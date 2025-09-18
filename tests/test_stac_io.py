@@ -117,7 +117,7 @@ def test_report_duplicate_keys() -> None:
         assert str(excinfo.value), f'Found duplicate object name "key" in {src_href}'
 
 
-@unittest.mock.patch("pystac.stac_io.urllib3.request")
+@unittest.mock.patch("pystac.stac_io.urllib3.PoolManager.request")
 def test_headers_stac_io(request_mock: unittest.mock.MagicMock) -> None:
     stac_io = DefaultStacIO(headers={"Authorization": "api-key fake-api-key-value"})
 

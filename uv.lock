@@ -3189,7 +3189,7 @@ dev = [
     { name = "types-orjson", specifier = ">=3.6.2" },
     { name = "types-python-dateutil", specifier = ">=2.9.0.20241003" },
     { name = "types-urllib3", specifier = ">=1.26.25.14" },
-    { name = "urllib3", specifier = ">=2.3.0" },
+    { name = "urllib3", specifier = ">=1.26.19" },
     { name = "virtualenv", specifier = ">=20.26.6" },
 ]
 docs = [
