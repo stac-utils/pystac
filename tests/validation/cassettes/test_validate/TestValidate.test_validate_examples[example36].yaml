@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/collection-spec/json-schema/collection.json
   response:
@@ -96,13 +96,13 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 11 Sep 2025 15:51:51 GMT
+      - Thu, 18 Sep 2025 14:56:12 GMT
       ETag:
       - '"efa6309742b904ab7b06bab4c30c3ea2e1ce78163892365a7f4ee461716396b3"'
       Expires:
-      - Thu, 11 Sep 2025 15:56:51 GMT
+      - Thu, 18 Sep 2025 15:01:12 GMT
       Source-Age:
-      - '1'
+      - '2'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -116,15 +116,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 58945c526b2e69150a9fe5c6a3f677f8924d73ba
+      - d32b240704b5449058db2481c743b56d68ace0f5
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - ED3E:151D18:158C55:1A0484:68C2EEC0
+      - E19D:388807:C6F9A:F2341:68CC1D89
       X-Served-By:
-      - cache-bos4653-BOS
+      - cache-bos4672-BOS
       X-Timer:
-      - S1757605912.891094,VS0,VE1
+      - S1758207372.293634,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -134,7 +134,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/catalog-spec/json-schema/catalog.json
   response:
@@ -183,13 +183,13 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 11 Sep 2025 15:51:51 GMT
+      - Thu, 18 Sep 2025 14:56:12 GMT
       ETag:
       - '"c76fd44b22619705d40fb03a5b1d875e2e786f9ac7a85244758d15cc7cc947a9"'
       Expires:
-      - Thu, 11 Sep 2025 15:56:51 GMT
+      - Thu, 18 Sep 2025 15:01:12 GMT
       Source-Age:
-      - '1'
+      - '2'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -203,15 +203,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 895b47d278c438c0be5be69ba061f54e28d9f4b7
+      - e7eaec71ef237aded8187c9961c3e80b5239d594
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 3DDA:1CB1E4:12F35F:176261:68C2EEC0
+      - DF64:33F2BE:BEF40:EA092:68CC1D88
       X-Served-By:
-      - cache-bos4631-BOS
+      - cache-bos4644-BOS
       X-Timer:
-      - S1757605912.968425,VS0,VE1
+      - S1758207372.359189,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -221,7 +221,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/asset/json-schema/schema.json
   response:
@@ -262,11 +262,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 11 Sep 2025 15:51:52 GMT
+      - Thu, 18 Sep 2025 14:56:12 GMT
       ETag:
       - '"6ae857b8e1e2f74d6b996d5f7111e822099d2620956150db4b96325f59fccc52"'
       Expires:
-      - Thu, 11 Sep 2025 15:56:52 GMT
+      - Thu, 18 Sep 2025 15:01:12 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -276,21 +276,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
       - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 2d1e60bd1b131a6b50f13d1631f105679db89f21
+      - ae6c69a73207cc1fa74b0e8eca8d80c37a8a7f72
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - AE36:35E91B:14981C:191054:68C2EEC3
+      - 97B0:2036C0:A6896:D4BDE:68CC1D8C
       X-Served-By:
-      - cache-bos4621-BOS
+      - cache-bos4682-BOS
       X-Timer:
-      - S1757605912.040093,VS0,VE52
+      - S1758207372.423752,VS0,VE193
       X-XSS-Protection:
       - 1; mode=block
     status:

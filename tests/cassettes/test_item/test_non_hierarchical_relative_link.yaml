@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/collection-spec/examples/sentinel2.json
   response:
@@ -90,11 +90,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 11 Sep 2025 15:51:25 GMT
+      - Thu, 18 Sep 2025 14:55:44 GMT
       ETag:
       - '"7b5b9590049813a43b1a9c064eb61dd6b9c25e8e649fff820d3ac83580b7e559"'
       Expires:
-      - Thu, 11 Sep 2025 15:56:25 GMT
+      - Thu, 18 Sep 2025 15:00:44 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -104,21 +104,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
       - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - dfc83047c67598317344fa0aecf2030541f09a84
+      - 317fc71de5f4be989affd463ca39e1182e2d512b
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 0F0F:9DF63:14AF5F:192194:68C2EEA6
+      - 3B4B:48527:C2A46:EDA72:68CC1D6E
       X-Served-By:
-      - cache-bos4624-BOS
+      - cache-bos4682-BOS
       X-Timer:
-      - S1757605886.932207,VS0,VE49
+      - S1758207344.251079,VS0,VE102
       X-XSS-Protection:
       - 1; mode=block
     status:

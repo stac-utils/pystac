@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/catalog.json
   response:
@@ -33,11 +33,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 11 Sep 2025 15:51:20 GMT
+      - Thu, 18 Sep 2025 14:55:37 GMT
       ETag:
       - '"e74ebcbc46d43c5b693ecb995381fbeba03583627e6d65b21ed7678a10d94729"'
       Expires:
-      - Thu, 11 Sep 2025 15:56:20 GMT
+      - Thu, 18 Sep 2025 15:00:37 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -47,21 +47,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
       - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - b529d376c653063dbe51649d16b4513f9b18c8ca
+      - ac3bc65e8df95cb70374f59a88fd5cb2a3796d3a
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 159F:3ACAF2:F8CE77:1374D7D:68C2EE9E
+      - 95AC:175DD:C1C7B:ECB06:68CC1D68
       X-Served-By:
-      - cache-bos4650-BOS
+      - cache-bos4641-BOS
       X-Timer:
-      - S1757605881.609397,VS0,VE34
+      - S1758207338.739596,VS0,VE85
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -71,7 +71,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/zanzibar/collection.json
   response:
@@ -119,11 +119,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 11 Sep 2025 15:51:20 GMT
+      - Thu, 18 Sep 2025 14:55:37 GMT
       ETag:
       - '"ddd340bc27c120dd2e43868bcde0510a326a6223dac1b0c47c05100e20d1397e"'
       Expires:
-      - Thu, 11 Sep 2025 15:56:20 GMT
+      - Thu, 18 Sep 2025 15:00:37 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -133,21 +133,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
       - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 3b49c3a05484403c226cd6bf3f5c47020c8fa603
+      - 535459ae7b90c861026f8934ab614c34be0371da
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - E9A4:25E917:F65002:134CF27:68C2EE9F
+      - 6E2B:27CA0A:AE274:D9059:68CC1D69
       X-Served-By:
-      - cache-bos4660-BOS
+      - cache-bos4659-BOS
       X-Timer:
-      - S1757605881.744502,VS0,VE44
+      - S1758207338.893150,VS0,VE67
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -157,7 +157,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/zanzibar/znz001.json
   response:
@@ -215,11 +215,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 11 Sep 2025 15:51:20 GMT
+      - Thu, 18 Sep 2025 14:55:38 GMT
       ETag:
       - '"80ec96bc0acf2e604a03f109bd730426aa82e442d44946231cbe82a531b944f7"'
       Expires:
-      - Thu, 11 Sep 2025 15:56:20 GMT
+      - Thu, 18 Sep 2025 15:00:38 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -229,21 +229,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
       - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - f022c197150d57ef5d41874f68c5bf2739937624
+      - 410b1deb003782322b5aa10c140b104d64b3a4e7
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - A679:3ACAF2:F8CEAC:1374DBE:68C2EE9F
+      - 6225:3CAE3B:BD380:E8214:68CC1D6A
       X-Served-By:
-      - cache-bos4624-BOS
+      - cache-bos4660-BOS
       X-Timer:
-      - S1757605881.859959,VS0,VE68
+      - S1758207338.033185,VS0,VE181
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -253,7 +253,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/zanzibar/znz029.json
   response:
@@ -311,11 +311,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 11 Sep 2025 15:51:21 GMT
+      - Thu, 18 Sep 2025 14:55:38 GMT
       ETag:
       - '"726870312c74ead0b10c3125045c301e8600929684c49447d64c2db72dc779fc"'
       Expires:
-      - Thu, 11 Sep 2025 15:56:21 GMT
+      - Thu, 18 Sep 2025 15:00:38 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -325,21 +325,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
       - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 3fdd9d041aa32f44206789e13a539495a5b9eecb
+      - ee825a75cc33b63da5d5c206b3462823b952405f
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 2E1B:3B0BD:FEBD0E:13D3C78:68C2EEA1
+      - 4B06:3CAE3B:BD3AB:E824E:68CC1D69
       X-Served-By:
-      - cache-bos4639-BOS
+      - cache-bos4646-BOS
       X-Timer:
-      - S1757605881.995906,VS0,VE46
+      - S1758207338.373515,VS0,VE96
       X-XSS-Protection:
       - 1; mode=block
     status:
