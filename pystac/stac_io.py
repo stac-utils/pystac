@@ -286,9 +286,9 @@ class DefaultStacIO(StacIO):
         """Reads file as a UTF-8 string.
 
         If ``href`` has a "scheme" (e.g. if it starts with "https://") then this will
-        use :func:`urllib.request.urlopen` (or func:`urllib3.request` if available)
-        to open the file and read the contents; otherwise, :func:`open` will be used
-        to open a local file.
+        use :func:`urllib.request.urlopen` (or func:`urllib3.PoolManager().request`
+        if available) to open the file and read the contents; otherwise, :func:`open`
+        will be used to open a local file.
 
         Args:
 
@@ -299,7 +299,8 @@ class DefaultStacIO(StacIO):
             try:
                 logger.debug(f"GET {href} Headers: {self.headers}")
                 if HAS_URLLIB3:
-                    with urllib3.request(
+                    http = urllib3.PoolManager()
+                    with http.request(
                         "GET",
                         href,
                         headers={
