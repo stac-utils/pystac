@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://stac-extensions.github.io/scientific/v1.0.0/schema.json
   response:
@@ -89,7 +89,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '357'
+      - '14'
       Cache-Control:
       - max-age=600
       Connection:
@@ -99,7 +99,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 11 Sep 2025 15:51:14 GMT
+      - Thu, 18 Sep 2025 14:55:31 GMT
       ETag:
       - '"60febab7-15fa"'
       Last-Modified:
@@ -117,15 +117,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 0092b0148622f344e8cff5c5e0022350c70eb589
+      - 546d68bf0901c9642c9da60be6af35d7e48a869f
       X-GitHub-Request-Id:
-      - 3922:128B70:CB9EFB:E73AAF:68C2EE8E
+      - 5CF5:3D35AC:C4B412:DF1A74:68CC1D55
       X-Served-By:
-      - cache-bos4624-BOS
+      - cache-bos4645-BOS
       X-Timer:
-      - S1757605875.895763,VS0,VE2
+      - S1758207332.861129,VS0,VE2
       expires:
-      - Thu, 11 Sep 2025 15:55:18 GMT
+      - Thu, 18 Sep 2025 15:05:17 GMT
       x-proxy-cache:
       - MISS
     status:

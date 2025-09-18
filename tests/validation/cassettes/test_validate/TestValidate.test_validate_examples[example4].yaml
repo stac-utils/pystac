@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/collection-spec/json-schema/collection.json
   response:
@@ -85,11 +85,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 11 Sep 2025 15:51:42 GMT
+      - Thu, 18 Sep 2025 14:56:01 GMT
       ETag:
       - '"031974beaaaf6f0b5c6877dc97088d9e2aff3bc8962df33ff291dddded353f09"'
       Expires:
-      - Thu, 11 Sep 2025 15:56:42 GMT
+      - Thu, 18 Sep 2025 15:01:01 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -105,15 +105,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 72856912b47f329b260115e4c39e68745ecf8ff9
+      - 5aefb31837c4e4d1d7f13e756b539441828fb55e
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 48D2:9DF63:14B8DC:192D3D:68C2EEB6
+      - EAA4:3C3312:A80AF:D3151:68CC1D7F
       X-Served-By:
-      - cache-bos4632-BOS
+      - cache-bos4630-BOS
       X-Timer:
-      - S1757605903.703860,VS0,VE6
+      - S1758207362.713425,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -123,7 +123,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/catalog-spec/json-schema/catalog.json
   response:
@@ -184,11 +184,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 11 Sep 2025 15:51:42 GMT
+      - Thu, 18 Sep 2025 14:56:01 GMT
       ETag:
       - '"3b514933a3747f038125935624a13df108e30fe1cb8f9660a7f54ac6d4765ce9"'
       Expires:
-      - Thu, 11 Sep 2025 15:56:42 GMT
+      - Thu, 18 Sep 2025 15:01:01 GMT
       Source-Age:
       - '1'
       Strict-Transport-Security:
@@ -204,15 +204,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 06ac09f664f3867de8f2bfdeead0d0b24107b4e4
+      - 0bf051c2446dc0ecabdf9877af720e2276ed10e4
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 4D53:1CB1E4:12EBE4:17599A:68C2EEB7
+      - BCE7:388807:C697B:F1BF7:68CC1D7C
       X-Served-By:
-      - cache-bos4687-BOS
+      - cache-bos4625-BOS
       X-Timer:
-      - S1757605903.780814,VS0,VE1
+      - S1758207362.793818,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:

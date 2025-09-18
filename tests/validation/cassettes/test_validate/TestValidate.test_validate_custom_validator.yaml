@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://stac-extensions.github.io/custom-extension/v1.0.0/schema.json
   response:
@@ -54,7 +54,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '336'
+      - '0'
       Connection:
       - keep-alive
       Content-Length:
@@ -65,9 +65,9 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Thu, 11 Sep 2025 15:52:51 GMT
+      - Thu, 18 Sep 2025 14:57:16 GMT
       ETag:
-      - '"64d39a40-24a3"'
+      - '"64d248ca-24a3"'
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -77,17 +77,17 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - b96d8ff0fa27c9981a95595ca9c6fcf166a3eb6e
+      - 177bd79ca7730e04f4d2145eda89af6a0180b992
       X-GitHub-Request-Id:
-      - 5CA9:FA1FD:1EE767D:22450FC:68C2EF03
+      - 1E9F:3E33CC:1F8523:213561:68CC1DCB
       X-Served-By:
-      - cache-bos4664-BOS
+      - cache-bos4688-BOS
       X-Timer:
-      - S1757605972.802315,VS0,VE1
+      - S1758207436.153125,VS0,VE52
       x-proxy-cache:
       - MISS
     status:
@@ -97,7 +97,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://stac-extensions.github.io/custom-extension/v1.0.0/schema.json
   response:
@@ -148,7 +148,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '336'
+      - '0'
       Connection:
       - keep-alive
       Content-Length:
@@ -159,9 +159,9 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Thu, 11 Sep 2025 15:52:51 GMT
+      - Thu, 18 Sep 2025 14:57:16 GMT
       ETag:
-      - '"64d39a40-24a3"'
+      - '"64d248ca-24a3"'
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -175,13 +175,13 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 5d0f5a8400c75769e6b3d09a041d222a14a7228b
+      - 262dfd413adf1af18ad78e3807f7ac6742152b98
       X-GitHub-Request-Id:
-      - 5CA9:FA1FD:1EE767D:22450FC:68C2EF03
+      - 1E9F:3E33CC:1F8523:213561:68CC1DCB
       X-Served-By:
-      - cache-bos4633-BOS
+      - cache-bos4684-BOS
       X-Timer:
-      - S1757605972.892075,VS0,VE2
+      - S1758207436.293029,VS0,VE1
       x-proxy-cache:
       - MISS
     status:

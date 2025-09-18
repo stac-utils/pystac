@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/item-spec/json-schema/item.json
   response:
@@ -108,11 +108,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 11 Sep 2025 15:51:43 GMT
+      - Thu, 18 Sep 2025 14:56:02 GMT
       ETag:
       - '"4e24763d74f0d463b0cb6c63fc099e0b59447c7a049b93ffda4c6eb9eb54ae95"'
       Expires:
-      - Thu, 11 Sep 2025 15:56:43 GMT
+      - Thu, 18 Sep 2025 15:01:02 GMT
       Source-Age:
       - '1'
       Strict-Transport-Security:
@@ -128,15 +128,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - aa94bd681f0b5867df6a9f6afb7a9f8de67cb5a1
+      - 4fb23418e139dc18856d454393155d35bece245e
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 688A:1E0DA2:13B02E:181CCC:68C2EEB5
+      - DDD5:286E0:D0F1D:FC0CF:68CC1D7C
       X-Served-By:
-      - cache-bos4648-BOS
+      - cache-bos4693-BOS
       X-Timer:
-      - S1757605903.112114,VS0,VE1
+      - S1758207362.165377,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -146,7 +146,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.0
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/extensions/checksum/json-schema/schema.json
   response:
@@ -190,11 +190,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 11 Sep 2025 15:51:43 GMT
+      - Thu, 18 Sep 2025 14:56:02 GMT
       ETag:
       - '"ceed674cee48a43076989957b8a4f96d8acba3f52df1d52a3745e28225923aac"'
       Expires:
-      - Thu, 11 Sep 2025 15:56:43 GMT
+      - Thu, 18 Sep 2025 15:01:02 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -204,21 +204,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
       - '0'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - af8f2dafd7888bf0a534b68fe8adaea14c53bd15
+      - fb3c398d3b28c332c5248ccee0a62699818f247f
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 3EB7:6F752:15D306:1A5757:68C2EEB5
+      - A80D:3428C5:C3D9C:EEEC9:68CC1D81
       X-Served-By:
-      - cache-bos4630-BOS
+      - cache-bos4680-BOS
       X-Timer:
-      - S1757605903.177423,VS0,VE74
+      - S1758207362.239357,VS0,VE89
       X-XSS-Protection:
       - 1; mode=block
     status:
