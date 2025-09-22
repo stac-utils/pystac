@@ -14,8 +14,7 @@ build:
     - asdf install uv latest
     - asdf global uv latest
     - uv venv "${READTHEDOCS_VIRTUALENV_PATH}"
-    - UV_PROJECT_ENVIRONMENT="${READTHEDOCS_VIRTUALENV_PATH}" uv sync --all-extras --no-dev
-    - UV_PROJECT_ENVIRONMENT="${READTHEDOCS_VIRTUALENV_PATH}" uv sync --package pystac-docs --inexact # we need inexact to keep the top-level sync packages
+    - UV_PROJECT_ENVIRONMENT="${READTHEDOCS_VIRTUALENV_PATH}" sync --group docs --link-mode=copy
 
 formats:
   - pdf

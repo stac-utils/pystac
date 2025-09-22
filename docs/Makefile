@@ -5,14 +5,14 @@
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SOURCEDIR     = .
-BUILDDIR      = _build
+BUILDDIR      = build
 
 # Put it first so that "make" without argument is like "make help".
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 livehtml:
-	sphinx-autobuild --watch ../pystac --host 0.0.0.0 ${SOURCEDIR} $(BUILDDIR)/html -d _build/doctrees
+	sphinx-autobuild --watch ../pystac --host 0.0.0.0 ${SOURCEDIR} $(BUILDDIR)/html -d build/doctrees
 
 .PHONY: help Makefile
 
