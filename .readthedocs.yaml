@@ -14,7 +14,7 @@ build:
     - asdf install uv latest
     - asdf global uv latest
     - uv venv "${READTHEDOCS_VIRTUALENV_PATH}"
-    - UV_PROJECT_ENVIRONMENT="${READTHEDOCS_VIRTUALENV_PATH}" sync --group docs --link-mode=copy
+    - UV_PROJECT_ENVIRONMENT="${READTHEDOCS_VIRTUALENV_PATH}" uv sync --group docs --link-mode=copy
 
 formats:
   - pdf
