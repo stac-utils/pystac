@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import warnings
 from collections.abc import Generator
 from contextlib import contextmanager
 from typing import (
@@ -437,6 +436,8 @@ def ignore_deprecated() -> Generator[None]:
     """Context manager for suppressing the :class:`pystac.DeprecatedWarning`
     when creating a deprecated :class:`~pystac.Item` or :class:`~pystac.Collection`
     from a dictionary."""
+    import warnings
+
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=DeprecatedWarning)
         yield

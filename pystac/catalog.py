@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 import os
-import warnings
 from collections.abc import Callable, Iterable, Iterator
 from copy import deepcopy
-from itertools import chain
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -521,6 +519,8 @@ class Catalog(STACObject):
         Return:
             Item or None: The item with the given ID, or None if not found.
         """
+        import warnings
+
         warnings.warn(
             "get_item is deprecated and will be removed in v2. "
             "Use next(self.get_items(id), None) instead",
@@ -549,6 +549,8 @@ class Catalog(STACObject):
                 (if recursive) all catalogs or collections connected to this catalog
                 through child links.
         """
+        from itertools import chain
+
         items: Iterator[Item]
         if not recursive:
             items = map(
@@ -615,6 +617,9 @@ class Catalog(STACObject):
                 catalogs or collections connected to this catalog through
                 child links.
         """
+        import warnings
+        from itertools import chain
+
         warnings.warn(
             "get_all_items is deprecated and will be removed in v2",
             DeprecationWarning,

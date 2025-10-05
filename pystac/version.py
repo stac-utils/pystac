@@ -1,5 +1,3 @@
-import os
-
 __version__ = "1.14.2"  # x-release-please-version
 """Library version"""
 
@@ -20,6 +18,8 @@ class STACVersion:
     def get_stac_version(cls) -> str:
         if cls._override_version is not None:
             return cls._override_version
+
+        import os
 
         env_version = os.environ.get(cls.OVERRIDE_VERSION_ENV_VAR)
         if env_version is not None:

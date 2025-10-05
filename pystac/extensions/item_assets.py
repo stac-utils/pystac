@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import warnings
 from typing import Any, Literal
 
 import pystac
@@ -27,6 +26,8 @@ class AssetDefinition(ItemAssetDefinition):
     """
 
     def __init__(cls, *args: Any, **kwargs: Any) -> None:
+        import warnings
+
         warnings.warn(
             (
                 "``AssetDefinition`` is deprecated. "
@@ -49,6 +50,8 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
     collection: pystac.Collection
 
     def __init__(self, collection: pystac.Collection) -> None:
+        import warnings
+
         warnings.warn(
             (
                 "The ``item_assets`` extension is deprecated. "
