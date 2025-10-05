@@ -86,7 +86,6 @@ from pystac.item_assets import ItemAssetDefinition
 from pystac.item_collection import ItemCollection
 from pystac.provider import ProviderRole, Provider
 from pystac.utils import HREF
-import pystac.validation
 
 import pystac.extensions.hooks
 import pystac.extensions.classification
@@ -239,3 +238,18 @@ def read_dict(
     if stac_io is None:
         stac_io = StacIO.default()
     return stac_io.stac_object_from_dict(d, href, root)
+
+
+def __getattr__(name: str) -> Any:
+    if name == "validation":
+        import warnings
+        import pystac.validation
+
+        warnings.warn(
+            "pystac.validation will not be automatically imported to the package in "
+            "pystac v2.0. Instead, import it directly: `import pystac.validation`",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return pystac.validation
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
