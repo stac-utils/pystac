@@ -6,7 +6,6 @@ for use as values in the :attr:`~pystac.Collection.item_assets` dict.
 
 from __future__ import annotations
 
-from copy import deepcopy
 from typing import TYPE_CHECKING, Any
 
 import pystac
@@ -179,6 +178,8 @@ class ItemAssetDefinition:
 
     def to_dict(self) -> dict[str, Any]:
         """Returns a dictionary representing this ``ItemAssetDefinition``."""
+        from copy import deepcopy
+
         return deepcopy(self.properties)
 
     def create_asset(self, href: str) -> pystac.Asset:

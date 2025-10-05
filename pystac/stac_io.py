@@ -1,13 +1,10 @@
 from __future__ import annotations
 
 import json
-import logging
 import os
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
-from urllib.error import HTTPError
-from urllib.request import Request, urlopen
 
 import pystac
 from pystac.serialization import (
@@ -35,9 +32,6 @@ else:
 if TYPE_CHECKING:
     from pystac.catalog import Catalog
     from pystac.stac_object import STACObject
-
-
-logger = logging.getLogger(__name__)
 
 
 class StacIO(ABC):
@@ -296,6 +290,11 @@ class DefaultStacIO(StacIO):
         """
         href_contents: str
         if _is_url(href):
+            import logging
+            from urllib.error import HTTPError
+            from urllib.request import Request, urlopen
+
+            logger = logging.getLogger(__name__)
             try:
                 logger.debug(f"GET {href} Headers: {self.headers}")
                 if HAS_URLLIB3:
@@ -451,6 +450,8 @@ if HAS_URLLIB3:
                 href : The URI of the file to open.
             """
             if _is_url(href):
+                from urllib.error import HTTPError
+
                 # TODO provide a pooled StacIO to enable more efficient network
                 # access (probably named `PooledStacIO`).
                 http = PoolManager()

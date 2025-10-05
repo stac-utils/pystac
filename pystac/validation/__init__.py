@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from collections.abc import Iterable, Mapping
 from typing import TYPE_CHECKING, Any, cast
 
@@ -164,6 +163,8 @@ def validate_all(
         stac_io = pystac.StacIO.default()
 
     if isinstance(stac_object, dict):
+        import warnings
+
         warnings.warn(
             "validating a STAC object as a dict is deprecated;"
             " use validate_all_dict instead",

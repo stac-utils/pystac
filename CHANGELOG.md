@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Speed up importing pystac ([#1584](https://github.com/stac-utils/pystac/pull/1584))
+
 ## [v1.14.1] - 2025-09-18
 
 ### Fixed

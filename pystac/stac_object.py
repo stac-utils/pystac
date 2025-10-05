@@ -2,12 +2,10 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterable
-from html import escape
 from typing import TYPE_CHECKING, Any, TypeAlias, TypeVar, cast
 
 import pystac
 from pystac import STACError
-from pystac.html.jinja_env import get_jinja_env
 from pystac.link import Link
 from pystac.utils import (
     HREF,
@@ -584,6 +582,10 @@ class STACObject(ABC):
         raise NotImplementedError
 
     def _repr_html_(self) -> str:
+        from html import escape
+
+        from pystac.html.jinja_env import get_jinja_env
+
         jinja_env = get_jinja_env()
         if jinja_env:
             template = jinja_env.get_template("JSON.jinja2")

@@ -1,10 +1,7 @@
-import importlib.resources
 import json
-import warnings
 from typing import Any, cast
 
 from jsonschema import Draft7Validator, ValidationError
-from referencing import Registry, Resource
 
 from pystac.errors import STACLocalValidationError
 from pystac.version import STACVersion
@@ -13,6 +10,8 @@ VERSION = STACVersion.DEFAULT_STAC_VERSION
 
 
 def _read_schema(file_name: str) -> dict[str, Any]:
+    import importlib.resources
+
     with (
         importlib.resources.files("pystac.validation.jsonschemas")
         .joinpath(file_name)
@@ -73,6 +72,8 @@ deprecated_names = ["ITEM_SCHEMA_URI", "COLLECTION_SCHEMA_URI", "CATALOG_SCHEMA_
 
 def __getattr__(name: str) -> Any:
     if name in deprecated_names:
+        import warnings
+
         warnings.warn(f"{name} is deprecated and will be removed in v2.", FutureWarning)
         return globals()[f"_deprecated_{name}"]
     raise AttributeError(f"module {__name__} has no attribute {name}")
@@ -81,6 +82,8 @@ def __getattr__(name: str) -> Any:
 class LocalValidator:
     def __init__(self) -> None:
         """DEPRECATED"""
+        import warnings
+
         warnings.warn(
             "``LocalValidator`` is deprecated and will be removed in v2.",
             DeprecationWarning,
@@ -88,6 +91,8 @@ class LocalValidator:
         self.schema_cache = get_local_schema_cache()
 
     def registry(self) -> Any:
+        from referencing import Registry, Resource
+
         return Registry().with_resources(
             [(k, Resource.from_contents(v)) for k, v in self.schema_cache.items()]
         )
