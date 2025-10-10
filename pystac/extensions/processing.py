@@ -20,7 +20,7 @@ from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
 )
-from pystac.utils import StringEnum
+from pystac.utils import StringEnum, datetime_to_str, map_opt, str_to_datetime
 
 T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition)
 
@@ -44,7 +44,11 @@ class ProcessingLevel(StringEnum):
     RAW = "RAW"
     L0 = "L0"
     L1 = "L1"
+    L1A = "L1A"
+    L1B = "L1B"
+    L1C = "L1C"
     L2 = "L2"
+    L2A = "L2A"
     L3 = "L3"
     L4 = "L4"
 
@@ -81,12 +85,15 @@ class ProcessingExtension(
         self.level = level
 
     @property
-    def level(self: Self) -> str | None:
-        return self._get_property(LEVEL_PROP, str)
+    def level(self: Self) -> ProcessingLevel | None:
+        """Get or sets the processing level of the object."""
+        return map_opt(
+            lambda x: ProcessingLevel(x), self._get_property(LEVEL_PROP, str)
+        )
 
     @level.setter
-    def level(self: Self, v: str | None) -> None:
-        self._set_property(LEVEL_PROP, v, pop_if_none=True)
+    def level(self: Self, v: ProcessingLevel | None) -> None:
+        self._set_property(LEVEL_PROP, map_opt(lambda x: x.value, v), pop_if_none=True)
 
     @property
     def datetime(self: Self) -> str | None:
