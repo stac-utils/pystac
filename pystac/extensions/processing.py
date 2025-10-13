@@ -22,6 +22,7 @@ from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
 )
+from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, datetime_to_str, map_opt, str_to_datetime
 
 T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition)
@@ -350,3 +351,12 @@ class ItemAssetsProcessingExtension(ProcessingExtension[pystac.ItemAssetDefiniti
     def __init__(self, item_asset: pystac.ItemAssetDefinition):
         self.asset_defn = item_asset
         self.properties = item_asset.properties
+
+
+class ProcessingExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+    prev_extension_ids = {"processing"}
+    stac_object_types = {pystac.STACObjectType.ITEM}
+
+
+PROCESSING_EXTENSION_HOOKS: ExtensionHooks = ProcessingExtensionHooks()
