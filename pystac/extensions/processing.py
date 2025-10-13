@@ -21,8 +21,10 @@ from pystac.extensions import item_assets
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
+    SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.summaries import RangeSummary
 from pystac.utils import StringEnum, datetime_to_str, map_opt, str_to_datetime
 
 T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition)
@@ -211,7 +213,6 @@ class ProcessingExtension(
         the relation type processing-expression.
         .. code-block:: python
             >>> proc_ext.expression = "(b4-b1)/(b4+b1)"
-            >>> proc_ext.expression = "(b4-b1)/(b4+b1)"
         """
         return self._get_property(EXPRESSION_PROP, dict[str, str | Any])
 
@@ -334,13 +335,13 @@ class AssetProcessingExtension(ProcessingExtension[pystac.Asset]):
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
 
-    def __init__(self, asset: pystac.Asset):
+    def __init__(self: Self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.extra_fields
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 
-    def __repr__(self) -> str:
+    def __repr__(self: Self) -> str:
         return f"<AssetProcessingExtension Asset href={self.asset_href}>"
 
 
@@ -348,9 +349,100 @@ class ItemAssetsProcessingExtension(ProcessingExtension[pystac.ItemAssetDefiniti
     properties: dict[str, Any]
     asset_defn: pystac.ItemAssetDefinition
 
-    def __init__(self, item_asset: pystac.ItemAssetDefinition):
+    def __init__(self: Self, item_asset: pystac.ItemAssetDefinition):
         self.asset_defn = item_asset
         self.properties = item_asset.properties
+
+
+class SummariesProcessingExtension(SummariesExtension):
+    """A concrete implementation of :class:`~pystac.extensions.base.SummariesExtension`
+    that extends the ``summaries`` field of a :class:`~pystac.Collection` to include
+    properties defined in the :stac-ext:`Processing Extension <processing>`.
+    """
+
+    @property
+    def level(self: Self) -> list[ProcessingLevel] | None:
+        """Get or sets the summary of :attr:`ProcessingExtension.level` values
+        for this Collection.
+        """
+
+        return self.summaries.get_list(LEVEL_PROP)
+
+    @level.setter
+    def level(self: Self, v: list[ProcessingLevel] | None) -> None:
+        self._set_summary(LEVEL_PROP, v)
+
+    @property
+    def datetime(self: Self) -> RangeSummary[datetime] | None:
+        """Get or sets the summary of :attr:`ProcessingExtension.datetime` values
+        for this Collection.
+        """
+
+        return self.summaries.get_range(DATETIME_PROP)
+
+    @datetime.setter
+    def datetime(self: Self, v: RangeSummary[datetime] | None) -> None:
+        self._set_summary(DATETIME_PROP, v)
+
+    @property
+    def expression(self: Self) -> list[dict[str, str | Any]] | None:
+        """Get or sets the summary of :attr:`ProcessingExtension.expression` values
+        for this Collection.
+        """
+
+        return self.summaries.get_list(EXPRESSION_PROP)
+
+    @expression.setter
+    def expression(self: Self, v: list[dict[str, str | Any]] | None) -> None:
+        self._set_summary(EXPRESSION_PROP, v)
+
+    @property
+    def lineage(self: Self) -> RangeSummary[str] | None:
+        """Get or sets the summary of :attr:`ProcessingExtension.lineage` values
+        for this Collection.
+        """
+
+        return self.summaries.get_range(LINEAGE_PROP)
+
+    @lineage.setter
+    def lineage(self: Self, v: RangeSummary[str] | None) -> None:
+        self._set_summary(LINEAGE_PROP, v)
+
+    @property
+    def facility(self: Self) -> RangeSummary[str] | None:
+        """Get or sets the summary of :attr:`ProcessingExtension.facility` values
+        for this Collection.
+        """
+
+        return self.summaries.get_range(FACILITY_PROP)
+
+    @facility.setter
+    def facility(self: Self, v: RangeSummary[str] | None) -> None:
+        self._set_summary(FACILITY_PROP, v)
+
+    @property
+    def version(self: Self) -> RangeSummary[str] | None:
+        """Get or sets the summary of :attr:`ProcessingExtension.version` values
+        for this Collection.
+        """
+
+        return self.summaries.get_range(VERSION_PROP)
+
+    @version.setter
+    def version(self: Self, v: RangeSummary[str] | None) -> None:
+        self._set_summary(VERSION_PROP, v)
+
+    @property
+    def software(self: Self) -> RangeSummary[dict[str, str]] | None:
+        """Get or sets the summary of :attr:`ProcessingExtension.software` values
+        for this Collection.
+        """
+
+        return self.summaries.get_range(SOFTWARE_PROP)
+
+    @software.setter
+    def software(self: Self, v: RangeSummary[dict[str, str]] | None) -> None:
+        self._set_summary(SOFTWARE_PROP, v)
 
 
 class ProcessingExtensionHooks(ExtensionHooks):
