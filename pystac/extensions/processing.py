@@ -11,7 +11,6 @@ from typing import (
     Any,
     Generic,
     Literal,
-    Self,
     TypeVar,
     cast,
 )
@@ -136,15 +135,15 @@ class ProcessingExtension(
 
     name: Literal["processing"] = "processing"
 
-    def __init__(self: Self, item: pystac.Item) -> None:
+    def __init__(self, item: pystac.Item) -> None:
         self.item = item
         self.properties = item.properties
 
-    def __repr__(self: Self) -> str:
+    def __repr__(self) -> str:
         return f"<ProcessingExtension Item id={self.item.id}>"
 
     def apply(
-        self: Self,
+        self,
         level: ProcessingLevel | None = None,
         datetime: datetime | None = None,
         expression: str | None = None,
@@ -180,7 +179,7 @@ class ProcessingExtension(
         self.software = software
 
     @property
-    def level(self: Self) -> ProcessingLevel | None:
+    def level(self) -> ProcessingLevel | None:
         """Get or sets the processing level as the name commonly used to refer to the
         processing level to make it easier to search for product level across
         collections or items. This property is expected to be a `ProcessingLevel`"""
@@ -189,11 +188,11 @@ class ProcessingExtension(
         )
 
     @level.setter
-    def level(self: Self, v: ProcessingLevel | None) -> None:
+    def level(self, v: ProcessingLevel | None) -> None:
         self._set_property(LEVEL_PROP, map_opt(lambda x: x.value, v))
 
     @property
-    def datetime(self: Self) -> datetime | None:
+    def datetime(self) -> datetime | None:
         """Gets or set the processing date and time of the corresponding data formatted
         according to RFC 3339, section 5.6, in UTC. The time of the processing can be
         specified as a global field in processing:datetime, but it can also be specified
@@ -203,11 +202,11 @@ class ProcessingExtension(
         return map_opt(str_to_datetime, self._get_property(DATETIME_PROP, str))
 
     @datetime.setter
-    def datetime(self: Self, v: datetime | None) -> None:
+    def datetime(self, v: datetime | None) -> None:
         self._set_property(DATETIME_PROP, map_opt(datetime_to_str, v))
 
     @property
-    def expression(self: Self) -> dict[str, str | Any] | None:
+    def expression(self) -> dict[str, str | Any] | None:
         """Gets or sets an expression or processing chain that describes how the data
         has been processed. Alternatively, you can also link to a processing chain with
         the relation type processing-expression.
@@ -217,7 +216,7 @@ class ProcessingExtension(
         return self._get_property(EXPRESSION_PROP, dict[str, str | Any])
 
     @expression.setter
-    def expression(self: Self, v: str | Any | None) -> None:
+    def expression(self, v: str | Any | None) -> None:
         if isinstance(v, str):
             exp_format = "string"
         elif isinstance(v, object):
@@ -235,7 +234,7 @@ class ProcessingExtension(
         self._set_property(EXPRESSION_PROP, expression)
 
     @property
-    def lineage(self: Self) -> str | None:
+    def lineage(self) -> str | None:
         """Gets or sets the lineage provided as free text information about how
         observations were processed or models that were used to create the resource
         being described NASA ISO. For example, GRD Post Processing for "GRD" product of
@@ -244,32 +243,32 @@ class ProcessingExtension(
         return self._get_property(LINEAGE_PROP, str)
 
     @lineage.setter
-    def lineage(self: Self, v: str | None) -> None:
+    def lineage(self, v: str | None) -> None:
         self._set_property(LINEAGE_PROP, v)
 
     @property
-    def facility(self: Self) -> str | None:
+    def facility(self) -> str | None:
         """Gets or sets the name of the facility that produced the data. For example,
         Copernicus S1 Core Ground Segment - DPA for product of Sentinel-1 satellites."""
         return self._get_property(FACILITY_PROP, str)
 
     @facility.setter
-    def facility(self: Self, v: str | None) -> None:
+    def facility(self, v: str | None) -> None:
         self._set_property(FACILITY_PROP, v)
 
     @property
-    def version(self: Self) -> str | None:
+    def version(self) -> str | None:
         """Gets or sets The version of the primary processing software or processing
         chain that produced the data. For example, this could be the processing baseline
         for the Sentinel missions."""
         return self._get_property(VERSION_PROP, str)
 
     @version.setter
-    def version(self: Self, v: str | None) -> None:
+    def version(self, v: str | None) -> None:
         self._set_property(VERSION_PROP, v)
 
     @property
-    def software(self: Self) -> dict[str, str] | None:
+    def software(self) -> dict[str, str] | None:
         """Gets or sets the processing software as a dictionary with name/version for
         key/value describing one or more applications or libraries that were involved
         during the production of the data for provenance purposes.
@@ -288,7 +287,7 @@ class ProcessingExtension(
         return self._get_property(SOFTWARE_PROP, dict[str, str])
 
     @software.setter
-    def software(self: Self, v: dict[str, str] | None) -> None:
+    def software(self, v: dict[str, str] | None) -> None:
         self._set_property(SOFTWARE_PROP, v)
 
     @classmethod
@@ -308,11 +307,11 @@ class ItemProcessingExtension(ProcessingExtension[pystac.Item]):
     item: pystac.Item
     properties: dict[str, Any]
 
-    def __init__(self: Self, item: pystac.Item) -> None:
+    def __init__(self, item: pystac.Item) -> None:
         self.item = item
         self.properties = item.properties
 
-    def __repr__(self: Self) -> str:
+    def __repr__(self) -> str:
         return f"<ItemProcessingExtension Item id={self.item.id}>"
 
 
@@ -335,13 +334,13 @@ class AssetProcessingExtension(ProcessingExtension[pystac.Asset]):
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
 
-    def __init__(self: Self, asset: pystac.Asset):
+    def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.extra_fields
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 
-    def __repr__(self: Self) -> str:
+    def __repr__(self) -> str:
         return f"<AssetProcessingExtension Asset href={self.asset_href}>"
 
 
@@ -349,7 +348,7 @@ class ItemAssetsProcessingExtension(ProcessingExtension[pystac.ItemAssetDefiniti
     properties: dict[str, Any]
     asset_defn: pystac.ItemAssetDefinition
 
-    def __init__(self: Self, item_asset: pystac.ItemAssetDefinition):
+    def __init__(self, item_asset: pystac.ItemAssetDefinition):
         self.asset_defn = item_asset
         self.properties = item_asset.properties
 
@@ -361,7 +360,7 @@ class SummariesProcessingExtension(SummariesExtension):
     """
 
     @property
-    def level(self: Self) -> list[ProcessingLevel] | None:
+    def level(self) -> list[ProcessingLevel] | None:
         """Get or sets the summary of :attr:`ProcessingExtension.level` values
         for this Collection.
         """
@@ -369,11 +368,11 @@ class SummariesProcessingExtension(SummariesExtension):
         return self.summaries.get_list(LEVEL_PROP)
 
     @level.setter
-    def level(self: Self, v: list[ProcessingLevel] | None) -> None:
+    def level(self, v: list[ProcessingLevel] | None) -> None:
         self._set_summary(LEVEL_PROP, v)
 
     @property
-    def datetime(self: Self) -> RangeSummary[datetime] | None:
+    def datetime(self) -> RangeSummary[datetime] | None:
         """Get or sets the summary of :attr:`ProcessingExtension.datetime` values
         for this Collection.
         """
@@ -381,11 +380,11 @@ class SummariesProcessingExtension(SummariesExtension):
         return self.summaries.get_range(DATETIME_PROP)
 
     @datetime.setter
-    def datetime(self: Self, v: RangeSummary[datetime] | None) -> None:
+    def datetime(self, v: RangeSummary[datetime] | None) -> None:
         self._set_summary(DATETIME_PROP, v)
 
     @property
-    def expression(self: Self) -> list[dict[str, str | Any]] | None:
+    def expression(self) -> list[dict[str, str | Any]] | None:
         """Get or sets the summary of :attr:`ProcessingExtension.expression` values
         for this Collection.
         """
@@ -393,11 +392,11 @@ class SummariesProcessingExtension(SummariesExtension):
         return self.summaries.get_list(EXPRESSION_PROP)
 
     @expression.setter
-    def expression(self: Self, v: list[dict[str, str | Any]] | None) -> None:
+    def expression(self, v: list[dict[str, str | Any]] | None) -> None:
         self._set_summary(EXPRESSION_PROP, v)
 
     @property
-    def lineage(self: Self) -> RangeSummary[str] | None:
+    def lineage(self) -> RangeSummary[str] | None:
         """Get or sets the summary of :attr:`ProcessingExtension.lineage` values
         for this Collection.
         """
@@ -405,11 +404,11 @@ class SummariesProcessingExtension(SummariesExtension):
         return self.summaries.get_range(LINEAGE_PROP)
 
     @lineage.setter
-    def lineage(self: Self, v: RangeSummary[str] | None) -> None:
+    def lineage(self, v: RangeSummary[str] | None) -> None:
         self._set_summary(LINEAGE_PROP, v)
 
     @property
-    def facility(self: Self) -> RangeSummary[str] | None:
+    def facility(self) -> RangeSummary[str] | None:
         """Get or sets the summary of :attr:`ProcessingExtension.facility` values
         for this Collection.
         """
@@ -417,11 +416,11 @@ class SummariesProcessingExtension(SummariesExtension):
         return self.summaries.get_range(FACILITY_PROP)
 
     @facility.setter
-    def facility(self: Self, v: RangeSummary[str] | None) -> None:
+    def facility(self, v: RangeSummary[str] | None) -> None:
         self._set_summary(FACILITY_PROP, v)
 
     @property
-    def version(self: Self) -> RangeSummary[str] | None:
+    def version(self) -> RangeSummary[str] | None:
         """Get or sets the summary of :attr:`ProcessingExtension.version` values
         for this Collection.
         """
@@ -429,11 +428,11 @@ class SummariesProcessingExtension(SummariesExtension):
         return self.summaries.get_range(VERSION_PROP)
 
     @version.setter
-    def version(self: Self, v: RangeSummary[str] | None) -> None:
+    def version(self, v: RangeSummary[str] | None) -> None:
         self._set_summary(VERSION_PROP, v)
 
     @property
-    def software(self: Self) -> RangeSummary[dict[str, str]] | None:
+    def software(self) -> RangeSummary[dict[str, str]] | None:
         """Get or sets the summary of :attr:`ProcessingExtension.software` values
         for this Collection.
         """
@@ -441,7 +440,7 @@ class SummariesProcessingExtension(SummariesExtension):
         return self.summaries.get_range(SOFTWARE_PROP)
 
     @software.setter
-    def software(self: Self, v: RangeSummary[dict[str, str]] | None) -> None:
+    def software(self, v: RangeSummary[dict[str, str]] | None) -> None:
         self._set_summary(SOFTWARE_PROP, v)
 
 
