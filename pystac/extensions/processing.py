@@ -5,6 +5,7 @@ https://github.com/stac-extensions/processing
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime
 from typing import (
     Any,
@@ -311,3 +312,41 @@ class ItemProcessingExtension(ProcessingExtension[pystac.Item]):
 
     def __repr__(self: Self) -> str:
         return f"<ItemProcessingExtension Item id={self.item.id}>"
+
+
+class AssetProcessingExtension(ProcessingExtension[pystac.Asset]):
+    """A concrete implementation of :class:`ProcessingExtension` on an
+    :class:`~pystac.Asset` that extends the Asset fields to include properties defined
+    in the :stac-ext:`Processing Extension <processing>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`ProcessingExtension.ext` on an :class:`~pystac.Asset` to extend it.
+    """
+
+    asset_href: str
+    """The ``href`` value of the :class:`~pystac.Asset` being extended."""
+
+    properties: dict[str, Any]
+    """The :class:`~pystac.Asset` fields, including extension properties."""
+
+    additional_read_properties: Iterable[dict[str, Any]] | None = None
+    """If present, this will be a list containing 1 dictionary representing the
+    properties of the owning :class:`~pystac.Item`."""
+
+    def __init__(self, asset: pystac.Asset):
+        self.asset_href = asset.href
+        self.properties = asset.extra_fields
+        if asset.owner and isinstance(asset.owner, pystac.Item):
+            self.additional_read_properties = [asset.owner.properties]
+
+    def __repr__(self) -> str:
+        return f"<AssetProcessingExtension Asset href={self.asset_href}>"
+
+
+class ItemAssetsProcessingExtension(ProcessingExtension[pystac.ItemAssetDefinition]):
+    properties: dict[str, Any]
+    asset_defn: pystac.ItemAssetDefinition
+
+    def __init__(self, item_asset: pystac.ItemAssetDefinition):
+        self.asset_defn = item_asset
+        self.properties = item_asset.properties
