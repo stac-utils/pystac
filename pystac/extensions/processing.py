@@ -223,21 +223,24 @@ class ProcessingExtension(
 
     @expression.setter
     def expression(self, v: str | Any | None) -> None:
-        if isinstance(v, str):
-            exp_format = "string"
-        elif isinstance(v, object):
-            exp_format = "object"
+        if v is None:
+            self._set_property(EXPRESSION_PROP, v)
         else:
-            raise ValueError(
-                "The provided expression is not a valid type (string or object)"
-            )
+            if isinstance(v, str):
+                exp_format = "string"
+            elif isinstance(v, object):
+                exp_format = "object"
+            else:
+                raise ValueError(
+                    "The provided expression is not a valid type (string or object)"
+                )
 
-        expression = {
-            "format": exp_format,
-            "expression": v,
-        }
+            expression = {
+                "format": exp_format,
+                "expression": v,
+            }
 
-        self._set_property(EXPRESSION_PROP, expression)
+            self._set_property(EXPRESSION_PROP, expression)
 
     @property
     def lineage(self) -> str | None:
@@ -302,11 +305,39 @@ class ProcessingExtension(
 
     @classmethod
     def ext(cls, obj: T, add_if_missing: bool = False) -> ProcessingExtension[T]:
+        import pystac.errors
+
         if isinstance(obj, pystac.Item):
+            if not add_if_missing and cls.get_schema_uri() not in obj.stac_extensions:
+                raise pystac.errors.ExtensionNotImplemented(
+                    f"{cls.__name__} not implemented for Item id={getattr(obj, 'id', None)}"
+                )
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(ProcessingExtension[pystac.Item], ItemProcessingExtension(obj))
+        elif isinstance(obj, pystac.Asset):
+            owner = obj.owner if hasattr(obj, "owner") else None
+            if owner and isinstance(owner, pystac.Item):
+                if (
+                    not add_if_missing
+                    and cls.get_schema_uri() not in owner.stac_extensions
+                ):
+                    raise pystac.errors.ExtensionNotImplemented(
+                        f"{cls.__name__} not implemented for Asset href={getattr(obj, 'href', None)} (owner Item id={getattr(owner, 'id', None)})"
+                    )
+            cls.ensure_has_extension(owner, add_if_missing) if owner else None
+            return cast(
+                ProcessingExtension[pystac.Asset], AssetProcessingExtension(obj)
+            )
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
+
+    @classmethod
+    def summaries(
+        cls, obj: pystac.Collection, add_if_missing: bool = False
+    ) -> SummariesProcessingExtension:
+        """Returns the extended summaries object for the given collection."""
+        cls.ensure_has_extension(obj, add_if_missing)
+        return SummariesProcessingExtension(obj)
 
 
 class ItemProcessingExtension(ProcessingExtension[pystac.Item]):
