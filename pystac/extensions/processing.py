@@ -209,14 +209,15 @@ class ProcessingExtension(
         the relation type processing-expression.
         .. code-block:: python
             >>> proc_ext.expression = "(b4-b1)/(b4+b1)"
+            >>> proc_ext.expression = "(b4-b1)/(b4+b1)"
         """
         return self._get_property(EXPRESSION_PROP, dict[str, str | Any])
 
     @expression.setter
     def expression(self: Self, v: str | Any | None) -> None:
-        if isinstance(v.expression, str):
+        if isinstance(v, str):
             exp_format = "string"
-        elif isinstance(v.expression, object):
+        elif isinstance(v, object):
             exp_format = "object"
         else:
             raise ValueError(
