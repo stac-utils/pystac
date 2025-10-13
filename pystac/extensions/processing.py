@@ -26,7 +26,13 @@ from pystac.extensions.hooks import ExtensionHooks
 from pystac.summaries import RangeSummary
 from pystac.utils import StringEnum, datetime_to_str, map_opt, str_to_datetime
 
-T = TypeVar("T", pystac.Item, pystac.Asset, item_assets.AssetDefinition)
+T = TypeVar(
+    "T",
+    pystac.Item,
+    pystac.Asset,
+    item_assets.AssetDefinition,
+    pystac.ItemAssetDefinition,
+)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/processing/v1.2.0/schema.json"
 SCHEMA_URIS: list[str] = [
@@ -298,7 +304,7 @@ class ProcessingExtension(
     def ext(cls, obj: T, add_if_missing: bool = False) -> ProcessingExtension[T]:
         if isinstance(obj, pystac.Item):
             cls.ensure_has_extension(obj, add_if_missing)
-            return cast(ProcessingExtension, ItemProcessingExtension(obj))
+            return cast(ProcessingExtension[pystac.Item], ItemProcessingExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
@@ -432,15 +438,15 @@ class SummariesProcessingExtension(SummariesExtension):
         self._set_summary(VERSION_PROP, v)
 
     @property
-    def software(self) -> RangeSummary[dict[str, str]] | None:
+    def software(self) -> list[dict[str, str]] | None:
         """Get or sets the summary of :attr:`ProcessingExtension.software` values
         for this Collection.
         """
 
-        return self.summaries.get_range(SOFTWARE_PROP)
+        return self.summaries.get_list(SOFTWARE_PROP)
 
     @software.setter
-    def software(self, v: RangeSummary[dict[str, str]] | None) -> None:
+    def software(self, v: list[dict[str, str]] | None) -> None:
         self._set_summary(SOFTWARE_PROP, v)
 
 
