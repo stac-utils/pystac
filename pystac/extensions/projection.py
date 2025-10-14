@@ -30,6 +30,7 @@ SCHEMA_URI: str = "https://stac-extensions.github.io/projection/v2.0.0/schema.js
 SCHEMA_URIS: list[str] = [
     "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
     "https://stac-extensions.github.io/projection/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/projection/v1.2.0/schema.json",
     SCHEMA_URI,
 ]
 PREFIX: str = "proj:"
