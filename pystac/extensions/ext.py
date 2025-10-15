@@ -21,6 +21,7 @@ from pystac.extensions.timestamps import TimestampsExtension
 from pystac.extensions.version import BaseVersionExtension, VersionExtension
 from pystac.extensions.view import ViewExtension
 from pystac.extensions.xarray_assets import XarrayAssetsExtension
+from pystac.extensions.archive import ArchiveExtension
 
 T = TypeVar("T", Asset, AssetDefinition, Link)
 U = TypeVar("U", Asset, AssetDefinition)
@@ -45,6 +46,7 @@ EXTENSION_NAMES = Literal[
     "version",
     "view",
     "xarray",
+    "archive",
 ]
 
 EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
@@ -67,6 +69,7 @@ EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     VersionExtension.name: VersionExtension,
     ViewExtension.name: ViewExtension,
     XarrayAssetsExtension.name: XarrayAssetsExtension,
+    ArchiveExtension.name: ArchiveExtension,
 }
 
 
@@ -121,6 +124,10 @@ class CollectionExt(CatalogExt):
     @property
     def xarray(self) -> XarrayAssetsExtension[Collection]:
         return XarrayAssetsExtension.ext(self.stac_object)
+
+    @property
+    def archive(self) -> ArchiveExtension[Collection]:
+        return ArchiveExtension.ext(self.stac_object)
 
 
 @dataclass
@@ -195,6 +202,10 @@ class ItemExt:
     @property
     def xarray(self) -> XarrayAssetsExtension[Item]:
         return XarrayAssetsExtension.ext(self.stac_object)
+
+    @property
+    def archive(self) -> ArchiveExtension[Item]:
+        return ArchiveExtension.ext(self.stac_object)
 
 
 class _AssetsExt(Generic[T]):
@@ -281,6 +292,10 @@ class _AssetExt(_AssetsExt[U]):
     def view(self) -> ViewExtension[U]:
         return ViewExtension.ext(self.stac_object)
 
+    @property
+    def archive(self) -> ArchiveExtension[U]:
+        return ArchiveExtension.ext(self.stac_object)
+
 
 @dataclass
 class AssetExt(_AssetExt[Asset]):
@@ -297,6 +312,10 @@ class AssetExt(_AssetExt[Asset]):
     @property
     def xarray(self) -> XarrayAssetsExtension[Asset]:
         return XarrayAssetsExtension.ext(self.stac_object)
+
+    @property
+    def archive(self) -> ArchiveExtension[Asset]:
+        return ArchiveExtension.ext(self.stac_object)
 
 
 @dataclass
