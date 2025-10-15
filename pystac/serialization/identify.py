@@ -31,6 +31,7 @@ class OldExtensionShortIDs(Enum):
     VERSION = "version"
     VIEW = "view"
     FILE = "file"
+    ARCHIVE = "archive"
 
 
 @total_ordering
