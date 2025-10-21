@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Remove unused pystac.validation import ([#1583](https://github.com/stac-utils/pystac/pull/1583))
+- Add CF Extension ([#1592](https://github.com/stac-utils/pystac/pull/1592))
 
 ## [v1.14.1] - 2025-09-18
 
