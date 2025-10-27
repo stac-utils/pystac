@@ -2,12 +2,8 @@ interactions:
 - request:
     body: null
     headers:
-      Connection:
-      - close
-      Host:
-      - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.12
+      - pystac/1.14.1
     method: GET
     uri: https://stac-extensions.github.io/datacube/v2.2.0/schema.json
   response:
@@ -205,21 +201,21 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '2'
+      - '1'
       Cache-Control:
       - max-age=600
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '13997'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 23 Jan 2025 15:04:11 GMT
+      - Thu, 18 Sep 2025 14:55:19 GMT
       ETag:
-      - '"64527b1d-36ad"'
+      - '"6852a0c7-36ad"'
       Last-Modified:
-      - Wed, 03 May 2023 15:17:49 GMT
+      - Wed, 18 Jun 2025 11:19:35 GMT
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -233,17 +229,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - e9162b0b9e1d6a5e9f906d253e12767728474c09
+      - 4bc4e175a372fd234ec8ce5d0e93d1d319bb29a0
       X-GitHub-Request-Id:
-      - 59D8:151BE8:FC5C21:11A256F:67925A69
+      - E5BA:358B9B:CCBE53:E723BF:68CC1D55
       X-Served-By:
-      - cache-den-kden1300029-DEN
+      - cache-bos4668-BOS
       X-Timer:
-      - S1737644651.295736,VS0,VE1
+      - S1758207320.551758,VS0,VE1
       expires:
-      - Thu, 23 Jan 2025 15:14:09 GMT
-      permissions-policy:
-      - interest-cohort=()
+      - Thu, 18 Sep 2025 15:05:18 GMT
       x-proxy-cache:
       - MISS
     status:

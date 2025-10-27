@@ -1,7 +1,9 @@
 interactions:
 - request:
     body: null
-    headers: {}
+    headers:
+      User-Agent:
+      - pystac/1.14.1
     method: GET
     uri: https://capella-open-data.s3.us-west-2.amazonaws.com/stac/capella-open-data-by-capital/capella-open-data-mal%C3%A9/collection.json
   response:
@@ -12,9 +14,9 @@ interactions:
         \     \"type\": \"application/json\",\n      \"title\": \"Capella Open Data\"\n
         \   },\n    {\n      \"rel\": \"license\",\n      \"href\": \"https://creativecommons.org/licenses/by/4.0/\",\n
         \     \"title\": \"CC BY 4.0\"\n    },\n    {\n      \"rel\": \"item\",\n
-        \     \"href\": \"../../capella-open-data-by-datetime/capella-open-data-2024/capella-open-data-2024-11/capella-open-data-2024-11-30/CAPELLA_C09_SP_GEO_HH_20241130164247_20241130164315/CAPELLA_C09_SP_GEO_HH_20241130164247_20241130164315.json\",\n
-        \     \"type\": \"application/json\"\n    },\n    {\n      \"rel\": \"item\",\n
         \     \"href\": \"../../capella-open-data-by-datetime/capella-open-data-2024/capella-open-data-2024-11/capella-open-data-2024-11-30/CAPELLA_C09_SP_GEC_HH_20241130164247_20241130164315/CAPELLA_C09_SP_GEC_HH_20241130164247_20241130164315.json\",\n
+        \     \"type\": \"application/json\"\n    },\n    {\n      \"rel\": \"item\",\n
+        \     \"href\": \"../../capella-open-data-by-datetime/capella-open-data-2024/capella-open-data-2024-11/capella-open-data-2024-11-30/CAPELLA_C09_SP_GEO_HH_20241130164247_20241130164315/CAPELLA_C09_SP_GEO_HH_20241130164247_20241130164315.json\",\n
         \     \"type\": \"application/json\"\n    },\n    {\n      \"rel\": \"item\",\n
         \     \"href\": \"../../capella-open-data-by-datetime/capella-open-data-2024/capella-open-data-2024-11/capella-open-data-2024-11-30/CAPELLA_C09_SP_SICD_HH_20241130164247_20241130164315/CAPELLA_C09_SP_SICD_HH_20241130164247_20241130164315.json\",\n
         \     \"type\": \"application/json\"\n    },\n    {\n      \"rel\": \"item\",\n
@@ -66,17 +68,17 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 16 Jul 2025 14:27:08 GMT
+      - Thu, 18 Sep 2025 14:55:47 GMT
       ETag:
-      - '"3a7d18f018a5dc5e29af78ba91fb3a67"'
+      - '"97688a98c449dfb3e9e1e90352e3e8e1"'
       Last-Modified:
-      - Wed, 16 Jul 2025 07:07:12 GMT
+      - Thu, 18 Sep 2025 07:07:22 GMT
       Server:
       - AmazonS3
       x-amz-id-2:
-      - mS8cX+L1/uoMVhaC4ZTcrNLZb47iqTYwEXT52pFgbN9gFq3JRX17cTr8i0bTFOAaWWZ1DwnpogFTTAOAyjGj3Q==
+      - COTHOREpyll/7k3ulEh3Pi5yLkRpwl6k0AlNBBzfYQFwS6gOUy4jM6RRbglorYJkN13UQ98sk9c=
       x-amz-request-id:
-      - PWBXR28EN2M7DX2W
+      - R36SSDJ4ZBGMZ0AQ
       x-amz-server-side-encryption:
       - AES256
     status:

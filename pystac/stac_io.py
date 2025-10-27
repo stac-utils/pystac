@@ -286,9 +286,9 @@ class DefaultStacIO(StacIO):
         """Reads file as a UTF-8 string.
 
         If ``href`` has a "scheme" (e.g. if it starts with "https://") then this will
-        use :func:`urllib.request.urlopen` (or func:`urllib3.request` if available)
-        to open the file and read the contents; otherwise, :func:`open` will be used
-        to open a local file.
+        use :func:`urllib.request.urlopen` (or func:`urllib3.PoolManager().request`
+        if available) to open the file and read the contents; otherwise, :func:`open`
+        will be used to open a local file.
 
         Args:
 
@@ -299,15 +299,25 @@ class DefaultStacIO(StacIO):
             try:
                 logger.debug(f"GET {href} Headers: {self.headers}")
                 if HAS_URLLIB3:
-                    with urllib3.request(
+                    http = urllib3.PoolManager()
+                    with http.request(
                         "GET",
                         href,
-                        headers=self.headers,
+                        headers={
+                            "User-Agent": f"pystac/{pystac.__version__}",
+                            **self.headers,
+                        },
                         preload_content=False,  # type: ignore
                     ) as f:
                         href_contents = f.read().decode("utf-8")
                 else:
-                    req = Request(href, headers=self.headers)
+                    req = Request(
+                        href,
+                        headers={
+                            "User-Agent": f"pystac/{pystac.__version__}",
+                            **self.headers,
+                        },
+                    )
                     with urlopen(req) as f:
                         href_contents = f.read().decode("utf-8")
 
@@ -448,6 +458,10 @@ if HAS_URLLIB3:
                     response = http.request(
                         "GET",
                         href,
+                        headers={
+                            "User-Agent": f"pystac/{pystac.__version__}",
+                            **self.headers,
+                        },
                         retries=self.retry,  # type: ignore
                     )
                     return cast(str, response.data.decode("utf-8"))

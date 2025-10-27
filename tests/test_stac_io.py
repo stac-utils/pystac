@@ -117,7 +117,7 @@ def test_report_duplicate_keys() -> None:
         assert str(excinfo.value), f'Found duplicate object name "key" in {src_href}'
 
 
-@unittest.mock.patch("pystac.stac_io.urllib3.request")
+@unittest.mock.patch("pystac.stac_io.urllib3.PoolManager.request")
 def test_headers_stac_io(request_mock: unittest.mock.MagicMock) -> None:
     stac_io = DefaultStacIO(headers={"Authorization": "api-key fake-api-key-value"})
 
@@ -130,7 +130,7 @@ def test_headers_stac_io(request_mock: unittest.mock.MagicMock) -> None:
     pystac.Catalog.from_file("https://example.com/catalog.json", stac_io=stac_io)
 
     headers = request_mock.call_args[1]["headers"]
-    assert headers == stac_io.headers
+    assert headers == {"User-Agent": f"pystac/{pystac.__version__}", **stac_io.headers}
 
 
 @pytest.mark.vcr()
@@ -177,3 +177,13 @@ def test_urls_with_non_ascii_characters() -> None:
     else:
         with pytest.raises(pystac.STACError):
             pystac.Collection.from_file(url)
+
+
+@pytest.mark.vcr()
+def test_proj_json_schema_is_readable() -> None:
+    from pystac.stac_io import DefaultStacIO
+
+    stac_io = DefaultStacIO()
+    _ = stac_io.read_text_from_href(
+        "https://proj.org/schemas/v0.7/projjson.schema.json"
+    )

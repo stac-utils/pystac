@@ -2,12 +2,8 @@ interactions:
 - request:
     body: null
     headers:
-      Connection:
-      - close
-      Host:
-      - stac-extensions.github.io
       User-Agent:
-      - Python-urllib/3.12
+      - pystac/1.14.1
     method: GET
     uri: https://stac-extensions.github.io/sar/v1.0.0/schema.json
   response:
@@ -90,17 +86,17 @@ interactions:
       Cache-Control:
       - max-age=600
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '5087'
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 23 Jan 2025 15:04:15 GMT
+      - Thu, 18 Sep 2025 14:55:30 GMT
       ETag:
-      - '"676219a3-13df"'
+      - '"687775e1-13df"'
       Last-Modified:
-      - Wed, 18 Dec 2024 00:38:59 GMT
+      - Wed, 16 Jul 2025 09:50:25 GMT
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -110,21 +106,19 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - HIT
+      - MISS
       X-Cache-Hits:
-      - '1'
+      - '0'
       X-Fastly-Request-ID:
-      - fc9c09df035177fc552577d0c7db98067c3e0ee0
+      - 581754361e1dbd2b57eab92c544d0da80cfba5c2
       X-GitHub-Request-Id:
-      - 3CD4:2259D3:103FE85:121C807:67925A6F
+      - C4E5:1D3617:CA1CFB:E48D12:68CC1D62
       X-Served-By:
-      - cache-den-kden1300077-DEN
+      - cache-bos4666-BOS
       X-Timer:
-      - S1737644656.782149,VS0,VE1
+      - S1758207330.467280,VS0,VE48
       expires:
-      - Thu, 23 Jan 2025 15:14:15 GMT
-      permissions-policy:
-      - interest-cohort=()
+      - Thu, 18 Sep 2025 15:05:30 GMT
       x-proxy-cache:
       - MISS
     status:

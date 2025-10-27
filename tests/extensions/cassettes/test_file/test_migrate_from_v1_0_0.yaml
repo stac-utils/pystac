@@ -2,12 +2,8 @@ interactions:
 - request:
     body: null
     headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.12
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/file/v1.0.0/examples/item.json
   response:
@@ -55,7 +51,7 @@ interactions:
       Cache-Control:
       - max-age=300
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '2814'
       Content-Security-Policy:
@@ -65,17 +61,17 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 23 Jan 2025 15:04:12 GMT
+      - Thu, 18 Sep 2025 14:55:22 GMT
       ETag:
       - '"d86613d81195c6b4fdebc2055d91ce4921bbc44d99ad6206c5ffdf7518eb89f2"'
       Expires:
-      - Thu, 23 Jan 2025 15:09:12 GMT
+      - Thu, 18 Sep 2025 15:00:22 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding,Origin
+      - Authorization,Accept-Encoding
       Via:
       - 1.1 varnish
       X-Cache:
@@ -85,15 +81,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 9fc019b7f28c7eae6cabe925edc313336874b18c
+      - fa669480f9dbc6ddfa2a1532880d58adca212cce
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 4495:22F95D:205CFB:23ACE1:67925A6B
+      - E90D:B9EE0:781D6F:967D97:68CC1D59
       X-Served-By:
-      - cache-den-kden1300024-DEN
+      - cache-bos4640-BOS
       X-Timer:
-      - S1737644652.263409,VS0,VE354
+      - S1758207322.049362,VS0,VE111
       X-XSS-Protection:
       - 1; mode=block
     status:

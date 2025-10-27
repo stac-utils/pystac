@@ -1,7 +1,9 @@
 interactions:
 - request:
     body: null
-    headers: {}
+    headers:
+      User-Agent:
+      - pystac/1.14.1
     method: GET
     uri: https://planetarycomputer.microsoft.com/api/stac/v1/collections/not-a-collection-id
   response:
@@ -26,13 +28,13 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 23 Jan 2025 15:04:23 GMT
+      - Thu, 18 Sep 2025 14:55:45 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
       X-Cache:
       - CONFIG_NOCACHE
       x-azure-ref:
-      - 20250123T150422Z-r1dccb64849m7n58hC1CYS7y2g0000000mt000000000021u
+      - 20250918T145545Z-17db9869998gc5l6hC1TEBg2rg00000005x0000000001nee
     status:
       code: 404
       message: Not Found

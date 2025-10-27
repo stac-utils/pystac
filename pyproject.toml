@@ -55,7 +55,7 @@ dev = [
     "types-python-dateutil>=2.9.0.20241003",
     "types-requests>=2.32.0.20250328",
     "types-urllib3>=1.26.25.14",
-    "urllib3>=2.3.0",
+    "urllib3>=1.26.19",
     "virtualenv>=20.26.6",
 ]
 docs = [

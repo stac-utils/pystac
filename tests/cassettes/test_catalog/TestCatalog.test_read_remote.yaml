@@ -2,12 +2,8 @@ interactions:
 - request:
     body: null
     headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.12
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/catalog.json
   response:
@@ -27,7 +23,7 @@ interactions:
       Cache-Control:
       - max-age=300
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '436'
       Content-Security-Policy:
@@ -37,17 +33,17 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 23 Jan 2025 15:04:18 GMT
+      - Thu, 18 Sep 2025 14:55:37 GMT
       ETag:
       - '"e74ebcbc46d43c5b693ecb995381fbeba03583627e6d65b21ed7678a10d94729"'
       Expires:
-      - Thu, 23 Jan 2025 15:09:18 GMT
+      - Thu, 18 Sep 2025 15:00:37 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding,Origin
+      - Authorization,Accept-Encoding
       Via:
       - 1.1 varnish
       X-Cache:
@@ -57,15 +53,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - f039e0965880c3a4f071ce585f60acb588f5f11c
+      - ac3bc65e8df95cb70374f59a88fd5cb2a3796d3a
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 4495:22F95D:205FB0:23AFE6:67925A71
+      - 95AC:175DD:C1C7B:ECB06:68CC1D68
       X-Served-By:
-      - cache-den-kden1300041-DEN
+      - cache-bos4641-BOS
       X-Timer:
-      - S1737644658.294291,VS0,VE340
+      - S1758207338.739596,VS0,VE85
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -74,12 +70,8 @@ interactions:
 - request:
     body: null
     headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.12
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/zanzibar/collection.json
   response:
@@ -117,7 +109,7 @@ interactions:
       Cache-Control:
       - max-age=300
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '1709'
       Content-Security-Policy:
@@ -127,17 +119,17 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 23 Jan 2025 15:04:18 GMT
+      - Thu, 18 Sep 2025 14:55:37 GMT
       ETag:
       - '"ddd340bc27c120dd2e43868bcde0510a326a6223dac1b0c47c05100e20d1397e"'
       Expires:
-      - Thu, 23 Jan 2025 15:09:18 GMT
+      - Thu, 18 Sep 2025 15:00:37 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding,Origin
+      - Authorization,Accept-Encoding
       Via:
       - 1.1 varnish
       X-Cache:
@@ -147,15 +139,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - e84c45e0397a83b17c87b325715b916f5d64468d
+      - 535459ae7b90c861026f8934ab614c34be0371da
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - FE9B:2B18D8:1FA6D6:22F4DA:67925A70
+      - 6E2B:27CA0A:AE274:D9059:68CC1D69
       X-Served-By:
-      - cache-den-kden1300070-DEN
+      - cache-bos4659-BOS
       X-Timer:
-      - S1737644659.655386,VS0,VE202
+      - S1758207338.893150,VS0,VE67
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -164,12 +156,8 @@ interactions:
 - request:
     body: null
     headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.12
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/zanzibar/znz001.json
   response:
@@ -217,7 +205,7 @@ interactions:
       Cache-Control:
       - max-age=300
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '2776'
       Content-Security-Policy:
@@ -227,17 +215,17 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 23 Jan 2025 15:04:19 GMT
+      - Thu, 18 Sep 2025 14:55:38 GMT
       ETag:
       - '"80ec96bc0acf2e604a03f109bd730426aa82e442d44946231cbe82a531b944f7"'
       Expires:
-      - Thu, 23 Jan 2025 15:09:19 GMT
+      - Thu, 18 Sep 2025 15:00:38 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding,Origin
+      - Authorization,Accept-Encoding
       Via:
       - 1.1 varnish
       X-Cache:
@@ -247,15 +235,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - ed03994fba3b95f37322480c8fd73cae1db4b104
+      - 410b1deb003782322b5aa10c140b104d64b3a4e7
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 45D8:173A05:25B586:2904B8:67925A71
+      - 6225:3CAE3B:BD380:E8214:68CC1D6A
       X-Served-By:
-      - cache-den-kden1300045-DEN
+      - cache-bos4660-BOS
       X-Timer:
-      - S1737644659.878747,VS0,VE149
+      - S1758207338.033185,VS0,VE181
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -264,12 +252,8 @@ interactions:
 - request:
     body: null
     headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
       User-Agent:
-      - Python-urllib/3.12
+      - pystac/1.14.1
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/zanzibar/znz029.json
   response:
@@ -317,7 +301,7 @@ interactions:
       Cache-Control:
       - max-age=300
       Connection:
-      - close
+      - keep-alive
       Content-Length:
       - '2774'
       Content-Security-Policy:
@@ -327,17 +311,17 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 23 Jan 2025 15:04:19 GMT
+      - Thu, 18 Sep 2025 14:55:38 GMT
       ETag:
       - '"726870312c74ead0b10c3125045c301e8600929684c49447d64c2db72dc779fc"'
       Expires:
-      - Thu, 23 Jan 2025 15:09:19 GMT
+      - Thu, 18 Sep 2025 15:00:38 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
-      - Authorization,Accept-Encoding,Origin
+      - Authorization,Accept-Encoding
       Via:
       - 1.1 varnish
       X-Cache:
@@ -347,15 +331,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 46f5162223936806654b1d3c67dbe991947e2158
+      - ee825a75cc33b63da5d5c206b3462823b952405f
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 5188:121744:23621E:26B43C:67925A70
+      - 4B06:3CAE3B:BD3AB:E824E:68CC1D69
       X-Served-By:
-      - cache-den-kden1300063-DEN
+      - cache-bos4646-BOS
       X-Timer:
-      - S1737644659.050995,VS0,VE130
+      - S1758207338.373515,VS0,VE96
       X-XSS-Protection:
       - 1; mode=block
     status:
