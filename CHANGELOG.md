@@ -2,7 +2,13 @@
 
 ## [Unreleased]
 
+### Changed
+
 - Remove unused pystac.validation import ([#1583](https://github.com/stac-utils/pystac/pull/1583))
+
+### Fixed
+
+- Make `extent` not required for `VerticalSpatialDimension` ([#1596](https://github.com/stac-utils/pystac/pull/1596))
 
 ## [v1.14.1] - 2025-09-18
 
