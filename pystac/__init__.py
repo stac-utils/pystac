@@ -112,6 +112,7 @@ import pystac.extensions.timestamps
 import pystac.extensions.version
 import pystac.extensions.view
 import pystac.extensions.xarray_assets
+import pystac.extensions.archive
 
 EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
     [
@@ -136,6 +137,7 @@ EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
         pystac.extensions.version.VERSION_EXTENSION_HOOKS,
         pystac.extensions.view.VIEW_EXTENSION_HOOKS,
         pystac.extensions.xarray_assets.XARRAY_ASSETS_EXTENSION_HOOKS,
+        pystac.extensions.archive.ARCHIVE_EXTENSION_HOOKS,
     ]
 )
 
