@@ -152,10 +152,13 @@ class StorageScheme:
         """
         Get or set the required type property
         """
-        return get_required(
-            self._properties.get(TYPE_PROP),
-            self,
-            TYPE_PROP,
+        return cast(
+            str,
+            get_required(
+                self._properties.get(TYPE_PROP),
+                self,
+                TYPE_PROP,
+            ),
         )
 
     @type.setter
@@ -167,10 +170,13 @@ class StorageScheme:
         """
         Get or set the required platform property
         """
-        return get_required(
-            self._properties.get(PLATFORM_PROP),
-            self,
-            PLATFORM_PROP,
+        return cast(
+            str,
+            get_required(
+                self._properties.get(PLATFORM_PROP),
+                self,
+                PLATFORM_PROP,
+            ),
         )
 
     @platform.setter
