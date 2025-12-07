@@ -5,12 +5,10 @@ https://github.com/stac-extensions/storage
 
 from __future__ import annotations
 
-from abc import ABC
 from typing import (
     Any,
     Generic,
     Literal,
-    SupportsIndex,
     TypeVar,
     cast,
 )
@@ -25,12 +23,15 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, get_required, map_opt
 
-#: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Catalog` or
-#: :class:`~pystac.Collection`
-T = TypeVar("T", pystac.Item, pystac.Catalog, pystac.Collection)
-#: Generalized version of :class:`~pystac.Asset`, :class:`~pystac.Link` or
-#: :class:`~pystac.ItemAssetDefinition`
-U = TypeVar("U", pystac.Asset, pystac.Link, pystac.ItemAssetDefinition)
+T = TypeVar(
+    "T",
+    pystac.Catalog,
+    pystac.Collection,
+    pystac.Item,
+    pystac.Asset,
+    pystac.Link,
+    pystac.ItemAssetDefinition,
+)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/storage/v2.0.0/schema.json"
 PREFIX: str = "storage:"
@@ -53,31 +54,47 @@ class StorageSchemeType(StringEnum):
 
 
 class StorageScheme:
+    """
+    Helper class for storage scheme objects.
+
+    Can set well-defined properties, or if needed,
+    any arbitrary property.
+    """
+
+    _known_fields = {"type", "platform", "region", "requester_pays"}
     _properties: dict[str, Any]
 
     def __init__(self, properties: dict[str, Any]):
         super().__setattr__("_properties", properties)
 
+    def __setattr__(self, name: str, value: Any) -> None:
+        if hasattr(type(self), name):
+            object.__setattr__(self, name, value)
+            return
+
+        if name in self._known_fields:
+            prop = getattr(type(self), name)
+            prop.fset(self, value)
+            return
+
+        props = object.__getattribute__(self, "_properties")
+        props[name] = value
+
+    def __getattr__(self, name: str) -> Any:
+        props = object.__getattribute__(self, "_properties")
+
+        if name in props:
+            return props[name]
+
+        raise AttributeError(name)
+
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, StorageScheme):
             return NotImplemented
+        return bool(self._properties == other._properties)
 
-        return bool(self.__dict__["_properties"] == other.__dict__["_properties"])
-
-    def __getattr__(self, name: str) -> Any:
-        properties = self.__dict__["_properties"]
-        if name in properties:
-            return properties[name]
-        raise AttributeError(f"StorageScheme does not have attribute '{name}'")
-
-    def __setattr__(self, name: str, value: Any) -> None:
-        if name.startswith("_") or hasattr(type(self), name):
-            super().__setattr__(name, value)
-        else:
-            self._properties[name] = value
-
-    def __reduce_ex__(self, protocol: SupportsIndex) -> Any:
-        return (self.__class__, (self.__dict__["_properties"],), None)
+    def __repr__(self) -> str:
+        return f"<StorageScheme platform={self.platform}>"
 
     def apply(
         self,
@@ -85,7 +102,7 @@ class StorageScheme:
         platform: str,
         region: str | None = None,
         requester_pays: bool | None = None,
-        **kwargs: dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         self.type = type
         self.platform = platform
@@ -100,7 +117,7 @@ class StorageScheme:
         platform: str,
         region: str | None = None,
         requester_pays: bool | None = None,
-        **kwargs: dict[str, Any],
+        **kwargs: Any,
     ) -> StorageScheme:
         """Set the properties for a new StorageScheme object.
 
@@ -168,7 +185,7 @@ class StorageScheme:
         return self._properties.get(REGION_PROP)
 
     @region.setter
-    def region(self, v: str) -> None:
+    def region(self, v: str | None) -> None:
         if v is not None:
             self._properties[REGION_PROP] = v
         else:
@@ -182,7 +199,7 @@ class StorageScheme:
         return self._properties.get(REQUESTER_PAYS_PROP)
 
     @requester_pays.setter
-    def requester_pays(self, v: bool) -> None:
+    def requester_pays(self, v: bool | None) -> None:
         if v is not None:
             self._properties[REQUESTER_PAYS_PROP] = v
         else:
@@ -198,95 +215,100 @@ class StorageScheme:
         return self._properties
 
 
-class _StorageExtension(ABC):
+class StorageExtension(
+    Generic[T],
+    PropertiesExtension,
+    ExtensionManagementMixin[pystac.Item | pystac.Collection | pystac.Catalog],
+):
+    """An class that can be used to extend the properties of an
+    :class:`~pystac.Catalog`, :class:`~pystac.Collection`, :class:`~pystac.Item`,
+    :class:`~pystac.Asset`, :class:`~pystac.Link`, or
+    :class:`~pystac.ItemAssetDefinition` with properties from the
+    :stac-ext:`Storage Extension <storage>`.
+    This class is generic over the type of STAC Object to be extended (e.g.
+    :class:`~pystac.Item`, :class:`~pystac.Collection`).
+    To create a concrete instance of :class:`StorageExtension`, use the
+    :meth:`StorageExtension.ext` method. For example:
+
+    .. code-block:: python
+
+       >>> item: pystac.Item = ...
+       >>> storage_ext = StorageExtension.ext(item)
+    """
+
     name: Literal["storage"] = "storage"
 
     @classmethod
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
 
-
-class StorageSchemesExtension(
-    _StorageExtension,
-    Generic[T],
-    PropertiesExtension,
-    ExtensionManagementMixin[pystac.Item | pystac.Collection | pystac.Catalog],
-):
-    """An abstract class that can be used to extend the properties of an
-    :class:`~pystac.Collection`, :class:`~pystac.Catalog`, or :class:`~pystac.Item`
-    with properties from the :stac-ext:`Storage Extension <storage>`.
-    This class is generic over the type of STAC Object to be extended (e.g.
-    :class:`~pystac.Item`, :class:`~pystac.Collection`).
-
-    To create a concrete instance of :class:`StorageSchemesExtension`, use the
-    :meth:`StorageSchemesExtension.ext` method. For example:
-
-    .. code-block:: python
-
-       >>> item: pystac.Item = ...
-       >>> storage_ext = StorageSchemesExtension.ext(item)
-    """
-
+    # For type checking purposes only, these methods are overridden in mixins
     def apply(
         self,
-        schemes: dict[str, StorageScheme],
+        *,
+        schemes: dict[str, StorageScheme] | None = None,
+        refs: list[str] | None = None,
     ) -> None:
-        """Applies Storage Extension properties to the extended
-        :class:`~pystac.Catalog`, :class:`~pystac.Collection`,
-        or :class:`~pystac.Item`.
-
-        Args:
-            schemes (dict[str, StorageScheme]): Storage schemes used by Assets and Links
-                in the STAC Item, Catalog or Collection.
-        """
-        self.schemes = schemes
+        raise NotImplementedError()
 
     @property
     def schemes(self) -> dict[str, StorageScheme]:
-        """Get or sets the schemes used by Assets and Links.
-
-        Returns:
-            dict[str, StorageScheme]: storage schemes
-        """
-        schemes: dict[str, dict[str, Any]] = get_required(
-            self.properties.get(SCHEMES_PROP),
-            self,
-            SCHEMES_PROP,
-        )
-        return {k: StorageScheme(v) for k, v in schemes.items()}
+        raise NotImplementedError()
 
     @schemes.setter
     def schemes(self, v: dict[str, StorageScheme]) -> None:
-        v_trans = {k: c.to_dict() for k, c in v.items()}
-        self._set_property(SCHEMES_PROP, v_trans)
+        raise NotImplementedError()
 
     def add_scheme(self, key: str, scheme: StorageScheme) -> None:
-        try:
-            self.schemes = {**self.schemes, **{key: scheme}}
-        except RequiredPropertyMissing:
-            self.schemes = {key: scheme}
+        raise NotImplementedError()
+
+    @property
+    def refs(self) -> list[str]:
+        raise NotImplementedError()
+
+    @refs.setter
+    def refs(self, v: list[str]) -> None:
+        raise NotImplementedError()
+
+    def add_ref(self, ref: str) -> None:
+        raise NotImplementedError()
 
     @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> StorageSchemesExtension[T]:
+    def ext(cls, obj: T, add_if_missing: bool = False) -> StorageExtension[T]:
         """Extends the given STAC Object with properties from the :stac-ext:`Storage
         Extension <storage>`.
 
         This extension can be applied to instances of :class:`~pystac.Catalog`,
-        :class:`~pystac.Collection`, or :class:`~pystac.Item`.
+        :class:`~pystac.Collection`, :class:`~pystac.Item`, :class:`~pystac.Asset`,
+        :class:`~pystac.Link`, or :class:`~pystac.ItemAssetDefinition`.
 
         Raises:
-
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
         if isinstance(obj, pystac.Item):
             cls.ensure_has_extension(obj, add_if_missing)
-            return cast(StorageSchemesExtension[T], ItemStorageExtension(obj))
+            return cast(StorageExtension[T], ItemStorageExtension(obj))
+
         elif isinstance(obj, pystac.Collection):
             cls.ensure_has_extension(obj, add_if_missing)
-            return cast(StorageSchemesExtension[T], CollectionStorageExtension(obj))
+            return cast(StorageExtension[T], CollectionStorageExtension(obj))
+
         elif isinstance(obj, pystac.Catalog):
             cls.ensure_has_extension(obj, add_if_missing)
-            return cast(StorageSchemesExtension[T], CatalogStorageExtension(obj))
+            return cast(StorageExtension[T], CatalogStorageExtension(obj))
+
+        elif isinstance(obj, pystac.Asset):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+            return cast(StorageExtension[T], AssetStorageExtension(obj))
+
+        elif isinstance(obj, pystac.Link):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+            return cast(StorageExtension[T], LinkStorageExtension(obj))
+
+        elif isinstance(obj, pystac.ItemAssetDefinition):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+            return cast(StorageExtension[T], ItemAssetsStorageExtension(obj))
+
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
@@ -299,21 +321,85 @@ class StorageSchemesExtension(
         return SummariesStorageExtension(obj)
 
 
-class ItemStorageExtension(StorageSchemesExtension[pystac.Item]):
-    """A concrete implementation of :class:`StorageSchemesExtension` on an
-    :class:`~pystac.Item` that extends the properties of the Item to include
-    properties defined in the :stac-ext:`Storage Extension <storage>`.
-
-    This class should generally not be instantiated directly. Instead, call
-    :meth:`StorageSchemesExtension.ext` on an :class:`~pystac.Item` to extend it.
-    """
-
-    item: pystac.Item
-    """The :class:`~pystac.Item` being extended."""
+class _SchemesMixin:
+    """Mixin for objects that support Storage Schemes (Items, Collections, Catalogs)."""
 
     properties: dict[str, Any]
-    """The :class:`~pystac.Item` properties, including extension properties."""
+    _set_property: Any
 
+    def apply(
+        self,
+        *,
+        schemes: dict[str, StorageScheme] | None = None,
+        refs: list[str] | None = None,
+    ) -> None:
+        if refs is not None:
+            raise ValueError("'refs' cannot be applied with this STAC object type.")
+        if schemes is None:
+            raise RequiredPropertyMissing(
+                self,
+                SCHEMES_PROP,
+                "'schemes' property is required for this object type.",
+            )
+        self.schemes = schemes
+
+    @property
+    def schemes(self) -> dict[str, StorageScheme]:
+        schemes_dict: dict[str, Any] = get_required(
+            self.properties.get(SCHEMES_PROP), self, SCHEMES_PROP
+        )
+        return {k: StorageScheme(v) for k, v in schemes_dict.items()}
+
+    @schemes.setter
+    def schemes(self, v: dict[str, StorageScheme]) -> None:
+        v_trans = {k: c.to_dict() for k, c in v.items()}
+        self._set_property(SCHEMES_PROP, v_trans)
+
+    def add_scheme(self, key: str, scheme: StorageScheme) -> None:
+        current = self.properties.get(SCHEMES_PROP, {})
+        current[key] = scheme.to_dict()
+        self._set_property(SCHEMES_PROP, current)
+
+
+class _RefsMixin:
+    """Mixin for objects that support Storage Refs (Assets, Links)."""
+
+    properties: dict[str, Any]
+    _set_property: Any
+
+    def apply(
+        self,
+        *,
+        schemes: dict[str, StorageScheme] | None = None,
+        refs: list[str] | None = None,
+    ) -> None:
+        if schemes is not None:
+            raise ValueError("'schemes' cannot be applied with this STAC object type.")
+        if refs is None:
+            raise RequiredPropertyMissing(
+                self, REFS_PROP, "'refs' property is required for this object type."
+            )
+        self.refs = refs
+
+    @property
+    def refs(self) -> list[str]:
+        return get_required(self.properties.get(REFS_PROP), self, REFS_PROP)
+
+    @refs.setter
+    def refs(self, v: list[str]) -> None:
+        self._set_property(REFS_PROP, v)
+
+    def add_ref(self, ref: str) -> None:
+        try:
+            current = self.refs
+            if ref not in current:
+                current.append(ref)
+                self.refs = current
+        except RequiredPropertyMissing:
+            self.refs = [ref]
+
+
+class ItemStorageExtension(_SchemesMixin, StorageExtension[pystac.Item]):
     def __init__(self, item: pystac.Item):
         self.item = item
         self.properties = item.properties
@@ -322,13 +408,36 @@ class ItemStorageExtension(StorageSchemesExtension[pystac.Item]):
         return f"<ItemStorageExtension Item id={self.item.id}>"
 
 
-class CollectionStorageExtension(StorageSchemesExtension[pystac.Collection]):
-    """A concrete implementation of :class:`StorageSchemesExtension` on an
+class CatalogStorageExtension(_SchemesMixin, StorageExtension[pystac.Catalog]):
+    """A concrete implementation of :class:`StorageExtension` on an
+    :class:`~pystac.Catalog` that extends the properties of the Catalog to include
+    properties defined in the :stac-ext:`Storage Extension <storage>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`StorageExtension.ext` on an :class:`~pystac.Catalog` to extend it.
+    """
+
+    catalog: pystac.Catalog
+    """The :class:`~pystac.Catalog` being extended."""
+
+    properties: dict[str, Any]
+    """The :class:`~pystac.Catalog` properties, including extension properties."""
+
+    def __init__(self, catalog: pystac.Catalog):
+        self.catalog = catalog
+        self.properties = catalog.extra_fields
+
+    def __repr__(self) -> str:
+        return f"<CatalogStorageExtension Catalog id={self.catalog.id}>"
+
+
+class CollectionStorageExtension(_SchemesMixin, StorageExtension[pystac.Collection]):
+    """A concrete implementation of :class:`StorageExtension` on an
     :class:`~pystac.Collection` that extends the properties of the Collection to include
     properties defined in the :stac-ext:`Storage Extension <storage>`.
 
     This class should generally not be instantiated directly. Instead, call
-    :meth:`StorageSchemesExtension.ext` on an :class:`~pystac.Collection` to extend it.
+    :meth:`StorageExtension.ext` on an :class:`~pystac.Collection` to extend it.
     """
 
     collection: pystac.Collection
@@ -345,125 +454,78 @@ class CollectionStorageExtension(StorageSchemesExtension[pystac.Collection]):
         return f"<CollectionStorageExtension Collection id={self.collection.id}>"
 
 
-class CatalogStorageExtension(StorageSchemesExtension[pystac.Catalog]):
-    """A concrete implementation of :class:`StorageSchemesExtension` on an
-    :class:`~pystac.Catalog` that extends the properties of the Catalog to include
+class AssetStorageExtension(_RefsMixin, StorageExtension[pystac.Asset]):
+    """A concrete implementation of :class:`StorageExtension` on an
+    :class:`~pystac.Asset` that extends the properties of the Asset to include
     properties defined in the :stac-ext:`Storage Extension <storage>`.
 
     This class should generally not be instantiated directly. Instead, call
-    :meth:`StorageSchemesExtension.ext` on an :class:`~pystac.Catalog` to extend it.
+    :meth:`StorageExtension.ext` on an :class:`~pystac.Asset` to extend it.
     """
 
-    catalog: pystac.Catalog
-    """The :class:`~pystac.Catalog` being extended."""
+    asset: pystac.Asset
+    """The :class:`~pystac.Asset` being extended."""
 
     properties: dict[str, Any]
-    """The :class:`~pystac.Catalog` properties, including extension properties."""
+    """The :class:`~pystac.Asset` properties, including extension properties."""
 
-    def __init__(self, catalog: pystac.Catalog):
-        self.catalog = catalog
-        self.properties = catalog.extra_fields
-
-    def __repr__(self) -> str:
-        return f"<CatalogStorageExtension Collection id={self.catalog.id}>"
-
-
-class StorageRefsExtension(
-    _StorageExtension,
-    Generic[U],
-    PropertiesExtension,
-    ExtensionManagementMixin[pystac.Item | pystac.Collection | pystac.Catalog],
-):
-    def apply(
-        self,
-        refs: list[str],
-    ) -> None:
-        """Applies Storage Extension properties to the extended :class:`~pystac.Asset`,
-        :class:`~pystac.Link`, or :class:`~pystac.ItemAssetDefinition`.
-
-        Args:
-            refs (list[str]): specifies which schemes in storage:schemes may be used to
-                access an Asset or Link. Each value must be one of the keys defined in
-                storage:schemes.
-        """
-        self.refs = refs
-
-    @property
-    def refs(self) -> list[str]:
-        """Get or sets the keys of the schemes that may be used to access an Asset
-            or Link.
-
-        Returns:
-            list[str]
-        """
-        return get_required(
-            self.properties.get(REFS_PROP),
-            self,
-            REFS_PROP,
-        )
-
-    @refs.setter
-    def refs(self, v: list[str]) -> None:
-        self._set_property(REFS_PROP, v)
-
-    def add_ref(self, ref: str) -> None:
-        try:
-            self.refs.append(ref)
-        except RequiredPropertyMissing:
-            self.refs = [ref]
-
-    @classmethod
-    def ext(cls, obj: U, add_if_missing: bool = False) -> StorageRefsExtension[U]:
-        """Extends the given STAC Object with properties from the :stac-ext:`Storage
-        Extension <storage>`.
-
-        This extension can be applied to instances of :class:`~pystac.Item` or
-        :class:`~pystac.Asset`.
-
-        Raises:
-
-            pystac.ExtensionTypeError : If an invalid object type is passed.
-        """
-        if isinstance(obj, pystac.Asset):
-            cls.ensure_owner_has_extension(obj, add_if_missing)
-            return AssetStorageExtension(obj)
-        if isinstance(obj, pystac.Link):
-            cls.ensure_owner_has_extension(obj, add_if_missing)
-            return LinkStorageExtension(obj)
-        if isinstance(obj, pystac.ItemAssetDefinition):
-            cls.ensure_owner_has_extension(obj, add_if_missing)
-            return ItemAssetsStorageExtension(obj)
-        else:
-            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
-
-
-class AssetStorageExtension(StorageRefsExtension[pystac.Asset]):
     def __init__(self, asset: pystac.Asset):
-        self.asset_href = asset.href
+        self.asset = asset
         self.properties = asset.extra_fields
-        if asset.owner and isinstance(asset.owner, pystac.Item):
-            self.additional_read_properties = [asset.owner.properties]
 
     def __repr__(self) -> str:
-        return f"<AssetStorageExtension Asset href={self.asset_href}>"
+        return f"<AssetStorageExtension Asset href={self.asset.href}>"
 
 
-class ItemAssetsStorageExtension(StorageRefsExtension[pystac.ItemAssetDefinition]):
-    properties: dict[str, Any]
-    asset_defn: pystac.ItemAssetDefinition
+class LinkStorageExtension(_RefsMixin, StorageExtension[pystac.Link]):
+    """A concrete implementation of :class:`StorageExtension` on an
+    :class:`~pystac.Link` that extends the properties of the Link to include
+    properties defined in the :stac-ext:`Storage Extension <storage>`.
 
-    def __init__(self, item_asset: pystac.ItemAssetDefinition):
-        self.asset_defn = item_asset
-        self.properties = item_asset.properties
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`StorageExtension.ext` on an :class:`~pystac.Link` to extend it.
+    """
 
-
-class LinkStorageExtension(StorageRefsExtension[pystac.Link]):
-    properties: dict[str, Any]
     link: pystac.Link
+    """The :class:`~pystac.Link` being extended."""
+
+    properties: dict[str, Any]
+    """The :class:`~pystac.Link` properties, including extension properties."""
 
     def __init__(self, link: pystac.Link):
         self.link = link
         self.properties = link.extra_fields
+
+    def __repr__(self) -> str:
+        return f"<LinkStorageExtension Link href={self.link.href}>"
+
+
+class ItemAssetsStorageExtension(
+    _RefsMixin, StorageExtension[pystac.ItemAssetDefinition]
+):
+    """A concrete implementation of :class:`StorageExtension` on an
+    :class:`~pystac.ItemAssetDefinition` that extends the properties of the
+    ItemAssetDefinition to include properties defined in the
+    :stac-ext:`Storage Extension <storage>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`StorageExtension.ext` on an :class:`~pystac.ItemAssetDefinition`
+    to extend it.
+    """
+
+    item_asset: pystac.ItemAssetDefinition
+    """The :class:`~pystac.ItemAssetDefinition` being extended."""
+
+    properties: dict[str, Any]
+    """The :class:`~pystac.ItemAssetDefinition` properties,
+    including extension properties."""
+
+    def __init__(self, item_asset: pystac.ItemAssetDefinition):
+        self.item_asset = item_asset
+        self.properties = item_asset.properties
+
+    def __repr__(self) -> str:
+        return f"<ItemAssetsStorageExtension ItemAssetDefinition={self.item_asset}>"
 
 
 class SummariesStorageExtension(SummariesExtension):
@@ -477,14 +539,12 @@ class SummariesStorageExtension(SummariesExtension):
         """Get or sets the summary of :attr:`StorageScheme.platform` values
         for this Collection.
         """
-        v = map_opt(
+        return map_opt(
             lambda schemes: [
                 {k: StorageScheme(v) for k, v in x.items()} for x in schemes
             ],
             self.summaries.get_list(SCHEMES_PROP),
         )
-
-        return v
 
     @schemes.setter
     def schemes(self, v: list[dict[str, StorageScheme]] | None) -> None:

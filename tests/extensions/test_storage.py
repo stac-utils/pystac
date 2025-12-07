@@ -8,10 +8,10 @@ import pytest
 import pystac
 from pystac import ExtensionTypeError, Item, ItemAssetDefinition
 from pystac.collection import Collection
+from pystac.errors import RequiredPropertyMissing
 from pystac.extensions.storage import (
-    StorageRefsExtension,
+    StorageExtension,
     StorageScheme,
-    StorageSchemesExtension,
     StorageSchemeType,
 )
 from tests.utils import TestCases, assert_to_from_dict
@@ -59,20 +59,20 @@ def test_to_from_dict() -> None:
 
 
 def test_add_to(sample_item: Item) -> None:
-    assert StorageSchemesExtension.get_schema_uri() not in sample_item.stac_extensions
+    assert StorageExtension.get_schema_uri() not in sample_item.stac_extensions
     # Check that the URI gets added to stac_extensions
-    StorageSchemesExtension.add_to(sample_item)
-    assert StorageSchemesExtension.get_schema_uri() in sample_item.stac_extensions
+    StorageExtension.add_to(sample_item)
+    assert StorageExtension.get_schema_uri() in sample_item.stac_extensions
 
     # Check that the URI only gets added once, regardless of how many times add_to
     # is called.
-    StorageSchemesExtension.add_to(sample_item)
-    StorageSchemesExtension.add_to(sample_item)
+    StorageExtension.add_to(sample_item)
+    StorageExtension.add_to(sample_item)
 
     uris = [
         uri
         for uri in sample_item.stac_extensions
-        if uri == StorageSchemesExtension.get_schema_uri()
+        if uri == StorageExtension.get_schema_uri()
     ]
     assert len(uris) == 1
 
@@ -82,74 +82,65 @@ def test_validate_storage(naip_item: Item) -> None:
     naip_item.validate()
 
 
-def test_extend_invalid_object() -> None:
-    link = pystac.Link("child", "https://some-domain.com/some/path/to.json")
-
-    with pytest.raises(pystac.ExtensionTypeError):
-        StorageSchemesExtension.ext(link)  # type: ignore
-
-
 def test_extension_not_implemented(sample_item: Item) -> None:
     # Should raise exception if Item does not include extension URI
     with pytest.raises(pystac.ExtensionNotImplemented):
-        _ = StorageSchemesExtension.ext(sample_item)
+        _ = StorageExtension.ext(sample_item)
 
     # Should raise exception if owning Item does not include extension URI
     asset = sample_item.assets["thumbnail"]
 
     with pytest.raises(pystac.ExtensionNotImplemented):
-        _ = StorageRefsExtension.ext(asset)
+        _ = StorageExtension.ext(asset)
 
     # Should succeed if Asset has no owner
     ownerless_asset = pystac.Asset.from_dict(asset.to_dict())
-    _ = StorageRefsExtension.ext(ownerless_asset)
+    _ = StorageExtension.ext(ownerless_asset)
 
 
 def test_collection_ext_add_to(naip_collection: Collection) -> None:
     naip_collection.stac_extensions = []
-    assert (
-        StorageSchemesExtension.get_schema_uri() not in naip_collection.stac_extensions
-    )
+    assert StorageExtension.get_schema_uri() not in naip_collection.stac_extensions
 
-    _ = StorageSchemesExtension.ext(naip_collection, add_if_missing=True)
+    _ = StorageExtension.ext(naip_collection, add_if_missing=True)
 
-    assert StorageSchemesExtension.get_schema_uri() in naip_collection.stac_extensions
+    assert StorageExtension.get_schema_uri() in naip_collection.stac_extensions
 
 
 def test_item_ext_add_to(sample_item: Item) -> None:
-    assert StorageSchemesExtension.get_schema_uri() not in sample_item.stac_extensions
+    assert StorageExtension.get_schema_uri() not in sample_item.stac_extensions
 
-    _ = StorageSchemesExtension.ext(sample_item, add_if_missing=True)
+    _ = StorageExtension.ext(sample_item, add_if_missing=True)
 
-    assert StorageSchemesExtension.get_schema_uri() in sample_item.stac_extensions
+    assert StorageExtension.get_schema_uri() in sample_item.stac_extensions
 
 
 def test_catalog_ext_add_to() -> None:
     catalog = pystac.Catalog("stac", "a catalog")
 
-    assert StorageSchemesExtension.get_schema_uri() not in catalog.stac_extensions
+    assert StorageExtension.get_schema_uri() not in catalog.stac_extensions
 
-    _ = StorageSchemesExtension.ext(catalog, add_if_missing=True)
+    _ = StorageExtension.ext(catalog, add_if_missing=True)
 
-    assert StorageSchemesExtension.get_schema_uri() in catalog.stac_extensions
+    assert StorageExtension.get_schema_uri() in catalog.stac_extensions
 
 
 def test_asset_ext_add_to(sample_item: Item) -> None:
-    assert StorageSchemesExtension.get_schema_uri() not in sample_item.stac_extensions
+    assert StorageExtension.get_schema_uri() not in sample_item.stac_extensions
     asset = sample_item.assets["thumbnail"]
 
-    _ = StorageRefsExtension.ext(asset, add_if_missing=True)
+    _ = StorageExtension.ext(asset, add_if_missing=True)
 
-    assert StorageSchemesExtension.get_schema_uri() in sample_item.stac_extensions
+    assert StorageExtension.get_schema_uri() in sample_item.stac_extensions
 
 
 def test_link_ext_add_to(sample_item: Item) -> None:
-    assert StorageSchemesExtension.get_schema_uri() not in sample_item.stac_extensions
+    assert StorageExtension.get_schema_uri() not in sample_item.stac_extensions
     asset = sample_item.links[0]
 
-    _ = StorageRefsExtension.ext(asset, add_if_missing=True)
+    _ = StorageExtension.ext(asset, add_if_missing=True)
 
-    assert StorageSchemesExtension.get_schema_uri() in sample_item.stac_extensions
+    assert StorageExtension.get_schema_uri() in sample_item.stac_extensions
 
 
 def test_asset_ext_add_to_ownerless_asset(sample_item: Item) -> None:
@@ -157,22 +148,21 @@ def test_asset_ext_add_to_ownerless_asset(sample_item: Item) -> None:
     asset = pystac.Asset.from_dict(asset_dict)
 
     with pytest.raises(pystac.STACError):
-        _ = StorageRefsExtension.ext(asset, add_if_missing=True)
+        _ = StorageExtension.ext(asset, add_if_missing=True)
 
 
 def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
     with pytest.raises(
         ExtensionTypeError,
-        match=r"^StorageRefsExtension does not apply to type 'object'$",
+        match=r"^StorageExtension does not apply to type 'object'$",
     ):
         # calling it wrong purposely so ---------v
-        StorageRefsExtension.ext(object())  # type: ignore
+        StorageExtension.ext(object())  # type: ignore
 
 
 def test_summaries_schemes(naip_collection: Collection) -> None:
     col_dict = naip_collection.to_dict()
-    storage_summaries = StorageSchemesExtension.summaries(naip_collection)
-    print(naip_collection.summaries)
+    storage_summaries = StorageExtension.summaries(naip_collection)
     # Get
     assert (
         list(
@@ -203,20 +193,18 @@ def test_summaries_adds_uri(naip_collection: Collection) -> None:
         pystac.ExtensionNotImplemented,
         match="Extension 'storage' is not implemented",
     ):
-        StorageSchemesExtension.summaries(naip_collection, add_if_missing=False)
+        StorageExtension.summaries(naip_collection, add_if_missing=False)
 
-    _ = StorageSchemesExtension.summaries(naip_collection, add_if_missing=True)
+    _ = StorageExtension.summaries(naip_collection, add_if_missing=True)
 
-    assert StorageSchemesExtension.get_schema_uri() in naip_collection.stac_extensions
+    assert StorageExtension.get_schema_uri() in naip_collection.stac_extensions
 
-    StorageSchemesExtension.remove_from(naip_collection)
-    assert (
-        StorageSchemesExtension.get_schema_uri() not in naip_collection.stac_extensions
-    )
+    StorageExtension.remove_from(naip_collection)
+    assert StorageExtension.get_schema_uri() not in naip_collection.stac_extensions
 
 
 def test_schemes_apply(naip_item: Item) -> None:
-    storage_ext = StorageSchemesExtension.ext(naip_item)
+    storage_ext = StorageExtension.ext(naip_item)
     new_key = random.choice(ascii_letters)
     new_type = random.choice(ascii_letters)
     new_platform = random.choice(ascii_letters)
@@ -243,8 +231,8 @@ def test_schemes_apply(naip_item: Item) -> None:
 def test_refs_apply(naip_asset: pystac.Asset) -> None:
     test_refs = ["a_ref", "b_ref"]
 
-    storage_ext = StorageRefsExtension.ext(naip_asset)
-    storage_ext.apply(test_refs)
+    storage_ext = StorageExtension.ext(naip_asset)
+    storage_ext.apply(refs=test_refs)
 
     # Get
     assert storage_ext.refs == test_refs
@@ -253,6 +241,47 @@ def test_refs_apply(naip_asset: pystac.Asset) -> None:
     new_refs = [random.choice(ascii_letters)]
     storage_ext.refs = new_refs
     assert storage_ext.refs == new_refs
+
+
+def test_schemes_apply_raises(naip_item: Item) -> None:
+    storage_ext = StorageExtension.ext(naip_item)
+
+    with pytest.raises(
+        ValueError,
+        match="'refs' cannot be applied with this STAC object type.",
+    ):
+        storage_ext.apply(
+            schemes={
+                "a_key": StorageScheme.create("a_type", "a_platform"),
+            },
+            refs=["a_ref"],
+        )
+    with pytest.raises(
+        RequiredPropertyMissing,
+        match="'schemes' property is required for this object type.",
+    ):
+        storage_ext.apply(refs=None)
+
+
+def test_refs_apply_raises(naip_asset: Item) -> None:
+    storage_ext = StorageExtension.ext(naip_asset)
+
+    with pytest.raises(
+        ValueError,
+        match="'schemes' cannot be applied with this STAC object type.",
+    ):
+        storage_ext.apply(
+            schemes={
+                "a_key": StorageScheme.create("a_type", "a_platform"),
+            },
+            refs=["a_ref"],
+        )
+
+    with pytest.raises(
+        RequiredPropertyMissing,
+        match="'refs' property is required for this object type.",
+    ):
+        storage_ext.apply(schemes=None)
 
 
 def test_add_storage_scheme(naip_item: Item) -> None:
@@ -270,7 +299,7 @@ def test_add_refs(naip_item: Item) -> None:
     scheme_name = random.choice(ascii_letters)
     asset = naip_item.assets["GEOTIFF_AZURE_RGBIR"]
     storage_ext = asset.ext.storage
-    assert isinstance(storage_ext, StorageRefsExtension)
+    assert isinstance(storage_ext, StorageExtension)
 
     storage_ext.add_ref(scheme_name)
     assert scheme_name in storage_ext.refs
@@ -315,4 +344,4 @@ def test_item_asset_accessor() -> None:
     item_asset = ItemAssetDefinition.create(
         title="title", description="desc", media_type="media", roles=["a_role"]
     )
-    assert isinstance(item_asset.ext.storage, StorageRefsExtension)
+    assert isinstance(item_asset.ext.storage, StorageExtension)
