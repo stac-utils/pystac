@@ -197,14 +197,17 @@ def test_make_absolute_href_windows(
 def test_is_absolute_href() -> None:
     # Test cases of (href, expected)
     test_cases = [
-        ("item.json", False),
-        ("./item.json", False),
-        ("../item.json", False),
-        ("http://stacspec.org/item.json", True),
+        ("item.json", False, None),
+        ("./item.json", False, None),
+        ("../item.json", False, None),
+        ("http://stacspec.org/item.json", True, None),
+        ("/item.json", True, None),
+        ("/item.json", False, "http://stacspec.org/"),
+        ("http://stacspec.org/item.json", True, "http://stacspec.org/"),
     ]
 
-    for href, expected in test_cases:
-        actual = is_absolute_href(href)
+    for href, expected, start_href in test_cases:
+        actual = is_absolute_href(href, start_href)
         assert actual == expected
 
 
