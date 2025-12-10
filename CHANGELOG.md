@@ -9,6 +9,7 @@
 ### Fixed
 
 - Make `extent` not required for `VerticalSpatialDimension` ([#1596](https://github.com/stac-utils/pystac/pull/1596))
+- `get_absolute_href()` now properly returns the full URL for assets of network-loaded STAC items ([#1599](https://github.com/stac-utils/pystac/pull/1599))
 
 ## [v1.14.1] - 2025-09-18
 
