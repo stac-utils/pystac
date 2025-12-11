@@ -386,8 +386,7 @@ def is_absolute_href(href: str, start_href: str | None = None) -> bool:
     Args:
         href : The HREF to consider.
         start_href : The HREF that will be used as the basis for checking if
-          ``source_href`` is a relative path. Defaults to the current
-          working directory.
+          ``source_href`` is a relative path. Defaults to None.
 
     Returns:
         bool: ``True`` if the given HREF is absolute, ``False`` if it is relative.
