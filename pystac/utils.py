@@ -395,7 +395,9 @@ def is_absolute_href(href: str, start_href: str | None = None) -> bool:
     if parsed.scheme not in ["", "file"]:
         return True
     else:
-        parsed_start_scheme = "" if start_href is None else safe_urlparse(start_href).scheme
+        parsed_start_scheme = (
+            "" if start_href is None else safe_urlparse(start_href).scheme
+        )
         return parsed_start_scheme in ["", "file"] and os.path.isabs(parsed.path)
 
 
