@@ -226,7 +226,7 @@ class Item(STACObject, Assets):
             # Make sure relative asset links remain valid.
             for asset in self.assets.values():
                 asset_href = asset.href
-                if not is_absolute_href(asset_href, prev_href):
+                if not is_absolute_href(asset_href):
                     abs_href = make_absolute_href(asset_href, prev_href)
                     new_relative_href = make_relative_href(abs_href, new_href)
                     asset.href = new_relative_href
