@@ -105,36 +105,16 @@ def test_delete_asset_relative_no_owner_fails(tmp_asset: pystac.Asset) -> None:
 
 
 @pytest.mark.parametrize(
-    "self_href, asset_href, expected_href_nix, expected_href_win",
+    "self_href, asset_href, expected_href",
     (
-        (
-            "{tmp_path}/myitem.json",
-            "asset.data",
-            "{tmp_path}/asset.data",
-            "{tmp_path}/asset.data",
-        ),
-        (
-            "{tmp_path}/myitem.json",
-            "/absolute/asset.data",
-            "/absolute/asset.data",
-            "/absolute/asset.data",
-        ),
-        (
-            "{tmp_path}/myitem.json",
-            "d:\\absolute\\asset.data",
-            "{tmp_path}/d:/absolute/asset.data",
-            "d:\\absolute\\asset.data",
-        ),
         (
             "http://test.com/stac/catalog/myitem.json",
             "asset.data",
-            "http://test.com/stac/catalog/asset.data",
             "http://test.com/stac/catalog/asset.data",
         ),
         (
             "http://test.com/stac/catalog/myitem.json",
             "/asset.data",
-            "http://test.com/asset.data",
             "http://test.com/asset.data",
         ),
     ),
@@ -143,8 +123,7 @@ def test_asset_get_absolute_href(
     tmp_asset: pystac.Asset,
     self_href: str,
     asset_href: str,
-    expected_href_nix: str,
-    expected_href_win: str,
+    expected_href: str,
 ) -> None:
     asset = tmp_asset
     item = asset.owner
@@ -152,25 +131,83 @@ def test_asset_get_absolute_href(
     if not isinstance(item, pystac.Item):
         raise TypeError("Asset must belong to an Item")
 
-    # Extract temporary path from old item HREF
-    old_item_href = item.get_self_href()
-    if not isinstance(old_item_href, str):
-        raise TypeError("Cannot temporary item href")
-    tmp_path = os.path.dirname(old_item_href)
-
-    # Set the temporary path in the test parameters
-    self_href = self_href.format(tmp_path=tmp_path)
-    asset_href = asset_href.format(tmp_path=tmp_path)
-    expected_href_nix = expected_href_nix.format(tmp_path=tmp_path)
-    expected_href_win = expected_href_win.format(tmp_path=tmp_path)
-
     # Set the item HREF as per test
     item.set_self_href(self_href)
     assert item.get_self_href() == self_href
 
     # Set the asset HREF as per test and check expected output
     asset.href = asset_href
-    if os.name == "nt":
-        assert asset.get_absolute_href() == expected_href_win
-    else:
-        assert asset.get_absolute_href() == expected_href_nix
+    assert asset.get_absolute_href() == expected_href
+
+
+@pytest.mark.skipif(os.name == "nt", reason="Unix only test")
+@pytest.mark.parametrize(
+    "self_href, asset_href, expected_href",
+    (
+        (
+            "/local/myitem.json",
+            "asset.data",
+            "/local/asset.data",
+        ),
+        (
+            "/local/myitem.json",
+            "subdir/asset.data",
+            "/local/subdir/asset.data",
+        ),
+        (
+            "/local/myitem.json",
+            "/absolute/asset.data",
+            "/absolute/asset.data",
+        ),
+    ),
+)
+def test_asset_get_absolute_href_unix(
+    tmp_asset: pystac.Asset,
+    self_href: str,
+    asset_href: str,
+    expected_href: str,
+) -> None:
+    test_asset_get_absolute_href(tmp_asset, self_href, asset_href, expected_href)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows only test")
+@pytest.mark.parametrize(
+    "self_href, asset_href, expected_href",
+    (
+        (
+            "{tmpdir}/myitem.json",
+            "asset.data",
+            "{tmpdir}/asset.data",
+        ),
+        (
+            "{tmpdir}/myitem.json",
+            "subdir/asset.data",
+            "{tmpdir}/subdir/asset.data",
+        ),
+        (
+            "{tmpdir}/myitem.json",
+            "c:/absolute/asset.data",
+            "c:/absolute/asset.data",
+        ),
+        (
+            "{tmpdir}/myitem.json",
+            "d:\\absolute\\asset.data",
+            "d:\\absolute\\asset.data",
+        ),
+    ),
+)
+def test_asset_get_absolute_href_windows(
+    tmp_path: Path,
+    tmp_asset: pystac.Asset,
+    self_href: str,
+    asset_href: str,
+    expected_href: str,
+) -> None:
+    # For windows, we need an actual existing temporary directory
+    tmpdir = tmp_path.as_posix()
+    test_asset_get_absolute_href(
+        tmp_asset,
+        self_href.format(tmpdir=tmpdir),
+        asset_href.format(tmpdir=tmpdir),
+        expected_href.format(tmpdir=tmpdir),
+    )
