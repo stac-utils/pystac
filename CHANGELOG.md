@@ -9,6 +9,7 @@
 ### Fixed
 
 - Make `extent` not required for `VerticalSpatialDimension` ([#1596](https://github.com/stac-utils/pystac/pull/1596))
+- `Asset.get_absolute_href()` now properly resolves root relative hrefs ([#1599](https://github.com/stac-utils/pystac/pull/1599))
 
 ## [v1.14.1] - 2025-09-18
 

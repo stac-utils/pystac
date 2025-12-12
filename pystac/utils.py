@@ -378,19 +378,27 @@ def make_absolute_href(
         return _make_absolute_href_path(parsed_source, parsed_start, start_is_dir)
 
 
-def is_absolute_href(href: str) -> bool:
+def is_absolute_href(href: str, start_href: str | None = None) -> bool:
     """Determines if an HREF is absolute or not.
 
     May be used on either local file paths or URLs.
 
     Args:
         href : The HREF to consider.
+        start_href : The HREF that will be used as the basis for checking if
+          ``source_href`` is a relative path. Defaults to None.
 
     Returns:
         bool: ``True`` if the given HREF is absolute, ``False`` if it is relative.
     """
     parsed = safe_urlparse(href)
-    return parsed.scheme not in ["", "file"] or os.path.isabs(parsed.path)
+    if parsed.scheme not in ["", "file"]:
+        return True
+    else:
+        parsed_start_scheme = (
+            "" if start_href is None else safe_urlparse(start_href).scheme
+        )
+        return parsed_start_scheme in ["", "file"] and os.path.isabs(parsed.path)
 
 
 def datetime_to_str(dt: datetime, timespec: str = "auto") -> str:
