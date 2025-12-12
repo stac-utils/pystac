@@ -102,3 +102,61 @@ def test_delete_asset_relative_no_owner_fails(tmp_asset: pystac.Asset) -> None:
 
     assert asset.href in str(e.value)
     assert os.path.exists(href)
+
+
+@pytest.mark.parametrize(
+    "self_href, asset_href, expected_href_nix, expected_href_win",
+    (
+        ("/local/myitem.json", "asset.data", "/local/asset.data", "/local/asset.data"),
+        (
+            "/local/myitem.json",
+            "/absolute/asset.data",
+            "/absolute/asset.data",
+            "/absolute/asset.data",
+        ),
+        (
+            "c:\\local\\myitem.json",
+            "asset.data",
+            os.path.join(os.getcwd(), "c:/local/asset.data"),
+            "c:/local/asset.data",
+        ),
+        (
+            "c:\\local\\myitem.json",
+            "d:\\asset.data",
+            os.path.join(os.getcwd(), "c:/local/d:/asset.data"),
+            "d:\\asset.data",
+        ),
+        (
+            "http://test.com/stac/catalog/myitem.json",
+            "asset.data",
+            "http://test.com/stac/catalog/asset.data",
+            "http://test.com/stac/catalog/asset.data",
+        ),
+        (
+            "http://test.com/stac/catalog/myitem.json",
+            "/asset.data",
+            "http://test.com/asset.data",
+            "http://test.com/asset.data",
+        ),
+    ),
+)
+def test_asset_get_absolute_href(
+    tmp_asset: pystac.Asset,
+    self_href: str,
+    asset_href: str,
+    expected_href_nix: str,
+    expected_href_win: str,
+) -> None:
+    asset = tmp_asset
+    item = asset.owner
+
+    if not isinstance(item, pystac.Item):
+        raise TypeError("Asset must belong to an Item")
+
+    item.set_self_href(self_href)
+
+    asset.href = asset_href
+    if os.name == "nt":
+        assert asset.get_absolute_href() == expected_href_win
+    else:
+        assert asset.get_absolute_href() == expected_href_nix
