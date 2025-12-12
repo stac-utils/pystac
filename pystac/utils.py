@@ -392,12 +392,11 @@ def is_absolute_href(href: str, start_href: str | None = None) -> bool:
         bool: ``True`` if the given HREF is absolute, ``False`` if it is relative.
     """
     parsed = safe_urlparse(href)
-    parsed_start_scheme = "" if start_href is None else safe_urlparse(start_href).scheme
-
-    if parsed_start_scheme in ["", "file"]:
-        return parsed.scheme not in ["", "file"] or os.path.isabs(parsed.path)
+    if parsed.scheme not in ["", "file"]:
+        return True
     else:
-        return parsed.scheme not in ["", "file"]
+        parsed_start_scheme = "" if start_href is None else safe_urlparse(start_href).scheme
+        return parsed_start_scheme in ["", "file"] and os.path.isabs(parsed.path)
 
 
 def datetime_to_str(dt: datetime, timespec: str = "auto") -> str:
