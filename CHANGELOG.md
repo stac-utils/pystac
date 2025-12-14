@@ -5,6 +5,7 @@
 ### Changed
 
 - Remove unused pystac.validation import ([#1583](https://github.com/stac-utils/pystac/pull/1583))
+- Added Processing extension ([#1588](https://github.com/stac-utils/pystac/pull/1589))
 
 ### Fixed
 
