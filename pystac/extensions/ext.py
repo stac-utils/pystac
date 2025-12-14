@@ -173,6 +173,10 @@ class CollectionExt(CatalogExt):
         return ScientificExtension.ext(self.stac_object)
 
     @property
+    def storage(self) -> StorageExtension[Collection]:
+        return StorageExtension.ext(self.stac_object)
+
+    @property
     def table(self) -> TableExtension[Collection]:
         return TableExtension.ext(self.stac_object)
 
@@ -432,6 +436,10 @@ class ItemAssetExt(_AssetExt[ItemAssetDefinition]):
     def mlm(self) -> MLMExtension[ItemAssetDefinition]:
         return MLMExtension.ext(self.stac_object)
 
+    @property
+    def storage(self) -> StorageExtension[ItemAssetDefinition]:
+        return StorageExtension.ext(self.stac_object)
+
 
 @dataclass
 class LinkExt(_AssetsExt[Link]):
@@ -444,3 +452,7 @@ class LinkExt(_AssetsExt[Link]):
     @property
     def file(self) -> FileExtension[Link]:
         return FileExtension.ext(self.stac_object)
+
+    @property
+    def storage(self) -> StorageExtension[Link]:
+        return StorageExtension.ext(self.stac_object)
