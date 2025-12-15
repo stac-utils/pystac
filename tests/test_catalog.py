@@ -2024,3 +2024,9 @@ def test_get_root_link_cares_about_media_type(catalog: pystac.Catalog) -> None:
     )
     root_link = catalog.get_root_link()
     assert root_link and root_link.target != "./self.json"
+
+
+def test_clone_extra_fields(catalog: Catalog) -> None:
+    catalog.extra_fields["foo"] = "bar"
+    cloned = catalog.clone()
+    assert cloned.extra_fields["foo"] == "bar"
