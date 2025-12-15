@@ -686,3 +686,9 @@ def test_migrate_by_default() -> None:
         data = json.load(f)
     item = pystac.Item.from_dict(data)  # default used to be migrate=False
     assert item.ext.proj.code == "EPSG:32614"
+
+
+def test_clone_extra_fields(item: Item) -> None:
+    item.extra_fields["foo"] = "bar"
+    cloned = item.clone()
+    assert cloned.extra_fields["foo"] == "bar"
