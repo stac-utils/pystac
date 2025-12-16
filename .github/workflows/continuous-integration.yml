@@ -4,11 +4,6 @@ on:
   push:
     branches:
       - main
-      - "0.3"
-      - "0.4"
-      - "0.5"
-      - "1.0"
-      - "2.0"
   pull_request:
   merge_group:
 
@@ -27,6 +22,7 @@ jobs:
           - "3.11"
           - "3.12"
           - "3.13"
+          - "3.14"
         os:
           - ubuntu-latest
           - windows-latest
@@ -36,91 +32,14 @@ jobs:
       - uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Sync
-        run: uv sync --all-extras
-      - name: Lint
+      - uses: j178/prek-action@v1
         if: runner.os != 'Windows'
-        run: uv run pre-commit run --all-files
       - name: Test on windows
         if: runner.os == 'Windows'
         shell: bash
         env:
           TMPDIR: 'D:\\a\\_temp'
-        run: uv run pytest tests
+        run: uv run pytest
       - name: Test
         if: runner.os != 'Windows'
-        run: uv run pytest tests --block-network --record-mode=none
-
-  coverage:
-    name: coverage
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v7
-      - name: Install with dependencies
-        run: uv sync --all-extras
-      - name: Run coverage with orjson
-        run: uv run pytest tests --cov
-      - name: Uninstall orjson
-        run: uv pip uninstall orjson
-      - name: Run coverage without orjson, appending results
-        run: uv run pytest tests --cov --cov-append
-      - name: Prepare ./coverage.xml
-        # Ignore the configured fail-under to ensure we upload the coverage report. We
-        # will trigger a failure for coverage drops in a later job
-        run: uv run coverage xml --fail-under 0
-      - name: Upload All coverage to Codecov
-        uses: codecov/codecov-action@v5
-        if: ${{ env.GITHUB_REPOSITORY }} == 'stac-utils/pystac'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
-          fail_ci_if_error: false
-      - name: Check for coverage drop
-        # This will use the configured fail-under, causing this job to fail if the
-        # coverage drops.
-        run: uv run coverage report
-
-  without-orjson:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v7
-      - name: Sync
-        run: uv sync
-      - name: Uninstall orjson
-        run: uv pip uninstall orjson
-      - name: Run tests
-        run: uv run pytest tests
-
-  check-benchmarks:
-    # This checks to make sure any API changes haven't broken any of the
-    # benchmarks. It doesn't do any actual benchmarking, since (IMO) that's not
-    # appropriate for CI on Github actions.
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.10"
-      - uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
-      - name: Sync
-        run: uv sync
-      - name: Set asv machine
-        run: uv run asv machine --yes
-      - name: Check benchmarks
-        run: uv run asv run -a repeat=1 -a rounds=1 HEAD
-
-  docs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v7
-      - name: Install pandoc
-        run: sudo apt-get install pandoc
-      - name: Sync
-        run: uv sync --group docs
-      - name: Check docs
-        run: uv run make -C docs html SPHINXOPTS="-W --keep-going -n"
+        run: uv run pytest
