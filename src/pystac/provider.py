@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any
-
-from typing_extensions import Self
+from typing import Any, Self
 
 
 class Provider:

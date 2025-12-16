@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
-
-from typing_extensions import Self
+from typing import TYPE_CHECKING, Any, Self
 
 from .constants import CHILD, COLLECTION, ITEM, PARENT, ROOT, SELF
 from .errors import PySTACError

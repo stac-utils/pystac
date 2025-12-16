@@ -4,9 +4,7 @@ import copy
 import datetime
 import warnings
 from collections.abc import Sequence
-from typing import Any
-
-from typing_extensions import Self
+from typing import Any, Self
 
 from . import deprecate
 from .constants import DEFAULT_BBOX, DEFAULT_INTERVAL
@@ -98,7 +96,7 @@ class TemporalExtent:
     @classmethod
     def from_now(cls: type[Self]) -> Self:
         """Creates a new temporal extent that starts now and has no end time."""
-        return cls([[datetime.datetime.now(tz=datetime.timezone.utc), None]])
+        return cls([[datetime.datetime.now(tz=datetime.UTC), None]])
 
     def __init__(
         self,
