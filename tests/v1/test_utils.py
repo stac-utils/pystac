@@ -1,7 +1,7 @@
 import json
 import os
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 
 import pytest
 from dateutil import tz
@@ -254,7 +254,7 @@ def test_datetime_to_str() -> None:
         ),
         (
             "timezone aware, utc",
-            datetime(2000, 1, 1, tzinfo=timezone.utc),
+            datetime(2000, 1, 1, tzinfo=UTC),
             "2000-01-01T00:00:00Z",
         ),
         (
@@ -278,7 +278,7 @@ def test_datetime_to_str_with_microseconds_timespec() -> None:
         ),
         (
             "timezone aware, utc",
-            datetime(2000, 1, 1, 0, 0, 0, 0, tzinfo=timezone.utc),
+            datetime(2000, 1, 1, 0, 0, 0, 0, tzinfo=UTC),
             "2000-01-01T00:00:00.000000Z",
         ),
         (
@@ -410,7 +410,7 @@ def test_now_functions() -> None:
     now2 = now_in_utc()
 
     assert now1 < now2
-    assert now1.tzinfo == timezone.utc
+    assert now1.tzinfo == UTC
 
     assert str_to_datetime(now_to_rfc3339_str())
 

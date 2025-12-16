@@ -2,7 +2,7 @@ import json
 import os
 import shutil
 import tempfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any, cast
 
 import jsonschema
@@ -174,7 +174,7 @@ class TestValidate:
             id="test-item",
             geometry=geom,
             bbox=[-115.308, 36.126, -115.305, 36.129],
-            datetime=datetime.now(timezone.utc),
+            datetime=datetime.now(UTC),
             properties={},
         )
 

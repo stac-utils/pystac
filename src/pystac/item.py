@@ -85,7 +85,7 @@ class Item(STACObject):
                 and self.start_datetime is None
                 and self.end_datetime is None
             ):
-                self.datetime = dt.datetime.now(tz=dt.timezone.utc)
+                self.datetime = dt.datetime.now(tz=dt.UTC)
         elif isinstance(datetime, dt.datetime):
             self.datetime = datetime
             self.start_datetime = None

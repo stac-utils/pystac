@@ -1,6 +1,6 @@
 import csv
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 import pystac
@@ -156,7 +156,7 @@ class TestCases:
             id="imagery-item",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
-            datetime=datetime.now(timezone.utc),
+            datetime=datetime.now(UTC),
             properties={},
         )
 
@@ -168,7 +168,7 @@ class TestCases:
             id="label-items",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
-            datetime=datetime.now(timezone.utc),
+            datetime=datetime.now(UTC),
             properties={},
         )
 

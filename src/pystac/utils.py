@@ -240,7 +240,7 @@ def _make_relative_href_url(
 
 def datetime_to_str(dt: datetime.datetime, timespec: str = "auto") -> str:
     if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=datetime.timezone.utc)
+        dt = dt.replace(tzinfo=datetime.UTC)
 
     timestamp = dt.isoformat(timespec=timespec)
     zulu = "+00:00"
