@@ -132,7 +132,8 @@ CHANGELOG
 
 PySTAC maintains a `changelog  <https://github.com/stac-utils/pystac/blob/develop/CHANGELOG.md>`_
 to track changes between releases. This changelog is automatically kept up-to-date by
-`release-please <https://github.com/googleapis/release-please>`_.
+`release-please <https://github.com/googleapis/release-please>`_, specifically on an unmerged
+release PR.
 
 Style
 ^^^^^
