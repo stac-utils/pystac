@@ -7,7 +7,7 @@ from abc import abstractmethod
 from collections.abc import Iterable
 from copy import deepcopy
 from enum import Enum
-from functools import lru_cache
+from functools import cache
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -97,7 +97,7 @@ class RangeSummary(Generic[T]):
         return self.to_dict().__repr__()
 
 
-@lru_cache(maxsize=None)
+@cache
 def _get_fields_json(url: str | None) -> dict[str, Any]:
     if url is None:
         # Every time pystac is released this file gets pulled from

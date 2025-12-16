@@ -311,8 +311,9 @@ class TestTemplateLayoutStrategy:
         )
         collection = self._get_collection()
         href = strategy.get_href(collection, parent_dir="http://example.com")
-        assert href == "http://example.com/col/{}/{}/collection.json".format(
-            collection.id, collection.license
+        assert (
+            href
+            == f"http://example.com/col/{collection.id}/{collection.license}/collection.json"
         )
 
     def test_produces_layout_for_collection_with_filename(self) -> None:
@@ -320,8 +321,9 @@ class TestTemplateLayoutStrategy:
         strategy = TemplateLayoutStrategy(collection_template=template)
         collection = self._get_collection()
         href = strategy.get_href(collection, parent_dir="http://example.com")
-        assert href == "http://example.com/col/{}/{}/col.json".format(
-            collection.id, collection.license
+        assert (
+            href
+            == f"http://example.com/col/{collection.id}/{collection.license}/col.json"
         )
 
     def test_produces_fallback_layout_for_collection(self) -> None:

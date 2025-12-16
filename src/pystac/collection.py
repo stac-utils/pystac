@@ -7,7 +7,6 @@ from datetime import datetime, timezone
 from typing import (
     TYPE_CHECKING,
     Any,
-    Optional,
     TypeVar,
     cast,
 )
@@ -42,8 +41,8 @@ if TYPE_CHECKING:
 C = TypeVar("C", bound="Collection")
 
 Bboxes = list[list[float | int]]
-TemporalIntervals = list[list[datetime]] | list[list[Optional[datetime]]]
-TemporalIntervalsLike = TemporalIntervals | list[datetime] | list[Optional[datetime]]
+TemporalIntervals = list[list[datetime]] | list[list[datetime | None]]
+TemporalIntervalsLike = TemporalIntervals | list[datetime] | list[datetime | None]
 
 
 class SpatialExtent:
@@ -79,7 +78,7 @@ class SpatialExtent:
 
         # A common mistake is to pass in a single bbox instead of a list of bboxes.
         # Account for this by transforming the input in that case.
-        if isinstance(bboxes[0], (float, int)):
+        if isinstance(bboxes[0], float | int):
             self.bboxes = [cast(list[float | int], bboxes)]
         else:
             self.bboxes = cast(Bboxes, bboxes)
@@ -208,7 +207,7 @@ class TemporalExtent:
         # list of intervals. Account for this by transforming the input
         # in that case.
         if isinstance(intervals[0], datetime) or intervals[0] is None:
-            self.intervals = [cast(list[Optional[datetime]], intervals)]
+            self.intervals = [cast(list[datetime | None], intervals)]
         else:
             self.intervals = cast(TemporalIntervals, intervals)
 

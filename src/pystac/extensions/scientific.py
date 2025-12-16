@@ -284,9 +284,7 @@ class CollectionScientificExtension(ScientificExtension[pystac.Collection]):
         super().__init__(self.collection)
 
     def __repr__(self) -> str:
-        return "<CollectionScientificExtension Collection id={}>".format(
-            self.collection.id
-        )
+        return f"<CollectionScientificExtension Collection id={self.collection.id}>"
 
 
 class ItemScientificExtension(ScientificExtension[pystac.Item]):

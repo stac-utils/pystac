@@ -301,15 +301,15 @@ class Link(PathLike):
             if not is_absolute_href(target_href):
                 if self.owner is None:
                     raise pystac.STACError(
-                        "Relative path {} encountered "
-                        "without owner or start_href.".format(target_href)
+                        f"Relative path {target_href} encountered "
+                        "without owner or start_href."
                     )
                 start_href = self.owner.get_self_href()
 
                 if start_href is None:
                     raise pystac.STACError(
-                        "Relative path {} encountered "
-                        'without owner "self" link set.'.format(target_href)
+                        f"Relative path {target_href} encountered "
+                        'without owner "self" link set.'
                     )
 
                 target_href = make_absolute_href(target_href, start_href)

@@ -785,9 +785,7 @@ class ItemAssetsRasterExtension(RasterExtension[pystac.ItemAssetDefinition]):
         self.asset_definition = item_asset
 
     def __repr__(self) -> str:
-        return "<ItemAssetsRasterExtension AssetDefinition={}>".format(
-            self.asset_definition
-        )
+        return f"<ItemAssetsRasterExtension AssetDefinition={self.asset_definition}>"
 
 
 class SummariesRasterExtension(SummariesExtension):

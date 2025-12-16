@@ -22,7 +22,7 @@ from pystac.utils import HREF, _is_url, safe_urlparse
 try:
     import orjson
 except ImportError:
-    orjson = None  # type: ignore[assignment]
+    orjson = None
 
 # Is urllib3 available?
 try:
@@ -125,7 +125,7 @@ class StacIO(ABC):
             json_dict : The dictionary to serialize
         """
         if orjson is not None:
-            return orjson.dumps(json_dict, option=orjson.OPT_INDENT_2, **kwargs).decode(
+            return orjson.dumps(json_dict, option=orjson.OPT_INDENT_2, **kwargs).decode(  # type: ignore
                 "utf-8"
             )
         else:
@@ -307,7 +307,7 @@ class DefaultStacIO(StacIO):
                             "User-Agent": f"pystac/{pystac.__version__}",
                             **self.headers,
                         },
-                        preload_content=False,  # type: ignore
+                        preload_content=False,
                     ) as f:
                         href_contents = f.read().decode("utf-8")
                 else:
@@ -462,7 +462,7 @@ if HAS_URLLIB3:
                             "User-Agent": f"pystac/{pystac.__version__}",
                             **self.headers,
                         },
-                        retries=self.retry,  # type: ignore
+                        retries=self.retry,
                     )
                     return cast(str, response.data.decode("utf-8"))
                 except HTTPError as e:

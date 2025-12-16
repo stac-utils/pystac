@@ -461,9 +461,8 @@ class TestCatalog:
             assert set(expected_counts.keys()) == set(actual_counts.keys())
             for rel in expected_counts:
                 assert actual_counts[rel] == expected_counts[rel], (
-                    "Clone of {} has {} {} links, original has {}".format(
-                        obj_id, actual_counts[rel], rel, expected_counts[rel]
-                    )
+                    f"Clone of {obj_id} has {actual_counts[rel]} {rel} links, "
+                    f"original has {expected_counts[rel]}"
                 )
 
     def test_save_uses_previous_catalog_type(self) -> None:
@@ -1235,8 +1234,9 @@ class TestCatalog:
                 # Set each item's HREF based on it's datetime
                 for item in items:
                     assert item.datetime is not None
-                    item_href = "{}/{}-{}/{}.json".format(
-                        root_dir, item.datetime.year, item.datetime.month, item.id
+                    item_href = (
+                        f"{root_dir}/{item.datetime.year}-"
+                        f"{item.datetime.month}/{item.id}.json"
                     )
                     item.set_self_href(item_href)
 
@@ -1263,8 +1263,8 @@ class TestCatalog:
                     )
                     self_href = item.get_self_href()
                     assert self_href is not None
-                    assert self_href.endswith(end), "{} does not end with {}".format(
-                        self_href, end
+                    assert self_href.endswith(end), (
+                        f"{self_href} does not end with {end}"
                     )
 
     @pytest.mark.parametrize("cat", TestCases.all_test_catalogs())
@@ -1287,8 +1287,8 @@ class TestCatalog:
 
         for collection_uri in expected_collection_reads:
             calls = len([x for x in call_uris if x == collection_uri])
-            assert calls == 1, "{} was read {} times instead of once!".format(
-                collection_uri, calls
+            assert calls == 1, (
+                f"{collection_uri} was read {calls} times instead of once!"
             )
 
     def test_reading_iterating_and_writing_works_as_expected(self) -> None:
@@ -1428,8 +1428,8 @@ class TestFullCopy:
             target_href: str = cast(pystac.STACObject, link.target).self_href
         else:
             target_href = str(link.target)
-        assert tag in target_href, '[{}] {} does not contain "{}"'.format(
-            link.rel, target_href, tag
+        assert tag in target_href, (
+            f'[{link.rel}] {target_href} does not contain "{tag}"'
         )
 
     def check_item(self, item: Item, tag: str) -> None:

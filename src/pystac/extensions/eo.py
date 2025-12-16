@@ -42,7 +42,7 @@ SNOW_COVER_PROP: str = PREFIX + "snow_cover"
 
 
 def validated_percentage(v: float | None) -> float | None:
-    if v is not None and not isinstance(v, (float, int)) or isinstance(v, bool):
+    if v is not None and not isinstance(v, float | int) or isinstance(v, bool):
         raise ValueError(f"Invalid percentage: {v} must be number")
     if v is not None and not 0 <= v <= 100:
         raise ValueError(f"Invalid percentage: {v} must be between 0 and 100")

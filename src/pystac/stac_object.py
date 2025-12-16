@@ -193,7 +193,7 @@ class STACObject(ABC):
         """
         if rel is None and media_type is None:
             return next(iter(self.links), None)
-        if media_type and isinstance(media_type, (str, pystac.MediaType)):
+        if media_type and isinstance(media_type, str | pystac.MediaType):
             media_type = [media_type]
         return next(
             (
@@ -226,7 +226,7 @@ class STACObject(ABC):
         """
         if rel is None and media_type is None:
             return self.links
-        if media_type and isinstance(media_type, (str, pystac.MediaType)):
+        if media_type and isinstance(media_type, str | pystac.MediaType):
             media_type = [media_type]
         return [
             link

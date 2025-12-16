@@ -909,8 +909,8 @@ class Catalog(STACObject):
             for subcat_id in subcat_ids:
                 subcat = curr_parent.get_child(subcat_id)
                 if subcat is None:
-                    subcat_desc = "Catalog of items from {} with id {}".format(
-                        curr_parent.id, subcat_id
+                    subcat_desc = (
+                        f"Catalog of items from {curr_parent.id} with id {subcat_id}"
                     )
                     subcat = pystac.Catalog(id=subcat_id, description=subcat_desc)
                     curr_parent.add_child(subcat)

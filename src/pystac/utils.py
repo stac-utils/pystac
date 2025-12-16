@@ -62,12 +62,9 @@ def safe_urlparse(href: str) -> URLParseResult:
         return URLParseResult(
             scheme="",
             netloc="",
-            path="{}:{}".format(
-                # We use this more complicated formulation because parsed.scheme
-                # converts to lower-case
-                href[: len(parsed.scheme)],
-                parsed.path,
-            ),
+            # We use this more complicated formulation because parsed.scheme
+            # converts to lower-case
+            path=f"{href[: len(parsed.scheme)]}:{parsed.path}",
             params=parsed.params,
             query=parsed.query,
             fragment=parsed.fragment,

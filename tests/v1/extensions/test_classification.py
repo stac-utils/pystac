@@ -260,7 +260,7 @@ def test_to_from_dict(item_dict: dict[str, Any]) -> None:
         for k, v in a_dict.items():
             if isinstance(v, dict):
                 _parse_times(v)
-            elif isinstance(v, (tuple, list, set)):
+            elif isinstance(v, tuple | list | set):
                 for vv in v:
                     if isinstance(vv, dict):
                         _parse_times(vv)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Optional, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 import pystac
 from pystac import utils
@@ -52,7 +52,7 @@ class CommonMetadata:
 
     def _get_field(self, prop_name: str, _typ: type[P]) -> P | None:
         if hasattr(self.object, prop_name):
-            return cast(Optional[P], getattr(self.object, prop_name))
+            return cast(P | None, getattr(self.object, prop_name))
         elif hasattr(self.object, "properties"):
             item = cast(pystac.Item, self.object)
             return item.properties.get(prop_name)

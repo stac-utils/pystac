@@ -131,10 +131,9 @@ class LayoutTemplate:
                     dt = stac_object.common_metadata.start_datetime
                 if dt is None:
                     raise pystac.TemplateError(
-                        "Item {} does not have a datetime or "
-                        "datetime range set; cannot template {} in {}".format(
-                            stac_object, template_var, self.template
-                        )
+                        f"Item {stac_object} does not have a datetime or "
+                        f"datetime range set; cannot template {template_var} "
+                        f"in {self.template}"
                     )
 
                 if template_var == "year":
@@ -156,18 +155,16 @@ class LayoutTemplate:
                     )
             else:
                 raise pystac.TemplateError(
-                    '"{}" cannot be used to template non-Item {} in {}'.format(
-                        template_var, stac_object, self.template
-                    )
+                    f'"{template_var}" cannot be used to template non-Item '
+                    f"{stac_object} in {self.template}"
                 )
 
         # Allow dot-notation properties for arbitrary object values.
         props = template_var.split(".")
         prop_source: pystac.STACObject | dict[str, Any] | None = None
         error = pystac.TemplateError(
-            "Cannot find property {} on {} for template {}".format(
-                template_var, stac_object, self.template
-            )
+            f"Cannot find property {template_var} on {stac_object} for "
+            f"template {self.template}"
         )
 
         try:
