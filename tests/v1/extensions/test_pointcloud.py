@@ -2,10 +2,6 @@ import json
 from typing import Any
 
 import pytest
-
-import pystac
-from pystac.asset import Asset
-from pystac.errors import ExtensionTypeError, RequiredPropertyMissing, STACError
 from pystac.extensions.pointcloud import (
     AssetPointcloudExtension,
     PhenomenologyType,
@@ -15,6 +11,10 @@ from pystac.extensions.pointcloud import (
     Statistic,
 )
 from pystac.summaries import RangeSummary
+
+import pystac
+from pystac.asset import Asset
+from pystac.errors import ExtensionTypeError, RequiredPropertyMissing, STACError
 from tests.v1.utils import TestCases, assert_to_from_dict
 
 # from copy import deepcopy

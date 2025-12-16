@@ -1,9 +1,6 @@
 import json
 
 import pytest
-
-import pystac
-from pystac import ExtensionTypeError, Item
 from pystac.extensions.raster import (
     DataType,
     Histogram,
@@ -13,6 +10,9 @@ from pystac.extensions.raster import (
     Sampling,
     Statistics,
 )
+
+import pystac
+from pystac import ExtensionTypeError, Item
 from pystac.utils import get_opt
 from tests.v1.conftest import get_data_file
 from tests.v1.utils import TestCases, assert_to_from_dict

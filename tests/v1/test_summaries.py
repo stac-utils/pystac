@@ -2,8 +2,8 @@ import socket
 from typing import Any
 
 import pytest
-
 from pystac.summaries import RangeSummary, Summaries, Summarizer, SummaryStrategy
+
 from tests.v1.utils import TestCases
 
 

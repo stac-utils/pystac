@@ -3,11 +3,11 @@ from copy import deepcopy
 from typing import Any
 
 import pytest
+from pystac.extensions.projection import ProjectionExtension
 
 import pystac
 from pystac import ExtensionTypeError, Item
 from pystac.errors import ExtensionNotImplemented
-from pystac.extensions.projection import ProjectionExtension
 from pystac.utils import get_opt
 from tests.v1.utils import TestCases, assert_to_from_dict
 

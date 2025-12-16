@@ -1,6 +1,4 @@
 import pytest
-
-import pystac
 from pystac.cache import CollectionCache
 from pystac.serialization import (
     identify_stac_object,
@@ -8,6 +6,8 @@ from pystac.serialization import (
     merge_common_properties,
 )
 from pystac.serialization.identify import STACVersionID, STACVersionRange
+
+import pystac
 from tests.v1.utils import TestCases
 from tests.v1.utils.test_cases import ExampleInfo
 

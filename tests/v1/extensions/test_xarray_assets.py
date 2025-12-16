@@ -3,9 +3,9 @@
 import json
 
 import pytest
+from pystac.extensions.xarray_assets import XarrayAssetsExtension
 
 import pystac
-from pystac.extensions.xarray_assets import XarrayAssetsExtension
 from tests.v1.conftest import get_data_file
 
 

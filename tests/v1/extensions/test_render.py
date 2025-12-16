@@ -3,10 +3,10 @@
 import json
 
 import pytest
+from pystac.extensions.render import Render, RenderExtension
 
 import pystac
 import pystac.errors
-from pystac.extensions.render import Render, RenderExtension
 from tests.v1.conftest import get_data_file
 
 

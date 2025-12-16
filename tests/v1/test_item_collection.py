@@ -4,10 +4,10 @@ from os.path import relpath
 from typing import Any, cast
 
 import pytest
+from pystac.item_collection import ItemCollection
 
 import pystac
 from pystac import Item, StacIO
-from pystac.item_collection import ItemCollection
 from tests.v1.utils import TestCases
 from tests.v1.utils.stac_io_mock import MockDefaultStacIO
 

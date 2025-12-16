@@ -3,11 +3,11 @@ import random
 from string import ascii_letters
 
 import pytest
+from pystac.extensions.storage import CloudPlatform, StorageExtension
 
 import pystac
 from pystac import ExtensionTypeError, Item
 from pystac.collection import Collection
-from pystac.extensions.storage import CloudPlatform, StorageExtension
 from tests.v1.utils import TestCases, assert_to_from_dict
 
 NAIP_EXAMPLE_URI = TestCases.get_path("data-files/storage/item-naip.json")

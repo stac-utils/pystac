@@ -2,11 +2,11 @@ import tempfile
 from typing import Any
 
 import pytest
+from pystac.validation import validate_dict
 
 import pystac
 from pystac import HIERARCHICAL_LINKS, Catalog, CatalogType, Collection
 from pystac.utils import is_absolute_href, make_absolute_href
-from pystac.validation import validate_dict
 from tests.v1.utils import TestCases
 
 CTYPES = [

@@ -12,6 +12,12 @@ from pathlib import Path
 from typing import Any, cast
 
 import pytest
+from pystac.layout import (
+    APILayoutStrategy,
+    BestPracticesLayoutStrategy,
+    HrefLayoutStrategy,
+    TemplateLayoutStrategy,
+)
 
 import pystac
 from pystac import (
@@ -24,12 +30,6 @@ from pystac import (
     MediaType,
 )
 from pystac.errors import STACError
-from pystac.layout import (
-    APILayoutStrategy,
-    BestPracticesLayoutStrategy,
-    HrefLayoutStrategy,
-    TemplateLayoutStrategy,
-)
 from pystac.utils import (
     is_absolute_href,
     make_absolute_href,

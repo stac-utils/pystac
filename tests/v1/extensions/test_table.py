@@ -1,10 +1,10 @@
 from pathlib import Path
 
 import pytest
+from pystac.extensions.table import Column, TableExtension
 
 import pystac
 from pystac import ExtensionTypeError, Item
-from pystac.extensions.table import Column, TableExtension
 from tests.v1.utils import TestCases
 
 

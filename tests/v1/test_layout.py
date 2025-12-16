@@ -3,9 +3,6 @@ from collections.abc import Callable
 from datetime import datetime, timedelta
 
 import pytest
-
-import pystac
-from pystac.collection import Collection
 from pystac.layout import (
     APILayoutStrategy,
     AsIsLayoutStrategy,
@@ -14,6 +11,9 @@ from pystac.layout import (
     LayoutTemplate,
     TemplateLayoutStrategy,
 )
+
+import pystac
+from pystac.collection import Collection
 from tests.v1.utils import (
     ARBITRARY_BBOX,
     ARBITRARY_GEOM,

@@ -10,6 +10,8 @@ from typing import Any
 
 import pytest
 from dateutil import tz
+from pystac.extensions.eo import EOExtension
+from pystac.validation import validate_dict
 
 import pystac
 from pystac import (
@@ -24,9 +26,7 @@ from pystac import (
     SpatialExtent,
     TemporalExtent,
 )
-from pystac.extensions.eo import EOExtension
 from pystac.utils import datetime_to_str, get_required, str_to_datetime
-from pystac.validation import validate_dict
 from tests.v1.utils import ARBITRARY_BBOX, ARBITRARY_GEOM, TestCases
 
 TEST_DATETIME = datetime(2020, 3, 14, 16, 32)

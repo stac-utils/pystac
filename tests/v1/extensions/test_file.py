@@ -2,6 +2,7 @@ import json
 from typing import Any
 
 import pytest
+from pystac.extensions.file import ByteOrder, FileExtension, MappingObject
 
 from pystac import (
     Asset,
@@ -11,7 +12,6 @@ from pystac import (
     ExtensionTypeError,
     Item,
 )
-from pystac.extensions.file import ByteOrder, FileExtension, MappingObject
 from tests.v1.utils import TestCases, assert_to_from_dict
 
 FILE_ITEM_EXAMPLE_URI = TestCases.get_path("data-files/file/item.json")

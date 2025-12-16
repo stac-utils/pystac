@@ -4,6 +4,13 @@ from collections.abc import Generator
 from datetime import datetime
 
 import pytest
+from pystac.extensions.version import (
+    DEPRECATED,
+    VERSION,
+    VersionExtension,
+    VersionRelType,
+    ignore_deprecated,
+)
 
 from pystac import (
     Asset,
@@ -16,13 +23,6 @@ from pystac import (
     TemporalExtent,
 )
 from pystac.errors import DeprecatedWarning, ExtensionTypeError
-from pystac.extensions.version import (
-    DEPRECATED,
-    VERSION,
-    VersionExtension,
-    VersionRelType,
-    ignore_deprecated,
-)
 from tests.v1.utils import TestCases
 
 URL_TEMPLATE: str = "http://example.com/catalog/%s.json"

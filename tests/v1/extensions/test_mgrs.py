@@ -3,9 +3,9 @@
 import json
 
 import pytest
+from pystac.extensions.mgrs import MgrsExtension
 
 import pystac
-from pystac.extensions.mgrs import MgrsExtension
 from tests.v1.conftest import get_data_file
 
 

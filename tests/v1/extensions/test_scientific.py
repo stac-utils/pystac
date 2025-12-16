@@ -3,10 +3,6 @@
 from datetime import datetime, timedelta
 
 import pytest
-
-import pystac
-from pystac import Collection, ExtensionTypeError, Item
-from pystac.errors import ExtensionNotImplemented
 from pystac.extensions import scientific
 from pystac.extensions.scientific import (
     Publication,
@@ -14,8 +10,12 @@ from pystac.extensions.scientific import (
     ScientificRelType,
     remove_link,
 )
-from pystac.link import Link
 from pystac.summaries import Summaries
+
+import pystac
+from pystac import Collection, ExtensionTypeError, Item
+from pystac.errors import ExtensionNotImplemented
+from pystac.link import Link
 from tests.v1.utils import TestCases
 
 URL_TEMPLATE = "http://example.com/catalog/%s.json"

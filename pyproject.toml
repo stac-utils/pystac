@@ -23,24 +23,17 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
 ]
 requires-python = ">=3.10"
-dependencies = ["python-dateutil>=2.7.0"]
+dependencies = [
+    "python-dateutil>=2.9.0.post0",
+]
 dynamic = ["version"]
-
-[project.optional-dependencies]
-validation = ["jsonschema>=4.18"]
 
 [dependency-groups]
 dev = [
-    "html5lib>=1.1",
-    "jinja2>=3.1.4",
-    "jsonschema>=4.23.0",
-    "pytest>=8.3.3",
-    "pytest-cov>=5.0.0",
-    "pytest-mock>=3.14.0",
-    "pytest-recording>=0.13.2",
-    "requests-mock>=1.12.1",
+    "jsonschema>=4.25.1",
+    "pytest>=9.0.2",
+    "ruff>=0.14.9",
 ]
-docs = []
 
 [project.urls]
 Documentation = "https://pystac.readthedocs.io"
@@ -58,7 +51,8 @@ lint.select = ["E", "F", "I", "UP"]
 
 [tool.pytest.ini_options]
 filterwarnings = ["error"]
-addopts = "--block-network --record-mode=none"
+testpaths = ["tests"]
+norecursedirs = ["v1"]
 
 [build-system]
 requires = ["hatchling"]

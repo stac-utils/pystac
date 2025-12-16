@@ -11,8 +11,9 @@ from subprocess import call
 from typing import Any
 from urllib.error import HTTPError
 
-import pystac
 from pystac.serialization import identify_stac_object
+
+import pystac
 
 
 def remove_bad_collection(js: dict[str, Any]) -> dict[str, Any]:

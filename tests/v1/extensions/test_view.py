@@ -1,12 +1,12 @@
 import json
 
 import pytest
+from pystac.extensions.view import ViewExtension
+from pystac.summaries import RangeSummary
 
 import pystac
 from pystac import ExtensionTypeError, Item
 from pystac.collection import Collection
-from pystac.extensions.view import ViewExtension
-from pystac.summaries import RangeSummary
 from tests.v1.utils import TestCases, assert_to_from_dict
 
 EXAMPLE_URI = TestCases.get_path("data-files/view/example-landsat8.json")

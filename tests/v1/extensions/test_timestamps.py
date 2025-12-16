@@ -2,11 +2,11 @@ import json
 from datetime import datetime
 
 import pytest
+from pystac.extensions.timestamps import TimestampsExtension
+from pystac.summaries import RangeSummary
 
 import pystac
 from pystac import Collection, ExtensionTypeError, Item
-from pystac.extensions.timestamps import TimestampsExtension
-from pystac.summaries import RangeSummary
 from pystac.utils import datetime_to_str, get_opt, str_to_datetime
 from tests.v1.utils import TestCases, assert_to_from_dict
 

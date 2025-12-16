@@ -1,7 +1,4 @@
 import pytest
-
-import pystac
-from pystac import ExtensionTypeError
 from pystac.cache import CollectionCache
 from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.view import ViewExtension
@@ -11,6 +8,9 @@ from pystac.serialization import (
     merge_common_properties,
     migrate_to_latest,
 )
+
+import pystac
+from pystac import ExtensionTypeError
 from pystac.utils import get_required, str_to_datetime
 from tests.v1.utils import TestCases
 from tests.v1.utils.test_cases import ExampleInfo

@@ -4,10 +4,6 @@ from copy import deepcopy
 from typing import Any, cast
 
 import pytest
-
-import pystac.errors
-from pystac import Asset, Collection, Item, ItemAssetDefinition
-from pystac.errors import STACError
 from pystac.extensions.classification import Classification
 from pystac.extensions.mlm import (
     ARCHITECTURE_PROP,
@@ -31,6 +27,10 @@ from pystac.extensions.mlm import (
     ValueScalingType,
 )
 from pystac.extensions.raster import DataType
+
+import pystac.errors
+from pystac import Asset, Collection, Item, ItemAssetDefinition
+from pystac.errors import STACError
 from tests.v1.utils import TestCases
 
 logging.basicConfig(level=logging.DEBUG)

@@ -6,15 +6,15 @@ from datetime import datetime, timezone
 from typing import Any, cast
 
 import jsonschema
+import pystac.validation
 import pytest
+from pystac.cache import CollectionCache
+from pystac.serialization.common_properties import merge_common_properties
+from pystac.validation import GetSchemaError, JsonSchemaSTACValidator
 from requests_mock import Mocker
 
 import pystac
-import pystac.validation
-from pystac.cache import CollectionCache
-from pystac.serialization.common_properties import merge_common_properties
 from pystac.utils import get_opt
-from pystac.validation import GetSchemaError, JsonSchemaSTACValidator
 from tests.v1.utils import TestCases
 from tests.v1.utils.test_cases import ExampleInfo
 
