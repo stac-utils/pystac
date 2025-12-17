@@ -8,7 +8,7 @@ from pystac import SpatialExtent, STACWarning, TemporalExtent
 
 def test_temporal_with_datetimes() -> None:
     extent = TemporalExtent([[datetime.datetime(2023, 1, 1), None]])
-    json.dumps(extent.to_dict())
+    _ = json.dumps(extent.to_dict())
 
 
 def test_temporal_with_unnested_list() -> None:

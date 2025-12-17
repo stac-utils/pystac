@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Self
 
+from typing_extensions import override
+
 from .constants import CHILD, COLLECTION, ITEM, PARENT, ROOT, SELF
 from .errors import PySTACError
 
@@ -58,15 +60,15 @@ class Link:
         owner: STACObject | None = None,
         stac_object: STACObject | None = None,
     ) -> None:
-        self.href = href
-        self.rel = rel
-        self.type = type
-        self.title = title
-        self.method = method
-        self.headers = headers
-        self.body = body
-        self.owner = owner
-        self._stac_object = stac_object
+        self.href: str | None = href
+        self.rel: str = rel
+        self.type: str | None = type
+        self.title: str | None = title
+        self.method: str | None = method
+        self.headers: dict[str, str | list[str]] | None = headers
+        self.body: Any | None = body
+        self.owner: STACObject | None = owner
+        self._stac_object: STACObject | None = stac_object
         # TODO extra fields
 
     def is_root(self) -> bool:
@@ -114,5 +116,6 @@ class Link:
             d["body"] = self.body
         return d
 
+    @override
     def __repr__(self) -> str:
         return f"<pystac.Link href={self.href} rel={self.rel} to={self._stac_object}>"

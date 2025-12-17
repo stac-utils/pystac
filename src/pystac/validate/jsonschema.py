@@ -1,6 +1,5 @@
 import importlib.resources
 import json
-import urllib.parse
 import urllib.request
 import warnings
 from collections.abc import Iterator
@@ -9,6 +8,7 @@ from typing import Any, cast
 import referencing.retrieval
 from jsonschema.validators import Draft7Validator
 from referencing import Registry
+from typing_extensions import override
 
 from ..catalog import Catalog
 from ..collection import Collection
@@ -28,11 +28,12 @@ class JsonschemaValidator(Validator):
         have to hit the network for them.
         """
 
-        self._registry = Registry(retrieve=cached_retrieve).with_contents(  # type: ignore
+        self._registry: Registry = Registry(retrieve=cached_retrieve).with_contents(  # type: ignore
             registry_contents()
         )
         self._schemas: dict[str, dict[str, Any]] = {}
 
+    @override
     def validate(self, stac_object: STACObject) -> None:
         if isinstance(stac_object, Item):
             slug = "item"
@@ -43,7 +44,7 @@ class JsonschemaValidator(Validator):
         else:
             raise Exception("unreachable")
         validator = self._get_validator(stac_object.stac_version, slug)
-        validator.validate(stac_object.to_dict())
+        validator.validate(stac_object.to_dict())  # pyright: ignore[reportUnknownMemberType]
 
     def _get_validator(self, version: str, slug: str) -> Draft7Validator:
         path = f"stac/v{version}/{slug}.json"
@@ -110,15 +111,5 @@ def registry_contents() -> Iterator[tuple[str, dict[str, Any]]]:
 
 
 def get_text(uri: str) -> str:
-    try:
-        import obstore
-
-        parsed_url = urllib.parse.urlparse(uri)
-        store = obstore.store.from_url(
-            urllib.parse.urlunparse(parsed_url._replace(path=""))
-        )
-        result = obstore.get(store, parsed_url.path)
-        return str(result.bytes(), encoding="utf-8")
-    except ImportError:
-        with urllib.request.urlopen(uri) as response:
-            return str(response.read(), encoding="utf-8")
+    with urllib.request.urlopen(uri) as response:
+        return str(response.read(), encoding="utf-8")

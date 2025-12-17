@@ -9,9 +9,11 @@ from .stac_object import STACObject
 class Render(Protocol):
     def get_href(self, stac_object: STACObject, base: str) -> str:
         """Returns a STAC object's href."""
+        ...
 
     def get_file_name(self, stac_object: STACObject) -> str:
         """Returns a STAC object's file name."""
+        ...
 
 
 class BestPracticesRenderer:

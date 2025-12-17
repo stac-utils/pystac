@@ -30,6 +30,7 @@ dynamic = ["version"]
 
 [dependency-groups]
 dev = [
+    "basedpyright>=1.36.1",
     "jsonschema>=4.25.1",
     "mkdocstrings-python>=2.0.1",
     "pytest>=9.0.2",
@@ -49,6 +50,13 @@ Discussions = "https://github.com/radiantearth/stac-spec/discussions/categories/
 [tool.mypy]
 show_error_codes = true
 strict = true
+
+[tool.basedpyright]
+exclude = ["tests/v1"]
+reportExplicitAny = false
+reportAny = false
+reportImplicitStringConcatenation = false
+reportImportCycles = false
 
 [tool.ruff]
 lint.select = ["E", "F", "I", "UP"]

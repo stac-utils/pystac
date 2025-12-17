@@ -28,7 +28,7 @@ def get_stac_version() -> str:
     "This function is a no-op. Use `Container.set_stac_version()` to modify the STAC "
     "version of an entire catalog."
 )
-def set_stac_version(version: str) -> None:
+def set_stac_version(version: str) -> None:  # pyright: ignore[reportUnusedParameter]
     """**DEPRECATED** This function is a no-op and will be removed in a future version
 
     Warning:

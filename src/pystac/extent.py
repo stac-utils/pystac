@@ -27,13 +27,13 @@ class Extent:
     ):
         """Creates a new extent."""
         if spatial is None:
-            self.spatial = SpatialExtent()
+            self.spatial: SpatialExtent = SpatialExtent()
         elif isinstance(spatial, SpatialExtent):
             self.spatial = spatial
         else:
             self.spatial = SpatialExtent.from_dict(spatial)
         if temporal is None:
-            self.temporal = TemporalExtent()
+            self.temporal: TemporalExtent = TemporalExtent()
         elif isinstance(temporal, TemporalExtent):
             self.temporal = temporal
         else:
@@ -73,10 +73,10 @@ class SpatialExtent:
         if bbox is None or len(bbox) == 0:
             self.bbox = [DEFAULT_BBOX]
         elif isinstance(bbox[0], Sequence):
-            self.bbox = bbox  # type: ignore
+            self.bbox = bbox  # pyright: ignore[reportAttributeAccessIssue]
         else:
-            self.bbox = [bbox]  # type: ignore
-        self.extra_fields = kwargs
+            self.bbox = [bbox]  # pyright: ignore[reportAttributeAccessIssue]
+        self.extra_fields: dict[str, Any] = kwargs
 
     def to_dict(self) -> dict[str, Any]:
         """Converts this spatial extent to a dictionary."""
@@ -117,7 +117,7 @@ class TemporalExtent:
                         STACWarning,
                     )
                 else:
-                    self.interval.append(_create_interval(interval))  # type: ignore
+                    self.interval.append(_create_interval(interval))  # pyright: ignore[reportArgumentType]
                     break
 
     def to_dict(self) -> dict[str, Any]:
@@ -128,13 +128,13 @@ class TemporalExtent:
 def datetime_str(value: datetime.datetime | str | None) -> str | None:
     if isinstance(value, datetime.datetime):
         return value.isoformat()
-    elif value is None or isinstance(value, str):
+    elif value is None or isinstance(value, str):  # pyright: ignore[reportUnnecessaryIsInstance]
         return value
     else:
         warnings.warn(
             f"Invalid interval value ({type(value)}), converting to None", STACWarning
         )
-        return None
+        return None  # pyright: ignore[reportUnreachable]
 
 
 def _create_interval(

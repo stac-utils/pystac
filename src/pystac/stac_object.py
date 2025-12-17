@@ -7,6 +7,8 @@ from collections.abc import Iterator
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Self
 
+from typing_extensions import override
+
 from . import deprecate, utils
 from .asset import Asset
 from .constants import (
@@ -86,7 +88,7 @@ class STACObject(ABC):
         if not isinstance(d, dict):
             raise PySTACError(f"JSON is not a dict: {type(d)}")
 
-        stac_object = cls.from_dict(d)
+        stac_object = cls.from_dict(d)  # pyright: ignore[reportUnknownArgumentType]
         stac_object.href = str(href)
         stac_object.reader = reader
         if isinstance(stac_object, cls):
@@ -457,5 +459,6 @@ class STACObject(ABC):
         validator = JsonschemaValidator()
         validator.validate(self)
 
+    @override
     def __repr__(self) -> str:
         return f"<pystac.{self.__class__.__name__} id={self.id}>"

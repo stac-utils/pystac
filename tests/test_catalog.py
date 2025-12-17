@@ -118,7 +118,7 @@ def test_wrong_type_field() -> None:
     d = Catalog("an-id", "a description").to_dict()
     d["type"] = "CustomCatalog"
     with pytest.raises(STACError):
-        Catalog.from_dict(d)
+        _ = Catalog.from_dict(d)
 
 
 def test_read_file_self_link(catalog: Catalog) -> None:

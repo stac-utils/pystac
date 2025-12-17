@@ -136,7 +136,7 @@ class DefaultWriter:
         with open(path, "w") as f:
             json.dump(data, f)
 
-    def write_json_to_url(self, data: Any, url: str) -> None:
+    def write_json_to_url(self, data: Any, url: str) -> None:  # pyright: ignore[reportUnusedParameter]
         """Writes JSON to a url.
 
         Always raises a `NotImplementedError`."""

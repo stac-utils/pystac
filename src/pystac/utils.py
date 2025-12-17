@@ -4,22 +4,13 @@ import datetime
 import os.path
 import posixpath
 import urllib.parse
-from enum import Enum
 from pathlib import Path
-from typing import TypeVar, cast
+from typing import TypeVar
 from urllib.parse import ParseResult
 
 import dateutil.parser
 
 T = TypeVar("T")
-
-
-class StringEnum(str, Enum):
-    def __repr__(self) -> str:
-        return repr(self.value)
-
-    def __str__(self) -> str:
-        return cast(str, self.value)
 
 
 def is_absolute_href(href: str) -> bool:

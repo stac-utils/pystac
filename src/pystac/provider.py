@@ -16,10 +16,10 @@ class Provider:
         roles: list[Role | str] | None = None,
         url: str | None = None,
     ):
-        self.name = name
-        self.description = description
-        self.roles = roles
-        self.url = url
+        self.name: str = name
+        self.description: str | None = description
+        self.roles: list[Role | str] | None = roles
+        self.url: str | None = url
 
     def to_dict(self) -> dict[str, Any]:
         d: dict[str, Any] = {"name": self.name}

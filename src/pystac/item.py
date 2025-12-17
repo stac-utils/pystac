@@ -6,6 +6,8 @@ import warnings
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
+from typing_extensions import override
+
 from . import utils
 from .asset import Asset
 from .constants import COLLECTION, ITEM_TYPE
@@ -27,6 +29,7 @@ class Item(STACObject):
     'assets' (e.g., satellite imagery, derived data, DEMs)."""
 
     @classmethod
+    @override
     def get_type(cls: type[Item]) -> str:
         return ITEM_TYPE
 
@@ -58,17 +61,17 @@ class Item(STACObject):
             datetime: The item datetime, or start and end datetimes, as a string
                 or as a datetime object.
         """
-        self.geometry = geometry
+        self.geometry: dict[str, Any] | None = geometry
         if self.geometry is None and bbox:
             warnings.warn(
                 "bbox cannot be set if geometry is None. Setting bbox to None",
                 STACWarning,
             )
-            self.bbox = None
+            self.bbox: Sequence[float | int] | None = None
         else:
             self.bbox = bbox
 
-        self.properties = properties or {}
+        self.properties: dict[str, Any] = properties or {}
 
         self.datetime: dt.datetime | None = None
         self.start_datetime: dt.datetime | None = None
@@ -95,7 +98,7 @@ class Item(STACObject):
             self.start_datetime = _parse_datetime(datetime[0])
             self.end_datetime = _parse_datetime(datetime[1])
 
-        self.collection_id = collection
+        self.collection_id: str | None = collection
 
         super().__init__(
             id=id,
@@ -106,6 +109,7 @@ class Item(STACObject):
             **kwargs,
         )
 
+    @override
     def get_fields(self) -> dict[str, Any]:
         return self.properties
 
@@ -129,6 +133,7 @@ class Item(STACObject):
         else:
             return None
 
+    @override
     def _to_dict(self) -> dict[str, Any]:
         d: dict[str, Any] = {
             "type": self.get_type(),

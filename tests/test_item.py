@@ -26,17 +26,17 @@ def test_read_file(examples_path: Path) -> None:
 
 def test_no_geometry_but_bbox() -> None:
     with pytest.warns(STACWarning):
-        Item("an-id", bbox=DEFAULT_BBOX)
+        _ = Item("an-id", bbox=DEFAULT_BBOX)
 
 
 def test_warn_include_self_link() -> None:
     with pytest.warns(FutureWarning):
-        Item("an-id").to_dict(include_self_link=True)
+        _ = Item("an-id").to_dict(include_self_link=True)
 
 
 def test_warn_transform_hrefs() -> None:
     with pytest.warns(FutureWarning):
-        Item("an-id").to_dict(transform_hrefs=True)
+        _ = Item("an-id").to_dict(transform_hrefs=True)
 
 
 def test_migrate() -> None:

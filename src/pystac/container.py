@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC
 from collections.abc import Iterator
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
     from .collection import Collection
 
 
-class Container(STACObject):
+class Container(STACObject, ABC):
     """Base class for [Catalog][pystac.Catalog] and [Collection][pystac.Collection].
 
     While collections are very similar to catalogs, they _technically_ are to
