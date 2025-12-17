@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.14.2](https://github.com/stac-utils/pystac/compare/v1.14.1...v1.14.2) (2025-12-17)
+
+
+### Bug Fixes
+
+* clone extra_fields for Item ([#1601](https://github.com/stac-utils/pystac/issues/1601)) ([6ba7da1](https://github.com/stac-utils/pystac/commit/6ba7da1796488c8de30eedf972dce07fbbec248f))
+* make it two separate jobs ([#1607](https://github.com/stac-utils/pystac/issues/1607)) ([bb6d289](https://github.com/stac-utils/pystac/commit/bb6d2892675bbc49249e8c06a4634610bd826f53))
+
 ## [Unreleased]
 
 ### Changed
