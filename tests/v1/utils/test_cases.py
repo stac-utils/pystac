@@ -1,5 +1,6 @@
 import csv
 import os
+import warnings
 from datetime import UTC, datetime
 from typing import Any
 
@@ -62,10 +63,12 @@ ARBITRARY_BBOX: list[float] = [
     ARBITRARY_GEOM["coordinates"][0][1][1],
 ]
 
-ARBITRARY_EXTENT = Extent(
-    spatial=SpatialExtent.from_coordinates(ARBITRARY_GEOM["coordinates"]),
-    temporal=TemporalExtent.from_now(),
-)
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    ARBITRARY_EXTENT = Extent(
+        spatial=SpatialExtent.from_coordinates(ARBITRARY_GEOM["coordinates"]),
+        temporal=TemporalExtent.from_now(),
+    )
 
 
 class ExampleInfo:

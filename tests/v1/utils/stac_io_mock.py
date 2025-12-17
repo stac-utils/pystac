@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any
 from unittest.mock import Mock
 
 import pystac
-from pystac.stac_io import DefaultStacIO, StacIO
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    from pystac.stac_io import DefaultStacIO, StacIO
 
 if TYPE_CHECKING:
     from pystac.utils import HREF

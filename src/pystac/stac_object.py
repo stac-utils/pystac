@@ -5,9 +5,7 @@ import warnings
 from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Self
-
-from typing_extensions import override
+from typing import TYPE_CHECKING, Any, Self, override
 
 from . import deprecate, utils
 from .asset import Asset

@@ -1,0 +1,2 @@
+class ItemCollection:
+    pass

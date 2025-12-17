@@ -16,13 +16,11 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Natural Language :: English",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "python-dateutil>=2.9.0.post0",
 ]
@@ -63,7 +61,7 @@ lint.select = ["E", "F", "I", "UP"]
 
 [tool.pytest.ini_options]
 filterwarnings = ["error"]
-testpaths = ["tests"]
+testpaths = ["tests", "tests/v1/test_asset.py"]
 norecursedirs = ["tests/v1"]
 
 [tool.uv]

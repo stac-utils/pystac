@@ -4,13 +4,31 @@ import datetime
 import os.path
 import posixpath
 import urllib.parse
+import warnings
+from enum import StrEnum
 from pathlib import Path
-from typing import TypeVar
+from typing import Any
 from urllib.parse import ParseResult
 
 import dateutil.parser
 
-T = TypeVar("T")
+
+def __getattr__(name: str) -> Any:
+    if name == "StringEnum":
+        warnings.warn(
+            "StringEnum is deprecated and will be removed in a future release. "
+            "Use Python's enum.StrEnum instead.",
+            FutureWarning,
+        )
+
+        return StrEnum
+    elif name == "StacIO":
+        # We defer loading so we don't trigger a `FutureWarning`
+        from .stac_io import StacIO
+
+        return StacIO
+    else:
+        raise AttributeError(name)
 
 
 def is_absolute_href(href: str) -> bool:
@@ -245,7 +263,7 @@ def str_to_datetime(s: str) -> datetime.datetime:
     return dateutil.parser.isoparse(s)
 
 
-def get_opt(option: T | None) -> T:
+def get_opt[T](option: T | None) -> T:
     if option is None:
         raise ValueError("Cannot get value from None")
     return option

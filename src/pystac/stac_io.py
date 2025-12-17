@@ -1,4 +1,4 @@
-from typing import Self
+from __future__ import annotations
 
 from . import deprecate
 
@@ -6,6 +6,10 @@ deprecate.module("stac_io")
 
 
 class StacIO:
-    @classmethod
-    def default(cls: type[Self]) -> Self:
-        return cls()
+    @staticmethod
+    def default() -> DefaultStacIO:
+        return DefaultStacIO()
+
+
+class DefaultStacIO(StacIO):
+    pass
