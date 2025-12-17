@@ -1,4 +1,6 @@
 {
-  ".": "1.14.1",
-  "extra-files": ["pystac/version.py"]
+  ".": "1.14.2",
+  "extra-files": [
+    "pystac/version.py"
+  ]
 }
