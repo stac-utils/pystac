@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       prs_created: ${{ steps.release-please.outputs.prs_created }}
-      pr_head_branch: ${{ fromJSON(steps.release-please.outputs.prs)[0].headBranchName }}
+      pr_head_branch: ${{ steps.release-please.outputs.prs_created && fromJSON(steps.release-please.outputs.prs)[0].headBranchName || '' }}
     steps:
       - uses: actions/create-github-app-token@v2
         id: generate-token
