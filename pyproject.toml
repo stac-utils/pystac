@@ -64,7 +64,7 @@ lint.select = ["E", "F", "I", "UP"]
 [tool.pytest.ini_options]
 filterwarnings = ["error"]
 testpaths = ["tests"]
-norecursedirs = ["v1"]
+norecursedirs = ["tests/v1"]
 
 [tool.uv]
 default-groups = ["dev", "docs"]
