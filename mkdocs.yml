@@ -1,0 +1,61 @@
+site_name: PySTAC
+site_url: https://stac-utils.github.com/pystac/
+repo_name: stac-utils/pystac
+repo_url: https://github.com/stac-utils/pystac
+theme:
+  name: material
+  custom_dir: docs/overrides
+  logo: img/stac-python.png
+  favicon: img/stac-python.png
+  features:
+    - navigation.instant
+    - navigation.indexes
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      primary: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: default
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+watch:
+  - docs
+  - src
+
+nav:
+  - Home: index.md
+  - pystac-v2.0.md
+
+extra:
+  alias: true
+  provider: mike
+
+extra_css:
+  - overrides/stylesheets/extra.css
+
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_bases: true
+            show_root_heading: true
+            show_root_full_path: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            separate_signature: true
+            show_signature_annotations: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
