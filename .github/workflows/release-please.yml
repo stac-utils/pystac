@@ -26,7 +26,7 @@ jobs:
           release-type: python
       - name: Checkout PR branch
         if: ${{ steps.release-please.outputs.prs_created }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ fromJSON(steps.release-please.outputs.pr).headBranchName }}
       - uses: astral-sh/setup-uv@v7
