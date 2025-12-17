@@ -31,8 +31,6 @@ jobs:
       - uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Sync
-        run: uv sync
       - uses: j178/prek-action@v1
         if: runner.os != 'Windows'
       - name: Test on windows
