@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       prs_created: ${{ steps.release-please.outputs.prs_created }}
-      pr_head_branch: ${{ steps.release-please.outputs.prs_created && fromJSON(steps.release-please.outputs.prs)[0].headBranchName || '' }}
+      prs: ${{ steps.release-please.outputs.prs }}
     steps:
       - uses: actions/create-github-app-token@v2
         id: generate-token
@@ -42,7 +42,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           token: ${{ steps.generate-token.outputs.token }}
-          ref: ${{ needs.release-please.outputs.pr_head_branch }}
+          ref: ${{ fromJSON(needs.release-please.outputs.prs)[0].headBranchName }}
       - uses: astral-sh/setup-uv@v7
       - name: Run pull-static script
         run: uv run scripts/pull-static
