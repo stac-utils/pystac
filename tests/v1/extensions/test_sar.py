@@ -5,7 +5,6 @@ from random import choice
 from string import ascii_letters
 
 import pytest
-from pystac.extensions import sar
 from pystac.extensions.sar import (
     FrequencyBand,
     ObservationDirection,
@@ -16,6 +15,7 @@ from pystac.summaries import RangeSummary
 
 import pystac
 from pystac import ExtensionTypeError
+from pystac.extensions import sar
 from tests.v1.utils import TestCases
 
 

@@ -3,7 +3,6 @@
 from datetime import datetime, timedelta
 
 import pytest
-from pystac.extensions import scientific
 from pystac.extensions.scientific import (
     Publication,
     ScientificExtension,
@@ -15,6 +14,7 @@ from pystac.summaries import Summaries
 import pystac
 from pystac import Collection, ExtensionTypeError, Item
 from pystac.errors import ExtensionNotImplemented
+from pystac.extensions import scientific
 from pystac.link import Link
 from tests.v1.utils import TestCases
 

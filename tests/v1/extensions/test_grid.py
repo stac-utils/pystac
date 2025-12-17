@@ -7,11 +7,11 @@ from datetime import datetime
 from typing import Any
 
 import pytest
-from pystac.extensions import grid
 from pystac.extensions.grid import GridExtension
 
 import pystac
 from pystac import ExtensionTypeError
+from pystac.extensions import grid
 from tests.v1.conftest import get_data_file
 from tests.v1.utils import TestCases
 
