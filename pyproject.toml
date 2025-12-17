@@ -31,8 +31,12 @@ dynamic = ["version"]
 [dependency-groups]
 dev = [
     "jsonschema>=4.25.1",
+    "mkdocstrings-python>=2.0.1",
     "pytest>=9.0.2",
     "ruff>=0.14.9",
+]
+docs = [
+    "mkdocs-material>=9.7.0",
 ]
 
 [project.urls]
@@ -53,6 +57,9 @@ lint.select = ["E", "F", "I", "UP"]
 filterwarnings = ["error"]
 testpaths = ["tests"]
 norecursedirs = ["v1"]
+
+[tool.uv]
+default-groups = ["dev", "docs"]
 
 [build-system]
 requires = ["hatchling"]
