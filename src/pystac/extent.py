@@ -104,7 +104,7 @@ class TemporalExtent:
     ):
         """Creates a new temporal extent."""
         if interval is None:
-            self.interval = [DEFAULT_INTERVAL]
+            self.interval: list[list[str | None]] = [DEFAULT_INTERVAL]
         else:
             self.interval = []
             for value in interval:

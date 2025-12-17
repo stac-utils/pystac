@@ -1,6 +1,8 @@
 import copy
 from typing import Any
 
+from typing_extensions import override
+
 from .asset import Asset, ItemAsset
 from .constants import COLLECTION_TYPE, DEFAULT_LICENSE
 from .container import Container
@@ -11,6 +13,7 @@ from .provider import Provider
 
 class Collection(Container):
     @classmethod
+    @override
     def get_type(cls) -> str:
         return COLLECTION_TYPE
 
@@ -33,14 +36,14 @@ class Collection(Container):
         **kwargs: Any,
     ):
         """Creates a new collection."""
-        self.description = description
-        self.title = title
-        self.keywords = keywords
-        self.license = license
-        self.summaries = summaries
+        self.description: str = description
+        self.title: str | None = title
+        self.keywords: list[str] | None = keywords
+        self.license: str = license
+        self.summaries: dict[str, Any] | None = summaries
 
         if providers is None:
-            self.providers = None
+            self.providers: list[Provider] | None = None
         else:
             self.providers = [
                 provider
@@ -50,14 +53,14 @@ class Collection(Container):
             ]
 
         if extent is None:
-            self.extent = Extent()
+            self.extent: Extent = Extent()
         elif isinstance(extent, Extent):
             self.extent = extent
         else:
             self.extent = Extent.from_dict(extent)
 
         if item_assets is None:
-            self.item_assets = None
+            self.item_assets: dict[str, ItemAsset] | None = None
         else:
             self.item_assets = dict(
                 (
@@ -78,6 +81,7 @@ class Collection(Container):
             **kwargs,
         )
 
+    @override
     def _to_dict(self) -> dict[str, Any]:
         """Converts this collection to a dictionary."""
         d: dict[str, Any] = {

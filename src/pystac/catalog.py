@@ -3,6 +3,8 @@ from __future__ import annotations
 import copy
 from typing import Any
 
+from typing_extensions import override
+
 from .constants import CATALOG_TYPE
 from .container import Container
 from .link import Link
@@ -10,6 +12,7 @@ from .link import Link
 
 class Catalog(Container):
     @classmethod
+    @override
     def get_type(cls) -> str:
         return CATALOG_TYPE
 
@@ -24,10 +27,11 @@ class Catalog(Container):
         links: list[Link | dict[str, Any]] | None = None,
         **kwargs: Any,
     ):
-        self.description = description
-        self.title = title
+        self.description: str = description
+        self.title: str | None = title
         super().__init__(id, stac_version, stac_extensions, links, **kwargs)
 
+    @override
     def _to_dict(self) -> dict[str, Any]:
         d: dict[str, Any] = {
             "type": self.get_type(),

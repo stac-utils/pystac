@@ -3,6 +3,8 @@ from __future__ import annotations
 import copy
 from typing import TYPE_CHECKING, Any, Self
 
+from typing_extensions import override
+
 from . import deprecate, utils
 
 if TYPE_CHECKING:
@@ -29,11 +31,11 @@ class ItemAsset:
         **kwargs: Any,
     ) -> None:
         """Creates a new item asset."""
-        self.title = title
-        self.description = description
-        self.type = type
-        self.roles = roles
-        self.extra_fields = kwargs
+        self.title: str | None = title
+        self.description: str | None = description
+        self.type: str | None = type
+        self.roles: list[str] | None = roles
+        self.extra_fields: dict[str, Any] = kwargs
 
     def to_dict(self) -> dict[str, Any]:
         """Converts this item asset to a dictionary."""
@@ -54,6 +56,7 @@ class Asset(ItemAsset):
     """An asset, e.g. a geospatial data file."""
 
     @classmethod
+    @override
     def from_dict(cls: type[Self], d: dict[str, Any]) -> Self:
         """Creates an asset from a dictionary."""
         return cls(**d)
@@ -68,7 +71,7 @@ class Asset(ItemAsset):
         **kwargs: Any,
     ) -> None:
         """Creates a new asset."""
-        self.href = href
+        self.href: str = href
         super().__init__(
             title=title, description=description, type=type, roles=roles, **kwargs
         )
@@ -88,6 +91,7 @@ class Asset(ItemAsset):
         else:
             return None
 
+    @override
     def to_dict(self) -> dict[str, Any]:
         """Converts this asset to a dictionary."""
         d = {"href": self.href}

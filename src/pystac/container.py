@@ -87,7 +87,10 @@ class Container(STACObject, ABC):
         self.add_link(Link.child(child))
 
     def get_child(
-        self, id: str, recursive: bool = False, sort_links_by_id: bool = True
+        self,
+        id: str,
+        recursive: bool = False,
+        sort_links_by_id: bool = True,  # pyright: ignore[reportUnusedParameter]
     ) -> Container | None:
         # TODO handle sort links by id
         for child in self.get_children(recursive=recursive):
@@ -164,10 +167,10 @@ class Container(STACObject, ABC):
     def normalize_and_save(
         self,
         root_href: str,
-        catalog_type: Any = None,
-        strategy: Any = None,
-        stac_io: Any = None,
-        skip_unresolved: bool = False,
+        catalog_type: Any = None,  # pyright: ignore[reportUnusedParameter]
+        strategy: Any = None,  # pyright: ignore[reportUnusedParameter]
+        stac_io: Any = None,  # pyright: ignore[reportUnusedParameter]
+        skip_unresolved: bool = False,  # pyright: ignore[reportUnusedParameter]
     ) -> None:
         self.render(root_href)
         self.save()
