@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterable
 from html import escape
@@ -426,12 +427,21 @@ class STACObject(ABC):
         if modify_links:
             links = modify_links(links)
 
+        has_next_link = False
         for i in range(0, len(links)):
             link = links[i]
             if link.rel == rel:
                 link.resolve_stac_object(root=self.get_root())
                 if typ is None or isinstance(link.target, typ):
                     yield cast(STACObject, link.target)
+            if link.rel == "next":
+                has_next_link = True
+        if has_next_link:
+            warnings.warn(
+                "This STAC object has a 'next' link, but pystac does not support "
+                "pagination. If you need to paginate through responses from a STAC "
+                "API, use pystac-client: https://github.com/stac-utils/pystac-client"
+            )
 
     def save_object(
         self,
