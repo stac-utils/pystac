@@ -398,6 +398,7 @@ class Item(STACObject, Assets):
             stac_extensions=deepcopy(self.stac_extensions),
             collection=self.collection_id,
             assets={k: asset.clone() for k, asset in self.assets.items()},
+            extra_fields=deepcopy(self.extra_fields),
         )
         for link in self.links:
             clone.add_link(link.clone())

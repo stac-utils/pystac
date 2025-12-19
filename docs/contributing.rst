@@ -131,21 +131,9 @@ CHANGELOG
 ^^^^^^^^^
 
 PySTAC maintains a `changelog  <https://github.com/stac-utils/pystac/blob/develop/CHANGELOG.md>`_
-to track changes between releases. All PRs should make a changelog entry unless
-the change is trivial (e.g. fixing typos) or is entirely invisible to users who may
-be upgrading versions (e.g. an improvement to the CI system).
-
-For changelog entries, please link to the PR of that change. This needs to happen in a
-few steps:
-
-- Make a PR to PySTAC with your changes
-- Record the link to the PR
-- Push an additional commit to your branch with the changelog entry with the link to the
-  PR.
-
-For more information on changelogs and how to write a good entry, see `keep a changelog
-<https://keepachangelog.com/en/1.0.0/>`_.
-
+to track changes between releases. This changelog is automatically kept up-to-date by
+`release-please <https://github.com/googleapis/release-please>`_, specifically on an unmerged
+release PR.
 
 Style
 ^^^^^
