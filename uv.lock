@@ -3127,6 +3127,7 @@ dev = [
     { name = "types-jsonschema" },
     { name = "types-orjson" },
     { name = "types-python-dateutil" },
+    { name = "types-requests" },
     { name = "types-urllib3" },
     { name = "urllib3" },
     { name = "virtualenv" },
@@ -3188,6 +3189,7 @@ dev = [
     { name = "types-jsonschema", specifier = ">=4.23.0.20240813" },
     { name = "types-orjson", specifier = ">=3.6.2" },
     { name = "types-python-dateutil", specifier = ">=2.9.0.20241003" },
+    { name = "types-requests", specifier = ">=2.32.0.20250328" },
     { name = "types-urllib3", specifier = ">=1.26.25.14" },
     { name = "urllib3", specifier = ">=1.26.19" },
     { name = "virtualenv", specifier = ">=20.26.6" },
@@ -4173,6 +4175,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/c9/95/6bdde7607da2e1e99ec1c1672a759d42f26644bbacf939916e086db34870/types_python_dateutil-2.9.0.20250708.tar.gz", hash = "sha256:ccdbd75dab2d6c9696c350579f34cffe2c281e4c5f27a585b2a2438dd1d5c8ab", size = 15834 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/72/52/43e70a8e57fefb172c22a21000b03ebcc15e47e97f5cb8495b9c2832efb4/types_python_dateutil-2.9.0.20250708-py3-none-any.whl", hash = "sha256:4d6d0cc1cc4d24a2dc3816024e502564094497b713f7befda4d5bc7a8e3fd21f", size = 17724 },
+]
+
+[[package]]
+name = "types-requests"
+version = "2.32.0.20250328"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/00/7d/eb174f74e3f5634eaacb38031bbe467dfe2e545bc255e5c90096ec46bc46/types_requests-2.32.0.20250328.tar.gz", hash = "sha256:c9e67228ea103bd811c96984fac36ed2ae8da87a36a633964a21f199d60baf32", size = 22995 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cc/15/3700282a9d4ea3b37044264d3e4d1b1f0095a4ebf860a99914fd544e3be3/types_requests-2.32.0.20250328-py3-none-any.whl", hash = "sha256:72ff80f84b15eb3aa7a8e2625fffb6a93f2ad5a0c20215fc1dcfa61117bcb2a2", size = 20663 },
 ]
 
 [[package]]

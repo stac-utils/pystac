@@ -8,6 +8,7 @@ use of each property, please refer to the official
 
 from __future__ import annotations
 
+import warnings
 from abc import ABC
 from collections.abc import Iterable
 from typing import Any, Generic, Literal, TypeVar, cast
@@ -123,7 +124,7 @@ class TaskType(StringEnum):
     PANOPTIC_SEGMENTATION = "panoptic-segmentation"
     SIMILARITY_SEARCH = "similarity-search"
     GENERATIVE = "generative"
-    IAMGE_CAPTIONING = "image-captioning"
+    IMAGE_CAPTIONING = "image-captioning"
     SUPER_RESOLUTION = "super-resolution"
 
 
@@ -148,8 +149,8 @@ class ResizeType(StringEnum):
 
     CROP = "crop"
     PAD = "pad"
-    INTERPOLATION_NEAREST = "interpolate-nearest"
-    INTERPOLATION_LINEAR = "interpolate-linear"
+    INTERPOLATION_NEAREST = "interpolation-nearest"
+    INTERPOLATION_LINEAR = "interpolation-linear"
     INTERPOLATION_CUBIC = "interpolation-cubic"
     INTERPOLATION_AREA = "interpolation-area"
     INTERPOLATION_LANCZOS4 = "interpolation-lanczos4"
@@ -160,7 +161,7 @@ class ResizeType(StringEnum):
 
 class ValueScalingType(StringEnum):
     """
-    An enumeratino of Value Scaling operations supported by the extension
+    An enumeration of Value Scaling operations supported by the extension
     """
 
     MIN_MAX = "min-max"
@@ -573,7 +574,7 @@ class ValueScaling:
         if v is not None:
             self.properties[MAXIMUM_VALUE_SCALING_PROP] = v
         else:
-            self.properties.get(MAXIMUM_VALUE_SCALING_PROP, None)
+            self.properties.pop(MAXIMUM_VALUE_SCALING_PROP, None)
 
     @property
     def mean(self) -> int | float | None:
@@ -799,7 +800,7 @@ class ModelInput:
         bands: list[ModelBand] | list[str],
         input: InputStructure,
         description: str | None = None,
-        value_scaling: ValueScaling | None = None,
+        value_scaling: list[ValueScaling] | None = None,
         resize_type: ResizeType | None = None,
         pre_processing_function: ProcessingExpression | None = None,
     ) -> None:
@@ -850,7 +851,7 @@ class ModelInput:
         bands: list[ModelBand] | list[str],
         input: InputStructure,
         description: str | None = None,
-        value_scaling: ValueScaling | None = None,
+        value_scaling: list[ValueScaling] | None = None,
         resize_type: ResizeType | None = None,
         pre_processing_function: ProcessingExpression | None = None,
     ) -> ModelInput:
@@ -970,18 +971,18 @@ class ModelInput:
             self.properties.pop(DESCRIPTION_INPUT_OBJECT_PROP, None)
 
     @property
-    def value_scaling(self) -> ValueScaling | None:
+    def value_scaling(self) -> list[ValueScaling] | None:
         """
         Gets or sets the value_scaling property of this ModelInput object
         """
-        v = self.properties.get(VALUE_SCALING_INPUT_OBJECT_PROP)
-        return ValueScaling(v) if v is not None else v
+        v_list = self.properties.get(VALUE_SCALING_INPUT_OBJECT_PROP)
+        return [ValueScaling(v) for v in v_list] if v_list is not None else None
 
     @value_scaling.setter
-    def value_scaling(self, v: ValueScaling | None) -> None:
+    def value_scaling(self, v: list[ValueScaling] | None) -> None:
         # add None to properties dict and do not pop it, according to specification
         self.properties[VALUE_SCALING_INPUT_OBJECT_PROP] = (
-            None if v is None else v.to_dict()
+            None if v is None else [v_entry.to_dict() for v_entry in v]
         )
 
     @property
@@ -1118,7 +1119,7 @@ class ResultStructure:
             get_required(
                 self.properties.get(DATA_TYPE_RESULT_STRUCTURE_PROP),
                 self,
-                DIM_ORDER_RESULT_STRUCTURE_PROP,
+                DATA_TYPE_RESULT_STRUCTURE_PROP,
             ),
         )
 
@@ -1203,7 +1204,7 @@ class ModelOutput:
         Creates a new Output
 
         Args:
-            name:Name of the output variable defined by the model. If no explicit name
+            name: Name of the output variable defined by the model. If no explicit name
                 is defined by the model, an informative name (e.g.: "CLASSIFICATION")
                 can be used instead.
             tasks: Specifies the Machine Learning tasks for which the output can be used
@@ -1213,6 +1214,7 @@ class ModelOutput:
                 from one model head. description: Additional details about the output
                 such as describing its purpose or expected result that cannot be
                 represented by other properties.
+            description: Description of output.
             classes: A list of class objects adhering to the Classification Extension.
             post_processing_function: Custom postprocessing function where
                 normalization, rescaling, or any other significant operations takes
@@ -1362,144 +1364,8 @@ class Hyperparameters:
         return self.properties
 
 
-class MLMExtension(
-    Generic[T],
-    PropertiesExtension,
-    ExtensionManagementMixin[pystac.Item | pystac.Collection],
-):
-    """An abstract class that can be used to extend to properties of an
-    :class:`pystac.Item` or :class:`pystac.Collection` with properties from the
-    :stac-ext:`Machine Learning Model Extension <mlm>`.
-
-    This class can be used to extend :class:`pystac.Item`, :class:`pystac.Collection`
-    and :class:`pystac.ItemAssetDefinition`. For extending :class:`pystac.Asset`, use
-    either :class:`~AssetGeneralMLMExtension`: or :class:`AssetDetailedMLMExtension`.
-    """
-
-    name: Literal["mlm"] = "mlm"
+class _ExcludedFromAssetProps(PropertiesExtension):
     properties: dict[str, Any]
-
-    def apply(
-        self,
-        name: str,
-        architecture: str,
-        tasks: list[TaskType],
-        input: list[ModelInput],
-        output: list[ModelOutput],
-        framework: str | None = None,
-        framework_version: str | None = None,
-        memory_size: int | None = None,
-        total_parameters: int | None = None,
-        pretrained: bool | None = None,
-        pretrained_source: str | None = None,
-        batch_size_suggestion: int | None = None,
-        accelerator: AcceleratorType | None = None,
-        accelerator_constrained: bool | None = None,
-        accelerator_summary: str | None = None,
-        accelerator_count: int | None = None,
-        hyperparameters: Hyperparameters | None = None,
-        *args: Any,
-        **kwargs: Any,
-    ) -> None:
-        """
-        Sets the properties of a new MLMExtension
-
-        Args:
-            name:  name for the model
-            architecture: A generic and well established architecture name of the model
-            tasks: Specifies the Machine Learning tasks for which the model can be
-                used for
-            input: Describes the transformation between the EO data and the model input
-            output: Describes each model output and how to interpret it.
-            framework: Framework used to train the model
-            framework_version: The ``framework`` library version
-            memory_size: The in-memory size of the model on the accelerator during
-                inference (bytes)
-            total_parameters: Total number of model parameters, including trainable and
-                non-trainable parameters.
-            pretrained: Indicates if the model was pretrained. If the model was
-                pretrained, consider providing ``pretrained_source`` if it is known
-            pretrained_source: The source of the pretraining.
-            batch_size_suggestion: A suggested batch size for the accelerator and
-                summarized hardware.
-            accelerator: The intended computational hardware that runs inference
-            accelerator_constrained: Indicates if the intended ``accelerator`` is the
-                only accelerator that can run inference
-            accelerator_summary: A high level description of the ``accelerator``
-            accelerator_count: A minimum amount of ``accelerator`` instances required to
-                run the model
-            hyperparameters: Additional hyperparameters relevant for the model
-            *args: Unused (no effect, only here for signature compliance with apply
-                method in derived classes
-            **kwargs: Unused (no effect, only here for signature compliance with apply
-                method in derived classes
-        """
-        self.mlm_name = name
-        self.architecture = architecture
-        self.tasks = tasks
-        self.input = input
-        self.output = output
-        self.framework = framework
-        self.framework_version = framework_version
-        self.memory_size = memory_size
-        self.total_parameters = total_parameters
-        self.pretrained = pretrained
-        self.pretrained_source = pretrained_source
-        self.batch_size_suggestion = batch_size_suggestion
-        self.accelerator = accelerator
-        self.accelerator_constrained = accelerator_constrained
-        self.accelerator_summary = accelerator_summary
-        self.accelerator_count = accelerator_count
-        self.hyperparameters = hyperparameters
-
-    @classmethod
-    def get_schema_uri(cls) -> str:
-        """
-        Retrieves this extension's schema URI
-
-        Returns:
-            str: the schema URI
-        """
-        return SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
-
-    @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> MLMExtension[T]:
-        """
-        Extend a STAC object (``obj``) with the MLMExtension
-
-        Args:
-            obj: The STAC object to be extended.
-            add_if_missing: Defines whether this extension's URI should be added to
-                this object's  (or its parent's) list of extensions if it is not already
-                listed there.
-
-        Returns:
-            MLMExtension[T]: The extended object
-
-        Raises:
-            TypeError: When a :class:`pystac.Asset` object is passed as the
-                `obj` parameter
-            pystac.ExtensionTypeError: When any unsupported object is passed as the
-                `obj` parameter. If you see this extension in this context, please
-                raise an issue on github.
-        """
-        if isinstance(obj, pystac.Item):
-            cls.ensure_has_extension(obj, add_if_missing)
-            return cast(MLMExtension[T], ItemMLMExtension(obj))
-        elif isinstance(obj, pystac.Collection):
-            cls.ensure_has_extension(obj, add_if_missing)
-            return cast(MLMExtension[T], CollectionMLMExtension(obj))
-        elif isinstance(obj, pystac.ItemAssetDefinition):
-            cls.ensure_owner_has_extension(obj, add_if_missing)
-            return cast(MLMExtension[T], ItemAssetMLMExtension(obj))
-        elif isinstance(obj, pystac.Asset):
-            raise TypeError(
-                "This class cannot be used to extend STAC objects of type Assets. "
-                "To extend Asset objects, use either AssetGeneralMLMExtension or "
-                "AssetDetailedMLMExtension"
-            )
-        else:
-            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
     @property
     def mlm_name(self) -> str:
@@ -1512,6 +1378,54 @@ class MLMExtension(
     @mlm_name.setter
     def mlm_name(self, v: str) -> None:
         self._set_property(NAME_PROP, v)
+
+    @property
+    def input(self) -> list[ModelInput]:
+        """
+        Get or set the required input property
+        """
+        return [
+            ModelInput(inp)
+            for inp in get_required(
+                self._get_property(INPUT_PROP, list[dict[str, Any]]), self, INPUT_PROP
+            )
+        ]
+
+    @input.setter
+    def input(self, v: list[ModelInput]) -> None:
+        self._set_property(INPUT_PROP, [inp.to_dict() for inp in v])
+
+    @property
+    def output(self) -> list[ModelOutput]:
+        """
+        Get or set the required output property
+        """
+        return [
+            ModelOutput(outp)
+            for outp in get_required(
+                self._get_property(OUTPUT_PROP, list[dict[str, Any]]), self, OUTPUT_PROP
+            )
+        ]
+
+    @output.setter
+    def output(self, v: list[ModelOutput]) -> None:
+        self._set_property(OUTPUT_PROP, [outp.to_dict() for outp in v])
+
+    @property
+    def hyperparameters(self) -> Hyperparameters | None:
+        """
+        Get or set the hyperparameters property
+        """
+        prop = self._get_property(HYPERPARAMETERS_PROP, dict[str, Any])
+        return Hyperparameters(prop) if prop is not None else None
+
+    @hyperparameters.setter
+    def hyperparameters(self, v: Hyperparameters | None) -> None:
+        self._set_property(HYPERPARAMETERS_PROP, v.to_dict() if v is not None else None)
+
+
+class _IncludedInAssetProps(PropertiesExtension):
+    properties: dict[str, Any]
 
     @property
     def architecture(self) -> str:
@@ -1664,49 +1578,140 @@ class MLMExtension(
     def accelerator_count(self, v: int | None) -> None:
         self._set_property(ACCELERATOR_COUNT_PROP, v)
 
-    @property
-    def input(self) -> list[ModelInput]:
+
+class MLMExtension(
+    Generic[T],
+    _ExcludedFromAssetProps,
+    _IncludedInAssetProps,
+    ExtensionManagementMixin[pystac.Item | pystac.Collection],
+):
+    """An abstract class that can be used to extend to properties of an
+    :class:`pystac.Item` or :class:`pystac.Collection` with properties from the
+    :stac-ext:`Machine Learning Model Extension <mlm>`.
+
+    This class can be used to extend :class:`pystac.Item`, :class:`pystac.Collection`
+    and :class:`pystac.ItemAssetDefinition`. For extending :class:`pystac.Asset`, use
+    either :class:`~AssetGeneralMLMExtension`: or :class:`AssetDetailedMLMExtension`.
+    """
+
+    name: Literal["mlm"] = "mlm"
+    properties: dict[str, Any]
+
+    def apply(
+        self,
+        name: str,
+        architecture: str,
+        tasks: list[TaskType],
+        input: list[ModelInput],
+        output: list[ModelOutput],
+        framework: str | None = None,
+        framework_version: str | None = None,
+        memory_size: int | None = None,
+        total_parameters: int | None = None,
+        pretrained: bool | None = None,
+        pretrained_source: str | None = None,
+        batch_size_suggestion: int | None = None,
+        accelerator: AcceleratorType | None = None,
+        accelerator_constrained: bool | None = None,
+        accelerator_summary: str | None = None,
+        accelerator_count: int | None = None,
+        hyperparameters: Hyperparameters | None = None,
+    ) -> None:
         """
-        Get or set the required input property
+        Sets the properties of a new MLMExtension
+
+        Args:
+            name:  name for the model
+            architecture: A generic and well established architecture name of the model
+            tasks: Specifies the Machine Learning tasks for which the model can be
+                used for
+            input: Describes the transformation between the EO data and the model input
+            output: Describes each model output and how to interpret it.
+            framework: Framework used to train the model
+            framework_version: The ``framework`` library version
+            memory_size: The in-memory size of the model on the accelerator during
+                inference (bytes)
+            total_parameters: Total number of model parameters, including trainable and
+                non-trainable parameters.
+            pretrained: Indicates if the model was pretrained. If the model was
+                pretrained, consider providing ``pretrained_source`` if it is known
+            pretrained_source: The source of the pretraining.
+            batch_size_suggestion: A suggested batch size for the accelerator and
+                summarized hardware.
+            accelerator: The intended computational hardware that runs inference
+            accelerator_constrained: Indicates if the intended ``accelerator`` is the
+                only accelerator that can run inference
+            accelerator_summary: A high level description of the ``accelerator``
+            accelerator_count: A minimum amount of ``accelerator`` instances required to
+                run the model
+            hyperparameters: Additional hyperparameters relevant for the model
         """
-        return [
-            ModelInput(inp)
-            for inp in get_required(
-                self._get_property(INPUT_PROP, list[dict[str, Any]]), self, INPUT_PROP
+        self.mlm_name = name
+        self.architecture = architecture
+        self.tasks = tasks
+        self.input = input
+        self.output = output
+        self.framework = framework
+        self.framework_version = framework_version
+        self.memory_size = memory_size
+        self.total_parameters = total_parameters
+        self.pretrained = pretrained
+        self.pretrained_source = pretrained_source
+        self.batch_size_suggestion = batch_size_suggestion
+        self.accelerator = accelerator
+        self.accelerator_constrained = accelerator_constrained
+        self.accelerator_summary = accelerator_summary
+        self.accelerator_count = accelerator_count
+        self.hyperparameters = hyperparameters
+
+    @classmethod
+    def get_schema_uri(cls) -> str:
+        """
+        Retrieves this extension's schema URI
+
+        Returns:
+            str: the schema URI
+        """
+        return SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
+
+    @classmethod
+    def ext(cls, obj: T, add_if_missing: bool = False) -> MLMExtension[T]:
+        """
+        Extend a STAC object (``obj``) with the MLMExtension
+
+        Args:
+            obj: The STAC object to be extended.
+            add_if_missing: Defines whether this extension's URI should be added to
+                this object's  (or its parent's) list of extensions if it is not already
+                listed there.
+
+        Returns:
+            MLMExtension[T]: The extended object
+
+        Raises:
+            TypeError: When a :class:`pystac.Asset` object is passed as the
+                `obj` parameter
+            pystac.ExtensionTypeError: When any unsupported object is passed as the
+                `obj` parameter. If you see this extension in this context, please
+                raise an issue on github.
+        """
+        if isinstance(obj, pystac.Item):
+            cls.ensure_has_extension(obj, add_if_missing)
+            return cast(MLMExtension[T], ItemMLMExtension(obj))
+        elif isinstance(obj, pystac.Collection):
+            cls.ensure_has_extension(obj, add_if_missing)
+            return cast(MLMExtension[T], CollectionMLMExtension(obj))
+        elif isinstance(obj, pystac.ItemAssetDefinition):
+            cls.ensure_owner_has_extension(obj, add_if_missing)
+            return cast(MLMExtension[T], ItemAssetMLMExtension(obj))
+        elif isinstance(obj, pystac.Asset):
+            raise TypeError(
+                "This class cannot be used to extend STAC objects of type Assets. "
+                "To extend Asset objects, use either AssetGeneralMLMExtension or "
+                "AssetDetailedMLMExtension"
             )
-        ]
-
-    @input.setter
-    def input(self, v: list[ModelInput]) -> None:
-        self._set_property(INPUT_PROP, [inp.to_dict() for inp in v])
-
-    @property
-    def output(self) -> list[ModelOutput]:
-        """
-        Get or set the required output property
-        """
-        return [
-            ModelOutput(outp)
-            for outp in get_required(
-                self._get_property(OUTPUT_PROP, list[dict[str, Any]]), self, OUTPUT_PROP
-            )
-        ]
-
-    @output.setter
-    def output(self, v: list[ModelOutput]) -> None:
-        self._set_property(OUTPUT_PROP, [outp.to_dict() for outp in v])
-
-    @property
-    def hyperparameters(self) -> Hyperparameters | None:
-        """
-        Get or set the hyperparameters property
-        """
-        prop = self._get_property(HYPERPARAMETERS_PROP, dict[str, Any])
-        return Hyperparameters(prop) if prop is not None else None
-
-    @hyperparameters.setter
-    def hyperparameters(self, v: Hyperparameters | None) -> None:
-        self._set_property(HYPERPARAMETERS_PROP, v.to_dict() if v is not None else None)
+        else:
+            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
     def to_dict(self) -> dict[str, Any]:
         """
@@ -1911,7 +1916,11 @@ class AssetGeneralMLMExtension(
         return f"<AssetGeneralMLMExtension Asset href={self.asset_href}>"
 
 
-class AssetDetailedMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
+class AssetDetailedMLMExtension(
+    _AssetMLMExtension,
+    _IncludedInAssetProps,
+    ExtensionManagementMixin[pystac.Item | pystac.Collection],
+):
     """A class that can be used to extend the properties of an
     :class:`pystac.Asset` object with properties from the
     :stac-ext:`Machine Learning Model Extension <mlm>`.
@@ -1949,11 +1958,8 @@ class AssetDetailedMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
 
     def apply(
         self,
-        name: str,
         architecture: str,
         tasks: list[TaskType],
-        input: list[ModelInput],
-        output: list[ModelOutput],
         framework: str | None = None,
         framework_version: str | None = None,
         memory_size: int | None = None,
@@ -1965,7 +1971,6 @@ class AssetDetailedMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
         accelerator_constrained: bool | None = None,
         accelerator_summary: str | None = None,
         accelerator_count: int | None = None,
-        hyperparameters: Hyperparameters | None = None,
         artifact_type: str | None = None,
         compile_method: str | None = None,
         entrypoint: str | None = None,
@@ -1974,12 +1979,9 @@ class AssetDetailedMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
         Sets the properties of a new AssetDetailedMLMExtensions
 
         Args:
-            name:  name for the model
             architecture: A generic and well established architecture name of the model
             tasks: Specifies the Machine Learning tasks for which the model can be
                 used for
-            input: Describes the transformation between the EO data and the model input
-            output: Describes each model output and how to interpret it.
             framework: Framework used to train the model
             framework_version: The ``framework`` library version
             memory_size: The in-memory size of the model on the accelerator during
@@ -1997,7 +1999,6 @@ class AssetDetailedMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
             accelerator_summary: A high level description of the ``accelerator``
             accelerator_count: A minimum amount of ``accelerator`` instances required to
                 run the model
-            hyperparameters: Additional hyperparameters relevant for the model
             artifact_type: Specifies the kind of model artifact, any string is allowed.
                 Typically related to a particular ML framework. This property is
                 required when ``mlm:model`` is listed as a role of this asset
@@ -2006,26 +2007,21 @@ class AssetDetailedMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
             entrypoint: Specific entrypoint reference in the code to use for running
                 model inference.
         """
-        MLMExtension.apply(
-            self,
-            name=name,
-            architecture=architecture,
-            tasks=tasks,
-            input=input,
-            output=output,
-            framework=framework,
-            framework_version=framework_version,
-            memory_size=memory_size,
-            total_parameters=total_parameters,
-            pretrained=pretrained,
-            pretrained_source=pretrained_source,
-            batch_size_suggestion=batch_size_suggestion,
-            accelerator=accelerator,
-            accelerator_constrained=accelerator_constrained,
-            accelerator_summary=accelerator_summary,
-            accelerator_count=accelerator_count,
-            hyperparameters=hyperparameters,
-        )
+
+        self.architecture = architecture
+        self.tasks = tasks
+        self.framework = framework
+        self.framework_version = framework_version
+        self.memory_size = memory_size
+        self.total_parameters = total_parameters
+        self.pretrained = pretrained
+        self.pretrained_source = pretrained_source
+        self.batch_size_suggestion = batch_size_suggestion
+        self.accelerator = accelerator
+        self.accelerator_constrained = accelerator_constrained
+        self.accelerator_summary = accelerator_summary
+        self.accelerator_count = accelerator_count
+
         self.artifact_type = artifact_type
         self.compile_method = compile_method
         self.entrypoint = entrypoint
@@ -2052,11 +2048,325 @@ class MLMExtensionHooks(ExtensionHooks):
     }
     stac_object_types = {pystac.STACObjectType.ITEM, pystac.STACObjectType.COLLECTION}
 
+    @staticmethod
+    def _migrate_1_0_to_1_1(obj: dict[str, Any]) -> None:
+        def migrate(props_obj: dict[str, Any]) -> None:
+            if "mlm:framework" in props_obj:
+                framework = props_obj["mlm:framework"]
+                # remove invalid characters at beginning and end
+                forbidden_chars = [".", "_", "-", " ", "\t", "\n", "\r", "\f", "\v"]
+                if framework[0] in forbidden_chars or framework[-1] in forbidden_chars:
+                    warnings.warn(
+                        "Value for mlm:framework is invalid in mlm>=1.1, as it must"
+                        "not start or end with one of the following characters: "
+                        "._- and whitespace. These characters are therefore removed "
+                        "while migrating the STAC object to v1.1.",
+                        SyntaxWarning,
+                    )
+                    while props_obj["mlm:framework"][0] in forbidden_chars:
+                        new_str = props_obj["mlm:framework"][1:]
+                        props_obj["mlm:framework"] = new_str
+                    while props_obj["mlm:framework"][-1] in forbidden_chars:
+                        new_str = props_obj["mlm:framework"][:-1]
+                        props_obj["mlm:framework"] = new_str
+
+                # rename frameworks
+                if props_obj["mlm:framework"] == "Scikit-learn":
+                    props_obj["mlm:framework"] = "scikit-learn"
+                    warnings.warn(
+                        "mlm:framework value Scikit-learn is no longer valid in "
+                        "mlm>=1.1. Renaming it to scikit-learn",
+                        SyntaxWarning,
+                    )
+                if props_obj["mlm:framework"] == "Huggingface":
+                    props_obj["mlm:framework"] = "Hugging Face"
+                    warnings.warn(
+                        "mlm:framework value Huggingface is no longer valid in "
+                        "mlm>=1.1. Renaming it to Hugging Face",
+                        SyntaxWarning,
+                    )
+
+            # if no bands definition is given in mlm:input (bands=[]),
+            # raster definitions are not allowed to be in the assets object that is
+            # stac:mlm
+            if "mlm:input" in props_obj:
+                no_bands_present = all(
+                    not inp["bands"] for inp in props_obj["mlm:input"]
+                )
+
+                if no_bands_present:
+                    for inner_asset_name in obj["assets"]:
+                        inner_asset = obj["assets"][inner_asset_name]
+
+                        if "mlm:model" not in inner_asset["roles"]:
+                            continue
+
+                        if "raster:bands" in inner_asset:
+                            bands_obj = inner_asset["raster:bands"]
+
+                            warnings.warn(
+                                "stac:mlm does not allow 'raster:bands' in mlm:model "
+                                "asset if mlm:input.bands is empty. Moving it to "
+                                "properties if it contains values, or deleting it if "
+                                "it does not contain any values.",
+                                SyntaxWarning,
+                            )
+
+                            # move the bands_obj if it is not an empty list
+                            if bands_obj:
+                                if obj["type"] == "Feature":
+                                    obj["properties"]["raster:bands"] = bands_obj
+                                if obj["type"] == "Collection":
+                                    obj["raster:bands"] = bands_obj
+                            inner_asset.pop("raster:bands")
+
+                        if "eo:bands" in inner_asset:
+                            bands_obj = inner_asset["eo:bands"]
+
+                            warnings.warn(
+                                "stac:mlm does not allow 'raster:bands' in mlm:model "
+                                "asset if mlm:input.bands is empty. Moving it to "
+                                "properties if it contains values, or deleting it if "
+                                "it does not contain any values.",
+                                SyntaxWarning,
+                            )
+
+                            # move the bands_obj if it is not an empty list
+                            if bands_obj:
+                                if obj["type"] == "Feature":
+                                    obj["properties"]["eo:bands"] = bands_obj
+                                if obj["type"] == "Collection":
+                                    obj["eo:bands"] = bands_obj
+                            inner_asset.pop("eo:bands")
+
+        if obj["type"] == "Feature":
+            migrate(obj["properties"])
+        if obj["type"] == "Collection":
+            migrate(obj)
+
+        if "assets" in obj:
+            for asset_name in obj["assets"]:
+                asset = obj["assets"][asset_name]
+                migrate(asset)
+
+        if obj["type"] == "Collection" and "item_assets" in obj:
+            for asset_name in obj["item_assets"]:
+                asset = obj["item_assets"][asset_name]
+                migrate(asset)
+
+    @staticmethod
+    def _migrate_1_1_to_1_2(obj: dict[str, Any]) -> None:
+        def migrate(obj_assets: dict[str, Any]) -> None:
+            model_in_assets = any(
+                ["mlm:model" in obj_assets[asset]["roles"] for asset in obj_assets]
+            )
+            if not model_in_assets:
+                raise pystac.errors.STACError(
+                    'Error migrating stac:mlm version: An asset with role "mlm:model" '
+                    "is required in mlm>=1.2. Include at least one asset with role "
+                    '"mlm:model" '
+                )
+
+        if "assets" in obj:
+            migrate(obj["assets"])
+        if "item_assets" in obj:
+            migrate(obj["item_assets"])
+
+    @staticmethod
+    def _migrate_1_2_to_1_3(obj: dict[str, Any]) -> None:
+        def migrate(props_obj: dict[str, Any]) -> None:
+            if "mlm:input" not in props_obj:
+                return
+
+            # check if mlm:input.bands is present and contains items
+            bands_objs_present = [
+                "bands" in inp and len(inp["bands"]) > 0
+                for inp in props_obj["mlm:input"]
+            ]
+
+            if not any(bands_objs_present):
+                return
+
+            if "eo:bands" in props_obj or "bands" in props_obj:
+                return
+
+            if (
+                "raster:bands" in props_obj
+                and "eo:bands" not in props_obj
+                and "bands" not in props_obj
+            ):
+                raster_bands = props_obj["raster:bands"]
+
+                bands_valid = all(
+                    "name" in band and len(band["name"]) > 0 for band in raster_bands
+                )
+
+                if not bands_valid:
+                    raise STACError(
+                        "Error migrating stac:mlm version: In mlm>=1.3, each band in "
+                        'raster:bands is required to have a property "name" with '
+                        "length > 0"
+                    )
+
+                # no need to perform the actions below if props_obj is not an asset
+                # this is checked by the presence of "roles" prop
+                if "roles" in props_obj:
+                    return
+
+                # move raster:bands to assets that contain "mlm:model" role
+                for inner_asset_name in obj["assets"]:
+                    inner_asset = obj["assets"][inner_asset_name]
+                    if "mlm:model" not in inner_asset["roles"]:
+                        continue
+                    inner_asset["raster:bands"] = raster_bands
+                props_obj.pop("raster:bands")
+
+            # create new bands object from mlm:input.bands if none exist
+            if (
+                "raster:bands" not in props_obj
+                and "eo:bands" not in props_obj
+                and "bands" not in props_obj
+            ):
+                i = bands_objs_present.index(True)
+                bands = [
+                    {"name": band if type(band) is str else band["name"]}
+                    for band in props_obj["mlm:input"][i]["bands"]
+                ]
+
+                # copy the raster:bands to assets
+                for inner_asset_name in obj["assets"]:
+                    inner_asset = obj["assets"][inner_asset_name]
+                    if "mlm:model" not in inner_asset["roles"]:
+                        continue
+                    inner_asset["raster:bands"] = bands
+
+        if obj["type"] == "Feature" and "mlm:input" in obj["properties"]:
+            migrate(obj["properties"])
+        if obj["type"] == "Collection":
+            migrate(obj)
+        if "assets" in obj:
+            for asset_name in obj["assets"]:
+                asset = obj["assets"][asset_name]
+                migrate(asset)
+
+    @staticmethod
+    def _migrate_1_3_to_1_4(obj: dict[str, Any]) -> None:
+        def migrate(props_obj: dict[str, Any]) -> None:
+            if "mlm:input" not in props_obj:
+                return
+
+            # Migrate to value_scaling
+            for input_obj in props_obj["mlm:input"]:
+                if "norm_type" in input_obj and input_obj["norm_type"] is not None:
+                    norm_type = input_obj["norm_type"]
+                    value_scaling_list = []
+                    if norm_type == "min-max":
+                        for band_statistic in input_obj["statistics"]:
+                            value_scaling_obj = {
+                                "type": "min-max",
+                                "minimum": band_statistic["minimum"],
+                                "maximum": band_statistic["maximum"],
+                            }
+                            value_scaling_list.append(value_scaling_obj)
+                    elif norm_type == "z-score":
+                        for band_statistic in input_obj["statistics"]:
+                            value_scaling_obj = {
+                                "type": "z-score",
+                                "mean": band_statistic["mean"],
+                                "stddev": band_statistic["stddev"],
+                            }
+                            value_scaling_list.append(value_scaling_obj)
+                    elif norm_type == "clip":
+                        for clip_value in input_obj["norm_clip"]:
+                            value_scaling_obj = {
+                                "type": "processing",
+                                "format": "gdal-calc",
+                                "expression": f"numpy.clip(A / {clip_value}, 0, 1)",
+                            }
+                            value_scaling_list.append(value_scaling_obj)
+                    else:
+                        raise NotImplementedError(
+                            f"Normalization type {norm_type} is not supported in "
+                            f"stac:mlm >= 1.3. Therefore an automatic migration is not "
+                            f"possible. Please migrate this normalization manually "
+                            f'using type="processing".'
+                        )
+                    input_obj["value_scaling"] = value_scaling_list
+                input_obj.pop("norm_by_channel", None)
+                input_obj.pop("norm_type", None)
+                input_obj.pop("norm_clip", None)
+                input_obj.pop("statistics", None)
+
+        if obj["type"] == "Feature":
+            migrate(obj["properties"])
+        if obj["type"] == "Collection":
+            migrate(obj)
+
+        if "assets" in obj:
+            for asset in obj["assets"]:
+                migrate(obj["assets"][asset])
+
+                # move forbidden fields from asset to properties
+                if "mlm:name" in obj["assets"][asset]:
+                    mlm_name = obj["assets"][asset]["mlm:name"]
+                    if obj["type"] == "Feature":
+                        obj["properties"]["mlm:name"] = mlm_name
+                    if obj["type"] == "Collection":
+                        obj["mlm:name"] = mlm_name
+                    obj["assets"][asset].pop("mlm:name")
+                if "mlm:input" in obj["assets"][asset]:
+                    inp = obj["assets"][asset]["mlm:input"]
+                    if obj["type"] == "Feature":
+                        obj["properties"]["mlm:input"] = inp
+                    if obj["type"] == "Collection":
+                        obj["mlm:input"] = inp
+                    obj["assets"][asset].pop("mlm:input")
+                if "mlm:output" in obj["assets"][asset]:
+                    outp = obj["assets"][asset]["mlm:output"]
+                    if obj["type"] == "Feature":
+                        obj["properties"]["mlm:output"] = outp
+                    if obj["type"] == "Collection":
+                        obj["mlm:output"] = outp
+                    obj["assets"][asset].pop("mlm:output")
+                if "mlm:hyperparameters" in obj["assets"][asset]:
+                    hyp = obj["assets"][asset]["mlm:hyperparameters"]
+                    if obj["type"] == "Feature":
+                        obj["properties"]["mlm:hyperparameters"] = hyp
+                    if obj["type"] == "Collection":
+                        obj["mlm:hyperparameters"] = hyp
+                    obj["assets"][asset].pop("mlm:hyperparameters")
+
+                # add new REQUIRED proretie mlm:artifact_type to asset
+                if "mlm:model" in obj["assets"][asset]["roles"]:
+                    obj["assets"][asset]["mlm:artifact_type"] = (
+                        "Placeholder string to satisfy requirements when migrating "
+                        "from mlm v1.3 to v1.4"
+                    )
+
     def migrate(
         self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
         # mo adjustments to objects needed when migrating yet
         # schema back to v1.0 is fully backwards compatible
+
+        if SCHEMA_URI_PATTERN.format(version="1.0.0") in info.extensions:
+            self._migrate_1_0_to_1_1(obj)
+            self._migrate_1_1_to_1_2(obj)
+            self._migrate_1_2_to_1_3(obj)
+            self._migrate_1_3_to_1_4(obj)
+
+        if SCHEMA_URI_PATTERN.format(version="1.1.0") in info.extensions:
+            self._migrate_1_1_to_1_2(obj)
+            self._migrate_1_2_to_1_3(obj)
+            self._migrate_1_3_to_1_4(obj)
+
+        if SCHEMA_URI_PATTERN.format(version="1.2.0") in info.extensions:
+            self._migrate_1_2_to_1_3(obj)
+            self._migrate_1_3_to_1_4(obj)
+
+        if SCHEMA_URI_PATTERN.format(version="1.3.0") in info.extensions:
+            self._migrate_1_3_to_1_4(obj)
+
         super().migrate(obj, version, info)
 
 
