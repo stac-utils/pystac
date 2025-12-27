@@ -110,6 +110,20 @@ def test_temporal_dimension_description(
     assert "description" not in temporal_dimension.properties
 
 
+def test_vertical_dimension_extent_not_required() -> None:
+    props: dict[str, list[float]] = {}
+    dim = dc.VerticalSpatialDimension(props)
+    assert dim.extent is None
+
+
+def test_vertical_dimension_setting_extent_to_none_pops_it() -> None:
+    props: dict[str, list[float]] = {"extent": [10, 100]}
+    dim = dc.VerticalSpatialDimension(props)
+    assert dim.extent == [10, 100]
+    dim.extent = None
+    assert props == {}
+
+
 def test_stac_extensions(ext_item: Item) -> None:
     assert dc.DatacubeExtension.has_extension(ext_item)
 

@@ -142,15 +142,18 @@ class Dimension(ABC):
 
 class SpatialDimension(Dimension):
     @property
-    def extent(self) -> list[float]:
+    def extent(self) -> list[float] | None:
         """Extent (lower and upper bounds) of the dimension as two-dimensional array.
         Open intervals with ``None`` are not allowed."""
-        return get_required(
-            self.properties.get(DIM_EXTENT_PROP), "cube:dimension", DIM_EXTENT_PROP
+        return cast(
+            list[float],
+            get_required(
+                self.properties.get(DIM_EXTENT_PROP), "cube:dimension", DIM_EXTENT_PROP
+            ),
         )
 
     @extent.setter
-    def extent(self, v: list[float]) -> None:
+    def extent(self, v: list[float] | None) -> None:
         self.properties[DIM_EXTENT_PROP] = v
 
     @property
@@ -227,6 +230,19 @@ class VerticalSpatialDimension(SpatialDimension):
     @axis.setter
     def axis(self, v: VerticalSpatialDimensionAxis) -> None:
         self.properties[DIM_AXIS_PROP] = v
+
+    @property
+    def extent(self) -> list[float] | None:
+        """Extent (lower and upper bounds) of the dimension as two-dimensional array.
+        Open intervals with ``None`` are not allowed."""
+        return self.properties.get(DIM_EXTENT_PROP)
+
+    @extent.setter
+    def extent(self, v: list[float] | None) -> None:
+        if v is None:
+            self.properties.pop(DIM_EXTENT_PROP, None)
+        else:
+            self.properties[DIM_EXTENT_PROP] = v
 
     @property
     def unit(self) -> str | None:

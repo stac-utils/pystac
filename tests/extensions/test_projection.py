@@ -574,7 +574,28 @@ def test_get_set_code(projection_landsat8_item: Item) -> None:
     assert proj_item.properties["proj:code"] == "IAU_2015:30100"
 
 
-def test_migrate_item() -> None:
+def test_migrate_item_on_1_2() -> None:
+    old = "https://stac-extensions.github.io/projection/v1.2.0/schema.json"
+    current = "https://stac-extensions.github.io/projection/v2.0.0/schema.json"
+
+    path = TestCases.get_path("data-files/projection/example-with-version-1.2.json")
+    with pytest.warns(UserWarning, match="surprising behavior"):
+        item = Item.from_file(path)
+
+    assert old not in item.stac_extensions
+    assert current in item.stac_extensions
+
+    assert item.ext.proj.epsg == 32613
+    assert item.ext.proj.code == "EPSG:32613"
+
+    assert item.assets["B1"].ext.proj.epsg == 32613
+    assert item.assets["B1"].ext.proj.code == "EPSG:32613"
+
+    assert item.assets["B8"].ext.proj.epsg == 9998
+    assert item.assets["B8"].ext.proj.code == "EPSG:9998"
+
+
+def test_migrate_item_on_1_1() -> None:
     old = "https://stac-extensions.github.io/projection/v1.1.0/schema.json"
     current = "https://stac-extensions.github.io/projection/v2.0.0/schema.json"
 
