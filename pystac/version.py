@@ -21,6 +21,8 @@ class STACVersion:
         if cls._override_version is not None:
             return cls._override_version
 
+        import os
+
         env_version = os.environ.get(cls.OVERRIDE_VERSION_ENV_VAR)
         if env_version is not None:
             return env_version

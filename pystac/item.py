@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from copy import copy, deepcopy
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
@@ -420,6 +419,8 @@ class Item(STACObject, Assets):
         migrate: bool = True,
         preserve_dict: bool = True,
     ) -> T:
+        import warnings
+
         from pystac.extensions.version import ItemVersionExtension
 
         if preserve_dict:

@@ -7,9 +7,7 @@ https://doi.org/10.1000/182
 
 from __future__ import annotations
 
-import copy
 from typing import Any, Generic, Literal, TypeVar, cast
-from urllib import parse
 
 import pystac
 from pystac.extensions.base import (
@@ -49,6 +47,8 @@ class ScientificRelType(StringEnum):
 
 def doi_to_url(doi: str) -> str:
     """Converts a DOI to the corresponding URL."""
+    from urllib import parse
+
     return DOI_URL_BASE + parse.quote(doi)
 
 
@@ -72,6 +72,8 @@ class Publication:
         return f"<Publication doi={self.doi} target={self.citation}>"
 
     def to_dict(self) -> dict[str, str | None]:
+        import copy
+
         return copy.deepcopy({"doi": self.doi, "citation": self.citation})
 
     @staticmethod

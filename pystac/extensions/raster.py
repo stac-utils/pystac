@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import warnings
 from collections.abc import Iterable
 from typing import (
     Any,
@@ -716,6 +715,8 @@ class RasterExtension(
 
     @classmethod
     def get_schema_uris(cls) -> list[str]:
+        import warnings
+
         warnings.warn(
             "get_schema_uris is deprecated and will be removed in v2",
             DeprecationWarning,

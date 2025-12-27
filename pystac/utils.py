@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 import posixpath
-import warnings
 from collections.abc import Callable
 from datetime import datetime, timezone
 from enum import Enum
@@ -14,8 +13,6 @@ from typing import (
 )
 from urllib.parse import ParseResult as URLParseResult
 from urllib.parse import urljoin, urlparse, urlunparse
-
-import dateutil.parser
 
 from pystac.errors import RequiredPropertyMissing
 
@@ -132,6 +129,8 @@ class JoinType(StringEnum):
         Returns:
             JoinType : The join type for the URI.
         """
+        import warnings
+
         warnings.warn(
             message=(
                 "from_parsed_uri is deprecated and will be removed in pystac "
@@ -166,6 +165,8 @@ def join_path_or_url(join_type: JoinType, *args: str) -> str:
     Returns:
         str : The joined path
     """
+    import warnings
+
     warnings.warn(
         message=(
             "join_path_or_url is deprecated and will be removed in pystac "
@@ -440,6 +441,8 @@ def str_to_datetime(s: str) -> datetime:
     Returns:
         str: The :class:`datetime.datetime` represented the by the string.
     """
+    import dateutil.parser
+
     return dateutil.parser.isoparse(s)
 
 
