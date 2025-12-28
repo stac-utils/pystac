@@ -1,13 +1,10 @@
 from __future__ import annotations
 
-import os
 import shutil
 from copy import copy, deepcopy
-from html import escape
 from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 
 from pystac import MediaType, STACError, common_metadata, utils
-from pystac.html.jinja_env import get_jinja_env
 from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 
 if TYPE_CHECKING:
@@ -181,6 +178,10 @@ class Asset:
         return f"<Asset href={self.href}>"
 
     def _repr_html_(self) -> str:
+        from html import escape
+
+        from pystac.html.jinja_env import get_jinja_env
+
         jinja_env = get_jinja_env()
         if jinja_env:
             template = jinja_env.get_template("JSON.jinja2")
@@ -258,6 +259,8 @@ class Asset:
 
         Does not modify the asset.
         """
+        import os
+
         href = _absolute_href(self.href, self.owner, "delete")
         os.remove(href)
 

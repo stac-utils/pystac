@@ -1,13 +1,10 @@
 from __future__ import annotations
 
 import os
-from copy import copy
-from html import escape
 from typing import TYPE_CHECKING, Any, TypeVar
 
 import pystac
 from pystac.errors import STACError
-from pystac.html.jinja_env import get_jinja_env
 from pystac.utils import (
     HREF as HREF,
 )
@@ -272,6 +269,10 @@ class Link(PathLike):
         return f"<Link rel={self.rel} target={self.target}>"
 
     def _repr_html_(self) -> str:
+        from html import escape
+
+        from pystac.html.jinja_env import get_jinja_env
+
         jinja_env = get_jinja_env()
         if jinja_env:
             template = jinja_env.get_template("JSON.jinja2")
@@ -435,6 +436,8 @@ class Link(PathLike):
         Returns:
             Link: Link instance constructed from the dict.
         """
+        from copy import copy
+
         d = copy(d)
         rel = d.pop("rel")
         href = d.pop("href")

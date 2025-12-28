@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import warnings
 from collections.abc import Iterable
 from typing import Any, Generic, Literal, TypeVar, cast
 
@@ -370,6 +369,8 @@ class FileExtensionHooks(ExtensionHooks):
                 found_fields[asset_key] = values
 
         if found_fields:
+            import warnings
+
             warnings.warn(
                 f"Assets {list(found_fields.keys())} contain fields: "
                 f"{list(set.union(*found_fields.values()))} which "

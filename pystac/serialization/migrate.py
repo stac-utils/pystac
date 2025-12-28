@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from copy import deepcopy
 from typing import TYPE_CHECKING, Any
 
 import pystac
@@ -167,6 +166,8 @@ def migrate_to_latest(
         dict: A copy of the dict that is migrated to the latest version (the
         version that is pystac.version.STACVersion.DEFAULT_STAC_VERSION)
     """
+    from copy import deepcopy
+
     result = deepcopy(json_dict)
     version = info.version_range.latest_valid_version()
 
