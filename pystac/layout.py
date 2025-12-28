@@ -297,8 +297,8 @@ class CustomLayoutStrategy(HrefLayoutStrategy):
 
     Args:
         catalog_func : A function that takes
-            an catalog, a parent directory, and a flag specifying whether
-            or not this catalog is the root. If it is the root, its usually
+            a catalog, a parent directory, and a flag specifying whether
+            or not this catalog is the root. If it is the root, it is usually
             best to not create a subdirectory and put the Catalog file directly
             in the parent directory. Must return the string path.
         collection_func : A function that

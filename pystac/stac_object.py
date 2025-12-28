@@ -265,7 +265,7 @@ class STACObject(ABC):
 
         Raises:
             ValueError: If the self_href is not set, this method will throw
-                a ValueError. Use get_self_href if there may not be an href set.
+                a ValueError. Use get_self_href if there may not be an HREF set.
         """
         result = self.get_self_href()
         if result is None:
@@ -679,8 +679,8 @@ class STACObject(ABC):
                 their latest supported version. Set this to False to disable
                 this behavior.
             preserve_dict: If False, the dict parameter ``d`` may be modified
-                during this method call. Otherwise the dict is not mutated.
-                Defaults to True, which results results in a deepcopy of the
+                during this method call. Otherwise, the dict is not mutated.
+                Defaults to True, which results in a deepcopy of the
                 parameter. Set to False when possible to avoid the performance
                 hit of a deepcopy.
 
@@ -693,7 +693,7 @@ class STACObject(ABC):
     @abstractmethod
     def matches_object_type(cls, d: dict[str, Any]) -> bool:
         """Returns a boolean indicating whether the given dictionary represents a valid
-        instance of this :class:`~pystac.STACObject` sub-class.
+        instance of this :class:`~pystac.STACObject` subclass.
 
         Args:
             d : A dictionary to identify

@@ -77,7 +77,7 @@ def validate_dict(
     :class:`~pystac.validation.JsonSchemaSTACValidator` by default.
 
     Args:
-        stac_dict : Dictionary that is the STAC json of the object.
+        stac_dict : Dictionary that is the STAC JSON of the object.
         stac_object_type : The stac object type of the object encoded in stac_dict.
             One of :class:`~pystac.STACObjectType`. If not supplied, this will use
             PySTAC's identification logic to identify the object type.
@@ -200,7 +200,7 @@ def validate_all_dict(
     called recursively for each child link and all contained items.
 
     Args:
-        stac_dict : Dictionary that is the STAC json of the object.
+        stac_dict : Dictionary that is the STAC JSON of the object.
         href : HREF of the STAC object being validated. Used for error
             reporting and resolving relative links.
         stac_io : Optional StacIO instance to use for reading hrefs. If None,

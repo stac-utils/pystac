@@ -178,8 +178,8 @@ class ItemCollection(Collection[pystac.Item]):
         Arguments:
             d : The dictionary from which the :class:`ItemCollection` will be created
             preserve_dict: If False, the dict parameter ``d`` may be modified
-                during this method call. Otherwise the dict is not mutated.
-                Defaults to True, which results results in a deepcopy of the
+                during this method call. Otherwise, the dict is not mutated.
+                Defaults to True, which results in a deepcopy of the
                 parameter. Set to False when possible to avoid the performance
                 hit of a deepcopy.
         """

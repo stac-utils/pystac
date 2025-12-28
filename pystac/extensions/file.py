@@ -331,7 +331,7 @@ class FileExtensionHooks(ExtensionHooks):
     def migrate(
         self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
-        # The checksum field was previously it's own extension.
+        # The checksum field was previously its own extension.
         old_checksum: dict[str, str] | None = None
         if info.version_range.latest_valid_version() < "v1.0.0-rc.2":
             if OldExtensionShortIDs.CHECKSUM.value in info.extensions:

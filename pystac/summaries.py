@@ -127,7 +127,7 @@ class Summarizer:
     will be used.
 
     Only fields that are in the Item `properties` can be summarized.
-    Thus it is not possible to summarize the top-level fields such as `id` or `assets`.
+    Thus, it is not possible to summarize the top-level fields such as `id` or `assets`.
 
     For more information about the structure of the fields JSON file, see:
     https://github.com/stac-utils/stac-fields
@@ -137,7 +137,7 @@ class Summarizer:
     https://cdn.jsdelivr.net/npm/@radiantearth/stac-fields/fields-normalized.json
 
     Args:
-        fields: A string containing the path to the json file with field descriptions.
+        fields: A string containing the path to the JSON file with field descriptions.
             Alternatively, a dict with the field names as keys and SummaryStrategys
             as values.
             If nothing is passed, a default file with field descriptions will be used.

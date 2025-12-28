@@ -117,7 +117,7 @@ class SatExtension(
 
     @property
     def absolute_orbit(self) -> int | None:
-        """Get or sets a absolute orbit number of the item."""
+        """Get or sets an absolute orbit number of the item."""
         return self._get_property(ABSOLUTE_ORBIT_PROP, int)
 
     @absolute_orbit.setter

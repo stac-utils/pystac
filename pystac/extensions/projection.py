@@ -299,7 +299,7 @@ class ProjectionExtension(
 
     @property
     def transform(self) -> list[float] | None:
-        """Get or sets the the affine transformation coefficients for the default grid.
+        """Get or sets the affine transformation coefficients for the default grid.
 
         The transform is a linear mapping from pixel coordinate space (Pixel, Line) to
         projection coordinate space (Xp, Yp). It is a 3x3 matrix stored as a flat array

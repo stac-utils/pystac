@@ -278,7 +278,7 @@ class Band:
 
         Returns:
             str or None: If a recognized common name, returns a description including
-            the band range. Otherwise returns None.
+            the band range. Otherwise, returns None.
         """
         r = Band.band_range(common_name)
         if r is not None:
