@@ -102,7 +102,7 @@ class Provider:
 
     @staticmethod
     def from_dict(d: dict[str, Any]) -> "Provider":
-        """Constructs an Provider from a dict.
+        """Constructs a Provider from a dict.
 
         Returns:
             Provider: The Provider deserialized from the JSON dict.

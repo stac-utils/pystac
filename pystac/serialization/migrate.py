@@ -104,7 +104,7 @@ def _get_removed_extension_migrations() -> dict[
 
     This does not handle renamed extension or extensions that were absorbed
     by other extensions; for instance the FileExtensions handles the migration of
-    the since replaced 'checksum' extension.
+    the previous 'checksum' extension.
 
     Dict of the extension ID to a tuple of optional list of STACObjectType which it was
     removed for (or None if removed from all), and an optional migrate function
@@ -117,7 +117,7 @@ def _get_removed_extension_migrations() -> dict[
         OldExtensionShortIDs.COLLECTION_ASSETS.value: (None, None),
         # Extensions that were placed on Collections that applied to
         # the 'commons' properties of their Items, but since the commons
-        # property merging has went away these extensions are removed
+        # property merging has gone away these extensions are removed
         # from the collection. Note that a migrated Collection may still
         # have a "properties" in extra_fields with the extension fields.
         OldExtensionShortIDs.EO.value: ([pystac.STACObjectType.COLLECTION], None),

@@ -89,9 +89,9 @@ class StacIO(ABC):
         """Method used internally by :class:`StacIO` instances to deserialize a
         dictionary from a JSON string.
 
-        This method may be overwritten in :class:`StacIO` sub-classes to provide custom
+        This method may be overwritten in :class:`StacIO` subclasses to provide custom
         deserialization logic. The method accepts arbitrary keyword arguments. These are
-        not used by the default implementation, but may be used by sub-class
+        not used by the default implementation, but may be used by subclass
         implementations.
 
         Args:
@@ -109,9 +109,9 @@ class StacIO(ABC):
         """Method used internally by :class:`StacIO` instances to serialize a dictionary
         to a JSON string.
 
-        This method may be overwritten in :class:`StacIO` sub-classes to provide custom
+        This method may be overwritten in :class:`StacIO` subclasses to provide custom
         serialization logic. The method accepts arbitrary keyword arguments. These are
-        not used by the default implementation, but may be used by sub-class
+        not used by the default implementation, but may be used by subclass
         implementations.
 
         Args:
@@ -132,7 +132,7 @@ class StacIO(ABC):
         root: Catalog | None = None,
         preserve_dict: bool = True,
     ) -> STACObject:
-        """Deserializes a :class:`~pystac.STACObject` sub-class instance from a
+        """Deserializes a :class:`~pystac.STACObject` subclass instance from a
         dictionary.
 
         Args:
@@ -142,8 +142,8 @@ class StacIO(ABC):
             root : Optional root :class:`~pystac.Catalog` to associate with the
                 STAC object.
             preserve_dict: If ``False``, the dict parameter ``d`` may be modified
-                during this method call. Otherwise the dict is not mutated.
-                Defaults to ``True``, which results results in a deepcopy of the
+                during this method call. Otherwise, the dict is not mutated.
+                Defaults to ``True``, which results in a deepcopy of the
                 parameter. Set to ``False`` when possible to avoid the performance
                 hit of a deepcopy.
         """

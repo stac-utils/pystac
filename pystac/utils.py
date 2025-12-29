@@ -21,7 +21,7 @@ HREF: TypeAlias = str | os.PathLike[str]
 
 
 def make_posix_style(href: HREF) -> str:
-    """Converts double back slashes and single back slashes to single forward
+    """Converts double backslashes and single backslashes to single forward
     slashes for converting Windows paths to Posix style.
 
     Args:

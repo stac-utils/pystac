@@ -143,7 +143,7 @@ class Link(PathLike):
         """Returns the HREF for this link.
 
         If the href is None, this will throw an exception.
-        Use get_href if there may not be an href.
+        Use get_href if there may not be an HREF.
         """
         result = self.get_href()
         if result is None:
@@ -198,7 +198,7 @@ class Link(PathLike):
         """Returns the absolute HREF for this link.
 
         If the href is None, this will throw an exception.
-        Use get_absolute_href if there may not be an href set.
+        Use get_absolute_href if there may not be an HREF set.
         """
         result = self.get_absolute_href()
         if result is None:

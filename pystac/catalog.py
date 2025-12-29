@@ -436,7 +436,7 @@ class Catalog(STACObject):
         """Return all children of this catalog.
 
         Return:
-            Iterable[Catalog or Collection]: Iterable of children who's parent
+            Iterable[Catalog or Collection]: Iterable of children whose parent
             is this catalog.
         """
         return map(
@@ -481,7 +481,7 @@ class Catalog(STACObject):
             self.remove_child(child_id)
 
     def remove_child(self, child_id: str) -> None:
-        """Removes an child from this catalog.
+        """Removes a child from this catalog.
 
         Args:
             child_id : The ID of the child to remove.
@@ -1165,7 +1165,7 @@ class Catalog(STACObject):
         through the asset_mapper function.
 
         Args:
-            asset_mapper : A function that takes in an key and an Asset, and
+            asset_mapper : A function that takes in a key and an Asset, and
                 returns either an Asset, a (key, Asset), or a dictionary of Assets with
                 unique keys. The Asset that is passed into the item_mapper is a copy,
                 so the method can mutate it safely.
