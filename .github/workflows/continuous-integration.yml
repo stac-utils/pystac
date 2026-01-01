@@ -54,6 +54,8 @@ jobs:
   coverage:
     name: coverage
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v7
@@ -73,9 +75,9 @@ jobs:
         uses: codecov/codecov-action@v5
         if: ${{ env.GITHUB_REPOSITORY }} == 'stac-utils/pystac'
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
           fail_ci_if_error: false
+          use_oidc: true
       - name: Check for coverage drop
         # This will use the configured fail-under, causing this job to fail if the
         # coverage drops.
