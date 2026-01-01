@@ -12,6 +12,7 @@ from pystac import (
     Link,
     STACError,
 )
+from pystac.extensions.archive import ArchiveExtension
 from pystac.extensions.classification import ClassificationExtension
 from pystac.extensions.datacube import DatacubeExtension
 from pystac.extensions.eo import EOExtension
@@ -37,7 +38,6 @@ from pystac.extensions.timestamps import TimestampsExtension
 from pystac.extensions.version import BaseVersionExtension, VersionExtension
 from pystac.extensions.view import ViewExtension
 from pystac.extensions.xarray_assets import XarrayAssetsExtension
-from pystac.extensions.archive import ArchiveExtension
 
 #: Generalized version of :class:`~pystac.Asset`,
 #: :class:`~pystac.ItemAssetDefinition`, or :class:`~pystac.Link`
@@ -47,6 +47,7 @@ T = TypeVar("T", Asset, ItemAssetDefinition, Link)
 U = TypeVar("U", Asset, ItemAssetDefinition)
 
 EXTENSION_NAMES = Literal[
+    "archive",
     "classification",
     "cube",
     "eo",
@@ -68,10 +69,10 @@ EXTENSION_NAMES = Literal[
     "version",
     "view",
     "xarray",
-    "archive",
 ]
 
 EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
+    ArchiveExtension.name: ArchiveExtension,
     ClassificationExtension.name: ClassificationExtension,
     DatacubeExtension.name: DatacubeExtension,
     EOExtension.name: EOExtension,
@@ -93,7 +94,6 @@ EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     VersionExtension.name: VersionExtension,
     ViewExtension.name: ViewExtension,
     XarrayAssetsExtension.name: XarrayAssetsExtension,
-    ArchiveExtension.name: ArchiveExtension,
 }
 
 
@@ -156,6 +156,10 @@ class CollectionExt(CatalogExt):
     stac_object: Collection
 
     @property
+    def archive(self) -> ArchiveExtension[Collection]:
+        return ArchiveExtension.ext(self.stac_object)
+
+    @property
     def cube(self) -> DatacubeExtension[Collection]:
         return DatacubeExtension.ext(self.stac_object)
 
@@ -182,10 +186,6 @@ class CollectionExt(CatalogExt):
     @property
     def xarray(self) -> XarrayAssetsExtension[Collection]:
         return XarrayAssetsExtension.ext(self.stac_object)
-
-    @property
-    def archive(self) -> ArchiveExtension[Collection]:
-        return ArchiveExtension.ext(self.stac_object)
 
 
 @dataclass
@@ -222,6 +222,10 @@ class ItemExt:
             name : Extension identifier (eg: 'eo')
         """
         _get_class_by_name(name).remove_from(self.stac_object)
+
+    @property
+    def archive(self) -> ArchiveExtension[Item]:
+        return ArchiveExtension.ext(self.stac_object)
 
     @property
     def classification(self) -> ClassificationExtension[Item]:
@@ -295,10 +299,6 @@ class ItemExt:
     def xarray(self) -> XarrayAssetsExtension[Item]:
         return XarrayAssetsExtension.ext(self.stac_object)
 
-    @property
-    def archive(self) -> ArchiveExtension[Item]:
-        return ArchiveExtension.ext(self.stac_object)
-
 
 class _AssetsExt(Generic[T]):
     stac_object: T
@@ -355,6 +355,10 @@ class _AssetExt(_AssetsExt[U]):
     stac_object: U
 
     @property
+    def archive(self) -> ArchiveExtension[U]:
+        return ArchiveExtension.ext(self.stac_object)
+
+    @property
     def classification(self) -> ClassificationExtension[U]:
         return ClassificationExtension.ext(self.stac_object)
 
@@ -401,10 +405,6 @@ class _AssetExt(_AssetsExt[U]):
     @property
     def view(self) -> ViewExtension[U]:
         return ViewExtension.ext(self.stac_object)
-
-    @property
-    def archive(self) -> ArchiveExtension[U]:
-        return ArchiveExtension.ext(self.stac_object)
 
 
 @dataclass

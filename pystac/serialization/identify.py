@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 class OldExtensionShortIDs(Enum):
     """Enumerates the IDs of common extensions."""
 
+    ARCHIVE = "archive"
     CHECKSUM = "checksum"
     COLLECTION_ASSETS = "collection-assets"
     DATACUBE = "datacube"  # TODO
@@ -31,7 +32,6 @@ class OldExtensionShortIDs(Enum):
     VERSION = "version"
     VIEW = "view"
     FILE = "file"
-    ARCHIVE = "archive"
 
 
 @total_ordering
