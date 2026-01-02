@@ -98,7 +98,7 @@ jobs:
   check-benchmarks:
     # This checks to make sure any API changes haven't broken any of the
     # benchmarks. It doesn't do any actual benchmarking, since (IMO) that's not
-    # appropriate for CI on Github actions.
+    # appropriate for CI on GitHub actions.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
