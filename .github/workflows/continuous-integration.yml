@@ -16,6 +16,8 @@ concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   test:
     name: test
@@ -32,8 +34,8 @@ jobs:
           - windows-latest
           - macos-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: astral-sh/setup-uv@681c641aba71e4a1c380be3ab5e12ad51f415867 # v7.1.6
         with:
           python-version: ${{ matrix.python-version }}
       - name: Sync
@@ -57,8 +59,8 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: astral-sh/setup-uv@681c641aba71e4a1c380be3ab5e12ad51f415867 # v7.1.6
       - name: Install with dependencies
         run: uv sync --all-extras
       - name: Run coverage with orjson
@@ -72,7 +74,7 @@ jobs:
         # will trigger a failure for coverage drops in a later job
         run: uv run coverage xml --fail-under 0
       - name: Upload All coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
         if: ${{ env.GITHUB_REPOSITORY }} == 'stac-utils/pystac'
         with:
           files: ./coverage.xml
@@ -86,8 +88,8 @@ jobs:
   without-orjson:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: astral-sh/setup-uv@681c641aba71e4a1c380be3ab5e12ad51f415867 # v7.1.6
       - name: Sync
         run: uv sync
       - name: Uninstall orjson
@@ -98,14 +100,14 @@ jobs:
   check-benchmarks:
     # This checks to make sure any API changes haven't broken any of the
     # benchmarks. It doesn't do any actual benchmarking, since (IMO) that's not
-    # appropriate for CI on Github actions.
+    # appropriate for CI on GitHub actions.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
         with:
           python-version: "3.10"
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@681c641aba71e4a1c380be3ab5e12ad51f415867 # v7.1.6
         with:
           enable-cache: true
       - name: Sync
@@ -118,8 +120,8 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: astral-sh/setup-uv@681c641aba71e4a1c380be3ab5e12ad51f415867 # v7.1.6
       - name: Install pandoc
         run: sudo apt-get install pandoc
       - name: Sync
