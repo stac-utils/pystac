@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.14.3](https://github.com/stac-utils/pystac/compare/v1.14.2...v1.14.3) (2026-01-02)
+
+
+### Bug Fixes
+
+* doc string fixes ([#1613](https://github.com/stac-utils/pystac/issues/1613)) ([61c3e14](https://github.com/stac-utils/pystac/commit/61c3e142f7e5b2f17b8c51ad67e48a91d6007cf7))
+* use broader iterable type ([#1614](https://github.com/stac-utils/pystac/issues/1614)) ([b9422d8](https://github.com/stac-utils/pystac/commit/b9422d8f4d440016e57a825aca1f239b2356b455))
+
 ## [1.14.2](https://github.com/stac-utils/pystac/compare/v1.14.1...v1.14.2) (2025-12-17)
 
 
