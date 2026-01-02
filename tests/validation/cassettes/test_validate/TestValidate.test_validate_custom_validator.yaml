@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/custom-extension/v1.0.0/schema.json
   response:
@@ -65,9 +65,9 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Thu, 18 Sep 2025 14:57:16 GMT
+      - Fri, 02 Jan 2026 14:13:11 GMT
       ETag:
-      - '"64d248ca-24a3"'
+      - '"64d39a40-24a3"'
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -81,13 +81,13 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 177bd79ca7730e04f4d2145eda89af6a0180b992
+      - 2d55506a7a34285111db4d10b3282026bd59035f
       X-GitHub-Request-Id:
-      - 1E9F:3E33CC:1F8523:213561:68CC1DCB
+      - B246:279F95:9D6BA9:AE6D99:6957D277
       X-Served-By:
-      - cache-bos4688-BOS
+      - cache-chi-kigq8000172-CHI
       X-Timer:
-      - S1758207436.153125,VS0,VE52
+      - S1767363191.428811,VS0,VE32
       x-proxy-cache:
       - MISS
     status:
@@ -97,7 +97,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/custom-extension/v1.0.0/schema.json
   response:
@@ -159,9 +159,9 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Thu, 18 Sep 2025 14:57:16 GMT
+      - Fri, 02 Jan 2026 14:13:11 GMT
       ETag:
-      - '"64d248ca-24a3"'
+      - '"64d39a40-24a3"'
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -175,13 +175,13 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 262dfd413adf1af18ad78e3807f7ac6742152b98
+      - 0c1af01828424aa722b870143ce7acea6136c63b
       X-GitHub-Request-Id:
-      - 1E9F:3E33CC:1F8523:213561:68CC1DCB
+      - B246:279F95:9D6BA9:AE6D99:6957D277
       X-Served-By:
-      - cache-bos4684-BOS
+      - cache-chi-kigq8000097-CHI
       X-Timer:
-      - S1758207436.293029,VS0,VE1
+      - S1767363192.536655,VS0,VE24
       x-proxy-cache:
       - MISS
     status:
