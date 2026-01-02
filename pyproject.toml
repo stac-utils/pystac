@@ -36,6 +36,7 @@ dev = [
     "codespell<2.3",
     "coverage>=7.6.2",
     "doc8>=1.1.2",
+    "filelock>=3.20.1", # No direct dependency, avoid CVE-2025-68146.
     "html5lib>=1.1",
     "jinja2>=3.1.4",
     "jsonschema>=4.23.0",
