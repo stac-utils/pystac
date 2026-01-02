@@ -7,6 +7,8 @@ on:
       - edited
       - reopened
 
+permissions: {}
+
 jobs:
   lint:
     name: Lint

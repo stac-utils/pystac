@@ -5,6 +5,8 @@ on:
     types:
       - published
 
+permissions: {}
+
 jobs:
   release:
     name: release
