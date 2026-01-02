@@ -816,9 +816,9 @@ class LabelExtensionHooks(ExtensionHooks):
     stac_object_types = {pystac.STACObjectType.ITEM}
 
     def get_object_links(
-        self, so: pystac.STACObject
+        self, obj: pystac.STACObject
     ) -> list[str | pystac.RelType] | None:
-        if isinstance(so, pystac.Item):
+        if isinstance(obj, pystac.Item):
             return [LabelRelType.SOURCE]
         return None
 
