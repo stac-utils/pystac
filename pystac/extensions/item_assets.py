@@ -25,7 +25,7 @@ class AssetDefinition(ItemAssetDefinition):
         Use :class:`~pystac.ItemAssetDefinition` instead.
     """
 
-    def __init__(cls, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         import warnings
 
         warnings.warn(
