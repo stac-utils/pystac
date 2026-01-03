@@ -64,6 +64,7 @@ docs = [
     "ipython>=8.28.0",
     "jinja2>=3.1.4",
     "jupyter>=1.1.1",
+    "jupyterlab>=4.4.8", # No direct dependency, avoid CVE-2025-59842.
     "nbsphinx>=0.9.5",
     "odc-stac>=0.4.0",
     "planetary-computer>=1.0.0",
