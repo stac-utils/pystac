@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/eo/v1.1.0/schema.json
   response:
@@ -81,7 +81,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '167'
+      - '273'
       Cache-Control:
       - max-age=600
       Connection:
@@ -91,11 +91,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 18 Sep 2025 14:55:51 GMT
+      - Fri, 02 Jan 2026 14:11:58 GMT
       ETag:
-      - '"66df1c53-13bc"'
+      - '"69247b92-13bc"'
       Last-Modified:
-      - Mon, 09 Sep 2024 16:03:31 GMT
+      - Mon, 24 Nov 2025 15:36:50 GMT
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -107,17 +107,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '1'
+      - '2'
       X-Fastly-Request-ID:
-      - 226641462be931f07bb6232f1597737a5678c36c
+      - 4bbb02639cbeaabf55aa9360b25085ab44a1df68
       X-GitHub-Request-Id:
-      - 98DE:39A2ED:1DBAAC:1F56C3:68CC1CD0
+      - 7C44:F9945:670080:6FEA98:6957D11D
       X-Served-By:
-      - cache-bos4620-BOS
+      - cache-chi-kigq8000162-CHI
       X-Timer:
-      - S1758207352.873143,VS0,VE1
+      - S1767363118.318883,VS0,VE0
       expires:
-      - Thu, 18 Sep 2025 15:03:04 GMT
+      - Fri, 02 Jan 2026 14:17:25 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -127,7 +127,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/view/v1.0.0/schema.json
   response:
@@ -185,7 +185,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '167'
+      - '394'
       Cache-Control:
       - max-age=600
       Connection:
@@ -195,7 +195,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 18 Sep 2025 14:55:51 GMT
+      - Fri, 02 Jan 2026 14:11:58 GMT
       ETag:
       - '"689f5434-dff"'
       Last-Modified:
@@ -213,15 +213,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 799893d40efeccab3a33622852ef033ad9caf00e
+      - db8c5fede3d32f020aad6a56d210e1691ba01aa9
       X-GitHub-Request-Id:
-      - 624D:BA176:74CE5:7ED3C:68CC1CD0
+      - 1589:2F9B:3978:410A:6957256C
       X-Served-By:
-      - cache-bos4686-BOS
+      - cache-chi-kigq8000043-CHI
       X-Timer:
-      - S1758207352.947321,VS0,VE1
+      - S1767363118.355402,VS0,VE1
       expires:
-      - Thu, 18 Sep 2025 15:03:04 GMT
+      - Fri, 02 Jan 2026 02:04:52 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -231,7 +231,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/projection/v2.0.0/schema.json
   response:
@@ -299,7 +299,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '167'
+      - '26'
       Cache-Control:
       - max-age=600
       Connection:
@@ -309,7 +309,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 18 Sep 2025 14:55:52 GMT
+      - Fri, 02 Jan 2026 14:11:58 GMT
       ETag:
       - '"669e563b-1116"'
       Last-Modified:
@@ -325,17 +325,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '2'
+      - '3'
       X-Fastly-Request-ID:
-      - da78cb60c11935ce4ed5f57271cae03963ba07a2
+      - 725b5f85d37ac35398c14a8e2f3ec1e02df34864
       X-GitHub-Request-Id:
-      - 224F:32B3EB:191F90:1ABAB3:68CC1CCF
+      - 7316:146933:2B746F:2E60D1:695756E0
       X-Served-By:
-      - cache-bos4666-BOS
+      - cache-chi-kigq8000113-CHI
       X-Timer:
-      - S1758207352.039026,VS0,VE0
+      - S1767363118.427976,VS0,VE0
       expires:
-      - Thu, 18 Sep 2025 15:03:04 GMT
+      - Fri, 02 Jan 2026 05:35:52 GMT
       x-proxy-cache:
       - MISS
     status:

@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://capella-open-data.s3.us-west-2.amazonaws.com/stac/capella-open-data-by-capital/capella-open-data-mal%C3%A9/collection.json
   response:
@@ -68,17 +68,17 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 18 Sep 2025 14:55:47 GMT
+      - Fri, 02 Jan 2026 14:11:52 GMT
       ETag:
       - '"97688a98c449dfb3e9e1e90352e3e8e1"'
       Last-Modified:
-      - Thu, 18 Sep 2025 07:07:22 GMT
+      - Fri, 02 Jan 2026 07:10:59 GMT
       Server:
       - AmazonS3
       x-amz-id-2:
-      - COTHOREpyll/7k3ulEh3Pi5yLkRpwl6k0AlNBBzfYQFwS6gOUy4jM6RRbglorYJkN13UQ98sk9c=
+      - Xf/Q5avoZ7E5u5BgvSGlenC7qlwZ58bcv5tykrnRBfXNEpDi+L1bcvhsRfcIXphDIo1o1MDvmaCoHIA9g2j+WA==
       x-amz-request-id:
-      - R36SSDJ4ZBGMZ0AQ
+      - H7B81WNWV5Z10NKG
       x-amz-server-side-encryption:
       - AES256
     status:

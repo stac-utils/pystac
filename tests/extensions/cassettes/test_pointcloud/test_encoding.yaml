@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json
   response:
@@ -75,7 +75,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '0'
+      - '364'
       Cache-Control:
       - max-age=600
       Connection:
@@ -85,7 +85,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 18 Sep 2025 14:55:23 GMT
+      - Fri, 02 Jan 2026 14:11:30 GMT
       ETag:
       - '"671aae9d-114a"'
       Last-Modified:
@@ -103,15 +103,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - cec37b8b7b257a08721e5c4ef4345b3899319595
+      - 4b253fb78894135e99a10623f1e4b7df897d6cad
       X-GitHub-Request-Id:
-      - 4BF1:268A6D:BB0971:D56C32:68CC1D5B
+      - 09A2:3412BD:8A6284:992550:6957C08A
       X-Served-By:
-      - cache-bos4665-BOS
+      - cache-chi-kigq8000107-CHI
       X-Timer:
-      - S1758207324.821590,VS0,VE1
+      - S1767363091.701218,VS0,VE2
       expires:
-      - Thu, 18 Sep 2025 15:05:23 GMT
+      - Fri, 02 Jan 2026 13:06:43 GMT
       x-proxy-cache:
       - MISS
     status:
