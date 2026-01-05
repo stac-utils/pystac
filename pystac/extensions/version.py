@@ -418,8 +418,8 @@ class VersionExtensionHooks(ExtensionHooks):
         STACObjectType.CATALOG,
     }
 
-    def get_object_links(self, so: STACObject) -> list[str] | None:
-        if isinstance(so, Collection) or isinstance(so, Item):
+    def get_object_links(self, obj: STACObject) -> list[str] | None:
+        if isinstance(obj, Collection) or isinstance(obj, Item):
             return [
                 VersionRelType.LATEST,
                 VersionRelType.PREDECESSOR,
