@@ -27,7 +27,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 jinja2 = ["jinja2<4.0"]
 orjson = ["orjson>=3.5"]
-urllib3 = ["urllib3>=1.26"]
+urllib3 = ["urllib3>=2.6.0"]
 validation = ["jsonschema~=4.18"]
 
 [dependency-groups]
@@ -36,6 +36,7 @@ dev = [
     "codespell<2.3",
     "coverage>=7.6.2",
     "doc8>=1.1.2",
+    "filelock>=3.20.1", # No direct dependency, avoid CVE-2025-68146.
     "html5lib>=1.1",
     "jinja2>=3.1.4",
     "jsonschema>=4.23.0",
@@ -63,6 +64,7 @@ docs = [
     "ipython>=8.28.0",
     "jinja2>=3.1.4",
     "jupyter>=1.1.1",
+    "jupyterlab>=4.4.8", # No direct dependency, avoid CVE-2025-59842.
     "nbsphinx>=0.9.5",
     "odc-stac>=0.4.0",
     "planetary-computer>=1.0.0",
@@ -74,6 +76,7 @@ docs = [
     "sphinx-autobuild>=2024.10.3",
     "sphinx-design>=0.6.1",
     "sphinxcontrib-fulltoc>=1.2.0",
+    "starlette>=0.49.1", # No direct dependency, avoid CVE-2025-62727.
     "xpystac>=0.2.0",
     "zarr>=2.18.3",
 ]
