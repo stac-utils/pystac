@@ -18,12 +18,12 @@ class Extension:
         return f"https://stac-extensions.github.io/{self._name}"
 
     def __init__(self, extendable: Extendable, frozen: bool = True) -> None:
-        self._fields = super().__init__(**extendable.get_fields(), frozen=frozen)
+        super().__init__(**extendable.get_fields(), frozen=frozen)
         self._extendable: Extendable = extendable
 
     def apply(self, fields):
         self._extendable.get_fields().update(
-            fields.model_dump(by_alias=True, mode="json")
+            fields.model_dump(by_alias=True, mode="json", exclude_unset=True)
         )
 
     def add(self) -> None:
