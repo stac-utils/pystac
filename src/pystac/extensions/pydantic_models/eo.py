@@ -58,7 +58,7 @@ class Bands(RootModel[list[Band]]):
     root: list[Band] = Field(..., min_length=1, title="Bands")
 
 
-class Fields(BaseModel, extra="forbid"):
+class Fields(BaseModel):
     cloud_cover: Annotated[float, confloat(ge=0.0, le=100.0)] | None = Field(
         None, alias="eo:cloud_cover", title="Cloud Cover"
     )
