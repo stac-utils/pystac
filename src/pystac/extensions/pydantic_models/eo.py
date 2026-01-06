@@ -57,6 +57,12 @@ class Band(BaseModel):
 class Bands(RootModel[list[Band]]):
     root: list[Band] = Field(..., min_length=1, title="Bands")
 
+    def __getitem__(self, item: str | int) -> Band:
+        if isinstance(item, int):
+            return self.root[item]
+        else:
+            return next(filter(lambda b: item in [b.name, b.common_name], self.root))
+
 
 class Fields(BaseModel):
     cloud_cover: Annotated[float, confloat(ge=0.0, le=100.0)] | None = Field(
