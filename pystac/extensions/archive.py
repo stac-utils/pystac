@@ -10,30 +10,33 @@ from pystac.extensions import item_assets
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension, SummariesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum
+from pystac.extensions.eo import Band
+
+from pystac.serialization.identify import STACJSONDescription, STACVersionID
+
 
 T = TypeVar(
     "T",  pystac.Asset, item_assets.AssetDefinition
 )
 
-# For time being set the URL to repo location.
-# Later to be in standard location like
-# "https://stac-extensions.github.io/archive/v1.0.0/schema.json"
-
-SCHEMA_URI = "https://github.com/stac-extensions/archive/blob/main/json-schema/schema.json"
+SCHEMA_URI = "https://stac-extensions.github.io/archive/v1.0.0/schema.json"
 PREFIX: str = "archive:"
 
 # Field names
 ARCHIVE_HREF_PROP = PREFIX + "href"
-ARCHIVE_FORMAT_PROP = PREFIX + "format"
 ARCHIVE_TYPE_PROP = PREFIX + "type"
-ARCHIVE_START_PROP = PREFIX + "start"
-ARCHIVE_END_PROP = PREFIX + "end"
+ARCHIVE_ROLES_PROP = PREFIX + "roles"
+ARCHIVE_RANGE_PROP = PREFIX + "range"
+ARCHIVE_TITLE_PROP = PREFIX + "title"
+ARCHIVE_DESCRIPTION_PROP = PREFIX + "description"
+ARCHIVE_BANDS_PROP = PREFIX + "bands"
+ARCHIVE_ARCHIVE_PROP = PREFIX + "archive"
 
 
 class ArchiveExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
+    ExtensionManagementMixin[Union[pystac.Asset]],
 ):
     """An abstract class that can be used to extend the properties of a
     :class:`~pystac.Collection`, :class:`~pystac.Item`, or :class:`~pystac.Asset` with
@@ -54,11 +57,14 @@ class ArchiveExtension(
 
     def apply(
         self,
-        href: str |  None = None,
-        format: str |  None = None,
+        href: str |  None = None,        
         type: str |  None = None,
-        start: int |  None = None,
-        end: int |  None = None,
+        roles: list[str] |  None = None,
+        range: list[int] |  None = None,
+        title: str |  None = None,
+        description: str |  None = None,
+        bands: list[Band] |  None = None,
+        archive: list[ArchiveExtension] |  None = None,
     ) -> None:
         """Applies Archive Extension properties to the extended
         :class:`~pystac.Collection`, :class:`~pystac.Item` or :class:`~pystac.Asset`.
@@ -71,10 +77,13 @@ class ArchiveExtension(
             end (int) : The offset of the last byte of the file within the archive.
         """
         self.href = href
-        self.format = format
         self.type = type
-        self.start = start
-        self.end = end
+        self.roles = roles
+        self.range = range
+        self.title = title
+        self.description = description
+        self.bands = bands
+        self.archive = archive
 
     @property
     def href(self) -> str | None:
@@ -87,19 +96,8 @@ class ArchiveExtension(
         self._set_property(ARCHIVE_HREF_PROP, v)
 
     @property
-    def format(self) -> str | None:
-        """Get or sets the format,the mimetype of the archive.
-        """
-        return self._get_property(ARCHIVE_FORMAT_PROP, str)
-
-    @format.setter
-    def format(self, v: str | None) -> None:
-        self._set_property(ARCHIVE_FORMAT_PROP, v)
-
-    @property
     def type(self) -> str | None:
-        """Get or sets the type,the mimetype of the file within the archive
-           specified by the href field.
+        """Get or sets the format,the mimetype of the archive.
         """
         return self._get_property(ARCHIVE_TYPE_PROP, str)
 
@@ -108,27 +106,74 @@ class ArchiveExtension(
         self._set_property(ARCHIVE_TYPE_PROP, v)
 
     @property
-    def start(self) -> int | None:
+    def roles(self) -> list[str] | None:
+        """Get or sets the type,the mimetype of the file within the archive
+           specified by the href field.
+        """
+        return self._get_property(ARCHIVE_ROLES_PROP, list[str])
+
+    @roles.setter
+    def roles(self, v: list[str] | None) -> None:
+        self._set_property(ARCHIVE_ROLES_PROP, v)
+
+    @property
+    def range(self) -> list[int] | None:
         """Get or sets the start,the offset of the first byte of the file 
            within the archive.
         """
-        return self._get_property(ARCHIVE_START_PROP, int)
+        return self._get_property(ARCHIVE_RANGE_PROP, list[int])
 
-    @start.setter
-    def start(self, v: int | None) -> None:
-        self._set_property(ARCHIVE_START_PROP, v)
+    @range.setter
+    def range(self, v: list[int] | None) -> None:
+        self._set_property(ARCHIVE_RANGE_PROP, v)   
 
     @property
-    def end(self) -> int | None:
+    def title(self) -> str | None:
         """Get or sets the end,the offset of the last byte of the file 
            within the archive.
         """
-        return self._get_property(ARCHIVE_END_PROP, int)
+        return self._get_property(ARCHIVE_TITLE_PROP, str)
 
-    @end.setter
-    def start(self, v: int | None) -> None:
-        self._set_property(ARCHIVE_END_PROP, v)
+    @title.setter
+    def title(self, v: str | None) -> None:
+        self._set_property(ARCHIVE_TITLE_PROP, v)
 
+    @property
+    def description(self) -> str | None:
+        """Get or sets the description of the archive.
+        """
+        return self._get_property(ARCHIVE_DESCRIPTION_PROP, str)
+    
+    @description.setter
+    def description(self, v: str | None) -> None:
+        self._set_property(ARCHIVE_DESCRIPTION_PROP, v) 
+
+    @property
+    def bands(self) -> list[Band] | None:
+        """Get or sets the bands information of the archive.
+        """
+        return self._get_property(ARCHIVE_BANDS_PROP, list[Band])
+    
+    @bands.setter
+    def bands(self, v: list[Band] | None) -> None:
+        if v is None:
+            self._set_property(ARCHIVE_BANDS_PROP, None)
+        else:
+            self._set_property(ARCHIVE_BANDS_PROP, v) 
+    
+    @property
+    def archive(self) -> list[ArchiveExtension] | None:
+        """Get or sets the archive information of the archive.
+        """
+        return self._get_property(ARCHIVE_ARCHIVE_PROP, list[ArchiveExtension])
+    
+    @archive.setter
+    def archive(self, v: list[ArchiveExtension] | None) -> None:
+        if v is None:
+            self._set_property(ARCHIVE_ARCHIVE_PROP, None)
+        else:            
+            self._set_property(ARCHIVE_ARCHIVE_PROP, v)
+        
     @classmethod
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
@@ -144,9 +189,12 @@ class ArchiveExtension(
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
+        '''
         if isinstance(obj, pystac.Item):
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(ArchiveExtension[T], ItemArchiveExtension(obj))
+        '''
+
         if isinstance(obj, pystac.Asset):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(ArchiveExtension[T], AssetArchiveExtension(obj))
@@ -159,10 +207,10 @@ class ArchiveExtension(
     @classmethod
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
-    ) -> SummariesStorageExtension:
+    ) -> SummariesArchiveExtension:
         """Returns the extended summaries object for the given collection."""
         cls.ensure_has_extension(obj, add_if_missing)
-        return SummariesStorageExtension(obj)
+        return SummariesArchiveExtension(obj)
 
 
 #class ItemArchiveExtension(ArchiveExtension[pystac.Item]):
@@ -200,14 +248,15 @@ class AssetArchiveExtension(ArchiveExtension[pystac.Asset]):
 
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
-        self.properties = asset.extra_fields
+        self.properties = asset.extra_fields        
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
         else:
             self.additional_read_properties = None
 
+
     def __repr__(self) -> str:
-        return f"<AssetArchiveExtension Item id={self.asset_href}>"
+        return f"<AssetArchiveExtension Asset href={self.asset_href}>"
 
 
 class ItemAssetsArchiveExtension(ArchiveExtension[item_assets.AssetDefinition]):
@@ -237,49 +286,88 @@ class SummariesArchiveExtension(SummariesExtension):
         self._set_summary(ARCHIVE_HREF_PROP, v)
 
     @property
-    def format(self) -> list[str] | None:
-        """Get or sets the summary of :attr:`ArchiveExtension.format` values
-        for this Collection.
-        """
-        return self.summaries.get_list(ARCHIVE_FORMAT_PROP)
-
-    @format.setter
-    def format(self, v: list[str] | None) -> None:
-        self._set_summary(ARCHIVE_FORMAT_PROP, v)
-
-    @property
-    def type(self) -> list[str] | None:
+    def type(self) -> str | None:
         """Get or sets the summary of :attr:`ArchiveExtension.type` values
         for this Collection.
         """
         return self.summaries.get_list(ARCHIVE_TYPE_PROP)
 
     @type.setter
-    def type(self, v: list[str] | None) -> None:
+    def type(self, v: str | None) -> None:
         self._set_summary(ARCHIVE_TYPE_PROP, v)
 
     @property
-    def start(self) -> list[int] | None:
-        """Get or sets the summary of :attr:`ArchiveExtension.start` values
+    def roles(self) -> list[str] | None:
+        """Get or sets the summary of :attr:`ArchiveExtension.roles` values
         for this Collection.
         """
-        return self.summaries.get_list(ARCHIVE_START_PROP)
+        return self.summaries.get_list(ARCHIVE_ROLES_PROP)
 
-    @start.setter
-    def start(self, v: list[int] | None) -> None:
-        self._set_summary(ARCHIVE_START_PROP, v)
+    @roles.setter
+    def roles(self, v: list[str] | None) -> None:
+        self._set_summary(ARCHIVE_ROLES_PROP, v)
 
     @property
-    def end(self) -> list[int] | None:
-        """Get or sets the summary of :attr:`ArchiveExtension.end` values
+    def range(self) -> list[int] | None:
+        """Get or sets the summary of :attr:`ArchiveExtension.range` values
         for this Collection.
         """
-        return self.summaries.get_list(ARCHIVE_END_PROP)
+        return self.summaries.get_list(ARCHIVE_RANGE_PROP)
+    
+    @range.setter
+    def range(self, v: list[int] | None) -> None:
+        self._set_summary(ARCHIVE_RANGE_PROP, v)
 
-    @end.setter
-    def end(self, v: list[int] | None) -> None:
-        self._set_summary(ARCHIVE_END_PROP, v)
+    @property
+    def title(self) -> str | None:
+        """Get or sets the summary of :attr:`ArchiveExtension.title` values
+        for this Collection.
+        """
+        return self.summaries.get_list(ARCHIVE_TITLE_PROP)
+    
+    @title.setter
+    def title(self, v: str | None) -> None:
+        self._set_summary(ARCHIVE_TITLE_PROP, v)
 
+    @property
+    def description(self) -> str | None:
+        """Get or sets the summary of :attr:`ArchiveExtension.description` values
+        for this Collection.
+        """
+        return self.summaries.get_list(ARCHIVE_DESCRIPTION_PROP)
+    
+    @description.setter
+    def description(self, v: str | None) -> None:
+        self._set_summary(ARCHIVE_DESCRIPTION_PROP, v)
+    
+    @property
+    def bands(self) -> list[Band] | None:
+        """Get or sets the summary of :attr:`ArchiveExtension.bands` values
+        for this Collection.
+        """
+        return self.summaries.get_list(ARCHIVE_BANDS_PROP)
+    
+    @bands.setter
+    def bands(self, v: list[Band] | None) -> None:
+        if v is None:
+            self._set_summary(ARCHIVE_BANDS_PROP, None)
+        else:            
+            self._set_summary(ARCHIVE_BANDS_PROP, v)
+
+    @property
+    def archive(self) -> list[ArchiveExtension] | None:
+        """Get or sets the summary of :attr:`ArchiveExtension.archive` values
+        for this Collection.
+        """
+        return self._get_summary(ARCHIVE_ARCHIVE_PROP, list[ArchiveExtension])
+    
+    @archive.setter
+    def archive(self, v: list[ArchiveExtension] | None) -> None:
+        if v is None:
+            self._set_summary(ARCHIVE_ARCHIVE_PROP, None)
+        else:
+            self._set_summary(ARCHIVE_ARCHIVE_PROP, v)
+    
 
 class ArchiveExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
