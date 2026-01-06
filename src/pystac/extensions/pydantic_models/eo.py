@@ -21,6 +21,8 @@ from pydantic import (
     confloat,
 )
 
+from .utils import FieldsModel
+
 
 class CommonName(Enum):
     coastal = "coastal"
@@ -64,7 +66,7 @@ class Bands(RootModel[list[Band]]):
             return next(filter(lambda b: item in [b.name, b.common_name], self.root))
 
 
-class Fields(BaseModel):
+class Fields(FieldsModel):
     cloud_cover: Annotated[float, confloat(ge=0.0, le=100.0)] | None = Field(
         None, alias="eo:cloud_cover", title="Cloud Cover"
     )
