@@ -37,6 +37,10 @@ dev = [
 docs = [
     "mkdocs-material>=9.7.0",
 ]
+ext = [
+    "datamodel-code-generator[http]>=0.52.2",
+    "pydantic>=2.12.5",
+]
 
 [project.urls]
 Documentation = "https://pystac.readthedocs.io"

@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import copy
-from typing import TYPE_CHECKING, Any, Self
-
-from typing_extensions import override
+from typing import TYPE_CHECKING, Any, Self, override
 
 from . import deprecate, utils
 
@@ -31,11 +29,16 @@ class ItemAsset:
         **kwargs: Any,
     ) -> None:
         """Creates a new item asset."""
+        from .extensions import Extensions
+
         self.title: str | None = title
         self.description: str | None = description
         self.type: str | None = type
         self.roles: list[str] | None = roles
         self.extra_fields: dict[str, Any] = kwargs
+
+        self.ext: Extensions = Extensions(self)
+        """This object's extension manager"""
 
     def to_dict(self) -> dict[str, Any]:
         """Converts this item asset to a dictionary."""
@@ -50,6 +53,9 @@ class ItemAsset:
             d["roles"] = self.roles
         d.update(copy.deepcopy(self.extra_fields))
         return d
+
+    def get_fields(self) -> dict[str, Any]:
+        return self.extra_fields
 
 
 class Asset(ItemAsset):

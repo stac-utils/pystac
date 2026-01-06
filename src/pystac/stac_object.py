@@ -176,6 +176,8 @@ class STACObject(ABC):
         **kwargs: Any,
     ) -> None:
         """Creates a new STAC object."""
+        from .extensions import Extensions
+
         super().__init__()
 
         self.id: str = id
@@ -189,6 +191,9 @@ class STACObject(ABC):
 
         self.extra_fields: dict[str, Any] = kwargs
         """Any extra fields on this object."""
+
+        self.ext: Extensions = Extensions(self)
+        """This object's extension manager"""
 
         self.reader: Read
         """This object's reader."""
