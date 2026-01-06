@@ -59,10 +59,10 @@ class Bands(RootModel[list[Band]]):
 
 
 class Fields(BaseModel, extra="forbid"):
-    eo_cloud_cover: Annotated[float, confloat(ge=0.0, le=100.0)] | None = Field(
+    cloud_cover: Annotated[float, confloat(ge=0.0, le=100.0)] | None = Field(
         None, alias="eo:cloud_cover", title="Cloud Cover"
     )
-    eo_snow_cover: Annotated[float, confloat(ge=0.0, le=100.0)] | None = Field(
+    snow_cover: Annotated[float, confloat(ge=0.0, le=100.0)] | None = Field(
         None, alias="eo:snow_cover", title="Snow and Ice Cover"
     )
-    eo_bands: Bands | None = Field(None, alias="eo:bands")
+    bands: Bands | None = Field(None, alias="eo:bands")
