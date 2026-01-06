@@ -11,7 +11,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Annotated, Any, Literal
+from typing import Annotated
 
 from pydantic import (
     BaseModel,
@@ -20,10 +20,6 @@ from pydantic import (
     StringConstraints,
     confloat,
 )
-
-
-class StacExtensions(BaseModel):
-    stac_extensions: list[Any]
 
 
 class CommonName(Enum):
@@ -70,21 +66,3 @@ class Fields(BaseModel, extra="forbid"):
         None, alias="eo:snow_cover", title="Snow and Ice Cover"
     )
     eo_bands: Bands | None = Field(None, alias="eo:bands")
-
-
-class EoExtension1(StacExtensions):
-    type: Literal["Feature"]
-    properties: Fields
-    assets: dict[str, Fields]
-
-
-class EoExtension2(StacExtensions):
-    type: Literal["Collection"]
-    assets: dict[str, Fields] | None = None
-    item_assets: dict[str, Fields] | None = None
-
-
-class EoExtension(RootModel[EoExtension1 | EoExtension2]):
-    root: EoExtension1 | EoExtension2 = Field(
-        ..., description="STAC EO Extension for STAC Items.", title="EO Extension"
-    )
