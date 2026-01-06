@@ -48,12 +48,12 @@ class Band(BaseModel, validate_assignment=True):
     name: str | None = Field(None, title="Name of the band")
     common_name: CommonName | None = Field(None, title="Common Name of the band")
     description: Annotated[str, StringConstraints(min_length=1)] | None = Field(
-        None, title="Description of the band"
+        None, title="Description of the band", min_length=1
     )
     center_wavelength: float | None = Field(None, title="Center Wavelength")
     full_width_half_max: float | None = Field(None, title="Full Width Half Max (FWHM)")
     solar_illumination: Annotated[float, confloat(ge=0.0)] | None = Field(
-        None, title="Solar Illumination"
+        None, title="Solar Illumination", ge=0.0
     )
 
 
@@ -70,9 +70,9 @@ class Bands(RootModel[list[Band]]):
 @register_extension(name="eo", slug="eo", version="1.1.0")
 class Fields(FieldsModel, validate_assignment=True):
     cloud_cover: Annotated[float, confloat(ge=0.0, le=100.0)] | None = Field(
-        None, alias="eo:cloud_cover", title="Cloud Cover"
+        None, alias="eo:cloud_cover", title="Cloud Cover", ge=0.0, le=100.0
     )
     snow_cover: Annotated[float, confloat(ge=0.0, le=100.0)] | None = Field(
-        None, alias="eo:snow_cover", title="Snow and Ice Cover"
+        None, alias="eo:snow_cover", title="Snow and Ice Cover", ge=0.0, le=100.0
     )
     bands: Bands | None = Field(None, alias="eo:bands")
