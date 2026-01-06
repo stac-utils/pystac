@@ -43,7 +43,7 @@ class CommonName(Enum):
     lwir12 = "lwir12"
 
 
-class Band(BaseModel):
+class Band(BaseModel, validate_assignment=True):
     name: str | None = Field(None, title="Name of the band")
     common_name: CommonName | None = Field(None, title="Common Name of the band")
     description: Annotated[str, StringConstraints(min_length=1)] | None = Field(
@@ -66,7 +66,7 @@ class Bands(RootModel[list[Band]]):
             return next(filter(lambda b: item in [b.name, b.common_name], self.root))
 
 
-class Fields(FieldsModel):
+class Fields(FieldsModel, validate_assignment=True):
     cloud_cover: Annotated[float, confloat(ge=0.0, le=100.0)] | None = Field(
         None, alias="eo:cloud_cover", title="Cloud Cover"
     )
