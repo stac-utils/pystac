@@ -21,6 +21,7 @@ from pydantic import (
     confloat,
 )
 
+from ..extensions import register_extension
 from .utils import FieldsModel
 
 
@@ -66,6 +67,7 @@ class Bands(RootModel[list[Band]]):
             return next(filter(lambda b: item in [b.name, b.common_name], self.root))
 
 
+@register_extension(name="eo", slug="eo", version="1.1.0")
 class Fields(FieldsModel, validate_assignment=True):
     cloud_cover: Annotated[float, confloat(ge=0.0, le=100.0)] | None = Field(
         None, alias="eo:cloud_cover", title="Cloud Cover"
