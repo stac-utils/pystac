@@ -1298,7 +1298,7 @@ class TestCatalog:
         cat = Catalog.from_file(stac_uri)
 
         # Iterate over the items. This was causing failure in
-        # in the later iterations as per issue #88
+        # the later iterations as per issue #88
         for item in cat.get_items(recursive=True):
             pass
 

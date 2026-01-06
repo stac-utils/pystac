@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-import os
 import posixpath
-import warnings
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 from collections.abc import Callable
-from string import Formatter
 from typing import TYPE_CHECKING, Any
 
 import pystac
@@ -30,6 +27,8 @@ class TemplateError(Exception):
     """
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore
+        import warnings
+
         warnings.warn(
             message=(
                 "TemplateError in pystac.layout is deprecated and will be "
@@ -109,6 +108,8 @@ class LayoutTemplate:
     ITEM_TEMPLATE_VARS = ["date", "year", "month", "day", "collection"]
 
     def __init__(self, template: str, defaults: dict[str, str] | None = None) -> None:
+        from string import Formatter
+
         self.template = template
         self.defaults = defaults or {}
 
@@ -261,6 +262,8 @@ class HrefLayoutStrategy(ABC):
     def get_href(
         self, stac_object: STACObject, parent_dir: str, is_root: bool = False
     ) -> str:
+        import os
+
         if is_file_path(parent_dir):
             parent_dir = os.path.dirname(parent_dir)
 
@@ -294,8 +297,8 @@ class CustomLayoutStrategy(HrefLayoutStrategy):
 
     Args:
         catalog_func : A function that takes
-            an catalog, a parent directory, and a flag specifying whether
-            or not this catalog is the root. If it is the root, its usually
+            a catalog, a parent directory, and a flag specifying whether
+            or not this catalog is the root. If it is the root, it is usually
             best to not create a subdirectory and put the Catalog file directly
             in the parent directory. Must return the string path.
         collection_func : A function that

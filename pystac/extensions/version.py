@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import warnings
 from collections.abc import Generator
 from contextlib import contextmanager
 from typing import (
@@ -419,8 +418,8 @@ class VersionExtensionHooks(ExtensionHooks):
         STACObjectType.CATALOG,
     }
 
-    def get_object_links(self, so: STACObject) -> list[str] | None:
-        if isinstance(so, Collection) or isinstance(so, Item):
+    def get_object_links(self, obj: STACObject) -> list[str] | None:
+        if isinstance(obj, Collection) or isinstance(obj, Item):
             return [
                 VersionRelType.LATEST,
                 VersionRelType.PREDECESSOR,
@@ -437,6 +436,8 @@ def ignore_deprecated() -> Generator[None]:
     """Context manager for suppressing the :class:`pystac.DeprecatedWarning`
     when creating a deprecated :class:`~pystac.Item` or :class:`~pystac.Collection`
     from a dictionary."""
+    import warnings
+
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", category=DeprecatedWarning)
         yield

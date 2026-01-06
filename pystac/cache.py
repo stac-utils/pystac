@@ -16,7 +16,7 @@ def get_cache_key(stac_object: STACObject) -> tuple[str, bool]:
 
     If a self href is set, use that as the cache key.
     If not, use a key that combines this object's ID with
-    it's parents' IDs.
+    its parents' IDs.
 
     Returns:
         Tuple[str, bool]: A tuple with the cache key as the first
@@ -90,7 +90,7 @@ class ResolvedObjectCache:
         if none exists, sets the cached object to the given object.
 
         Args:
-            obj : The given object who's cache key will be checked
+            obj : The given object whose cache key will be checked
                 against the cache.
 
         Returns:
@@ -115,7 +115,7 @@ class ResolvedObjectCache:
         """Get the cached object that has the same cache key as the given object.
 
         Args:
-            obj : The given object who's cache key will be checked against
+            obj : The given object whose cache key will be checked against
                 the cache.
 
         Returns:

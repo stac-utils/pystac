@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import json
-import warnings
 from collections.abc import Iterable
 from typing import (
     Any,
@@ -224,6 +222,8 @@ class ProjectionExtension(
         elif self.wkt2:
             return self.wkt2
         elif self.projjson:
+            import json
+
             return json.dumps(self.projjson)
         else:
             return None
@@ -299,7 +299,7 @@ class ProjectionExtension(
 
     @property
     def transform(self) -> list[float] | None:
-        """Get or sets the the affine transformation coefficients for the default grid.
+        """Get or sets the affine transformation coefficients for the default grid.
 
         The transform is a linear mapping from pixel coordinate space (Pixel, Line) to
         projection coordinate space (Xp, Yp). It is a 3x3 matrix stored as a flat array
@@ -322,6 +322,8 @@ class ProjectionExtension(
 
     @classmethod
     def get_schema_uris(cls) -> list[str]:
+        import warnings
+
         warnings.warn(
             "get_schema_uris is deprecated and will be removed in v2",
             DeprecationWarning,
@@ -477,6 +479,8 @@ class ProjectionExtensionHooks(ExtensionHooks):
     ) -> None:
         if not self.has_extension(obj):
             return
+
+        import warnings
 
         # proj:epsg moved to proj:code
         if epsg := obj["properties"].pop("proj:epsg", None):

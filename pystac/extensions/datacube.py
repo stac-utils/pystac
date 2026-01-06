@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC
+from collections.abc import Iterable
 from typing import Any, Generic, Literal, TypeVar, cast
 
 import pystac
@@ -706,7 +707,7 @@ class AssetDatacubeExtension(DatacubeExtension[pystac.Asset]):
 
     asset_href: str
     properties: dict[str, Any]
-    additional_read_properties: list[dict[str, Any]] | None
+    additional_read_properties: Iterable[dict[str, Any]] | None
 
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href

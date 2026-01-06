@@ -1,5 +1,3 @@
-import os
-
 __version__ = "1.14.2"  # x-release-please-version
 """Library version"""
 
@@ -21,6 +19,8 @@ class STACVersion:
         if cls._override_version is not None:
             return cls._override_version
 
+        import os
+
         env_version = os.environ.get(cls.OVERRIDE_VERSION_ENV_VAR)
         if env_version is not None:
             return env_version
@@ -38,7 +38,7 @@ def get_stac_version() -> str:
 
     If a call to ``set_stac_version`` was made, this will return the value it was
     called with. Next it will check the environment for a PYSTAC_STAC_VERSION_OVERRIDE
-    variable. Otherwise it will return the latest STAC version that this version of
+    variable. Otherwise, it will return the latest STAC version that this version of
     PySTAC supports.
 
     Returns:
@@ -65,7 +65,7 @@ def set_stac_version(stac_version: str | None) -> None:
 
     Note:
         Setting the STAC version to something besides the default version will not
-        effect the format of STAC read or written; it will only override the
+        affect the format of STAC read or written; it will only override the
         ``stac_version`` property of the objects being written. Setting this
         incorrectly can produce invalid STAC.
     """

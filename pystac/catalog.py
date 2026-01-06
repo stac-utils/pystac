@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 import os
-import warnings
 from collections.abc import Callable, Iterable, Iterator
 from copy import deepcopy
-from itertools import chain
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -438,7 +436,7 @@ class Catalog(STACObject):
         """Return all children of this catalog.
 
         Return:
-            Iterable[Catalog or Collection]: Iterable of children who's parent
+            Iterable[Catalog or Collection]: Iterable of children whose parent
             is this catalog.
         """
         return map(
@@ -483,7 +481,7 @@ class Catalog(STACObject):
             self.remove_child(child_id)
 
     def remove_child(self, child_id: str) -> None:
-        """Removes an child from this catalog.
+        """Removes a child from this catalog.
 
         Args:
             child_id : The ID of the child to remove.
@@ -521,6 +519,8 @@ class Catalog(STACObject):
         Return:
             Item or None: The item with the given ID, or None if not found.
         """
+        import warnings
+
         warnings.warn(
             "get_item is deprecated and will be removed in v2. "
             "Use next(self.get_items(id), None) instead",
@@ -549,6 +549,8 @@ class Catalog(STACObject):
                 (if recursive) all catalogs or collections connected to this catalog
                 through child links.
         """
+        from itertools import chain
+
         items: Iterator[Item]
         if not recursive:
             items = map(
@@ -615,6 +617,9 @@ class Catalog(STACObject):
                 catalogs or collections connected to this catalog through
                 child links.
         """
+        import warnings
+        from itertools import chain
+
         warnings.warn(
             "get_all_items is deprecated and will be removed in v2",
             DeprecationWarning,
@@ -1160,7 +1165,7 @@ class Catalog(STACObject):
         through the asset_mapper function.
 
         Args:
-            asset_mapper : A function that takes in an key and an Asset, and
+            asset_mapper : A function that takes in a key and an Asset, and
                 returns either an Asset, a (key, Asset), or a dictionary of Assets with
                 unique keys. The Asset that is passed into the item_mapper is a copy,
                 so the method can mutate it safely.

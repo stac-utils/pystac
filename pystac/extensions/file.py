@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import warnings
 from collections.abc import Iterable
 from typing import Any, Generic, Literal, TypeVar, cast
 
@@ -332,7 +331,7 @@ class FileExtensionHooks(ExtensionHooks):
     def migrate(
         self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
-        # The checksum field was previously it's own extension.
+        # The checksum field was previously its own extension.
         old_checksum: dict[str, str] | None = None
         if info.version_range.latest_valid_version() < "v1.0.0-rc.2":
             if OldExtensionShortIDs.CHECKSUM.value in info.extensions:
@@ -370,6 +369,8 @@ class FileExtensionHooks(ExtensionHooks):
                 found_fields[asset_key] = values
 
         if found_fields:
+            import warnings
+
             warnings.warn(
                 f"Assets {list(found_fields.keys())} contain fields: "
                 f"{list(set.union(*found_fields.values()))} which "

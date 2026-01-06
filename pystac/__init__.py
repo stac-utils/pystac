@@ -44,7 +44,6 @@ __all__ = [
     "set_stac_version",
 ]
 
-import os
 import warnings
 from typing import Any
 
@@ -200,6 +199,8 @@ def write_file(
     """
     if stac_io is None:
         stac_io = StacIO.default()
+    import os
+
     dest_href = None if dest_href is None else str(os.fspath(dest_href))
     obj.save_object(
         include_self_link=include_self_link, dest_href=dest_href, stac_io=stac_io

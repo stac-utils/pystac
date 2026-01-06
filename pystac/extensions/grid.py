@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import re
-import warnings
 from re import Pattern
 from typing import Any, Literal
 
@@ -92,6 +91,8 @@ class GridExtension(
 
     @classmethod
     def get_schema_uris(cls) -> list[str]:
+        import warnings
+
         warnings.warn(
             "get_schema_uris is deprecated and will be removed in v2",
             DeprecationWarning,
