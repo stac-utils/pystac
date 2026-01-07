@@ -279,7 +279,8 @@ def _make_absolute_href_url(
     start_is_dir: bool = False,
 ) -> str:
     # If the source is already absolute, just return it
-    if parsed_source.scheme != "":
+    # We also treat /vsi paths, from GDAL, as absolute
+    if parsed_source.scheme != "" or parsed_source.path.startswith("/vsi"):
         return urlunparse(parsed_source)
 
     # If the start path is not a directory, get the parent directory
@@ -393,7 +394,8 @@ def is_absolute_href(href: str, start_href: str | None = None) -> bool:
         bool: ``True`` if the given HREF is absolute, ``False`` if it is relative.
     """
     parsed = safe_urlparse(href)
-    if parsed.scheme not in ["", "file"]:
+    # We treat /vsi paths, from GDAL, as absolute
+    if parsed.scheme not in ["", "file"] or parsed.path.startswith("/vsi"):
         return True
     else:
         parsed_start_scheme = (
