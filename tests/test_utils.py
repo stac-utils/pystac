@@ -133,6 +133,11 @@ def test_make_relative_href(source_href: str, start_href: str, expected: str) ->
             "file:///a/b/c/z/item.json",
         ),
         ("file:///a/b/c/item.json", None, "file:///a/b/c/item.json"),
+        (
+            "/vsigs/file.tif",
+            "https://stacspec.org/a/b/c/catalog.json",
+            "/vsigs/file.tif",
+        ),
     ),
 )
 def test_make_absolute_href(source_href: str, start_href: str, expected: str) -> None:
