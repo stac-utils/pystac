@@ -6,6 +6,7 @@ import pytest
 import pystac
 from pystac import Asset, Collection, ExtensionTypeError, Item
 from pystac.extensions.archive import ArchiveExtension
+from pystac.extensions.eo import Band
 from tests.utils import TestCases, assert_to_from_dict
 
 
@@ -128,9 +129,6 @@ def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
         ArchiveExtension.ext(object())  # type: ignore
 
 
-""""""
-
-
 # Tests for summaries
 def test_summaries_href(archive_collection: Collection) -> None:
     col_dict = archive_collection.to_dict()
@@ -235,8 +233,7 @@ def test_summaries_bands(archive_collection: Collection) -> None:
     # Get
     assert archive_summaries.bands == col_dict["summaries"]["archive:bands"]
     # Set
-    #new_bands_summary = [["new-example-bands", "new-example-bands-2"]]
-    new_bands_summary = None
+    new_bands_summary = [[Band({"name": "B1"})], [Band({"name": "B2"})]] # type: list[list[Band]] | None
     assert archive_summaries.bands != new_bands_summary
     archive_summaries.bands = new_bands_summary
     assert archive_summaries.bands == new_bands_summary
