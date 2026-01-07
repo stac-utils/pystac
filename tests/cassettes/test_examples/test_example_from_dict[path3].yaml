@@ -1,0 +1,165 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - pystac/1.14.2
+    method: GET
+    uri: https://stac-extensions.github.io/scientific/v1.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/scientific/v1.0.0/schema.json#\",\n  \"title\":
+        \"Scientific Citation Extension\",\n  \"description\": \"Scientific Citation
+        Extension for STAC Items and STAC Collections.\",\n  \"oneOf\": [\n    {\n
+        \     \"$comment\": \"This is the schema for STAC Items. Remove this object
+        if this extension only applies to Collections.\",\n      \"allOf\": [\n        {\n
+        \         \"$ref\": \"#/definitions/stac_extensions\"\n        },\n        {\n
+        \         \"type\": \"object\",\n          \"required\": [\n            \"type\",\n
+        \           \"properties\",\n            \"assets\"\n          ],\n          \"properties\":
+        {\n            \"type\": {\n              \"const\": \"Feature\"\n            },\n
+        \           \"properties\": {\n              \"allOf\": [\n                {\n
+        \                 \"$ref\": \"#/definitions/require_any_field\"\n                },\n
+        \               {\n                  \"$ref\": \"#/definitions/fields\"\n
+        \               }\n              ]\n            },\n            \"assets\":
+        {\n              \"$comment\": \"This validates the fields in Item Assets,
+        but does not require them.\",\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        }\n      ]\n    },\n    {\n      \"$comment\": \"This
+        is the schema for STAC Collections.\",\n      \"type\": \"object\",\n      \"allOf\":
+        [\n        {\n          \"required\": [\n            \"type\"\n          ],\n
+        \         \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            }\n          }\n        },\n        {\n          \"$ref\":
+        \"#/definitions/stac_extensions\"\n        }\n      ],\n      \"anyOf\": [\n
+        \       {\n          \"$comment\": \"This is the schema for the top-level
+        fields in a Collection. Remove this if this extension does not define top-level
+        fields for Collections.\",\n          \"allOf\": [\n            {\n              \"$ref\":
+        \"#/definitions/require_any_field\"\n            },\n            {\n              \"$ref\":
+        \"#/definitions/fields\"\n            }\n          ]\n        },\n        {\n
+        \         \"$comment\": \"This validates the fields in Collection Assets,
+        but does not require them.\",\n          \"required\": [\n            \"assets\"\n
+        \         ],\n          \"properties\": {\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"not\": {\n                \"additionalProperties\":
+        {\n                  \"not\": {\n                    \"allOf\": [\n                      {\n
+        \                       \"$ref\": \"#/definitions/require_any_field\"\n                      },\n
+        \                     {\n                        \"$ref\": \"#/definitions/fields\"\n
+        \                     }\n                    ]\n                  }\n                }\n
+        \             }\n            }\n          }\n        },\n        {\n          \"$comment\":
+        \"This is the schema for the fields in Item Asset Definitions. It doesn't
+        require any fields.\",\n          \"required\": [\n            \"item_assets\"\n
+        \         ],\n          \"properties\": {\n            \"item_assets\": {\n
+        \             \"type\": \"object\",\n              \"not\": {\n                \"additionalProperties\":
+        {\n                  \"not\": {\n                    \"allOf\": [\n                      {\n
+        \                       \"$ref\": \"#/definitions/require_any_field\"\n                      },\n
+        \                     {\n                        \"$ref\": \"#/definitions/fields\"\n
+        \                     }\n                    ]\n                  }\n                }\n
+        \             }\n            }\n          }\n        },\n        {\n          \"$comment\":
+        \"This is the schema for the fields in Summaries. By default, only checks
+        the existance of the properties, but not the schema of the summaries.\",\n
+        \         \"required\": [\n            \"summaries\"\n          ],\n          \"properties\":
+        {\n            \"summaries\": {\n              \"$ref\": \"#/definitions/require_any_field\"\n
+        \           }\n          }\n        }\n      ]\n    }\n  ],\n  \"definitions\":
+        {\n    \"stac_extensions\": {\n      \"type\": \"object\",\n      \"required\":
+        [\n        \"stac_extensions\"\n      ],\n      \"properties\": {\n        \"stac_extensions\":
+        {\n          \"type\": \"array\",\n          \"contains\": {\n            \"const\":
+        \"https://stac-extensions.github.io/scientific/v1.0.0/schema.json\"\n          }\n
+        \       }\n      }\n    },\n    \"require_any_field\": {\n      \"$comment\":
+        \"Please list all fields here so that we can force the existance of one of
+        them in other parts of the schemas.\",\n      \"anyOf\": [\n        {\"required\":
+        [\"sci:doi\"]},\n        {\"required\": [\"sci:citation\"]},\n        {\"required\":
+        [\"sci:publications\"]}\n      ]\n    },\n    \"fields\": {\n      \"$comment\":
+        \"Add your new fields here. Don't require them here, do that above in the
+        item schema.\",\n      \"type\": \"object\",\n      \"properties\": {\n        \"sci:doi\":
+        {\n          \"type\": \"string\",\n          \"title\": \"Data DOI\",\n          \"pattern\":
+        \"^10\\\\.[0-9a-zA-Z]{4,}/[^\\\\s]+$\"\n        }, \n        \"sci:citation\":
+        {\n          \"type\": \"string\", \n          \"title\": \"Proposed Data
+        Citation\"\n        },\n        \"sci:publications\": {\n          \"type\":
+        \"array\",\n          \"title\": \"Publications\",\n          \"items\": {\n
+        \           \"type\": \"object\",\n            \"properties\": {\n              \"doi\":
+        {\n                \"type\": \"string\",\n                \"title\": \"Publication
+        DOI\",\n                \"pattern\": \"^10\\\\.[0-9a-zA-Z]{4,}/[^\\\\s]+$\"\n
+        \             }, \n              \"citation\": { \n                \"type\":
+        \"string\", \n                \"title\": \"Publication Citation\"\n              }\n
+        \           }\n          }\n        }\n      },\n      \"patternProperties\":
+        {\n        \"^(?!sci:)\": {}\n      },\n      \"additionalProperties\": false\n
+        \   }\n  }\n}"
+    headers: {}
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Connection:
+      - close
+      Host:
+      - stac-extensions.github.io
+      User-Agent:
+      - pystac/1.14.2
+    method: GET
+    uri: https://stac-extensions.github.io/remote-data/v1.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/remote-data/v1.0.0/schema.json\",\n  \"title\":
+        \"Remote Data (Example) Extension\",\n  \"description\": \"STAC Example Extension
+        for fictional vendor Remote Data\",\n  \"oneOf\": [\n    {\n      \"$comment\":
+        \"This is the schema for STAC Items.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"properties\",\n
+        \           \"assets\"\n          ],\n          \"properties\": {\n            \"type\":
+        {\n              \"const\": \"Feature\"\n            },\n            \"properties\":
+        {\n              \"allOf\": [\n                {\n                  \"$comment\":
+        \"Required fields here for item properties.\",\n                  \"required\":
+        [\n                    \"rd:type\",\n                    \"rd:product_level\",\n
+        \                   \"rd:sat_id\"\n                  ]\n                },\n
+        \               {\n                  \"$ref\": \"#/definitions/fields\"\n
+        \               }\n              ]\n            },\n            \"assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    },\n    {\n      \"$comment\": \"This is the schema
+        for STAC Collections.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"rd:visibility\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/fields\"\n              }\n            },\n            \"item_assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$comment\": \"Remove this
+        and the following object if this is not an extension to a Collection.\",\n
+        \         \"$ref\": \"#/definitions/stac_extensions\"\n        },\n        {\n
+        \         \"$ref\": \"#/definitions/collection_fields\"\n        }\n      ]\n
+        \   }\n  ],\n  \"definitions\": {\n    \"stac_extensions\": {\n      \"type\":
+        \"object\",\n      \"required\": [\n        \"stac_extensions\"\n      ],\n
+        \     \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/remote-data/v1.0.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"collection_fields\": {\n      \"properties\":
+        {\n        \"rd:visibility\": {\n          \"type\": \"string\",\n          \"enum\":
+        [\n            \"public\",\n            \"protected\",\n            \"private\"\n
+        \         ]\n        }\n      }\n    },\n    \"fields\": {\n      \"$comment\":
+        \"Remote Data fictional fields.\",\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"rd:type\": {\n          \"type\": \"string\",\n          \"enum\":
+        [\n            \"scene\"\n          ]\n        },\n        \"rd:product_level\":
+        {\n          \"type\": \"string\",\n          \"enum\": [\n            \"LV1A\",\n
+        \           \"LV1B\",\n            \"LV2A\",\n            \"LV2B\",\n            \"LV3A\",\n
+        \           \"LV3B\"\n          ]\n        }, \n        \"rd:runs\": {\n          \"type\":
+        \"array\", \n          \"items\": {\n            \"type\": \"string\"\n          }\n
+        \       },\n        \"rd:parsecs\": {\n          \"type\": \"array\", \n          \"items\":
+        {\n            \"type\": \"number\"\n          }\n        },\n        \"rd:anomalous_pixels\":
+        {\n          \"type\": \"number\"\n        },\n        \"rd:sat_id\": {\n
+        \         \"type\": \"string\"\n        },\n        \"rd:earth_sun_distance\":
+        {\n          \"type\": \"number\"\n        },\n        \"rd:flux_capacitor\":
+        {\n          \"type\": \"boolean\"\n        }\n      },\n      \"patternProperties\":
+        {\n        \"^(?!rd:)\": {\n          \"$comment\": \"Disallow other fields
+        with rd: prefix\"\n        }\n      },\n      \"additionalProperties\": false\n
+        \   }\n  }\n}\n"
+    headers: {}
+    status:
+      code: 200
+      message: OK
+version: 1
