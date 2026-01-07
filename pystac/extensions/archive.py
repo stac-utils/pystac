@@ -2,22 +2,16 @@
 
 from __future__ import annotations
 
-#from abc import ABC
 from typing import Any, Generic, Literal, TypeVar, Union, cast
 
 import pystac
 from pystac.extensions import item_assets
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension, SummariesExtension
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import StringEnum
 from pystac.extensions.eo import Band
 
-from pystac.serialization.identify import STACJSONDescription, STACVersionID
+T = TypeVar("T",  pystac.Item, pystac.Asset, pystac.ItemAssetDefinition)
 
-
-T = TypeVar(
-    "T",  pystac.Asset, item_assets.AssetDefinition
-)
 
 SCHEMA_URI = "https://stac-extensions.github.io/archive/v1.0.0/schema.json"
 PREFIX: str = "archive:"
@@ -35,8 +29,8 @@ ARCHIVE_ARCHIVE_PROP = PREFIX + "archive"
 
 class ArchiveExtension(
     Generic[T],
-    PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Asset]],
+    PropertiesExtension,    
+    ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
     """An abstract class that can be used to extend the properties of a
     :class:`~pystac.Collection`, :class:`~pystac.Item`, or :class:`~pystac.Asset` with
@@ -189,12 +183,10 @@ class ArchiveExtension(
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
-        '''
+        
         if isinstance(obj, pystac.Item):
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(ArchiveExtension[T], ItemArchiveExtension(obj))
-        '''
-
         if isinstance(obj, pystac.Asset):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(ArchiveExtension[T], AssetArchiveExtension(obj))
@@ -213,24 +205,24 @@ class ArchiveExtension(
         return SummariesArchiveExtension(obj)
 
 
-#class ItemArchiveExtension(ArchiveExtension[pystac.Item]):
-#    """A concrete implementation of :class:`ArchiveExtension` on an
-#    :class:`~pystac.Item` that extends the properties of the Item to include properties
-#    defined in the :stac-ext:`Archive Extension <archive>`.
-#
-#    This class should generally not be instantiated directly. Instead, call
-#    :meth:`ArchiveExtension.ext` on an :class:`~pystac.Item` to extend it.
-#    """
-#
-#    item: pystac.Item
-#    properties: dict[str, Any]
-#
-#    def __init__(self, item: pystac.Item):
-#        self.item = item
-#        self.properties = item.properties
-#
-#    def __repr__(self) -> str:
-#        return f"<ItemArchiveExtension Item id={self.item.id}>"
+class ItemArchiveExtension(ArchiveExtension[pystac.Item]):
+    """A concrete implementation of :class:`ArchiveExtension` on an
+    :class:`~pystac.Item` that extends the properties of the Item to include properties
+    defined in the :stac-ext:`Archive Extension <archive>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`ArchiveExtension.ext` on an :class:`~pystac.Item` to extend it.
+    """
+
+    item: pystac.Item
+    properties: dict[str, Any]
+
+    def __init__(self, item: pystac.Item):
+        self.item = item
+        self.properties = item.properties
+
+    def __repr__(self) -> str:
+        return f"<ItemArchiveExtension Item id={self.item.id}>"
 
 
 class AssetArchiveExtension(ArchiveExtension[pystac.Asset]):
@@ -259,7 +251,8 @@ class AssetArchiveExtension(ArchiveExtension[pystac.Asset]):
         return f"<AssetArchiveExtension Asset href={self.asset_href}>"
 
 
-class ItemAssetsArchiveExtension(ArchiveExtension[item_assets.AssetDefinition]):
+#class ItemAssetsArchiveExtension(ArchiveExtension[item_assets.AssetDefinition]):
+class ItemAssetsArchiveExtension(ArchiveExtension[pystac.ItemAssetDefinition]):
     properties: dict[str, Any]
     asset_defn: item_assets.AssetDefinition
 
@@ -371,7 +364,6 @@ class SummariesArchiveExtension(SummariesExtension):
 
 class ArchiveExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-
     #For time being empty set 
     prev_extension_ids: set[str] = set()
     stac_object_types = {

@@ -156,10 +156,6 @@ class CollectionExt(CatalogExt):
     stac_object: Collection
 
     @property
-    def archive(self) -> ArchiveExtension[Collection]:
-        return ArchiveExtension.ext(self.stac_object)
-
-    @property
     def cube(self) -> DatacubeExtension[Collection]:
         return DatacubeExtension.ext(self.stac_object)
 
