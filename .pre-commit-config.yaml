@@ -1,50 +1,19 @@
-# Configuration file for pre-commit (https://pre-commit.com/).
-# Please run `pre-commit run --all-files` when adding or changing entries.
-
 repos:
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.19.1
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
     hooks:
-      - id: pyupgrade
-        args:
-          - "--py310-plus"
-
-  - repo: local
-    hooks:
-      - id: ruff
-        name: ruff
-        entry: ruff check --force-exclude --fix --exit-non-zero-on-fix
-        language: system
-        types_or: [python, pyi, jupyter]
-        require_serial: true
-
-      - id: ruff-format
-        name: ruff-format
-        entry: ruff format --force-exclude
-        language: system
-        stages: [pre-commit]
-        types_or: [python, pyi, jupyter]
-        require_serial: true
-
       - id: codespell
-        name: codespell
-        entry: codespell
-        language: system
-        stages: [pre-commit]
-        types_or: [jupyter, markdown, python, shell]
-
-      - id: doc8
-        name: doc8
-        entry: doc8
-        language: system
-        files: \.rst$
-        require_serial: true
-
-      - id: mypy
-        name: mypy
-        entry: mypy
-        args: [--no-incremental]
-        language: system
-        stages: [pre-commit]
-        types: [python]
-        require_serial: true
+        types_or:
+          - jupyter
+          - markdown
+          - python
+          - shell
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.9
+    hooks:
+      - id: ruff-check
+      - id: ruff-format
+  - repo: https://github.com/DetachHead/basedpyright-prek-mirror
+    rev: 1.36.1
+    hooks:
+      - id: basedpyright

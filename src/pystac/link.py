@@ -60,6 +60,14 @@ class Link:
             self._href = href or target
             self.target = None
 
+    @override
+    def __getattribute__(self, name: str, /) -> Any:
+        if name == "owner":
+            warnings.warn("Link.owner is deprecated, and is always None in pystac v2")
+            return None
+        else:
+            return super().__getattribute__(name)
+
     @classmethod
     def try_from(cls, data: dict[str, Any] | Link) -> Link:
         if isinstance(data, Link):
