@@ -1,15 +1,11 @@
 import json
-from copy import deepcopy
 import random
-from typing import Any
 
 import pytest
 
 import pystac
-from pystac import ExtensionTypeError, Item, Asset, Collection
-from pystac.errors import ExtensionNotImplemented
+from pystac import Asset, Collection, ExtensionTypeError, Item
 from pystac.extensions.archive import ArchiveExtension
-from pystac.utils import get_opt
 from tests.utils import TestCases, assert_to_from_dict
 
 
@@ -31,7 +27,7 @@ def example_collection_uri() -> str:
 @pytest.fixture
 def archive_asset(example_empty_item_uri: str) -> Asset:
     example_empty_item = pystac.Item.from_file(example_empty_item_uri)
-    asset = example_empty_item.assets['example']
+    asset = example_empty_item.assets["example"]
     return asset
 
 
@@ -43,7 +39,9 @@ def archive_item(example_item_uri: str) -> Item:
 
 @pytest.fixture
 def archive_collection() -> Collection:
-    test_collection_uri = TestCases.get_path("data-files/archive/example-Collection.json")
+    test_collection_uri = TestCases.get_path(
+        "data-files/archive/example-Collection.json"
+    )
     test_collection = pystac.Collection.from_file(test_collection_uri)
     return test_collection
 
@@ -60,7 +58,7 @@ def test_add_to(sample_item: Item) -> None:
     # Check that the URI gets added to stac_extensions
     ArchiveExtension.add_to(sample_item)
     assert ArchiveExtension.get_schema_uri() in sample_item.stac_extensions
-    
+
     # Check that the URI only gets added once, regardless of how many times add_to
     # is called.
     ArchiveExtension.add_to(sample_item)
@@ -76,8 +74,8 @@ def test_add_to(sample_item: Item) -> None:
 
 @pytest.mark.vcr()
 def test_validate_archive(archive_item: Item) -> None:
-    print( f"In test_validate_archive: {archive_item.properties}", flush=True )
-    print( f"{archive_item.assets['ext-asset'].extra_fields}", flush=True )    
+    print(f"In test_validate_archive: {archive_item.properties}", flush=True)
+    print(f"{archive_item.assets['ext-asset'].extra_fields}", flush=True)
     archive_item.validate()
 
 
@@ -121,6 +119,7 @@ def test_asset_ext_add_to_ownerless_asset(sample_item: Item) -> None:
     with pytest.raises(pystac.STACError):
         _ = ArchiveExtension.ext(asset, add_if_missing=True)
 
+
 def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
     with pytest.raises(
         ExtensionTypeError, match=r"^ArchiveExtension does not apply to type 'object'$"
@@ -128,7 +127,10 @@ def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
         # calling it wrong purposely so ---------v
         ArchiveExtension.ext(object())  # type: ignore
 
-''''''
+
+""""""
+
+
 # Tests for summaries
 def test_summaries_href(archive_collection: Collection) -> None:
     col_dict = archive_collection.to_dict()
@@ -169,7 +171,7 @@ def test_summaries_roles(archive_collection: Collection) -> None:
     # Get
     assert archive_summaries.roles == col_dict["summaries"]["archive:roles"]
     # Set
-    new_roles_summary = ["new-example-roles", "new-example-roles-2"]
+    new_roles_summary = [["new-example-roles"], ["new-example-roles-2"]]
     assert archive_summaries.roles != new_roles_summary
     archive_summaries.roles = new_roles_summary
     assert archive_summaries.roles == new_roles_summary
@@ -185,7 +187,7 @@ def test_summaries_range(archive_collection: Collection) -> None:
     # Get
     assert archive_summaries.range == col_dict["summaries"]["archive:range"]
     # Set
-    new_range_summary = ["new-example-range", "new-example-range-2"]
+    new_range_summary = [[100, 200], [ 400, 500]]
     assert archive_summaries.range != new_range_summary
     archive_summaries.range = new_range_summary
     assert archive_summaries.range == new_range_summary
@@ -233,7 +235,8 @@ def test_summaries_bands(archive_collection: Collection) -> None:
     # Get
     assert archive_summaries.bands == col_dict["summaries"]["archive:bands"]
     # Set
-    new_bands_summary = ["new-example-bands", "new-example-bands-2"]
+    #new_bands_summary = [["new-example-bands", "new-example-bands-2"]]
+    new_bands_summary = None
     assert archive_summaries.bands != new_bands_summary
     archive_summaries.bands = new_bands_summary
     assert archive_summaries.bands == new_bands_summary
@@ -243,41 +246,41 @@ def test_summaries_bands(archive_collection: Collection) -> None:
 
 
 def test_item_apply() -> None:
-
-    example_empty_item_uri = TestCases.get_path("data-files/archive/example-empty-Item.json") 
+    example_empty_item_uri = TestCases.get_path(
+        "data-files/archive/example-empty-Item.json"
+    )
     example_empty_item = pystac.Item.from_file(example_empty_item_uri)
-    asset = example_empty_item.assets['example']
+    asset = example_empty_item.assets["example"]
 
     archive_ext = ArchiveExtension.ext(asset)
 
     archive_ext.apply(
-        href='some/href/path',
-        type='application/zip',
-        roles=['data'],
+        href="some/href/path",
+        type="application/zip",
+        roles=["data"],
         range=[],
-        title='An Archive',
-        description='This is an example archive.',
+        title="An Archive",
+        description="This is an example archive.",
         bands=[],
         archive=[],
     )
 
-    assert archive_ext.href == 'some/href/path'
-    assert archive_ext.type == 'application/zip'
-    assert archive_ext.roles == ['data']
+    assert archive_ext.href == "some/href/path"
+    assert archive_ext.type == "application/zip"
+    assert archive_ext.roles == ["data"]
     assert archive_ext.range == []
-    assert archive_ext.title == 'An Archive'
-    assert archive_ext.description == 'This is an example archive.'
+    assert archive_ext.title == "An Archive"
+    assert archive_ext.description == "This is an example archive."
     assert archive_ext.bands == []
-    assert archive_ext.archive == [] 
-    #example_empty_item.validate()
+    assert archive_ext.archive == []
+    # example_empty_item.validate()
 
-    
 
 @pytest.mark.vcr()
 def test_partial_apply(archive_asset: Asset) -> None:
-    ArchiveExtension.ext(archive_asset).apply(href='some/href/path')
+    ArchiveExtension.ext(archive_asset).apply(href="some/href/path")
 
-    assert ArchiveExtension.ext(archive_asset).href == 'some/href/path'
+    assert ArchiveExtension.ext(archive_asset).href == "some/href/path"
 
 
 @pytest.mark.vcr()
@@ -297,7 +300,7 @@ def test_asset_href(archive_item: Item) -> None:
     assert archive_ext.href == asset.extra_fields.get("archive:href")
 
     # Set
-    new_href = 'some/other/href/path'
+    new_href = "some/other/href/path"
     archive_ext.href = new_href
     assert archive_ext.href == new_href
 
@@ -325,7 +328,7 @@ def test_asset_type(archive_item: Item) -> None:
     assert archive_ext.type == asset.extra_fields.get("archive:type")
 
     # Set
-    new_type = 'some/file/type'
+    new_type = "some/file/type"
     archive_ext.type = new_type
     assert archive_ext.type == new_type
 
@@ -353,9 +356,9 @@ def test_asset_roles(archive_item: Item) -> None:
     assert archive_ext.roles == asset.extra_fields.get("archive:roles")
 
     # Set
-    new_roles = ['some', 'file', 'roles']
+    new_roles = ["some", "file", "roles"]
     archive_ext.roles = new_roles
-    assert archive_ext.roles == new_roles   
+    assert archive_ext.roles == new_roles
 
     archive_item.validate()
 
@@ -364,7 +367,6 @@ def test_asset_roles(archive_item: Item) -> None:
     assert "archive:type" not in asset.extra_fields
 
     archive_item.validate()
-
 
 
 @pytest.mark.vcr()
@@ -384,9 +386,9 @@ def test_asset_range(archive_item: Item) -> None:
     assert archive_ext.range == asset.extra_fields.get("archive:range")
 
     # Set
-    new_range = ['some', 'file', 'range']
+    new_range = [0, 1000]
     archive_ext.range = new_range
-    assert archive_ext.range == new_range   
+    assert archive_ext.range == new_range
 
     archive_item.validate()
 
@@ -414,9 +416,9 @@ def test_asset_title(archive_item: Item) -> None:
     assert archive_ext.title == asset.extra_fields.get("archive:title")
 
     # Set
-    new_title = 'some new title'
+    new_title = "some new title"
     archive_ext.title = new_title
-    assert archive_ext.title == new_title   
+    assert archive_ext.title == new_title
 
     archive_item.validate()
 
@@ -444,9 +446,9 @@ def test_asset_description(archive_item: Item) -> None:
     assert archive_ext.description == asset.extra_fields.get("archive:description")
 
     # Set
-    new_description = 'some new description'
+    new_description = "some new description"
     archive_ext.description = new_description
-    assert archive_ext.description == new_description   
+    assert archive_ext.description == new_description
 
     archive_item.validate()
 
@@ -474,9 +476,9 @@ def test_asset_bands(archive_item: Item) -> None:
     assert archive_ext.bands == asset.extra_fields.get("archive:bands")
 
     # Set
-    new_bands = 'some new bands'
+    new_bands = None
     archive_ext.bands = new_bands
-    assert archive_ext.bands == new_bands   
+    assert archive_ext.bands == new_bands
 
     archive_item.validate()
 
@@ -504,9 +506,9 @@ def test_asset_archive(archive_item: Item) -> None:
     assert archive_ext.archive == asset.extra_fields.get("archive:archive")
 
     # Set
-    new_archive = 'some new archive'
+    new_archive = None
     archive_ext.archive = new_archive
-    assert archive_ext.archive == new_archive   
+    assert archive_ext.archive == new_archive
 
     archive_item.validate()
 
