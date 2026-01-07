@@ -33,7 +33,7 @@ validation = ["jsonschema~=4.18"]
 [dependency-groups]
 dev = [
     "asv>=0.6.4",
-    "codespell<2.3",
+    "codespell<2.5",
     "coverage>=7.6.2",
     "doc8>=1.1.2",
     "filelock>=3.20.1", # No direct dependency, avoid CVE-2025-68146.
