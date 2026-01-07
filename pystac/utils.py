@@ -394,7 +394,8 @@ def is_absolute_href(href: str, start_href: str | None = None) -> bool:
         bool: ``True`` if the given HREF is absolute, ``False`` if it is relative.
     """
     parsed = safe_urlparse(href)
-    if parsed.scheme not in ["", "file"]:
+    # We treat /vsi paths, from GDAL, as absolute
+    if parsed.scheme not in ["", "file"] or parsed.path.startswith("/vsi"):
         return True
     else:
         parsed_start_scheme = (
