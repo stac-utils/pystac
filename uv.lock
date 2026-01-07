@@ -3171,7 +3171,7 @@ provides-extras = ["jinja2", "orjson", "urllib3", "validation"]
 [package.metadata.requires-dev]
 dev = [
     { name = "asv", specifier = ">=0.6.4" },
-    { name = "codespell", specifier = "<2.3" },
+    { name = "codespell", specifier = "<2.5" },
     { name = "coverage", specifier = ">=7.6.2" },
     { name = "doc8", specifier = ">=1.1.2" },
     { name = "filelock", specifier = ">=3.20.1" },

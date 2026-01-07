@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/collection-spec/examples/sentinel2.json
   response:
@@ -72,55 +72,7 @@ interactions:
         \   },\n    {\n      \"rel\": \"license\",\n      \"href\": \"https://scihub.copernicus.eu/twiki/pub/SciHubWebPortal/TermsConditions/Sentinel_Data_Terms_and_Conditions.pdf\",\n
         \     \"title\": \"Legal notice on the use of Copernicus Sentinel Data and
         Service Information\"\n    }\n  ]\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '5364'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 18 Sep 2025 14:55:44 GMT
-      ETag:
-      - '"7b5b9590049813a43b1a9c064eb61dd6b9c25e8e649fff820d3ac83580b7e559"'
-      Expires:
-      - Thu, 18 Sep 2025 15:00:44 GMT
-      Source-Age:
-      - '0'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 317fc71de5f4be989affd463ca39e1182e2d512b
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 3B4B:48527:C2A46:EDA72:68CC1D6E
-      X-Served-By:
-      - cache-bos4682-BOS
-      X-Timer:
-      - S1758207344.251079,VS0,VE102
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
