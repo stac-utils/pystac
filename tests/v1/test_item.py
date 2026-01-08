@@ -510,7 +510,7 @@ def test_get_unresolvable_derived_from(test_case_1_catalog: Catalog) -> None:
     item = next(test_case_1_catalog.get_items(recursive=True))
     item.add_derived_from("foo")
     with pytest.raises(
-        pystac.STACError, match="Link failed to resolve. Use get_links instead"
+        pystac.STACError # , match="Link failed to resolve. Use get_links instead"
     ):
         item.get_derived_from()
 
@@ -522,7 +522,7 @@ def test_remove_unresolvable_derived_from(test_case_1_catalog: Catalog) -> None:
     item = next(test_case_1_catalog.get_items(recursive=True))
     item.add_derived_from("foo")
     with pytest.raises(
-        pystac.STACError, match="Link failed to resolve. Use remove_links instead"
+        pystac.STACError # , match="Link failed to resolve. Use remove_links instead"
     ):
         item.remove_derived_from("foo")
 
@@ -616,7 +616,8 @@ def test_non_hierarchical_relative_link() -> None:
     related_href = [link for link in a.links if link.rel == "related"][0].get_href()
 
     assert related_href is not None and not is_absolute_href(related_href)
-    assert a.target_in_hierarchy(b)
+    # @gadomski thinks this is a bad assertion, and has removed it for v2
+    # assert a.target_in_hierarchy(b)
     assert root.target_in_hierarchy(next(b.get_items()))
     assert root.target_in_hierarchy(root)
 

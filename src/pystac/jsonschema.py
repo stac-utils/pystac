@@ -8,9 +8,12 @@ from typing import Any
 from urllib.request import Request
 
 import referencing.retrieval
+from jsonschema.exceptions import ValidationError
 from jsonschema.protocols import Validator
 from jsonschema.validators import Draft7Validator
 from referencing import Registry
+
+from pystac.errors import STACValidationError
 
 from .constants import STAC_OBJECT_TYPE
 from .utils import get_stac_type, get_user_agent
@@ -40,14 +43,20 @@ class JSONSchemaValidator:
         self, type: STAC_OBJECT_TYPE, version: str, data: dict[str, Any]
     ) -> None:
         validator = self.get_validator(type, version)
-        validator.validate(data)
+        try:
+            validator.validate(data)
+        except ValidationError as e:
+            raise STACValidationError(str(e)) from e
 
     def validate_extension(self, extension: str, data: dict[str, Any]) -> None:
         if extension not in self.cache:
             schema_data = json.loads(get_text(extension))
             self.cache[extension] = Draft7Validator(schema_data, registry=self.registry)
         validator = self.cache[extension]
-        validator.validate(data)
+        try:
+            validator.validate(data)
+        except ValidationError as e:
+            raise STACValidationError(str(e)) from e
 
 
 @referencing.retrieval.to_cached_resource()

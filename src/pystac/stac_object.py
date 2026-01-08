@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from enum import StrEnum
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar, Protocol
+from typing import TYPE_CHECKING, Any, ClassVar, Protocol, override
 
 from typing_extensions import deprecated
 
@@ -378,6 +378,10 @@ class STACObject(ABC):
 
     def clone[T: STACObject](self: T) -> T:
         return self.from_dict(self.to_dict())
+
+    @override
+    def __repr__(self) -> str:
+        return f"<{self.__class__} id={self.id}>"
 
     def _make_link(
         self, rel: str, target: STACObject, href: str, make_absolute: bool
