@@ -1,4 +1,4 @@
-pystac.extensions.storage
+pystac.extensions.archive
 ============================
 
 .. automodule:: pystac.extensions.archive
