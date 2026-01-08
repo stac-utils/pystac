@@ -96,7 +96,7 @@ class ArchiveExtension(
 
     @property
     def type(self) -> str | None:
-        """Get or sets the format,the mimetype of the archive."""
+        """Get or sets the file type,the mimetype of the archive."""
         return self._get_property(ARCHIVE_TYPE_PROP, str)
 
     @type.setter
@@ -105,9 +105,7 @@ class ArchiveExtension(
 
     @property
     def roles(self) -> list[str] | None:
-        """Get or sets the type,the mimetype of the file within the archive
-        specified by the href field.
-        """
+        """Get or sets the roles."""
         return self._get_property(ARCHIVE_ROLES_PROP, list[str])
 
     @roles.setter
@@ -116,9 +114,7 @@ class ArchiveExtension(
 
     @property
     def range(self) -> list[int] | None:
-        """Get or sets the start,the offset of the first byte of the file
-        within the archive.
-        """
+        """Get or sets the range of bytes of the file within the archive."""
         return self._get_property(ARCHIVE_RANGE_PROP, list[int])
 
     @range.setter
@@ -127,9 +123,7 @@ class ArchiveExtension(
 
     @property
     def title(self) -> str | None:
-        """Get or sets the end,the offset of the last byte of the file
-        within the archive.
-        """
+        """Get or sets the title of the file within the archive."""
         return self._get_property(ARCHIVE_TITLE_PROP, str)
 
     @title.setter
