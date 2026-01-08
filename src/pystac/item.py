@@ -11,9 +11,10 @@ from pystac.rel_type import RelType
 
 from .asset import Asset, Assets
 from .constants import DEFAULT_STAC_VERSION, STAC_OBJECT_TYPE
+from .container import Container
 from .geo_interface import GeoInterface
 from .link import Link
-from .stac_object import Container, STACObject
+from .stac_object import STACObject
 from .utils import datetime_to_str, str_to_datetime
 
 if TYPE_CHECKING:

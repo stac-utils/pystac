@@ -7,8 +7,6 @@ from .catalog import Catalog
 from .collection import (
     Collection,
     Extent,
-    Provider,
-    ProviderRole,
     SpatialExtent,
     TemporalExtent,
 )
@@ -28,6 +26,7 @@ from .item_assets import ItemAssetDefinition
 from .item_collection import ItemCollection
 from .link import HIERARCHICAL_LINKS, Link
 from .media_type import MediaType
+from .provider import Provider, ProviderRole
 from .rel_type import RelType
 from .stac_object import STACObject
 from .version import __version__

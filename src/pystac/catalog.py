@@ -5,9 +5,11 @@ from typing import Any, ClassVar, override
 
 from typing_extensions import deprecated
 
+from . import utils
 from .constants import DEFAULT_STAC_VERSION, STAC_OBJECT_TYPE
+from .container import Container
 from .link import Link
-from .stac_object import Container
+from .rel_type import RelType
 
 
 class Catalog(Container):
@@ -82,7 +84,7 @@ class CatalogType(StrEnum):
     """
 
     @classmethod
-    def determine_type(cls, stac_json: dict[str, Any]) -> CatalogType | None:
+    def determine_type(cls, stac_json: dict[str, Any]) -> CatalogType | None:  # pyright: ignore[reportDeprecated]
         """Determines the catalog type based on a STAC JSON dict.
 
         Only applies to Catalogs or Collections
@@ -97,10 +99,10 @@ class CatalogType(StrEnum):
         self_link = None
         relative = False
         for link in stac_json["links"]:
-            if link["rel"] == pystac.RelType.SELF:
+            if link["rel"] == RelType.SELF:
                 self_link = link
             else:
-                relative |= not is_absolute_href(link["href"])
+                relative |= not utils.is_absolute_href(link["href"])
 
         if self_link:
             if relative:

@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-import copy
 import datetime as dt
-from enum import StrEnum
 from typing import Any, ClassVar, TypedDict, cast, override
 
 from typing_extensions import deprecated
 
 from .asset import Asset, Assets, ItemAsset
 from .constants import DEFAULT_LICENSE, DEFAULT_STAC_VERSION, STAC_OBJECT_TYPE
+from .container import Container
 from .link import Link
-from .stac_object import Container
+from .provider import Provider
 from .utils import datetime_to_str
 
 SpatialExtentBboxType = list[float | int] | list[list[float | int]]
@@ -217,48 +216,3 @@ def to_datetime_str(datetime: dt.datetime | str | None) -> str | None:
         return datetime
     else:
         return datetime_to_str(datetime)
-
-
-class Provider:
-    def __init__(
-        self,
-        name: str,
-        description: str | None = None,
-        roles: list[ProviderRole | str] | None = None,
-        url: str | None = None,
-        **kwargs: Any,
-    ) -> None:
-        self.name: str = name
-        self.description: str | None = description
-        self.roles: list[ProviderRole] | None = roles
-        self.url: str | None = url
-        self.extra_fields: dict[str, Any] = kwargs
-
-    @classmethod
-    def try_from(cls, data: Provider | dict[str, Any]) -> Provider:
-        if isinstance(data, Provider):
-            return data
-        else:
-            return Provider.from_dict(data)
-
-    @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> Provider:
-        return cls(**data)
-
-    def to_dict(self) -> dict[str, Any]:
-        data = copy.deepcopy(self.extra_fields)
-        data["name"] = self.name
-        if self.description:
-            data["description"] = self.description
-        if self.roles:
-            data["roles"] = self.roles
-        if self.url:
-            data["url"] = self.url
-        return data
-
-
-class ProviderRole(StrEnum):
-    LICENSOR = "licensor"
-    PRODUCER = "producer"
-    PROCESSOR = "processor"
-    HOST = "host"

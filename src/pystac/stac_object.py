@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from enum import StrEnum
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar, Protocol, override
+from typing import TYPE_CHECKING, Any, ClassVar, override
 
 from typing_extensions import deprecated
 
@@ -23,7 +23,8 @@ from .writer import Writer
 
 if TYPE_CHECKING:
     from .collection import Collection
-    from .item import Item
+    from .container import Container
+    from .href_generator import HrefGenerator
 
 
 def __getattr__(name: str) -> Any:
@@ -31,59 +32,10 @@ def __getattr__(name: str) -> Any:
 
     if name == "S":
         warnings.warn(
-            "pystac.stac_object.S is deprecated, just use `type[STACObject]` instead"
+            "pystac.stac_object.S is deprecated, use `type[STACObject]` instead"
         )
         return TypeVar("S", bound="STACObject")
     raise AttributeError(f"module {__name__} has no attribute {name}")
-
-
-class HrefGenerator(Protocol):
-    def get_root(self, prefix: str, container: Container) -> str: ...
-    def get_child(self, parent_href: str, container: Container) -> str: ...
-    def get_item(self, parent_href: str, item: Item) -> str: ...
-
-
-class BestPracticesHrefGenerator:
-    def get_root(self, prefix: str, container: Container) -> str:
-        from .catalog import Catalog
-        from .collection import Collection
-
-        if isinstance(container, Catalog):
-            return make_absolute_href(prefix, "./catalog.json", start_is_dir=True)
-        elif isinstance(container, Collection):
-            return make_absolute_href(prefix, "./collection.json", start_is_dir=True)
-        else:
-            raise ValueError(f"Unsupported root type: {type(container)}")
-
-    def get_child(self, parent_href: str, container: Container) -> str:
-        from .catalog import Catalog
-        from .collection import Collection
-
-        if isinstance(container, Catalog):
-            file_name = "catalog.json"
-        elif isinstance(container, Collection):
-            file_name = "collection.json"
-        else:
-            raise ValueError(f"Unsupported child type: {type(container)}")
-
-        return make_absolute_href(
-            parent_href, "/".join((container.id, file_name)), start_is_dir=False
-        )
-
-    def get_item(self, parent_href: str, item: Item) -> str:
-        return make_absolute_href(
-            parent_href, "/".join((item.id, f"{item.id}.json")), start_is_dir=False
-        )
-
-
-DEFAULT_HREF_GENERATOR = BestPracticesHrefGenerator()
-
-
-@deprecated("STACObjectType is deprecated")
-class STACObjectType(StrEnum):
-    CATALOG = "Catalog"
-    COLLECTION = "Collection"
-    ITEM = "Feature"
 
 
 class STACObject(ABC):
@@ -282,9 +234,14 @@ class STACObject(ABC):
         parent: Container | None = None,
         collection: Collection | None = None,
         use_absolute_links: bool = False,
-        href_generator: HrefGenerator = DEFAULT_HREF_GENERATOR,
+        href_generator: HrefGenerator | None = None,
     ) -> Iterator[STACObject]:
         from .item import Item
+
+        if href_generator is None:
+            from .href_generator import DEFAULT_HREF_GENERATOR
+
+            href_generator = DEFAULT_HREF_GENERATOR
 
         self_href = self.get_self_href()
         if self_href is None:
@@ -403,68 +360,8 @@ class STACObject(ABC):
             return None
 
 
-class Container(STACObject, ABC):
-    def get_items(self, recursive: bool = False) -> Iterator[Item]:
-        for link in self.links:
-            if link.is_item():
-                from .item import Item
-
-                stac_object = link.get_target(start_href=self._href, reader=self.reader)
-                if isinstance(stac_object, Item):
-                    yield stac_object
-            elif recursive and link.is_child():
-                stac_object = link.get_target(start_href=self._href, reader=self.reader)
-                if isinstance(stac_object, Container):
-                    yield from stac_object.get_items(recursive=True)
-
-    def add_item(self, item: Item) -> None:
-        self.links.append(Link(target=item, rel=RelType.ITEM))
-
-    def get_child(self, id: str) -> Container | None:
-        for link in self.get_child_links():
-            stac_object = link.get_target(start_href=self._href, reader=self.reader)
-            if isinstance(stac_object, Container) and stac_object.id == id:
-                return stac_object
-
-    def add_child(self, child: Container) -> None:
-        link = Link(target=child, rel=RelType.CHILD)
-        self.links.append(link)
-
-    def get_child_links(self) -> list[Link]:
-        return [link for link in self.links if link.is_child()]
-
-    def get_item_links(self) -> list[Link]:
-        return [link for link in self.links if link.is_item()]
-
-    @deprecated("Use render instead")
-    def normalize_hrefs(self, root_href: str) -> None:
-        href_generator = DEFAULT_HREF_GENERATOR
-        self.set_self_href(href_generator.get_root(root_href, self))
-        for _ in self.render():
-            pass
-
-    def walk(self) -> Iterator[tuple[Container, list[Container], list[Item]]]:
-        from .item import Item
-
-        self_href = self.get_self_href()
-        children: list[Container] = []
-        items: list[Item] = []
-        for link in self.links:
-            if link.is_child() or link.is_item():
-                stac_object = link.get_target(self_href, self.reader)
-                if isinstance(stac_object, Container):
-                    children.append(stac_object)
-                elif isinstance(stac_object, Item):
-                    items.append(stac_object)
-
-        yield (self, children, items)
-
-        for child in children:
-            yield from child.walk()
-
-    def target_in_hierarchy(self, target: STACObject) -> bool:
-        for root, _, items in self.walk():
-            if root == target or any(item == target for item in items):
-                return True
-
-        return False
+@deprecated("STACObjectType is deprecated")
+class STACObjectType(StrEnum):
+    CATALOG = "Catalog"
+    COLLECTION = "Collection"
+    ITEM = "Feature"
