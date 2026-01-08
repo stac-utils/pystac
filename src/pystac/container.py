@@ -33,6 +33,29 @@ class Container(STACObject, ABC):
     def add_item(self, item: Item) -> None:
         self.links.append(Link(target=item, rel=RelType.ITEM))
 
+    def remove_item(self, id: str) -> Item | None:
+        from .item import Item
+
+        removed_item = None
+        index = None
+        for i, link in enumerate(self.links):
+            if link.is_item():
+                stac_object = link.get_target(
+                    start_href=self.get_self_href(), reader=self.reader
+                )
+                if isinstance(stac_object, Item) and stac_object.id == id:
+                    removed_item = stac_object
+                    index = i
+                    break
+
+        if index is not None:
+            _ = self.links.pop(index)
+
+        return removed_item
+
+    def clear_items(self) -> None:
+        self.links: list[Link] = [link for link in self.links if not link.is_item()]
+
     def get_child(self, id: str) -> Container | None:
         for child in self.get_children():
             if child.id == id:

@@ -229,6 +229,9 @@ class Properties:
 
         self.extra_fields: dict[str, Any] = kwargs
 
+    def __getitem__(self, key: str) -> Any:
+        return self.extra_fields[key]
+
     @classmethod
     def try_from(
         cls,

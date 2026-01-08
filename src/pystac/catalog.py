@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import warnings
 from enum import StrEnum
 from typing import Any, ClassVar, override
 
@@ -47,7 +48,20 @@ class Catalog(Container):
     ) -> Catalog:
         if preserve_dict:
             data = copy.deepcopy(data)
-        return cls(**data)
+        catalog = cls(**data)
+
+        # TODO deprecate migrate
+        if migrate:
+            raise NotImplementedError
+        if root:
+            warnings.warn(
+                "The root parameter is deprecated, call `set_root` directly after "
+                "creating the item",
+                DeprecationWarning,
+            )
+            catalog.set_root(root)
+
+        return catalog
 
     @override
     def to_dict(

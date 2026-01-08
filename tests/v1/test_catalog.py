@@ -107,6 +107,7 @@ class TestCatalog:
 
             assert len(list(items)) == 8
 
+    @pytest.mark.xfail(reason="We no longer migrate by default in v2, so this test should fail")
     def test_from_dict_preserves_dict(self) -> None:
         catalog_dict = TestCases.case_1().to_dict()
         param_dict = deepcopy(catalog_dict)
@@ -120,6 +121,7 @@ class TestCatalog:
         _ = Catalog.from_dict(param_dict, preserve_dict=False, migrate=False)
         assert param_dict != catalog_dict
 
+    @pytest.mark.xfail(reason="We deserialize more permissively in v2")
     def test_from_file_bad_catalog(self) -> None:
         with pytest.raises(pystac.errors.STACTypeError) as ctx:
             _ = Catalog.from_file(TestCases.get_path(TestCases.bad_catalog_case))
