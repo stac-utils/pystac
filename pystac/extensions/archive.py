@@ -62,19 +62,22 @@ class ArchiveExtension(
         title: str | None = None,
         description: str | None = None,
         bands: list[Band] | None = None,
-        archive: list[ArchiveExtension] | None = None,
+        archive: list[ArchiveExtension] | None = None, 
     ) -> None:
         """Applies Archive Extension properties to the extended
         :class:`~pystac.Collection`, :class:`~pystac.Item` or :class:`~pystac.Asset`.
 
         Args:
             href (str) : The location of the file within the archive specified by
-                        the href field.
-            format (str): The mimetype of the archive format.
+                        the href field.            
             type (str): The mimetype of the file within the archive specified by the
                         href field.
-            start (int) : The offset of the first byte of the file within the archive.
-            end (int) : The offset of the last byte of the file within the archive.
+            roles (list[str]) : The roles.
+            range (list[int]) : The range of bytes of the file within the archive.
+            title (str) : The title of the file within the archive.
+            description (str) : The description of the archive.
+            bands (list[Band]) : The bands information of the archive.
+            archive (list[ArchiveExtension]) : The archives within the nested archive.            
         """
         self.href = href
         self.type = type
@@ -185,7 +188,7 @@ class ArchiveExtension(
         if isinstance(obj, pystac.Asset):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(ArchiveExtension[T], AssetArchiveExtension(obj))
-        elif isinstance(obj, item_assets.AssetDefinition):
+        elif isinstance(obj, pystac.ItemAssetDefinition):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(ArchiveExtension[T], ItemAssetsArchiveExtension(obj))
         else:
@@ -248,9 +251,9 @@ class AssetArchiveExtension(ArchiveExtension[pystac.Asset]):
 # class ItemAssetsArchiveExtension(ArchiveExtension[item_assets.AssetDefinition]):
 class ItemAssetsArchiveExtension(ArchiveExtension[pystac.ItemAssetDefinition]):
     properties: dict[str, Any]
-    asset_defn: item_assets.AssetDefinition
+    asset_defn: pystac.ItemAssetDefinition
 
-    def __init__(self, item_asset: item_assets.AssetDefinition):
+    def __init__(self, item_asset: pystac.ItemAssetDefinition):
         self.asset_defn = item_asset
         self.properties = item_asset.properties
 
