@@ -99,7 +99,18 @@ class STACObject(ABC):
         **kwargs: Any,
     ) -> None:
         if type != self.type:
-            raise STACTypeError(f"Expected {self.type}, got {type}")
+            d = {
+                "type": type,
+                "id": id,
+                "stac_version": stac_version,
+                "stac_extensions": stac_extensions,
+                "links": links,
+            }
+            d.update(kwargs)
+            raise STACTypeError(
+                d,
+                self.__class__,
+            )
 
         self.id: str = id
         self.stac_version: str = stac_version

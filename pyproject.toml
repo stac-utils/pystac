@@ -67,6 +67,7 @@ Changelog = "https://github.com/stac-utils/pystac/blob/main/CHANGELOG.md"
 Discussions = "https://github.com/radiantearth/stac-spec/discussions/categories/stac-software"
 
 [tool.basedpyright]
+ignore = ["tests/v1"]
 reportExplicitAny = false
 reportAny = false
 reportImportCycles = false

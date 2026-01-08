@@ -28,7 +28,9 @@ from .item_assets import ItemAssetDefinition
 from .item_collection import ItemCollection
 from .link import HIERARCHICAL_LINKS, Link
 from .media_type import MediaType
+from .rel_type import RelType
 from .stac_object import STACObject
+from .version import __version__
 
 
 def __getattr__(name: str) -> Any:
@@ -39,13 +41,13 @@ def __getattr__(name: str) -> Any:
             return StacIO
 
         case "STACObjectType":
-            from .stac_object import STACObjectType
+            from .stac_object import STACObjectType  # pyright: ignore[reportDeprecated]
 
-            return STACObjectType
+            return STACObjectType  # pyright: ignore[reportDeprecated]
         case "CatalogType":
-            from .catalog import CatalogType
+            from .catalog import CatalogType  # pyright: ignore[reportDeprecated]
 
-            return CatalogType
+            return CatalogType  # pyright: ignore[reportDeprecated]
         case "get_stac_version":
 
             @deprecated("get_stac_version is deprecated")
@@ -66,6 +68,7 @@ __all__ = [
     "ExtensionTypeError",
     "Extent",
     "HIERARCHICAL_LINKS",
+    "RelType",
     "DEFAULT_STAC_VERSION",
     "Item",
     "ItemAssetDefinition",
@@ -82,4 +85,5 @@ __all__ = [
     "SpatialExtent",
     "TemporalExtent",
     "read_file",
+    "__version__",
 ]

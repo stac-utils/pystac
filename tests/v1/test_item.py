@@ -155,6 +155,7 @@ def test_datetime_ISO8601_format(sample_item: Item) -> None:
 
 
 @pytest.mark.vcr()
+@pytest.mark.xfail(reason="Null datetimes are ok in pystac v2")
 def test_null_datetime() -> None:
     item = pystac.Item.from_file(TestCases.get_path("data-files/item/sample-item.json"))
 
@@ -200,6 +201,7 @@ def test_get_assets() -> None:
 
 
 @pytest.mark.vcr()
+@pytest.mark.xfail(reason="Null datetimes are ok in pystac v2")
 def test_null_datetime_constructor() -> None:
     item = pystac.Item.from_file(TestCases.get_path("data-files/item/sample-item.json"))
     with pytest.raises(pystac.STACError):
@@ -429,18 +431,21 @@ def test_custom_item_from_dict(item: Item) -> None:
     _ = CustomItem.from_dict(item.to_dict())
 
 
+@pytest.mark.xfail(reason="pystac v2 is more permissive on input")
 def test_item_from_dict_raises_useful_error() -> None:
     item_dict = {"type": "Feature", "stac_version": "1.1.0", "id": "lalalalala"}
     with pytest.raises(pystac.STACError, match="Invalid Item: "):
         Item.from_dict(item_dict)
 
 
+@pytest.mark.xfail(reason="pystac v2 is more permissive on input")
 def test_item_from_dict_with_missing_stac_version_raises_useful_error() -> None:
     item_dict = {"type": "Feature", "id": "lalalalala"}
     with pytest.raises(pystac.STACTypeError, match="'stac_version' is missing"):
         Item.from_dict(item_dict, migrate=False)
 
 
+@pytest.mark.xfail(reason="pystac v2 is more permissive on input")
 def test_item_from_dict_with_missing_type_raises_useful_error() -> None:
     item_dict = {"stac_version": "0.8.0", "id": "lalalalala"}
     with pytest.raises(pystac.STACTypeError, match="'type' is missing"):
