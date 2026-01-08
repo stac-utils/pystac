@@ -253,6 +253,9 @@ class STACObject(ABC):
                 )
         return self._root
 
+    def get_root_link(self) -> Link | None:
+        return next((link for link in self.links if link.is_root()), None)
+
     def set_root(self, root: Container) -> None:
         self._root = root
 
@@ -429,6 +432,9 @@ class Container(STACObject, ABC):
 
     def get_child_links(self) -> list[Link]:
         return [link for link in self.links if link.is_child()]
+
+    def get_item_links(self) -> list[Link]:
+        return [link for link in self.links if link.is_item()]
 
     @deprecated("Use render instead")
     def normalize_hrefs(self, root_href: str) -> None:

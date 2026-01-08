@@ -82,8 +82,11 @@ class Link:
     def is_self(self) -> bool:
         return self.rel == RelType.SELF
 
+    def is_root(self) -> bool:
+        return self.rel == RelType.ROOT
+
     def is_item(self) -> bool:
-        return self.rel == RelType.ITEM
+        return self.rel == RelType.ITEM and self.media_type is None or self.is_json()
 
     def is_child(self) -> bool:
         return self.rel == RelType.CHILD and self.media_type is None or self.is_json()
