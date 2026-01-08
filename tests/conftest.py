@@ -4,7 +4,9 @@ from typing import Any, cast
 import pytest
 from pytest import FixtureRequest
 
+import pystac.jsonschema
 from pystac import Catalog, Item
+from pystac.jsonschema import JSONSchemaValidator
 
 
 @pytest.fixture(scope="module")
@@ -19,6 +21,12 @@ def vcr_config() -> dict[str, Any]:
         return response
 
     return {"before_record_response": scrub_headers}
+
+
+@pytest.fixture(autouse=True)
+def reset_json_schema_validator() -> None:
+    # Needed to make sure each test records a cassette for validation requests
+    pystac.jsonschema.set_default_json_schema_validator(JSONSchemaValidator())
 
 
 @pytest.fixture

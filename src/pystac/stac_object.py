@@ -418,15 +418,17 @@ class Container(STACObject, ABC):
         self.links.append(Link(target=item, rel=RelType.ITEM))
 
     def get_child(self, id: str) -> Container | None:
-        for link in self.links:
-            if link.is_child():
-                stac_object = link.get_target(start_href=self._href, reader=self.reader)
-                if isinstance(stac_object, Container) and stac_object.id == id:
-                    return stac_object
+        for link in self.get_child_links():
+            stac_object = link.get_target(start_href=self._href, reader=self.reader)
+            if isinstance(stac_object, Container) and stac_object.id == id:
+                return stac_object
 
     def add_child(self, child: Container) -> None:
         link = Link(target=child, rel=RelType.CHILD)
         self.links.append(link)
+
+    def get_child_links(self) -> list[Link]:
+        return [link for link in self.links if link.is_child()]
 
     @deprecated("Use render instead")
     def normalize_hrefs(self, root_href: str) -> None:

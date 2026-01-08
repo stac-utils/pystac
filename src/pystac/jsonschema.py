@@ -116,4 +116,9 @@ def read_schema(path: str) -> dict[str, Any]:
         return json.load(f)
 
 
+def set_default_json_schema_validator(validator: JSONSchemaValidator) -> None:
+    global DEFAULT_JSON_SCHEMA_VALIDATOR
+    DEFAULT_JSON_SCHEMA_VALIDATOR = validator  # pyright: ignore[reportConstantRedefinition]
+
+
 DEFAULT_JSON_SCHEMA_VALIDATOR = JSONSchemaValidator()

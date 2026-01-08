@@ -4,9 +4,8 @@ import copy
 import warnings
 from typing import TYPE_CHECKING, Any, override
 
-from typing_extensions import deprecated
-
 from pystac.errors import STACError
+from pystac.media_type import MediaType
 from pystac.rel_type import RelType
 from pystac.utils import make_absolute_href
 
@@ -28,11 +27,9 @@ class Link:
     def __init__(
         self,
         rel: str,
-        # target is mostly for backwards compatibility, if we were to design it
-        # from scratch we wouldn't do it this way,
         target: str | STACObject | None = None,
         href: str | None = None,
-        type: str | None = None,
+        media_type: str | None = None,
         title: str | None = None,
         method: str | None = None,
         headers: dict[str, str | list[str]] | None = None,
@@ -42,7 +39,7 @@ class Link:
         from .stac_object import STACObject
 
         self.rel: str = rel
-        self.type: str | None = type
+        self.media_type: str | None = media_type
         self.title: str | None = title
         self.method: str | None = method
         self.headers: dict[str, str | list[str]] | None = headers
@@ -79,11 +76,6 @@ class Link:
     def from_dict(cls, data: dict[str, Any]) -> Link:
         return cls(**data)
 
-    @property
-    @deprecated("media_type is now called type")
-    def media_type(self) -> str | None:
-        return self.type
-
     def is_hierarchical(self) -> bool:
         return self.rel in HIERARCHICAL_LINKS
 
@@ -94,10 +86,13 @@ class Link:
         return self.rel == RelType.ITEM
 
     def is_child(self) -> bool:
-        return self.rel == RelType.CHILD
+        return self.rel == RelType.CHILD and self.media_type is None or self.is_json()
 
     def is_derived_from(self) -> bool:
         return self.rel == RelType.DERIVED_FROM
+
+    def is_json(self) -> bool:
+        return self.media_type in (MediaType.JSON, MediaType.GEOJSON)
 
     def get_href(self) -> str | None:
         return self._href or self.target and self.target.get_self_href()
@@ -134,8 +129,8 @@ class Link:
         else:
             raise ValueError("No href or target self href on the link")
         data["rel"] = self.rel
-        if self.type is not None:
-            data["type"] = self.type
+        if self.media_type is not None:
+            data["type"] = self.media_type
         if self.title is not None:
             data["title"] = self.title
         if self.method is not None:
