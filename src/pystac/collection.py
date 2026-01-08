@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import datetime as dt
 from typing import Any, ClassVar, TypedDict, cast, override
 
@@ -72,7 +73,15 @@ class Collection(Container, Assets):
 
     @override
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> Collection:
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        preserve_dict: bool = True,
+        migrate: bool | None = None,
+        root: Container | None = None,
+    ) -> Collection:
+        if preserve_dict:
+            data = copy.deepcopy(data)
         return Collection(**data)
 
     @override

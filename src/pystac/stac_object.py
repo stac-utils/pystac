@@ -85,9 +85,17 @@ class STACObject(ABC):
 
     @classmethod
     @abstractmethod
-    def from_dict[T: STACObject](cls: type[T], data: dict[str, Any]) -> T:
+    def from_dict[T: STACObject](
+        cls: type[T],
+        data: dict[str, Any],
+        preserve_dict: bool = True,
+        migrate: bool | None = None,
+        root: Container | None = None,
+    ) -> T:
         from .deserialize import from_dict
 
+        if preserve_dict:
+            data = copy.deepcopy(data)
         return from_dict(data)  # pyright: ignore[reportReturnType]
 
     @abstractmethod

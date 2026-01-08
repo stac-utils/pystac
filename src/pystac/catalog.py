@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from enum import StrEnum
 from typing import Any, ClassVar, override
 
@@ -37,7 +38,15 @@ class Catalog(Container):
 
     @override
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> Catalog:
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        preserve_dict: bool = True,
+        migrate: bool | None = None,
+        root: Container | None = None,
+    ) -> Catalog:
+        if preserve_dict:
+            data = copy.deepcopy(data)
         return cls(**data)
 
     @override

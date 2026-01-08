@@ -34,10 +34,15 @@ class Container(STACObject, ABC):
         self.links.append(Link(target=item, rel=RelType.ITEM))
 
     def get_child(self, id: str) -> Container | None:
+        for child in self.get_children():
+            if child.id == id:
+                return child
+
+    def get_children(self) -> Iterator[Container]:
         for link in self.get_child_links():
             stac_object = link.get_target(start_href=self._href, reader=self.reader)
-            if isinstance(stac_object, Container) and stac_object.id == id:
-                return stac_object
+            if isinstance(stac_object, Container):
+                yield stac_object
 
     def add_child(self, child: Container) -> None:
         link = Link(target=child, rel=RelType.CHILD)

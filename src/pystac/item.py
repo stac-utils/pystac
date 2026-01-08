@@ -87,17 +87,16 @@ class Item(STACObject, Assets):
     def from_dict(
         cls,
         data: dict[str, Any],
+        preserve_dict: bool = True,
         migrate: bool | None = None,
-        preserve_dict: bool | None = None,
         root: Container | None = None,
     ) -> Item:
+        if preserve_dict:
+            data = copy.deepcopy(data)
         item = cls(**data)
 
         # TODO deprecate migrate
         if migrate:
-            raise NotImplementedError
-        # TODO deprecate preserve_dict
-        if preserve_dict:
             raise NotImplementedError
         if root:
             warnings.warn(
