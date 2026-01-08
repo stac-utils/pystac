@@ -4,13 +4,12 @@ from abc import ABC
 from collections.abc import Iterator
 from typing import TYPE_CHECKING
 
-from typing_extensions import deprecated
-
 from .link import Link
 from .rel_type import RelType
 from .stac_object import STACObject
 
 if TYPE_CHECKING:
+    from .href_generator import HrefGenerator
     from .item import Item
 
 
@@ -47,12 +46,19 @@ class Container(STACObject, ABC):
     def get_item_links(self) -> list[Link]:
         return [link for link in self.links if link.is_item()]
 
-    @deprecated("Use render instead")
     def normalize_hrefs(self, root_href: str) -> None:
-        from .href_generator import DEFAULT_HREF_GENERATOR
+        from .href_generator import BestPracticesHrefGenerator
 
-        self.set_self_href(DEFAULT_HREF_GENERATOR.get_root(root_href, self))
-        for _ in self.render():
+        href_generator = BestPracticesHrefGenerator()
+        self.set_self_href(href_generator.get_root(root_href, self))
+        self.render_all(href_generator=href_generator)
+
+    def render_all(
+        self,
+        use_absolute_links: bool = False,
+        href_generator: HrefGenerator | None = None,
+    ) -> None:
+        for _ in self.render(use_absolute_links, href_generator):
             pass
 
     def walk(self) -> Iterator[tuple[Container, list[Container], list[Item]]]:

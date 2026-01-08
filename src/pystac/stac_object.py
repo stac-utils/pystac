@@ -27,17 +27,6 @@ if TYPE_CHECKING:
     from .href_generator import HrefGenerator
 
 
-def __getattr__(name: str) -> Any:
-    from typing import TypeVar
-
-    if name == "S":
-        warnings.warn(
-            "pystac.stac_object.S is deprecated, use `type[STACObject]` instead"
-        )
-        return TypeVar("S", bound="STACObject")
-    raise AttributeError(f"module {__name__} has no attribute {name}")
-
-
 class STACObject(ABC):
     type: ClassVar[STAC_OBJECT_TYPE]
 
@@ -107,7 +96,7 @@ class STACObject(ABC):
     ) -> dict[str, Any]:
         if transform_hrefs is not None:
             warnings.warn(
-                "transform_hrefs is deprecated as an argument in `to_dict`",
+                "transform_hrefs is deprecated as an argument",
                 DeprecationWarning,
             )
             if transform_hrefs:
@@ -140,7 +129,7 @@ class STACObject(ABC):
     def get_links(self, rel: str) -> list[Link]:
         return list(link for link in self.links if link.rel == rel)
 
-    @deprecated("Use get_link instead")
+    @deprecated("Use .get_link()")
     def get_single_link(self, rel: str) -> Link | None:
         return self.get_link(rel)
 
@@ -151,16 +140,13 @@ class STACObject(ABC):
                 derived_from.append(link.get_target(self._href, self.reader))
         return derived_from
 
-    @deprecated("Just append to the links array")
+    @deprecated("Append to .links")
     def add_link(self, link: Link) -> None:
         self.links.append(link)
 
     def add_derived_from(self, *values: STACObject | str) -> None:
         for value in values:
-            if isinstance(value, STACObject):
-                self.links.append(Link(target=value, rel=RelType.DERIVED_FROM))
-            else:
-                self.links.append(Link(target=value, rel=RelType.DERIVED_FROM))
+            self.links.append(Link(target=value, rel=RelType.DERIVED_FROM))
 
     def remove_derived_from(self, id: str) -> None:
         links: list[Link] = []
@@ -230,18 +216,36 @@ class STACObject(ABC):
 
     def render(
         self,
+        use_absolute_links: bool = False,
+        href_generator: HrefGenerator | None = None,
+    ) -> Iterator[STACObject]:
+        """Remove and re-create all hierarchical links on this STAC object and
+        all children and items, yielding each."""
+        yield from self._render(
+            use_absolute_links=use_absolute_links,
+            href_generator=href_generator,
+            root=None,
+            parent=None,
+            collection=None,
+        )
+
+    def _render(
+        self,
         root: Container | None = None,
         parent: Container | None = None,
         collection: Collection | None = None,
         use_absolute_links: bool = False,
         href_generator: HrefGenerator | None = None,
     ) -> Iterator[STACObject]:
+        from .catalog import Catalog
+        from .collection import Collection
+        from .container import Container
         from .item import Item
 
         if href_generator is None:
-            from .href_generator import DEFAULT_HREF_GENERATOR
+            from .href_generator import BestPracticesHrefGenerator
 
-            href_generator = DEFAULT_HREF_GENERATOR
+            href_generator = BestPracticesHrefGenerator()
 
         self_href = self.get_self_href()
         if self_href is None:
@@ -306,15 +310,23 @@ class STACObject(ABC):
                         )
                     )
 
-                if isinstance(self, Container):
-                    yield from stac_object.render(
+                if isinstance(self, Collection):
+                    yield from stac_object._render(
+                        root=root,
+                        parent=self,
+                        collection=self,
+                        use_absolute_links=use_absolute_links,
+                        href_generator=href_generator,
+                    )
+                elif isinstance(self, Catalog):
+                    yield from stac_object._render(
                         root=root,
                         parent=self,
                         use_absolute_links=use_absolute_links,
                         href_generator=href_generator,
                     )
                 else:
-                    yield from stac_object.render(
+                    yield from stac_object._render(
                         root=root,
                         use_absolute_links=use_absolute_links,
                         href_generator=href_generator,
@@ -360,8 +372,20 @@ class STACObject(ABC):
             return None
 
 
-@deprecated("STACObjectType is deprecated")
+@deprecated("STACObjectType is deprecated, use pystac.constants.STAC_OBJECT_TYPE")
 class STACObjectType(StrEnum):
     CATALOG = "Catalog"
     COLLECTION = "Collection"
     ITEM = "Feature"
+
+
+def __getattr__(name: str) -> Any:
+    from typing import TypeVar
+
+    if name == "S":
+        warnings.warn(
+            "pystac.stac_object.S is deprecated, use `type[STACObject]`",
+            DeprecationWarning,
+        )
+        return TypeVar("S", bound="STACObject")
+    raise AttributeError(f"module {__name__} has no attribute {name}")

@@ -1,10 +1,8 @@
-from typing import TYPE_CHECKING, Protocol
+from typing import Protocol
 
+from .container import Container
+from .item import Item
 from .utils import make_absolute_href
-
-if TYPE_CHECKING:
-    from .container import Container
-    from .item import Item
 
 
 class HrefGenerator(Protocol):
@@ -44,6 +42,3 @@ class BestPracticesHrefGenerator:
         return make_absolute_href(
             parent_href, "/".join((item.id, f"{item.id}.json")), start_is_dir=False
         )
-
-
-DEFAULT_HREF_GENERATOR = BestPracticesHrefGenerator()
