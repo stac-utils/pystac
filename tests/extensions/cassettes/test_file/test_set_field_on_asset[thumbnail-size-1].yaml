@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/file/v2.1.0/schema.json
   response:
@@ -85,7 +85,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 18 Sep 2025 14:55:21 GMT
+      - Thu, 08 Jan 2026 13:11:36 GMT
       ETag:
       - '"61b4cf00-11b8"'
       Last-Modified:
@@ -103,15 +103,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 0ec83ff6f1bafe55a073b8c5a303b1a16ac872a7
+      - 552cfb21e6b716243528a144dda5ba02d4c4b0d2
       X-GitHub-Request-Id:
-      - 4944:D006F:CE75D8:E8CE6C:68CC1D58
+      - BA4B:18142A:9FB031:B1224A:695F0FA4
       X-Served-By:
-      - cache-bos4623-BOS
+      - cache-iad-kcgs7200039-IAD
       X-Timer:
-      - S1758207321.109551,VS0,VE1
+      - S1767877897.989060,VS0,VE1
       expires:
-      - Thu, 18 Sep 2025 15:05:20 GMT
+      - Thu, 08 Jan 2026 02:10:05 GMT
       x-proxy-cache:
       - MISS
     status:

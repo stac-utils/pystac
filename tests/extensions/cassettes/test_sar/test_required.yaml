@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/sar/v1.0.0/schema.json
   response:
@@ -92,7 +92,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 18 Sep 2025 14:55:30 GMT
+      - Thu, 08 Jan 2026 13:11:42 GMT
       ETag:
       - '"687775e1-13df"'
       Last-Modified:
@@ -106,19 +106,21 @@ interactions:
       Via:
       - 1.1 varnish
       X-Cache:
-      - MISS
+      - HIT
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 581754361e1dbd2b57eab92c544d0da80cfba5c2
+      - 656db0b6e65511309d6178c16a32c966d496375b
       X-GitHub-Request-Id:
-      - C4E5:1D3617:CA1CFB:E48D12:68CC1D62
+      - 3AFF:31C6B6:192343:1B2D56:695F9C9A
       X-Served-By:
-      - cache-bos4666-BOS
+      - cache-iad-kcgs7200171-IAD
       X-Timer:
-      - S1758207330.467280,VS0,VE48
+      - S1767877903.583875,VS0,VE10
       expires:
-      - Thu, 18 Sep 2025 15:05:30 GMT
+      - Thu, 08 Jan 2026 12:11:31 GMT
+      x-origin-cache:
+      - HIT
       x-proxy-cache:
       - MISS
     status:

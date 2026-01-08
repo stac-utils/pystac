@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/xarray-assets/v1.0.0/schema.json
   response:
@@ -65,7 +65,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 18 Sep 2025 14:55:36 GMT
+      - Thu, 08 Jan 2026 13:11:45 GMT
       ETag:
       - '"60dcd7ae-bb0"'
       Last-Modified:
@@ -83,15 +83,15 @@ interactions:
       X-Cache-Hits:
       - '0'
       X-Fastly-Request-ID:
-      - 50d222d2c614a22c0d9d5a506d60298263fc8d3b
+      - 7308be1da67eb7c09acaead7f499096d57821d1d
       X-GitHub-Request-Id:
-      - 39D7:358B9B:CCD787:E73F3A:68CC1D68
+      - 3A96:1429D2:25279D:29BDCF:695FAD11
       X-Served-By:
-      - cache-bos4645-BOS
+      - cache-iad-kcgs7200166-IAD
       X-Timer:
-      - S1758207337.609915,VS0,VE53
+      - S1767877906.766818,VS0,VE33
       expires:
-      - Thu, 18 Sep 2025 15:05:36 GMT
+      - Thu, 08 Jan 2026 13:21:45 GMT
       x-proxy-cache:
       - MISS
     status:

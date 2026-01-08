@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/catalog-spec/json-schema/catalog.json
   response:
@@ -55,11 +55,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 18 Sep 2025 14:56:29 GMT
+      - Thu, 08 Jan 2026 13:12:31 GMT
       ETag:
-      - '"66e1651c-84e"'
+      - '"691b88d5-84e"'
       Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
+      - Mon, 17 Nov 2025 20:43:01 GMT
       Server:
       - GitHub.com
       Vary:
@@ -71,15 +71,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - c173c16588132f007cd39cbc01820ff554056993
+      - eed358acea67df401b3b5f22a6ccc8d311130663
       X-GitHub-Request-Id:
-      - 3695:91567:105B1F4:125794D:68CC1D9D
+      - 5928:E1842:27C7C6:2ADF8B:695FAD3E
       X-Served-By:
-      - cache-bos4678-BOS
+      - cache-iad-kcgs7200054-IAD
       X-Timer:
-      - S1758207390.620792,VS0,VE1
+      - S1767877951.145283,VS0,VE1
       expires:
-      - Thu, 18 Sep 2025 15:06:29 GMT
+      - Thu, 08 Jan 2026 13:22:30 GMT
       x-proxy-cache:
       - MISS
     status:

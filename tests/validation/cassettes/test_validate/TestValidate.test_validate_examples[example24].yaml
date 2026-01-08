@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/collection-spec/json-schema/collection.json
   response:
@@ -85,11 +85,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 18 Sep 2025 14:56:08 GMT
+      - Thu, 08 Jan 2026 13:12:22 GMT
       ETag:
       - '"031974beaaaf6f0b5c6877dc97088d9e2aff3bc8962df33ff291dddded353f09"'
       Expires:
-      - Thu, 18 Sep 2025 15:01:08 GMT
+      - Thu, 08 Jan 2026 13:17:22 GMT
       Source-Age:
       - '7'
       Strict-Transport-Security:
@@ -101,19 +101,19 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '1'
+      - '3'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - fb62bdf99bf519de144708e35ddd12ab4a0ee021
+      - 3993a54c36f64ed540241c41a65844883765b3bb
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - EAA4:3C3312:A80AF:D3151:68CC1D7F
+      - D390:3D6176:1265F8:16AAB1:695FAD10
       X-Served-By:
-      - cache-bos4690-BOS
+      - cache-iad-kcgs7200042-IAD
       X-Timer:
-      - S1758207369.554180,VS0,VE1
+      - S1767877943.517381,VS0,VE0
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -123,7 +123,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/catalog-spec/json-schema/catalog.json
   response:
@@ -184,13 +184,13 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 18 Sep 2025 14:56:08 GMT
+      - Thu, 08 Jan 2026 13:12:22 GMT
       ETag:
       - '"3b514933a3747f038125935624a13df108e30fe1cb8f9660a7f54ac6d4765ce9"'
       Expires:
-      - Thu, 18 Sep 2025 15:01:08 GMT
+      - Thu, 08 Jan 2026 13:17:22 GMT
       Source-Age:
-      - '8'
+      - '7'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -200,19 +200,19 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '1'
+      - '2'
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 7c9ecb25ea815a213e3ca1a19e234b1a48cad9bc
+      - 2341c2aed4d569f8416020332ddef9eec8d5b0bc
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - BCE7:388807:C697B:F1BF7:68CC1D7C
+      - 66C8:14DB1B:158B54:19D45A:695FAD2E
       X-Served-By:
-      - cache-bos4678-BOS
+      - cache-iad-kcgs7200048-IAD
       X-Timer:
-      - S1758207369.623047,VS0,VE1
+      - S1767877943.545530,VS0,VE0
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -222,7 +222,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/extensions/scientific/json-schema/schema.json
   response:
@@ -268,11 +268,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 18 Sep 2025 14:56:08 GMT
+      - Thu, 08 Jan 2026 13:12:22 GMT
       ETag:
       - '"13ff4323200a45e6acb12e649221282624758beb0a8f5b3a190160c2aa9d358a"'
       Expires:
-      - Thu, 18 Sep 2025 15:01:08 GMT
+      - Thu, 08 Jan 2026 13:17:22 GMT
       Source-Age:
       - '0'
       Strict-Transport-Security:
@@ -288,15 +288,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 113703579d9e90398d9fb7776f2f210451a8b111
+      - 1eac0a773cafa4ffda4a94bf47d40c9637c2a493
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 5D46:3CAE3B:BE640:E98CC:68CC1D88
+      - B8F4:39F7C2:151BB0:1960D7:695FAD35
       X-Served-By:
-      - cache-bos4671-BOS
+      - cache-iad-kcgs7200079-IAD
       X-Timer:
-      - S1758207369.683090,VS0,VE76
+      - S1767877943.568028,VS0,VE24
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -306,7 +306,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/item-spec/json-schema/item.json
   response:
@@ -411,11 +411,11 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 18 Sep 2025 14:56:08 GMT
+      - Thu, 08 Jan 2026 13:12:22 GMT
       ETag:
       - '"4e24763d74f0d463b0cb6c63fc099e0b59447c7a049b93ffda4c6eb9eb54ae95"'
       Expires:
-      - Thu, 18 Sep 2025 15:01:08 GMT
+      - Thu, 08 Jan 2026 13:17:22 GMT
       Source-Age:
       - '7'
       Strict-Transport-Security:
@@ -431,15 +431,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 17fb621d01e78128d65f9f11133b6902c77ddc87
+      - 1fbbbc5cd9968f67820a5396a26702a6eff28d57
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - DDD5:286E0:D0F1D:FC0CF:68CC1D7C
+      - F90A:6FC73:1395C6:17DA77:695FAD2B
       X-Served-By:
-      - cache-bos4621-BOS
+      - cache-iad-kcgs7200033-IAD
       X-Timer:
-      - S1758207369.816697,VS0,VE1
+      - S1767877943.619182,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:

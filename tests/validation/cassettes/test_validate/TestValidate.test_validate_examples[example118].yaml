@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0/collection-spec/json-schema/collection.json
   response:
@@ -110,7 +110,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '1'
+      - '0'
       Cache-Control:
       - max-age=600
       Connection:
@@ -120,11 +120,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 18 Sep 2025 14:56:58 GMT
+      - Thu, 08 Jan 2026 13:12:44 GMT
       ETag:
-      - '"66e1651c-1c29"'
+      - '"691b88d5-1c29"'
       Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
+      - Mon, 17 Nov 2025 20:43:01 GMT
       Server:
       - GitHub.com
       Vary:
@@ -136,15 +136,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 0cd1794992b8735e0791eb053f18604720910d8b
+      - fda9eadda7c95948a3c88ce06da7a83fa9e2af1c
       X-GitHub-Request-Id:
-      - A7D1:3FED61:1CD3D5:1E813E:68CC1DB9
+      - FE7E:3C065B:246BD3:2A7A4E:695FAD4B
       X-Served-By:
-      - cache-bos4683-BOS
+      - cache-iad-kcgs7200148-IAD
       X-Timer:
-      - S1758207419.996193,VS0,VE1
+      - S1767877964.002704,VS0,VE1
       expires:
-      - Thu, 18 Sep 2025 15:06:57 GMT
+      - Thu, 08 Jan 2026 13:22:43 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -154,7 +154,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/eo/v1.1.0/schema.json
   response:
@@ -232,7 +232,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '235'
+      - '332'
       Cache-Control:
       - max-age=600
       Connection:
@@ -242,11 +242,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 18 Sep 2025 14:56:59 GMT
+      - Thu, 08 Jan 2026 13:12:44 GMT
       ETag:
-      - '"66df1c53-13bc"'
+      - '"69247b92-13bc"'
       Last-Modified:
-      - Mon, 09 Sep 2024 16:03:31 GMT
+      - Mon, 24 Nov 2025 15:36:50 GMT
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -260,15 +260,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 4867c4df58513640b64f80c38f22b3ace1e8ec76
+      - 8f7d8147866bc94f181f2894d0f26596092abbb8
       X-GitHub-Request-Id:
-      - 98DE:39A2ED:1DBAAC:1F56C3:68CC1CD0
+      - D068:C38C9:AA7BEB:C198EB:695F1025
       X-Served-By:
-      - cache-bos4660-BOS
+      - cache-iad-kcgs7200158-IAD
       X-Timer:
-      - S1758207419.068251,VS0,VE1
+      - S1767877964.033254,VS0,VE3
       expires:
-      - Thu, 18 Sep 2025 15:03:04 GMT
+      - Thu, 08 Jan 2026 02:12:13 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -278,7 +278,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/view/v1.0.0/schema.json
   response:
@@ -336,7 +336,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '235'
+      - '332'
       Cache-Control:
       - max-age=600
       Connection:
@@ -346,7 +346,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 18 Sep 2025 14:56:59 GMT
+      - Thu, 08 Jan 2026 13:12:44 GMT
       ETag:
       - '"689f5434-dff"'
       Last-Modified:
@@ -364,15 +364,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 94918a7525c4e66af490d6e68866b536adcf5d72
+      - 46612c15de11234c83db33c595831b78b069e6c3
       X-GitHub-Request-Id:
-      - 624D:BA176:74CE5:7ED3C:68CC1CD0
+      - 97C8:1834B3:9D629D:B48B20:695F1024
       X-Served-By:
-      - cache-bos4636-BOS
+      - cache-iad-kcgs7200117-IAD
       X-Timer:
-      - S1758207419.151710,VS0,VE1
+      - S1767877964.062311,VS0,VE1
       expires:
-      - Thu, 18 Sep 2025 15:03:04 GMT
+      - Thu, 08 Jan 2026 02:12:13 GMT
       x-proxy-cache:
       - MISS
     status:

@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/eo/v1.1.0/schema.json
   response:
@@ -81,7 +81,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '141'
+      - '267'
       Cache-Control:
       - max-age=600
       Connection:
@@ -91,11 +91,11 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 18 Sep 2025 14:55:24 GMT
+      - Thu, 08 Jan 2026 13:11:39 GMT
       ETag:
-      - '"66df1c53-13bc"'
+      - '"69247b92-13bc"'
       Last-Modified:
-      - Mon, 09 Sep 2024 16:03:31 GMT
+      - Mon, 24 Nov 2025 15:36:50 GMT
       Server:
       - GitHub.com
       Strict-Transport-Security:
@@ -107,17 +107,17 @@ interactions:
       X-Cache:
       - HIT
       X-Cache-Hits:
-      - '2'
+      - '1'
       X-Fastly-Request-ID:
-      - 41905fea894464aacf8ccdb3e65a26fa9c900c02
+      - 099d97dfd2cb43e22c7373db16849b2ad1d1e989
       X-GitHub-Request-Id:
-      - 98DE:39A2ED:1DBAAC:1F56C3:68CC1CD0
+      - D068:C38C9:AA7BEB:C198EB:695F1025
       X-Served-By:
-      - cache-bos4627-BOS
+      - cache-iad-kcgs7200068-IAD
       X-Timer:
-      - S1758207325.768259,VS0,VE0
+      - S1767877899.143296,VS0,VE1
       expires:
-      - Thu, 18 Sep 2025 15:03:04 GMT
+      - Thu, 08 Jan 2026 02:12:13 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -127,7 +127,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/projection/v2.0.0/schema.json
   response:
@@ -195,7 +195,7 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '140'
+      - '434'
       Cache-Control:
       - max-age=600
       Connection:
@@ -205,7 +205,7 @@ interactions:
       Content-Type:
       - application/json; charset=utf-8
       Date:
-      - Thu, 18 Sep 2025 14:55:24 GMT
+      - Thu, 08 Jan 2026 13:11:39 GMT
       ETag:
       - '"669e563b-1116"'
       Last-Modified:
@@ -223,15 +223,15 @@ interactions:
       X-Cache-Hits:
       - '1'
       X-Fastly-Request-ID:
-      - 333c93be7f0003393440382b68cb26bb37d83da4
+      - 717e20d303b681bbd2e244c6988b8d07765ec0c8
       X-GitHub-Request-Id:
-      - 224F:32B3EB:191F90:1ABAB3:68CC1CCF
+      - 75BC:19811C:1E60DE:20EAB0:695FA46A
       X-Served-By:
-      - cache-bos4686-BOS
+      - cache-iad-kcgs7200027-IAD
       X-Timer:
-      - S1758207325.839344,VS0,VE1
+      - S1767877899.170229,VS0,VE1
       expires:
-      - Thu, 18 Sep 2025 15:03:04 GMT
+      - Thu, 08 Jan 2026 12:44:52 GMT
       x-proxy-cache:
       - MISS
     status:
@@ -241,7 +241,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://proj.org/schemas/v0.7/projjson.schema.json
   response:
@@ -251,11 +251,11 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '701'
+      - '1'
       CF-Cache-Status:
       - HIT
       CF-Ray:
-      - 9811af24eca60a09-IAD
+      - 9babf126084dc9b9-IAD
       Cache-Control:
       - max-age=1200
       Connection:
@@ -267,16 +267,16 @@ interactions:
       Content-Type:
       - text/html; charset=utf-8
       Date:
-      - Thu, 18 Sep 2025 14:55:25 GMT
+      - Thu, 08 Jan 2026 13:11:39 GMT
       Location:
       - https://proj.org/en/latest/schemas/v0.7/projjson.schema.json
       Server:
       - cloudflare
       Set-Cookie:
-      - __cf_bm=5vnQE9f_NOnEzvfpAO5oQ58pLggbwWmE7fWFDPgprvM-1758207325-1.0.1.1-BKvTLCe3QQEdE22fWtQyIDKtvo6GpkTrVqXWmt_MS959i4OJzrEvLWVM4fWIwzaNbmU0OVe_9DNXk9V0iop2e960rr9DCzLJ440_78HxpdE;
-        path=/; expires=Thu, 18-Sep-25 15:25:25 GMT; domain=.proj.org; HttpOnly; Secure;
+      - __cf_bm=RmH2nbD4bicB3BUZdYrsY0.rrLQcT3P9JTNtUkCYbGM-1767877899-1.0.1.1-EpmtbNRhhd_3zf7yT1yY3AhhBhtTkbieuCoq3sPnhK99fGUqld2xIa5jrOj.d35QWTRHbLZjfcqqZ7z5mzw7g_Hq8Ejz8nj0Rnp9Sir6Oxw;
+        path=/; expires=Thu, 08-Jan-26 13:41:39 GMT; domain=.proj.org; HttpOnly; Secure;
         SameSite=None
-      - _cfuvid=uoO0AzuCMjWgM.sYj15KrpD8SGkm.GjVBU0UjaWMPxQ-1758207325021-0.0.1.1-604800000;
+      - _cfuvid=qb2uRuMvY7g0M99zFa_7Qx.DtkWStZpsNLIjl.US40k-1767877899241-0.0.1.1-604800000;
         path=/; domain=.proj.org; HttpOnly; Secure; SameSite=None
       Vary:
       - Accept-Language, Accept-Encoding
@@ -291,7 +291,7 @@ interactions:
       referrer-policy:
       - no-referrer-when-downgrade
       x-backend:
-      - web-i-046a40256d6a3b46c
+      - web-i-0ab7b88388f0be67c
       x-content-type-options:
       - nosniff
       x-rtd-domain:
@@ -315,7 +315,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://proj.org/en/latest/schemas/v0.7/projjson.schema.json
   response:
@@ -844,11 +844,11 @@ interactions:
       Access-Control-Allow-Origin:
       - '*'
       Age:
-      - '4638'
+      - '2207'
       CF-Cache-Status:
       - HIT
       CF-Ray:
-      - 9811af25f8e30614-IAD
+      - 9babf1267e095b3a-IAD
       Cache-Control:
       - max-age=1200
       Connection:
@@ -856,7 +856,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Thu, 18 Sep 2025 14:55:25 GMT
+      - Thu, 08 Jan 2026 13:11:39 GMT
       ETag:
       - W/"b36c7ce9824d274cfd711a16ef45d221"
       Last-Modified:
@@ -864,10 +864,10 @@ interactions:
       Server:
       - cloudflare
       Set-Cookie:
-      - __cf_bm=sYTSIc.8b9s1uy2mPfajDsGdOjDdAgGa9cx5rhcXRhE-1758207325-1.0.1.1-7YX8qpb4iTXSRzYYbVAjnMRGgyvMY1JsXfkRFs4d7rcg7t_on8uTAzCGyfRW_jPRK6fLhhJwTlSe8mBdbvbgE2.WyX8.6K4ZBfboNtrxDuk;
-        path=/; expires=Thu, 18-Sep-25 15:25:25 GMT; domain=.proj.org; HttpOnly; Secure;
+      - __cf_bm=G8Mog1bTvS77XiM6l61LmKWBg0Y3otaPnUTaMH3TveQ-1767877899-1.0.1.1-IYegC4Bxft1SHBmnlLlZq0h6PYwgQNZrUmP3LnISwpJiLALCYkkrpLrFIOMz6_YQsACNN0iVGvwaNot3KHMlJZvDpVfHRBz2rNwZtLZZLME;
+        path=/; expires=Thu, 08-Jan-26 13:41:39 GMT; domain=.proj.org; HttpOnly; Secure;
         SameSite=None
-      - _cfuvid=TsNV80u7KJt5eCyRnCtx0EslWwO_xfDHK5buyNyV2qk-1758207325219-0.0.1.1-604800000;
+      - _cfuvid=kR2NafrIqqkss9aj2moRqmSAsphVsKRkse.El.hv5Zw-1767877899306-0.0.1.1-604800000;
         path=/; domain=.proj.org; HttpOnly; Secure; SameSite=None
       Transfer-Encoding:
       - chunked
@@ -879,18 +879,20 @@ interactions:
       - h3=":443"; ma=86400
       cdn-cache-control:
       - public
+      cross-origin-opener-policy:
+      - same-origin
       referrer-policy:
       - no-referrer-when-downgrade
       x-amz-id-2:
-      - wq6M1yZwJIx72g0bu4iZIqB+T9hOmWOv1FfzWTgBKB1TbMZ30Ydon1RMGSDDCK+jALCUKViQfNEPgSiC2QHfaEtHxEE2g0MYvKvIxiq7DyA=
+      - 59w9LcKUXT2MYwV9dUCfoXtpf6BqjNl2dWimavwZHaoBLJSr6kynHNx4ddvOnmIBuuOr5fnS4lqt7wXEAC37sLoifzDoyzbY
       x-amz-meta-mtime:
       - '1714074779.458591481'
       x-amz-request-id:
-      - N37TE359KA2AHSV6
+      - HS3133JTKMAHMD88
       x-amz-server-side-encryption:
       - AES256
       x-backend:
-      - web-i-0d85dbf6e0a8f4cc9
+      - web-i-037ad379a7ceb786c
       x-content-type-options:
       - nosniff
       x-rtd-domain:

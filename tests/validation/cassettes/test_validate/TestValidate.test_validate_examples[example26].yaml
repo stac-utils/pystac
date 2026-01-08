@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/item-spec/json-schema/item.json
   response:
@@ -108,13 +108,13 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 18 Sep 2025 14:56:09 GMT
+      - Thu, 08 Jan 2026 13:12:22 GMT
       ETag:
       - '"4e24763d74f0d463b0cb6c63fc099e0b59447c7a049b93ffda4c6eb9eb54ae95"'
       Expires:
-      - Thu, 18 Sep 2025 15:01:09 GMT
+      - Thu, 08 Jan 2026 13:17:22 GMT
       Source-Age:
-      - '8'
+      - '7'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -128,15 +128,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 38b22f041f4eff5a996eefcc433984cddf2181d5
+      - a8edc24144d264503a719851499548f364680bb0
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - DDD5:286E0:D0F1D:FC0CF:68CC1D7C
+      - F90A:6FC73:1395C6:17DA77:695FAD2B
       X-Served-By:
-      - cache-bos4651-BOS
+      - cache-iad-kcgs7200140-IAD
       X-Timer:
-      - S1758207369.201233,VS0,VE1
+      - S1767877943.802310,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
@@ -146,7 +146,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/extensions/eo/json-schema/schema.json
   response:
@@ -212,13 +212,13 @@ interactions:
       Cross-Origin-Resource-Policy:
       - cross-origin
       Date:
-      - Thu, 18 Sep 2025 14:56:09 GMT
+      - Thu, 08 Jan 2026 13:12:22 GMT
       ETag:
       - '"c8576d5ea3fcee4039dcddbdcf9e59fed3f3086419a33aa96f18f4617203b76d"'
       Expires:
-      - Thu, 18 Sep 2025 15:01:09 GMT
+      - Thu, 08 Jan 2026 13:17:22 GMT
       Source-Age:
-      - '8'
+      - '7'
       Strict-Transport-Security:
       - max-age=31536000
       Vary:
@@ -232,15 +232,15 @@ interactions:
       X-Content-Type-Options:
       - nosniff
       X-Fastly-Request-ID:
-      - 03c5062e437940ce09b7cdb6864e7c71960b42fc
+      - 2385d5efdc3dfbec1ab577715552c615621fcec6
       X-Frame-Options:
       - deny
       X-GitHub-Request-Id:
-      - 46FA:175DD:C2790:ED92C:68CC1D80
+      - 1832:15F15B:1336C2:177B87:695FAD2F
       X-Served-By:
-      - cache-bos4663-BOS
+      - cache-iad-kcgs7200042-IAD
       X-Timer:
-      - S1758207369.267029,VS0,VE1
+      - S1767877943.831723,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
