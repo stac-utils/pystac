@@ -1,81 +1,69 @@
 # PySTAC
 
-[![Build Status](https://github.com/stac-utils/pystac/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stac-utils/pystac/actions/workflows/continuous-integration.yml)
-[![PyPI version](https://badge.fury.io/py/pystac.svg)](https://badge.fury.io/py/pystac)
-[![Documentation](https://readthedocs.org/projects/pystac/badge/?version=latest)](https://pystac.readthedocs.io/en/latest/)
+!!! warning
 
-PySTAC is a Python library for working with the [SpatioTemporal Asset Catalog (STAC)](https://stacspec.org) specification.
+    These docs are for the work-in-progress v2 of PySTAC.
+    For the current PySTAC v1 docs, see <https://pystac.readthedocs.io>.
 
-## What is STAC?
+    Our work plan for v2 goes like this:
 
-The SpatioTemporal Asset Catalog (STAC) specification provides a common language to describe geospatial information, so it can more easily be worked with, indexed, and discovered. STAC is a specification for describing geospatial data using JSON and GeoJSON.
+    1. Rebuild the core data structures (`Item`, `Catalog`, `Collection`, etc) from scratch, with new tests
+    2. Slowly re-add the old tests to the `tests/v1` one at a time, to make sure that we're breaking as little as possible
+    3. If we intentionally break a test (e.g. by relaxing a check on inputs) we'll mark it `xfail` and copy it to test the new expected behavior
 
-## What is PySTAC?
+    This will take a while.
+    Watch <https://github.com/stac-utils/pystac/tree/v2> to track our progress.
+    We'll sometimes use pull requests, but sometimes not.
 
-PySTAC is a library that provides a Python API for working with STAC catalogs, collections, and items. It allows you to:
+**PySTAC** is a Python library for reading and writing [SpatioTemporal Asset Catalog (STAC)](https://stacspec.org) metadata.
+To install:
 
-- **Read** STAC catalogs, collections, and items from files or URLs
-- **Create** new STAC objects programmatically
-- **Modify** existing STAC objects
-- **Write** STAC objects to disk
-- **Validate** STAC objects against the specification
-- **Traverse** STAC hierarchies
-
-## PySTAC v2.0
-
-This is the v2.0 rewrite of PySTAC with improved design principles:
-
-- **Stable core APIs**: Keep data structure APIs (Item, Catalog, Collection) consistent
-- **Flexible validation**: Accept almost anything with warnings for corrections
-- **Simplified implementation**: Do fewer things at once, single responsibility methods
-- **Low dependencies**: Minimal dependencies by default, optional extras for additional features
-
-## Quick Example
-
-```python
-import pystac
-
-# Read a STAC item
-item = pystac.Item.from_file("path/to/item.json")
-
-# Access item properties
-print(f"Item ID: {item.id}")
-print(f"Datetime: {item.datetime}")
-
-# Access assets
-for key, asset in item.assets.items():
-    print(f"Asset {key}: {asset.href}")
-
-# Create a new catalog
-catalog = pystac.Catalog(
-    id="my-catalog",
-    description="A catalog of imagery"
-)
-
-# Add the item to the catalog
-catalog.add_item(item)
-
-# Save the catalog
-catalog.render(root="/path/to/output")
-catalog.save()
+<!-- markdownlint-disable MD046 -->
+```shell
+python -m pip install pystac
 ```
 
-## Features
+## Creating
 
-- **Core STAC Types**: Full support for Item, Catalog, and Collection
-- **Links and Assets**: Complete link and asset management
-- **I/O**: Flexible I/O system with pluggable readers and writers
-- **Validation**: Optional validation against STAC JSON schemas
-- **Extensions**: Preserve extension data through extra_fields
-- **Type Safety**: Full type hints with strict type checking
+STAC has three data structure: `Item`, `Catalog`, and `Collection`.
+Each can be created with sensible defaults:
 
-## Get Started
+```python
+from pystac import Item, Catalog, Collection
 
-Check out the [Installation Guide](getting-started/installation.md) to install PySTAC, then follow the [Quickstart](getting-started/quickstart.md) to learn the basics.
+item = Item("an-item-id")
+catalog = Item("a-catalog-id", "A catalog description")
+collection = Item("a-collection-id", "A collection description")
+```
 
-## Links
+## Reading
 
-- [GitHub Repository](https://github.com/stac-utils/pystac)
-- [PyPI Package](https://pypi.org/project/pystac/)
-- [STAC Specification](https://stacspec.org)
-- [Issue Tracker](https://github.com/stac-utils/pystac/issues)
+Reading STAC from the local filesystem is supported out-of-the-box:
+
+```python
+item = pystac.read_file("item.json")
+```
+
+To read from remote locations, including HTTP(S) and blob storage, we use [obstore](https://developmentseed.org/obstore/).
+Install with that optional dependency:
+
+```shell
+python -m pip install 'pystac[obstore]'
+```
+
+Then:
+
+```python
+from pystac.obstore import ObstoreReader
+reader = ObstoreReader()  # provide any configuration values here, e.g. ObstoreReader(aws_region="us-east-1")
+item = reader.read_file("s3://bucket/item.json")
+```
+
+!!! todo
+
+    Add more examples, and maybe put them in a notebook so we can execute them.
+
+## Supported versions
+
+PySTAC v2.0 supports STAC v1.0 and STAC v1.1.
+For pre-STAC v1.0 versions, use `pystac<2`.
