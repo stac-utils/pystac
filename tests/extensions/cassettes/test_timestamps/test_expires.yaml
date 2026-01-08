@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://stac-extensions.github.io/timestamps/v1.1.0/schema.json
   response:
@@ -53,51 +53,7 @@ interactions:
         \"(\\\\+00:00|Z)$\"\n        },\n        \"expires\": {\n          \"title\":
         \"Expiry Time\",\n          \"type\": \"string\",\n          \"format\": \"date-time\",\n
         \         \"pattern\": \"(\\\\+00:00|Z)$\"\n        }\n      }\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '0'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '3337'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:55:34 GMT
-      ETag:
-      - '"63b6c089-d09"'
-      Last-Modified:
-      - Thu, 05 Jan 2023 12:20:25 GMT
-      Server:
-      - GitHub.com
-      Strict-Transport-Security:
-      - max-age=31556952
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Fastly-Request-ID:
-      - a601809aae13bc1e11a78148ca0403a9f9464ee8
-      X-GitHub-Request-Id:
-      - AECF:1D3617:CA21B7:E4923F:68CC1D65
-      X-Served-By:
-      - cache-bos4622-BOS
-      X-Timer:
-      - S1758207334.041775,VS0,VE1
-      expires:
-      - Thu, 18 Sep 2025 15:05:33 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK

@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/catalog.json
   response:
@@ -15,55 +15,7 @@ interactions:
         \   },\n    {\n      \"rel\": \"child\",\n      \"href\": \"zanzibar/collection.json\"\n
         \   },\n    {\n      \"rel\": \"child\",\n      \"href\": \"spacenet-buildings/collection.json\"\n
         \   }\n  ]\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '436'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 18 Sep 2025 14:55:37 GMT
-      ETag:
-      - '"e74ebcbc46d43c5b693ecb995381fbeba03583627e6d65b21ed7678a10d94729"'
-      Expires:
-      - Thu, 18 Sep 2025 15:00:37 GMT
-      Source-Age:
-      - '0'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - ac3bc65e8df95cb70374f59a88fd5cb2a3796d3a
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 95AC:175DD:C1C7B:ECB06:68CC1D68
-      X-Served-By:
-      - cache-bos4641-BOS
-      X-Timer:
-      - S1758207338.739596,VS0,VE85
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
@@ -71,7 +23,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/zanzibar/collection.json
   response:
@@ -101,55 +53,7 @@ interactions:
         \"parent\",\n      \"href\": \"../catalog.json\"\n    },\n    {\n      \"rel\":
         \"item\",\n      \"href\": \"znz001.json\"\n    },\n    {\n      \"rel\":
         \"item\",\n      \"href\": \"znz029.json\"\n    }\n  ]\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '1709'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 18 Sep 2025 14:55:37 GMT
-      ETag:
-      - '"ddd340bc27c120dd2e43868bcde0510a326a6223dac1b0c47c05100e20d1397e"'
-      Expires:
-      - Thu, 18 Sep 2025 15:00:37 GMT
-      Source-Age:
-      - '0'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 535459ae7b90c861026f8934ab614c34be0371da
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 6E2B:27CA0A:AE274:D9059:68CC1D69
-      X-Served-By:
-      - cache-bos4659-BOS
-      X-Timer:
-      - S1758207338.893150,VS0,VE67
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
@@ -157,7 +61,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/zanzibar/znz001.json
   response:
@@ -197,55 +101,7 @@ interactions:
         \   },\n    {\n      \"rel\": \"source\",\n      \"href\": \"https://oin-hotosm.s3.amazonaws.com/5afeda152b6a08001185f11a/0/5afeda152b6a08001185f11b.tif\",\n
         \     \"title\": \"The source imagery these building labels were derived from\",\n
         \     \"label:assets\": [\n        \"building\"\n      ]\n    }\n  ]\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '2776'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 18 Sep 2025 14:55:38 GMT
-      ETag:
-      - '"80ec96bc0acf2e604a03f109bd730426aa82e442d44946231cbe82a531b944f7"'
-      Expires:
-      - Thu, 18 Sep 2025 15:00:38 GMT
-      Source-Age:
-      - '0'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 410b1deb003782322b5aa10c140b104d64b3a4e7
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 6225:3CAE3B:BD380:E8214:68CC1D6A
-      X-Served-By:
-      - cache-bos4660-BOS
-      X-Timer:
-      - S1758207338.033185,VS0,VE181
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
@@ -253,7 +109,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/zanzibar/znz029.json
   response:
@@ -293,55 +149,7 @@ interactions:
         \   },\n    {\n      \"rel\": \"source\",\n      \"href\": \"https://oin-hotosm.s3.amazonaws.com/5ae242fd0b093000130afd38/0/5ae242fd0b093000130afd39.tif\",\n
         \     \"title\": \"The source imagery these building labels were derived from\",\n
         \     \"label:assets\": [\n        \"building\"\n      ]\n    }\n  ]\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '2774'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 18 Sep 2025 14:55:38 GMT
-      ETag:
-      - '"726870312c74ead0b10c3125045c301e8600929684c49447d64c2db72dc779fc"'
-      Expires:
-      - Thu, 18 Sep 2025 15:00:38 GMT
-      Source-Age:
-      - '0'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - ee825a75cc33b63da5d5c206b3462823b952405f
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 4B06:3CAE3B:BD3AB:E824E:68CC1D69
-      X-Served-By:
-      - cache-bos4646-BOS
-      X-Timer:
-      - S1758207338.373515,VS0,VE96
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK

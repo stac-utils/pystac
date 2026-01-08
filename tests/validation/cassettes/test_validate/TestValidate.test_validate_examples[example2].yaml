@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/collection-spec/json-schema/collection.json
   response:
@@ -67,55 +67,7 @@ interactions:
         \               }\n              }\n            }\n          }\n        },\n
         \       \"properties\": {\n          \"title\": \"Common properties\",\n          \"type\":
         \"object\"\n        }\n      }\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '4394'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 18 Sep 2025 14:56:01 GMT
-      ETag:
-      - '"031974beaaaf6f0b5c6877dc97088d9e2aff3bc8962df33ff291dddded353f09"'
-      Expires:
-      - Thu, 18 Sep 2025 15:01:01 GMT
-      Source-Age:
-      - '0'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 96c061be81f9fc59f8723fda96750d34ee2bebae
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - EAA4:3C3312:A80AF:D3151:68CC1D7F
-      X-Served-By:
-      - cache-bos4640-BOS
-      X-Timer:
-      - S1758207361.181811,VS0,VE68
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
@@ -123,7 +75,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/catalog-spec/json-schema/catalog.json
   response:
@@ -166,55 +118,7 @@ interactions:
         \"Link type\",\n          \"type\": \"string\"\n        },\n        \"title\":
         {\n          \"title\": \"Link title\",\n          \"type\": \"string\"\n
         \       }\n      }\n    }\n  }\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '2638'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 18 Sep 2025 14:56:01 GMT
-      ETag:
-      - '"3b514933a3747f038125935624a13df108e30fe1cb8f9660a7f54ac6d4765ce9"'
-      Expires:
-      - Thu, 18 Sep 2025 15:01:01 GMT
-      Source-Age:
-      - '0'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 9b81b3cb59324fe96532470bfbe8d629a41a493c
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - BCE7:388807:C697B:F1BF7:68CC1D7C
-      X-Served-By:
-      - cache-bos4653-BOS
-      X-Timer:
-      - S1758207361.325057,VS0,VE1
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK

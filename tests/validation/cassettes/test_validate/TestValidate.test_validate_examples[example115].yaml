@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-rc.2/item-spec/json-schema/item.json
   response:
@@ -92,49 +92,7 @@ interactions:
         \               \"type\": \"string\"\n              }\n            }\n          }\n
         \       },\n        {\n          \"$ref\": \"#/definitions/common_metadata\"\n
         \       }\n      ]\n    }\n  }\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '0'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '6279'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:56:56 GMT
-      ETag:
-      - '"66e1651c-1887"'
-      Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - 319912a5b1d0e8d3f9804eded8601667a3518cbb
-      X-GitHub-Request-Id:
-      - A228:32B3EB:1A2BFE:1BD963:68CC1DB7
-      X-Served-By:
-      - cache-bos4625-BOS
-      X-Timer:
-      - S1758207417.506635,VS0,VE52
-      expires:
-      - Thu, 18 Sep 2025 15:06:56 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
@@ -142,7 +100,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-rc.2/item-spec/json-schema/basics.json
   response:
@@ -155,49 +113,7 @@ interactions:
         \   },\n    \"description\": {\n      \"title\": \"Item Description\",\n      \"description\":
         \"Detailed multi-line description to fully explain the Item.\",\n      \"type\":
         \"string\"\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '0'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '538'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:56:56 GMT
-      ETag:
-      - '"66e1651c-21a"'
-      Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - 70287e37fad5988ee9be7e721be75338dd57fd8b
-      X-GitHub-Request-Id:
-      - 5153:32B3EB:1A2C3A:1BD99C:68CC1DB7
-      X-Served-By:
-      - cache-bos4658-BOS
-      X-Timer:
-      - S1758207417.655993,VS0,VE52
-      expires:
-      - Thu, 18 Sep 2025 15:06:56 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
@@ -205,7 +121,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-rc.2/item-spec/json-schema/datetime.json
   response:
@@ -229,51 +145,7 @@ interactions:
         \"date-time\"\n    },\n    \"updated\": {\n      \"title\": \"Last Update
         Time\",\n      \"type\": \"string\",\n      \"format\": \"date-time\"\n    }\n
         \ }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '0'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '1307'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:56:56 GMT
-      ETag:
-      - '"66e1651c-51b"'
-      Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - 34b657048d9f3c347bb07e10520c956a98fe9b0c
-      X-GitHub-Request-Id:
-      - ACC0:4837E:1C6011:1E0F4A:68CC1DB8
-      X-Served-By:
-      - cache-bos4661-BOS
-      X-Timer:
-      - S1758207417.797674,VS0,VE29
-      expires:
-      - Thu, 18 Sep 2025 15:06:56 GMT
-      x-origin-cache:
-      - HIT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
@@ -281,7 +153,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-rc.2/item-spec/json-schema/instrument.json
   response:
@@ -296,51 +168,7 @@ interactions:
         \"string\"\n    },\n    \"mission\": {\n      \"title\": \"Mission\",\n      \"type\":
         \"string\"\n    },\n    \"gsd\": {\n      \"title\": \"Ground Sample Distance\",\n
         \     \"type\": \"number\",\n      \"exclusiveMinimum\": 0\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '0'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '701'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:56:56 GMT
-      ETag:
-      - '"66e1651c-2bd"'
-      Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - a66cbb4d7f04653d2b7d5242efa49445d1976903
-      X-GitHub-Request-Id:
-      - E59A:2EDCE9:1DD0E8:1F7E34:68CC1DB7
-      X-Served-By:
-      - cache-bos4636-BOS
-      X-Timer:
-      - S1758207417.915914,VS0,VE24
-      expires:
-      - Thu, 18 Sep 2025 15:06:56 GMT
-      x-origin-cache:
-      - HIT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
@@ -348,7 +176,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-rc.2/item-spec/json-schema/licensing.json
   response:
@@ -358,51 +186,7 @@ interactions:
         \ \"title\": \"Licensing Fields\",\n  \"type\": \"object\",\n  \"properties\":
         {\n    \"license\": {\n      \"type\": \"string\",\n      \"pattern\": \"^[\\\\w\\\\-\\\\.\\\\+]+$\"\n
         \   }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '0'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '307'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:56:57 GMT
-      ETag:
-      - '"66e1651c-133"'
-      Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - 0912f464af9d7cfe4148c4a9d6f5b06d6d6e6cf9
-      X-GitHub-Request-Id:
-      - 1F3A:34271B:1DA320:1F50CF:68CC1DB8
-      X-Served-By:
-      - cache-bos4650-BOS
-      X-Timer:
-      - S1758207417.028274,VS0,VE52
-      expires:
-      - Thu, 18 Sep 2025 15:06:57 GMT
-      x-origin-cache:
-      - HIT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
@@ -410,7 +194,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-rc.2/item-spec/json-schema/provider.json
   response:
@@ -431,51 +215,7 @@ interactions:
         \           }\n          },\n          \"url\": {\n            \"title\":
         \"Organization homepage\",\n            \"type\": \"string\",\n            \"format\":
         \"iri\"\n          }\n        }\n      }\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '0'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '1140'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:56:57 GMT
-      ETag:
-      - '"66e1651c-474"'
-      Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - 5733c41a209c5da0126258a72c7db86b83a40991
-      X-GitHub-Request-Id:
-      - 2AF2:3F3ECC:1E0355:1FB140:68CC1DB8
-      X-Served-By:
-      - cache-bos4665-BOS
-      X-Timer:
-      - S1758207417.163630,VS0,VE34
-      expires:
-      - Thu, 18 Sep 2025 15:06:57 GMT
-      x-origin-cache:
-      - HIT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
@@ -483,7 +223,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://stac-extensions.github.io/eo/v1.1.0/schema.json
   response:
@@ -555,51 +295,7 @@ interactions:
         \"number\",\n            \"minimumExclusive\": 0\n          },\n          \"solar_illumination\":
         {\n            \"title\": \"Solar Illumination\",\n            \"type\": \"number\",\n
         \           \"minimum\": 0\n          }\n        }\n      }\n    }\n  }\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '233'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '5052'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:56:57 GMT
-      ETag:
-      - '"66df1c53-13bc"'
-      Last-Modified:
-      - Mon, 09 Sep 2024 16:03:31 GMT
-      Server:
-      - GitHub.com
-      Strict-Transport-Security:
-      - max-age=31556952
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Fastly-Request-ID:
-      - 6f8a7004ef607bb7fbb921edbd6defa5193eeaac
-      X-GitHub-Request-Id:
-      - 98DE:39A2ED:1DBAAC:1F56C3:68CC1CD0
-      X-Served-By:
-      - cache-bos4687-BOS
-      X-Timer:
-      - S1758207417.307511,VS0,VE1
-      expires:
-      - Thu, 18 Sep 2025 15:03:04 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
@@ -607,7 +303,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://stac-extensions.github.io/projection/v1.0.0/schema.json
   response:
@@ -673,53 +369,7 @@ interactions:
         \           }\n          ],\n          \"items\":{\n            \"type\":\"number\"\n
         \         }\n        }\n      },\n      \"patternProperties\": {\n        \"^(?!proj:)\":
         {}\n      },\n      \"additionalProperties\": false\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '0'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '4646'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:56:57 GMT
-      ETag:
-      - '"669e563b-1226"'
-      Last-Modified:
-      - Mon, 22 Jul 2024 12:53:15 GMT
-      Server:
-      - GitHub.com
-      Strict-Transport-Security:
-      - max-age=31556952
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - 6425a92ed590f5966bd49b16afb50294c241d0a3
-      X-GitHub-Request-Id:
-      - 3CEC:2EDCE9:1DD175:1F7EC7:68CC1DB8
-      X-Served-By:
-      - cache-bos4635-BOS
-      X-Timer:
-      - S1758207417.375849,VS0,VE35
-      expires:
-      - Thu, 18 Sep 2025 15:06:57 GMT
-      x-origin-cache:
-      - HIT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
@@ -727,7 +377,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://stac-extensions.github.io/scientific/v1.0.0/schema.json
   response:
@@ -807,51 +457,7 @@ interactions:
         \           }\n          }\n        }\n      },\n      \"patternProperties\":
         {\n        \"^(?!sci:)\": {}\n      },\n      \"additionalProperties\": false\n
         \   }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '100'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '5626'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:56:57 GMT
-      ETag:
-      - '"60febab7-15fa"'
-      Last-Modified:
-      - Mon, 26 Jul 2021 13:37:59 GMT
-      Server:
-      - GitHub.com
-      Strict-Transport-Security:
-      - max-age=31556952
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - 9f1954df41a9b70858c189440bb8f09993b130ae
-      X-GitHub-Request-Id:
-      - 5CF5:3D35AC:C4B412:DF1A74:68CC1D55
-      X-Served-By:
-      - cache-bos4636-BOS
-      X-Timer:
-      - S1758207417.478885,VS0,VE1
-      expires:
-      - Thu, 18 Sep 2025 15:05:17 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
@@ -859,7 +465,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://stac-extensions.github.io/view/v1.0.0/schema.json
   response:
@@ -911,51 +517,7 @@ interactions:
         \         \"minimum\": -90,\n          \"maximum\": 90\n        }\n      },\n
         \     \"patternProperties\": {\n        \"^(?!view:)\": {}\n      },\n      \"additionalProperties\":
         false\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '233'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '3583'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:56:57 GMT
-      ETag:
-      - '"689f5434-dff"'
-      Last-Modified:
-      - Fri, 15 Aug 2025 15:37:24 GMT
-      Server:
-      - GitHub.com
-      Strict-Transport-Security:
-      - max-age=31556952
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Fastly-Request-ID:
-      - 5a9b5371d4d9ca69132e92772c915750173c777c
-      X-GitHub-Request-Id:
-      - 624D:BA176:74CE5:7ED3C:68CC1CD0
-      X-Served-By:
-      - cache-bos4632-BOS
-      X-Timer:
-      - S1758207418.553929,VS0,VE1
-      expires:
-      - Thu, 18 Sep 2025 15:03:04 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
@@ -963,7 +525,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://stac-extensions.github.io/remote-data/v1.0.0/schema.json
   response:
@@ -1022,51 +584,7 @@ interactions:
         {\n        \"^(?!rd:)\": {\n          \"$comment\": \"Disallow other fields
         with rd: prefix\"\n        }\n      },\n      \"additionalProperties\": false\n
         \   }\n  }\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '0'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '3991'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:56:57 GMT
-      ETag:
-      - '"6046b731-f97"'
-      Last-Modified:
-      - Mon, 08 Mar 2021 23:45:53 GMT
-      Server:
-      - GitHub.com
-      Strict-Transport-Security:
-      - max-age=31556952
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - b67fc3f8ae33e470d2137998c8eec479a536901d
-      X-GitHub-Request-Id:
-      - 28D8:39A2ED:1EEE14:209C7E:68CC1DB9
-      X-Served-By:
-      - cache-bos4625-BOS
-      X-Timer:
-      - S1758207418.621420,VS0,VE69
-      expires:
-      - Thu, 18 Sep 2025 15:06:57 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
