@@ -1,0 +1,93 @@
+site_name: PySTAC
+site_description: Python library for working with the SpatioTemporal Asset Catalog (STAC) specification
+site_url: https://pystac.readthedocs.io
+repo_url: https://github.com/stac-utils/pystac
+repo_name: stac-utils/pystac
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - content.code.copy
+    - content.code.annotate
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - search.suggest
+    - search.highlight
+    - toc.follow
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            members_order: source
+            inherited_members: false
+            filters:
+              - "!^_"  # exclude private members
+            merge_init_into_class: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quickstart: getting-started/quickstart.md
+  - User Guide:
+    - Core Concepts: user-guide/concepts.md
+    - Working with Items: user-guide/items.md
+    - Working with Catalogs: user-guide/catalogs.md
+    - Working with Collections: user-guide/collections.md
+    - Reading and Writing: user-guide/io.md
+  - API Reference:
+    - STACObject: api/stac-object.md
+    - Item: api/item.md
+    - Catalog: api/catalog.md
+    - Collection: api/collection.md
+    - Link: api/link.md
+    - Asset: api/asset.md
+    - I/O: api/io.md
+  - Contributing: contributing.md
+
+watch:
+  - src/pystac
