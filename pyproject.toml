@@ -88,6 +88,9 @@ Issues = "https://github.com/stac-utils/pystac/issues"
 Changelog = "https://github.com/stac-utils/pystac/blob/main/CHANGELOG.md"
 Discussions = "https://github.com/radiantearth/stac-spec/discussions/categories/stac-software"
 
+[tool.codespell]
+skip = "CHANGELOG.md"
+
 [tool.coverage.run]
 branch = true
 source = ["pystac"]
