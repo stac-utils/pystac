@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.14.3](https://github.com/stac-utils/pystac/compare/v1.14.2...v1.14.3) (2026-01-08)
+
+
+### Bug Fixes
+
+* /vsi* paths are always absolute ([#1625](https://github.com/stac-utils/pystac/issues/1625)) ([60eef08](https://github.com/stac-utils/pystac/commit/60eef08f5b2aee33b63ce37f4e31162ed8b39fb5))
+* doc string fixes ([#1613](https://github.com/stac-utils/pystac/issues/1613)) ([61c3e14](https://github.com/stac-utils/pystac/commit/61c3e142f7e5b2f17b8c51ad67e48a91d6007cf7))
+* typo nework --&gt; network in test_summaries.py ([#1624](https://github.com/stac-utils/pystac/issues/1624)) ([7a5e734](https://github.com/stac-utils/pystac/commit/7a5e734800c8dc62cb5c1382730ea39a804cffab))
+* use broader iterable type ([#1614](https://github.com/stac-utils/pystac/issues/1614)) ([b9422d8](https://github.com/stac-utils/pystac/commit/b9422d8f4d440016e57a825aca1f239b2356b455))
+* use supertype parameter name ([#1616](https://github.com/stac-utils/pystac/issues/1616)) ([0d2ec09](https://github.com/stac-utils/pystac/commit/0d2ec091cee4e7b0d4141ef3571db01a15971730))
+
 ## [1.14.2](https://github.com/stac-utils/pystac/compare/v1.14.1...v1.14.2) (2025-12-17)
 
 
