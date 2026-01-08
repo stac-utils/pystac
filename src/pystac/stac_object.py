@@ -218,12 +218,14 @@ class STACObject(ABC):
         self,
         use_absolute_links: bool = False,
         href_generator: HrefGenerator | None = None,
+        previous_self_href: str | None = None,
     ) -> Iterator[STACObject]:
         """Remove and re-create all hierarchical links on this STAC object and
         all children and items, yielding each."""
         yield from self._render(
             use_absolute_links=use_absolute_links,
             href_generator=href_generator,
+            previous_self_href=previous_self_href,
             root=None,
             parent=None,
             collection=None,
@@ -236,6 +238,7 @@ class STACObject(ABC):
         collection: Collection | None = None,
         use_absolute_links: bool = False,
         href_generator: HrefGenerator | None = None,
+        previous_self_href: str | None = None,
     ) -> Iterator[STACObject]:
         from .catalog import Catalog
         from .collection import Collection
@@ -249,7 +252,7 @@ class STACObject(ABC):
 
         self_href = self.get_self_href()
         if self_href is None:
-            raise ValueError("Cannot render a self href")
+            raise ValueError("Cannot render without a self href")
         if root is None and isinstance(self, Container):
             root = self
         links: list[Link] = []
@@ -283,12 +286,11 @@ class STACObject(ABC):
             )
         for link in self.links:
             if link.is_child() or link.is_item():
-                stac_object = link.get_target(self.get_self_href(), self.reader)
-                href = stac_object.get_self_href()
+                stac_object = link.get_target(previous_self_href, self.reader)
+                stac_object_previous_self_href = stac_object.get_self_href()
                 if isinstance(stac_object, Container):
-                    if not href:
-                        href = href_generator.get_child(self_href, stac_object)
-                        stac_object.set_self_href(href)
+                    href = href_generator.get_child(self_href, stac_object)
+                    stac_object.set_self_href(href)
                     links.append(
                         self._make_link(
                             rel=RelType.CHILD,
@@ -298,9 +300,8 @@ class STACObject(ABC):
                         )
                     )
                 elif isinstance(stac_object, Item):
-                    if not href:
-                        href = href_generator.get_item(self_href, stac_object)
-                        stac_object.set_self_href(href)
+                    href = href_generator.get_item(self_href, stac_object)
+                    stac_object.set_self_href(href)
                     links.append(
                         self._make_link(
                             rel=RelType.ITEM,
@@ -317,6 +318,7 @@ class STACObject(ABC):
                         collection=self,
                         use_absolute_links=use_absolute_links,
                         href_generator=href_generator,
+                        previous_self_href=stac_object_previous_self_href,
                     )
                 elif isinstance(self, Catalog):
                     yield from stac_object._render(
@@ -324,12 +326,14 @@ class STACObject(ABC):
                         parent=self,
                         use_absolute_links=use_absolute_links,
                         href_generator=href_generator,
+                        previous_self_href=stac_object_previous_self_href,
                     )
                 else:
                     yield from stac_object._render(
                         root=root,
                         use_absolute_links=use_absolute_links,
                         href_generator=href_generator,
+                        previous_self_href=stac_object_previous_self_href,
                     )
             elif not link.is_hierarchical():
                 non_hierarchical_links.append(link)

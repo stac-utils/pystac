@@ -17,9 +17,9 @@ class BestPracticesHrefGenerator:
         from .collection import Collection
 
         if isinstance(container, Catalog):
-            return make_absolute_href(prefix, "./catalog.json", start_is_dir=True)
+            return make_absolute_href("./catalog.json", prefix, start_is_dir=True)
         elif isinstance(container, Collection):
-            return make_absolute_href(prefix, "./collection.json", start_is_dir=True)
+            return make_absolute_href("./collection.json", prefix, start_is_dir=True)
         else:
             raise ValueError(f"Unsupported root type: {type(container)}")
 
@@ -35,10 +35,10 @@ class BestPracticesHrefGenerator:
             raise ValueError(f"Unsupported child type: {type(container)}")
 
         return make_absolute_href(
-            parent_href, "/".join((container.id, file_name)), start_is_dir=False
+            "/".join((container.id, file_name)), parent_href, start_is_dir=False
         )
 
     def get_item(self, parent_href: str, item: Item) -> str:
         return make_absolute_href(
-            parent_href, "/".join((item.id, f"{item.id}.json")), start_is_dir=False
+            "/".join((item.id, f"{item.id}.json")), parent_href, start_is_dir=False
         )

@@ -12,6 +12,7 @@ class Writer(Protocol):
 class StandardLibraryWriter:
     def put_json(self, data: dict[str, Any], href: str | Path) -> None:
         if isinstance(href, Path) or not urllib.parse.urlparse(href).scheme:
+            Path(href).parent.mkdir(parents=True, exist_ok=True)
             with open(href, "w") as f:
                 json.dump(
                     data,

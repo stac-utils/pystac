@@ -4,11 +4,14 @@ from abc import ABC
 from collections.abc import Iterator
 from typing import TYPE_CHECKING
 
+from typing_extensions import deprecated
+
 from .link import Link
 from .rel_type import RelType
 from .stac_object import STACObject
 
 if TYPE_CHECKING:
+    from .catalog import CatalogType  # pyright: ignore[reportDeprecated]
     from .href_generator import HrefGenerator
     from .item import Item
 
@@ -46,20 +49,52 @@ class Container(STACObject, ABC):
     def get_item_links(self) -> list[Link]:
         return [link for link in self.links if link.is_item()]
 
-    def normalize_hrefs(self, root_href: str) -> None:
+    @deprecated("Call .normalize_hrefs() and then .save_all()")
+    def normalize_and_save(
+        self,
+        root_href: str,
+        catalog_type: CatalogType | None = None,  # pyright: ignore[reportDeprecated]
+    ) -> None:
+        from .catalog import CatalogType  # pyright: ignore[reportDeprecated]
+
+        self.normalize_hrefs(
+            root_href,
+            use_absolute_links=catalog_type == CatalogType.ABSOLUTE_PUBLISHED,  # pyright: ignore[reportDeprecated]
+        )
+        self.save_all()
+
+    def normalize_hrefs(self, root_href: str, use_absolute_links: bool = False) -> None:
         from .href_generator import BestPracticesHrefGenerator
 
         href_generator = BestPracticesHrefGenerator()
+        previous_self_href = self.get_self_href()
         self.set_self_href(href_generator.get_root(root_href, self))
-        self.render_all(href_generator=href_generator)
+        self.render_all(
+            use_absolute_links=use_absolute_links,
+            href_generator=href_generator,
+            previous_self_href=previous_self_href,
+        )
 
     def render_all(
         self,
         use_absolute_links: bool = False,
         href_generator: HrefGenerator | None = None,
+        previous_self_href: str | None = None,
     ) -> None:
-        for _ in self.render(use_absolute_links, href_generator):
+        for _ in self.render(use_absolute_links, href_generator, previous_self_href):
             pass
+
+    def save_all(self) -> None:
+        for _ in self.save_iter():
+            pass
+
+    def save_iter(self) -> Iterator[STACObject]:
+        for root, _, items in self.walk():
+            root.save_object()
+            yield root
+            for item in items:
+                item.save_object()
+                yield item
 
     def walk(self) -> Iterator[tuple[Container, list[Container], list[Item]]]:
         from .item import Item
