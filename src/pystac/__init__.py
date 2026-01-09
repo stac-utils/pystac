@@ -19,6 +19,7 @@ from .errors import (
     STACError,
     STACTypeError,
     STACValidationError,
+    TemplateError,
 )
 from .io import read_file
 from .item import Item
@@ -79,6 +80,7 @@ __all__ = [
     "ProviderRole",
     "STACError",
     "STACObject",
+    "TemplateError",
     "STACTypeError",
     "STACValidationError",
     "SpatialExtent",

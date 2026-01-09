@@ -3,13 +3,14 @@ from __future__ import annotations
 import os.path
 from abc import ABC
 from collections.abc import Iterator
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from typing_extensions import deprecated
 
 from pystac.errors import STACError
 from pystac.utils import make_absolute_href, make_relative_href
 
+from .layout import LayoutTemplate
 from .link import Link
 from .rel_type import RelType
 from .stac_object import STACObject
@@ -209,6 +210,65 @@ class Container(STACObject, ABC):
         self.save_all(
             dest_href=dest_href, writer=writer, include_self_links=include_self_links
         )
+
+    def generate_subcatalogs(
+        self,
+        template: str,
+        defaults: dict[str, Any] | None = None,
+        parent_ids: list[str] | None = None,
+    ) -> list[Container]:
+        from .catalog import Catalog
+
+        result: list[Container] = []
+        parent_ids = parent_ids or list()
+        parent_ids.append(self.id)
+        for child in self.get_children():
+            result.extend(
+                child.generate_subcatalogs(
+                    template, defaults=defaults, parent_ids=parent_ids.copy()
+                )
+            )
+
+        layout_template = LayoutTemplate(template, defaults=defaults)
+        keep_item_links: list[Link] = []
+        for link in self.get_item_links():
+            item = link.get_target(self.get_self_href(), self.reader)
+            subcatalog_ids = layout_template.substitute(item).split("/")
+            id_iter = reversed(parent_ids)
+            if all([f"{id}" == next(id_iter, None) for id in reversed(subcatalog_ids)]):
+                # Skip items for which the sub-catalog structure already
+                # matches the template. The list of parent IDs can include more
+                # elements on the root side, so compare the reversed sequences.
+                keep_item_links.append(link)
+                continue
+            current_parent = self
+            for subcatalog_id in subcatalog_ids:
+                subcatalog = current_parent.get_child(subcatalog_id)
+                if subcatalog is None:
+                    subcatalog_description = (
+                        f"Catalog of items from {current_parent.id} with "
+                        f"id {subcatalog_id}"
+                    )
+                    subcatalog = Catalog(
+                        id=subcatalog_id, description=subcatalog_description
+                    )
+                    _ = current_parent.add_child(subcatalog)
+                    result.append(subcatalog)
+                current_parent = subcatalog
+
+            # resolve collection link so when added back points to correct location
+            collection_link = item.get_link(RelType.COLLECTION)
+            if collection_link is not None:
+                _ = collection_link.get_target(item.get_self_href(), self.reader)
+
+            _ = current_parent.add_item(item)
+
+        # keep only non-item links and item links that have not been moved elsewhere
+        self.links = [
+            link for link in self.links if link.rel != RelType.ITEM
+        ] + keep_item_links
+
+        return result
 
     def normalize_hrefs(
         self,

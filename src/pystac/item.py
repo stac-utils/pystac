@@ -232,6 +232,12 @@ class Properties:
     def __getitem__(self, key: str) -> Any:
         return self.extra_fields[key]
 
+    def __getattr__(self, key: str) -> Any:
+        return self.extra_fields[key]
+
+    def __contains__(self, key: str) -> bool:
+        return key == "datetime" or key in self.extra_fields
+
     @classmethod
     def try_from(
         cls,

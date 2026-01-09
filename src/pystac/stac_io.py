@@ -479,6 +479,14 @@ if HAS_URLLIB3:
                 return super().read_text_from_href(href)
 
 
+class StacIOReader:
+    def __init__(self, stac_io: StacIO) -> None:
+        self.stac_io = stac_io
+
+    def get_json(self, href: str | Path) -> dict[str, Any]:
+        return self.stac_io.read_json(href)
+
+
 class StacIOWriter:
     def __init__(self, stac_io: StacIO) -> None:
         self.stac_io: StacIO = stac_io
