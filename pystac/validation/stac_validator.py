@@ -35,8 +35,8 @@ class GetSchemaError(Exception):
 class STACValidator(ABC):
     """STACValidator defines methods for validating STAC
     JSON. Implementations define methods for validating core objects and extension.
-    By default the JsonSchemaSTACValidator is used by PySTAC; users can define their own
-    STACValidator implementation and set that validator to be used by
+    By default, the JsonSchemaSTACValidator is used by PySTAC; users can define their
+    own STACValidator implementation and set that validator to be used by
     pystac by using the :func:`~pystac.validation.set_validator` method.
     """
 
@@ -53,7 +53,7 @@ class STACValidator(ABC):
         Return value can be None or specific to the implementation.
 
         Args:
-            stac_dict : Dictionary that is the STAC json of the object.
+            stac_dict : Dictionary that is the STAC JSON of the object.
             stac_object_type : The stac object type of the object encoded
                 in stac_dict. One of :class:`~pystac.STACObjectType`.
             stac_version : The version of STAC to validate the object against.
@@ -75,7 +75,7 @@ class STACValidator(ABC):
         Return value can be None or specific to the implementation.
 
         Args:
-            stac_dict : Dictionary that is the STAC json of the object.
+            stac_dict : Dictionary that is the STAC JSON of the object.
             stac_object_type : The stac object type of the object encoded in
                 stac_dict. One of :class:`~pystac.STACObjectType`.
             stac_version : The version of STAC to validate the object against.
@@ -95,7 +95,7 @@ class STACValidator(ABC):
         """Validate a STAC object JSON.
 
         Args:
-            stac_dict : Dictionary that is the STAC json of the object.
+            stac_dict : Dictionary that is the STAC JSON of the object.
             stac_object_type : The stac object type of the object encoded in
                 stac_dict. One of :class:`~pystac.STACObjectType`.
             stac_version : The version of STAC to validate the object against.
@@ -235,7 +235,7 @@ class JsonSchemaSTACValidator(STACValidator):
         Return value can be None or specific to the implementation.
 
         Args:
-            stac_dict : Dictionary that is the STAC json of the object.
+            stac_dict : Dictionary that is the STAC JSON of the object.
             stac_object_type : The stac object type of the object encoded in
                 stac_dict. One of :class:`~pystac.STACObjectType`.
             stac_version : The version of STAC to validate the object against.
@@ -275,7 +275,7 @@ class JsonSchemaSTACValidator(STACValidator):
         Return value can be None or specific to the implementation.
 
         Args:
-            stac_dict : Dictionary that is the STAC json of the object.
+            stac_dict : Dictionary that is the STAC JSON of the object.
             stac_object_type : The stac object type of the object encoded in
                 stac_dict. One of :class:`~pystac.STACObjectType`.
             stac_version : The version of STAC to validate the object against.

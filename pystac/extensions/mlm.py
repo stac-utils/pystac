@@ -1049,7 +1049,7 @@ class ResultStructure:
             dim_order: Order of the shape dimensions by name for the result array.
             data_type: The data type of values in the n-dimensional array. For model
                 outputs, this should be the data type of the result of the model
-                inference without extra post processing.
+                inference without extra post-processing.
         """
         self.shape = shape
         self.dim_order = dim_order
@@ -1069,7 +1069,7 @@ class ResultStructure:
             dim_order: Order of the shape dimensions by name for the result array.
             data_type: The data type of values in the n-dimensional array. For model
                 outputs, this should be the data type of the result of the model
-                inference without extra post processing.
+                inference without extra post-processing.
 
         Returns:
             ResultStructure
@@ -1481,7 +1481,7 @@ class MLMExtension(
                 `obj` parameter
             pystac.ExtensionTypeError: When any unsupported object is passed as the
                 `obj` parameter. If you see this extension in this context, please
-                raise an issue on github.
+                raise an issue on GitHub.
         """
         if isinstance(obj, pystac.Item):
             cls.ensure_has_extension(obj, add_if_missing)
@@ -1858,8 +1858,8 @@ class AssetGeneralMLMExtension(
     :class:`pystac.Asset` object with properties from the
     :stac-ext:`Machine Learning Model Extension <mlm>`.
 
-    Use this class, if model metadata is provided by by the asset's parent object
-    (i.e. :class:`pystac.Item` or :class:`pystac.Item`. If Model metadata is provided
+    Use this class, if model metadata is provided by the asset's parent object
+    (i.e. :class:`pystac.Item` or :class:`pystac.Item`). If Model metadata is provided
     by the asset object itself, use :class:`AssetDetailedMLMExtension`.
 
     For extending :class:`pystac.Item`, :class:`pystac.Collection` or
@@ -1918,7 +1918,7 @@ class AssetDetailedMLMExtension(_AssetMLMExtension, MLMExtension[pystac.Asset]):
 
     Use this class, if model metadata is provided by the asset. If model metadata is
     provided by the asset's parent object
-    (i.e. :class:`pystac.Item` or :class:`pystac.Item`, use
+    (i.e. :class:`pystac.Item` or :class:`pystac.Item`), use
     :class:`AssetGeneralMLMExtension`.
 
     For extending :class:`pystac.Item`, :class:`pystac.Collection` or

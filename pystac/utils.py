@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 import posixpath
-import warnings
 from collections.abc import Callable
 from datetime import datetime, timezone
 from enum import Enum
@@ -15,8 +14,6 @@ from typing import (
 from urllib.parse import ParseResult as URLParseResult
 from urllib.parse import urljoin, urlparse, urlunparse
 
-import dateutil.parser
-
 from pystac.errors import RequiredPropertyMissing
 
 #: HREF string or path-like object.
@@ -24,7 +21,7 @@ HREF: TypeAlias = str | os.PathLike[str]
 
 
 def make_posix_style(href: HREF) -> str:
-    """Converts double back slashes and single back slashes to single forward
+    """Converts double backslashes and single backslashes to single forward
     slashes for converting Windows paths to Posix style.
 
     Args:
@@ -132,6 +129,8 @@ class JoinType(StringEnum):
         Returns:
             JoinType : The join type for the URI.
         """
+        import warnings
+
         warnings.warn(
             message=(
                 "from_parsed_uri is deprecated and will be removed in pystac "
@@ -166,6 +165,8 @@ def join_path_or_url(join_type: JoinType, *args: str) -> str:
     Returns:
         str : The joined path
     """
+    import warnings
+
     warnings.warn(
         message=(
             "join_path_or_url is deprecated and will be removed in pystac "
@@ -278,7 +279,8 @@ def _make_absolute_href_url(
     start_is_dir: bool = False,
 ) -> str:
     # If the source is already absolute, just return it
-    if parsed_source.scheme != "":
+    # We also treat /vsi paths, from GDAL, as absolute
+    if parsed_source.scheme != "" or parsed_source.path.startswith("/vsi"):
         return urlunparse(parsed_source)
 
     # If the start path is not a directory, get the parent directory
@@ -392,7 +394,8 @@ def is_absolute_href(href: str, start_href: str | None = None) -> bool:
         bool: ``True`` if the given HREF is absolute, ``False`` if it is relative.
     """
     parsed = safe_urlparse(href)
-    if parsed.scheme not in ["", "file"]:
+    # We treat /vsi paths, from GDAL, as absolute
+    if parsed.scheme not in ["", "file"] or parsed.path.startswith("/vsi"):
         return True
     else:
         parsed_start_scheme = (
@@ -440,6 +443,8 @@ def str_to_datetime(s: str) -> datetime:
     Returns:
         str: The :class:`datetime.datetime` represented the by the string.
     """
+    import dateutil.parser
+
     return dateutil.parser.isoparse(s)
 
 

@@ -1,7 +1,5 @@
-from html import escape
 from typing import Any
 
-from pystac.html.jinja_env import get_jinja_env
 from pystac.utils import StringEnum
 
 
@@ -73,6 +71,10 @@ class Provider:
         return self.to_dict() == o.to_dict()
 
     def _repr_html_(self) -> str:
+        from html import escape
+
+        from pystac.html.jinja_env import get_jinja_env
+
         jinja_env = get_jinja_env()
         if jinja_env:
             template = jinja_env.get_template("JSON.jinja2")
@@ -100,7 +102,7 @@ class Provider:
 
     @staticmethod
     def from_dict(d: dict[str, Any]) -> "Provider":
-        """Constructs an Provider from a dict.
+        """Constructs a Provider from a dict.
 
         Returns:
             Provider: The Provider deserialized from the JSON dict.

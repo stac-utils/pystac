@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import warnings
 from collections.abc import Iterable
 from typing import (
     Any,
@@ -218,7 +217,7 @@ class Statistics:
 
     @staticmethod
     def from_dict(d: dict[str, Any]) -> Statistics:
-        """Constructs an Statistics from a dict.
+        """Constructs a Statistics from a dict.
 
         Returns:
             Statistics: The Statistics deserialized from the JSON dict.
@@ -251,9 +250,9 @@ class Histogram:
         Args:
             count : number of buckets of the distribution.
             min : minimum value of the distribution.
-                Also the mean value of the first bucket.
+                Also, the mean value of the first bucket.
             max : maximum value of the distribution.
-                Also the mean value of the last bucket.
+                Also, the mean value of the last bucket.
             buckets : Array of integer indicating the number
                 of pixels included in the bucket.
         """
@@ -276,9 +275,9 @@ class Histogram:
         Args:
             count : number of buckets of the distribution.
             min : minimum value of the distribution.
-                Also the mean value of the first bucket.
+                Also, the mean value of the first bucket.
             max : maximum value of the distribution.
-                Also the mean value of the last bucket.
+                Also, the mean value of the last bucket.
             buckets : Array of integer indicating the number
                 of pixels included in the bucket.
         """
@@ -354,7 +353,7 @@ class Histogram:
 
     @staticmethod
     def from_dict(d: dict[str, Any]) -> Histogram:
-        """Constructs an Histogram from a dict.
+        """Constructs a Histogram from a dict.
 
         Returns:
             Histogram: The Histogram deserialized from the JSON dict.
@@ -716,6 +715,8 @@ class RasterExtension(
 
     @classmethod
     def get_schema_uris(cls) -> list[str]:
+        import warnings
+
         warnings.warn(
             "get_schema_uris is deprecated and will be removed in v2",
             DeprecationWarning,

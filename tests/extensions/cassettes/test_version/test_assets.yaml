@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/version/v1.2.0/schema.json
   response:
@@ -55,51 +55,7 @@ interactions:
         false\n        },\n        \"experimental\": {\n          \"type\": \"boolean\",\n
         \         \"title\": \"Experimental\",\n          \"default\": false\n        }\n
         \     }\n    }\n  }\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '1'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '3405'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:55:35 GMT
-      ETag:
-      - '"645249bd-d4d"'
-      Last-Modified:
-      - Wed, 03 May 2023 11:47:09 GMT
-      Server:
-      - GitHub.com
-      Strict-Transport-Security:
-      - max-age=31556952
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Fastly-Request-ID:
-      - a85a368ded1957b288c6cfb2855f3dfd3ab6516e
-      X-GitHub-Request-Id:
-      - 47C6:BCA08:C42B16:DE942D:68CC1D66
-      X-Served-By:
-      - cache-bos4638-BOS
-      X-Timer:
-      - S1758207336.527649,VS0,VE2
-      expires:
-      - Thu, 18 Sep 2025 15:05:34 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
