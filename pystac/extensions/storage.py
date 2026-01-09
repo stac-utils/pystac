@@ -216,7 +216,7 @@ class StorageScheme:
         Returns the dictionary encoding of this object
 
         Returns:
-            dict[str, Any
+            dict[str, Any]: The dictionary encoding of this object
         """
         return self._properties
 
