@@ -28,8 +28,6 @@ To do so, we have some specific implementation strategies.
   Instead, we provide arguments like `use_absolute_hrefs` and `include_self_href`.
 - `StacIO` is deprecated in favor of `Reader` and `Writer`.
   We provide simple wrappers to allow folks to continue using their existing custom `StacIO` classes.
-- `Layout` is deprecated in favor of `HrefGenerator`.
-  We provide re-implementations of each existing `Layout` (TODO).
 - Link hrefs are now more explicit.
   In PySTAC v1, `Link.to_dict()` mutated the `href` based on the `CatalogType` and other factors.
   In PySTAC v2, all href mutation is done _before_ serialization.
