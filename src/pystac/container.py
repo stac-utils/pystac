@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING
 from typing_extensions import deprecated
 
 from pystac.errors import STACError
-from pystac.stac_io import StacIO
 from pystac.utils import make_absolute_href, make_relative_href
 
 from .link import Link
@@ -19,6 +18,7 @@ if TYPE_CHECKING:
     from .catalog import CatalogType  # pyright: ignore[reportDeprecated]
     from .href_generator import HrefGenerator
     from .item import Item
+    from .stac_io import StacIO
     from .writer import Writer
 
 
@@ -196,9 +196,9 @@ class Container(STACObject, ABC):
             include_self_links = True
 
         if stac_io:
-            from .writer import StacIOWriter  #  pyright: ignore[reportDeprecated]
+            from .stac_io import StacIOWriter
 
-            writer = StacIOWriter(stac_io)  #  pyright: ignore[reportDeprecated]
+            writer = StacIOWriter(stac_io)
         else:
             writer = None
 

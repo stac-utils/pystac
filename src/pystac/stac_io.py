@@ -10,6 +10,7 @@ import json
 import os
 from abc import ABC, abstractmethod
 from collections.abc import Callable
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import pystac
@@ -476,3 +477,14 @@ if HAS_URLLIB3:
                     raise Exception(f"Could not read uri {href}") from e
             else:
                 return super().read_text_from_href(href)
+
+
+class StacIOWriter:
+    def __init__(self, stac_io: StacIO) -> None:
+        self.stac_io: StacIO = stac_io
+
+    def put_json(self, data: dict[str, Any], href: str | Path) -> None:  # pyright: ignore[reportUnusedParameter]
+        raise NotImplementedError
+
+    def delete(self, href: str | Path) -> None:  # pyright: ignore[reportUnusedParameter]
+        raise NotImplementedError
