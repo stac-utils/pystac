@@ -2,11 +2,11 @@
 
 import json
 import shutil
-from urllib.request import Request
 import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from urllib.request import Request
 
 import pytest
 
@@ -27,7 +27,7 @@ def vcr_config() -> dict[str, Any]:
             if key.lower() in retain
         }
         return response
-    
+
     def scrub_request_headers(request: Request) -> Request:
         drop = ["User-Agent"]
         for header in drop:
@@ -35,7 +35,10 @@ def vcr_config() -> dict[str, Any]:
 
         return request
 
-    return {"before_record_response": scrub_response_headers, "before_record_request": scrub_request_headers}
+    return {
+        "before_record_response": scrub_response_headers,
+        "before_record_request": scrub_request_headers,
+    }
 
 
 @pytest.fixture
