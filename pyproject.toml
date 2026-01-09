@@ -6,6 +6,7 @@ authors = [
     { name = "Rob Emanuele", email = "rdemanuele@gmail.com" },
     { name = "Jon Duckworth", email = "duckontheweb@gmail.com" },
     { name = "Pete Gadomski", email = "pete.gadomski@gmail.com" },
+    { name = "Julia Signell", email = "jsignell@gmail.com" },
 ]
 maintainers = [{ name = "Pete Gadomski", email = "pete.gadomski@gmail.com" }]
 keywords = ["pystac", "imagery", "raster", "catalog", "STAC"]
