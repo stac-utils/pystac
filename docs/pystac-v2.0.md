@@ -20,3 +20,16 @@ To do so, we have some specific implementation strategies.
 - **Do fewer things at once**: One of the biggest design problems of PySTAC v1.0 (in this author's opinion) was that many functions tried to be "helpful" by doing a lot of things at once.
   When possible, we should simplify methods to do just one thing, and provide intuitive patterns for doing complex operations using multiple method calls.
   Top-level functions can be used to "synthesize" complex operations, e.g. `pystac.read_file`.
+
+## Key changes
+
+- Rather than making `Collection` a subclass of `Catalog`, both `Catalog` and `Collection` are subclasses of an abstract `Container` class.
+- `CatalogType` is deprecated and not used.
+  Instead, we provide arguments like `use_absolute_hrefs` and `include_self_href`.
+- `StacIO` is deprecated in favor of `Reader` and `Writer`.
+  We provide simple wrappers to allow folks to continue using their existing custom `StacIO` classes.
+- `Layout` is deprecated in favor of `HrefGenerator`.
+  We provide re-implementations of each existing `Layout` (TODO).
+- Link hrefs are now more explicit.
+  In PySTAC v1, `Link.to_dict()` mutated the `href` based on the `CatalogType` and other factors.
+  In PySTAC v2, all href mutation is done _before_ serialization.
