@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.2
+      - pystac/1.14.3
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/catalog.json
   response:
@@ -23,7 +23,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.2
+      - pystac/1.14.3
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/zanzibar/collection.json
   response:
@@ -61,7 +61,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.2
+      - pystac/1.14.3
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/zanzibar/znz001.json
   response:
@@ -109,7 +109,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.2
+      - pystac/1.14.3
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/zanzibar/znz029.json
   response:
