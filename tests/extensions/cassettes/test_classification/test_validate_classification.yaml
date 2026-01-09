@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.2
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/raster/v1.1.0/schema.json
   response:
@@ -102,7 +102,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.2
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/eo/v1.1.0/schema.json
   response:
@@ -182,7 +182,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.2
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/view/v1.0.0/schema.json
   response:
@@ -242,7 +242,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.2
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/projection/v2.0.0/schema.json
   response:
@@ -312,7 +312,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.2
+      - pystac/1.14.3
     method: GET
     uri: https://landsat.usgs.gov/stac/landsat-extension/v1.1.1/schema.json
   response:
@@ -376,7 +376,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.2
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/scientific/v1.0.0/schema.json
   response:
@@ -464,7 +464,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.2
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/classification/v2.0.0/schema.json
   response:
