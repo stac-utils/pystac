@@ -253,9 +253,11 @@ class STACObject(ABC):
 
     def render(
         self,
+        /,
         use_absolute_links: bool = False,
         href_generator: HrefGenerator | None = None,
         previous_self_href: str | None = None,
+        skip_unresolved: bool = False,
     ) -> Iterator[STACObject]:
         """Remove and re-create all hierarchical links on this STAC object and
         all children and items, yielding each."""
@@ -263,6 +265,7 @@ class STACObject(ABC):
             use_absolute_links=use_absolute_links,
             href_generator=href_generator,
             previous_self_href=previous_self_href,
+            skip_unresolved=skip_unresolved,
             root=None,
             parent=None,
             collection=None,
@@ -270,10 +273,12 @@ class STACObject(ABC):
 
     def _render(
         self,
+        /,
         root: Container | None = None,
         parent: Container | None = None,
         collection: Collection | None = None,
         use_absolute_links: bool = False,
+        skip_unresolved: bool = False,
         href_generator: HrefGenerator | None = None,
         previous_self_href: str | None = None,
     ) -> Iterator[STACObject]:
@@ -292,8 +297,8 @@ class STACObject(ABC):
             raise ValueError("Cannot render without a self href")
         if root is None and isinstance(self, Container):
             root = self
+
         links: list[Link] = []
-        non_hierarchical_links: list[Link] = []
         if root and (root_href := root.get_self_href()):
             links.append(
                 self._make_link(
@@ -322,6 +327,10 @@ class STACObject(ABC):
                 )
             )
         for link in self.links:
+            if skip_unresolved and not link.is_resolved():
+                links.append(link)
+                continue
+
             if link.is_child() or link.is_item():
                 stac_object = link.get_target(previous_self_href, self.reader)
                 stac_object_previous_self_href = stac_object.get_self_href()
@@ -373,9 +382,9 @@ class STACObject(ABC):
                         previous_self_href=stac_object_previous_self_href,
                     )
             elif not link.is_hierarchical():
-                non_hierarchical_links.append(link)
+                links.append(link)
 
-        self.links = links + non_hierarchical_links
+        self.links = links
         yield self
 
     def save_object(

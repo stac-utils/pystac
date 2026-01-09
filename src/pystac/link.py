@@ -107,6 +107,9 @@ class Link:
     def is_derived_from(self) -> bool:
         return self.rel == RelType.DERIVED_FROM
 
+    def is_resolved(self) -> bool:
+        return self._target is not None
+
     def is_json(self) -> bool:
         return self.media_type in (MediaType.JSON, MediaType.GEOJSON)
 

@@ -39,13 +39,15 @@ class Container(STACObject, ABC):
     def get_item_links(self) -> list[Link]:
         return [link for link in self.links if link.is_item()]
 
-    def add_item(self, item: Item, set_parent: bool = True) -> Link:
+    def add_item(
+        self, item: Item, set_parent: bool = True, title: str | None = None
+    ) -> Link:
         from .item import Item
 
         if not isinstance(item, Item):  # pyright: ignore[reportUnnecessaryIsInstance]
             raise STACError("Cannot add a non-item as an item")  # pyright: ignore[reportUnreachable]
 
-        item_link = Link(target=item, rel=RelType.ITEM)
+        item_link = Link(target=item, rel=RelType.ITEM, title=title)
         self.links.append(item_link)
 
         if set_parent:
@@ -206,16 +208,22 @@ class Container(STACObject, ABC):
             dest_href=dest_href, writer=writer, include_self_links=include_self_links
         )
 
-    def normalize_hrefs(self, root_href: str, use_absolute_links: bool = False) -> None:
+    def normalize_hrefs(
+        self,
+        root_href: str,
+        use_absolute_links: bool = False,
+        skip_unresolved: bool = False,
+    ) -> None:
         from .href_generator import BestPracticesHrefGenerator
 
         href_generator = BestPracticesHrefGenerator()
         previous_self_href = self.get_self_href()
-        self.set_self_href(href_generator.get_root(root_href, self))
+        self.set_self_href(href_generator.get_root(make_absolute_href(root_href), self))
         self.render_all(
             use_absolute_links=use_absolute_links,
             href_generator=href_generator,
             previous_self_href=previous_self_href,
+            skip_unresolved=skip_unresolved,
         )
 
     def render_all(
@@ -223,8 +231,11 @@ class Container(STACObject, ABC):
         use_absolute_links: bool = False,
         href_generator: HrefGenerator | None = None,
         previous_self_href: str | None = None,
+        skip_unresolved: bool = False,
     ) -> None:
-        for _ in self.render(use_absolute_links, href_generator, previous_self_href):
+        for _ in self.render(
+            use_absolute_links, href_generator, previous_self_href, skip_unresolved
+        ):
             pass
 
     def save_all(
