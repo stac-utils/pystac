@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://stac-extensions.github.io/mgrs/v1.0.0/schema.json
   response:
@@ -47,51 +47,7 @@ interactions:
         {\n        \"^(?!mgrs:)\": {\n          \"$comment\": \"Do not allow other
         fields with this prefix\"\n        }\n      },\n      \"additionalProperties\":
         false\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '0'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '2889'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:55:22 GMT
-      ETag:
-      - '"60c20ce1-b49"'
-      Last-Modified:
-      - Thu, 10 Jun 2021 13:00:17 GMT
-      Server:
-      - GitHub.com
-      Strict-Transport-Security:
-      - max-age=31556952
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Fastly-Request-ID:
-      - 73fb8ea7c189d546d6ea485b18fb212b819a1d6a
-      X-GitHub-Request-Id:
-      - 4494:C5EEF:CC4460:E69E65:68CC1D5A
-      X-Served-By:
-      - cache-bos4638-BOS
-      X-Timer:
-      - S1758207323.541915,VS0,VE1
-      expires:
-      - Thu, 18 Sep 2025 15:05:22 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK

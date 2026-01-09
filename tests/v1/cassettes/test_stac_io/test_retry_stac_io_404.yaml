@@ -3,38 +3,14 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://planetarycomputer.microsoft.com/api/stac/v1/collections/not-a-collection-id
   response:
     body:
       string: '{"code":"NotFoundError","description":"No collection with id ''not-a-collection-id''
         found!"}'
-    headers:
-      Access-Control-Allow-Credentials:
-      - 'true'
-      Access-Control-Allow-Headers:
-      - X-PC-Request-Entity,DNT,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization
-      Access-Control-Allow-Methods:
-      - PUT, GET, POST, OPTIONS
-      Access-Control-Allow-Origin:
-      - '*'
-      Access-Control-Max-Age:
-      - '1728000'
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '91'
-      Content-Type:
-      - application/json
-      Date:
-      - Thu, 18 Sep 2025 14:55:45 GMT
-      Strict-Transport-Security:
-      - max-age=31536000; includeSubDomains
-      X-Cache:
-      - CONFIG_NOCACHE
-      x-azure-ref:
-      - 20250918T145545Z-17db9869998gc5l6hC1TEBg2rg00000005x0000000001nee
+    headers: {}
     status:
       code: 404
       message: Not Found

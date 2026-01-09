@@ -3,73 +3,15 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://proj.org/schemas/v0.7/projjson.schema.json
   response:
     body:
       string: ''
     headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '722'
-      CF-Cache-Status:
-      - HIT
-      CF-Ray:
-      - 9811afaa89a129b8-IAD
-      Cache-Control:
-      - max-age=1200
-      Connection:
-      - keep-alive
-      Content-Language:
-      - en
-      Content-Length:
-      - '0'
-      Content-Type:
-      - text/html; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:55:46 GMT
       Location:
       - https://proj.org/en/latest/schemas/v0.7/projjson.schema.json
-      Server:
-      - cloudflare
-      Set-Cookie:
-      - __cf_bm=A8l9uNyuByIpWA5ky2tfPNHv3suiNB8A24Zp6uqHgDE-1758207346-1.0.1.1-W1zGzxaO.N26KnieNK_VOSeYv9BEZOmjSZBMsyTfpxmQQyE9G.t9dtvsyyg6K9mO7Rjj6tvuPCZn3FS2HzKaeqwISqS3FNpX0JD9eTOz.u0;
-        path=/; expires=Thu, 18-Sep-25 15:25:46 GMT; domain=.proj.org; HttpOnly; Secure;
-        SameSite=None
-      - _cfuvid=ZICoBss1Xpupg2_dPfHJQqMNRxYRWXVAg8W7uxFNBM8-1758207346364-0.0.1.1-604800000;
-        path=/; domain=.proj.org; HttpOnly; Secure; SameSite=None
-      Vary:
-      - Accept-Language, Accept-Encoding
-      access-control-expose-headers:
-      - Location
-      alt-svc:
-      - h3=":443"; ma=86400
-      cdn-cache-control:
-      - public
-      cross-origin-opener-policy:
-      - same-origin
-      referrer-policy:
-      - no-referrer-when-downgrade
-      x-backend:
-      - web-i-046a40256d6a3b46c
-      x-content-type-options:
-      - nosniff
-      x-rtd-domain:
-      - proj.org
-      x-rtd-force-addons:
-      - 'true'
-      x-rtd-project:
-      - osgeo-proj
-      x-rtd-project-method:
-      - custom_domain
-      x-rtd-redirect:
-      - user
-      x-rtd-version-method:
-      - path
-      x-served:
-      - Proxito-404
     status:
       code: 302
       message: Found
@@ -77,7 +19,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://proj.org/en/latest/schemas/v0.7/projjson.schema.json
   response:
@@ -602,77 +544,7 @@ interactions:
         {},\n        \"remarks\": {},\n        \"id\": {}, \"ids\": {}\n      },\n
         \     \"required\" : [ \"name\" ],\n      \"additionalProperties\": false\n
         \   }\n\n  }\n}\n"
-    headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '4659'
-      CF-Cache-Status:
-      - HIT
-      CF-Ray:
-      - 9811afab5a4cd639-IAD
-      Cache-Control:
-      - max-age=1200
-      Connection:
-      - keep-alive
-      Content-Type:
-      - application/json
-      Date:
-      - Thu, 18 Sep 2025 14:55:46 GMT
-      ETag:
-      - W/"b36c7ce9824d274cfd711a16ef45d221"
-      Last-Modified:
-      - Thu, 25 Apr 2024 19:53:05 GMT
-      Server:
-      - cloudflare
-      Set-Cookie:
-      - __cf_bm=QQt0N2EkC.wL5HtR.iA3R4evP0cG4yjK5aHH2AzGwsI-1758207346-1.0.1.1-VvuvkCyPKUwxeffciS4_vqF3hi9kZRN6CMcOxLSrxkLoQzGWh72c5cZq0.zD0DOWT0GUJqvFk599FjkJMcKqTVKiE96QLoSePkHHVdH51xY;
-        path=/; expires=Thu, 18-Sep-25 15:25:46 GMT; domain=.proj.org; HttpOnly; Secure;
-        SameSite=None
-      - _cfuvid=d2tBdjUsMPV1GpK4pAV1NtLuUTVFyLTDRkSS5OVoh5g-1758207346481-0.0.1.1-604800000;
-        path=/; domain=.proj.org; HttpOnly; Secure; SameSite=None
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - Accept-Encoding
-      access-control-allow-methods:
-      - HEAD, OPTIONS, GET
-      alt-svc:
-      - h3=":443"; ma=86400
-      cdn-cache-control:
-      - public
-      referrer-policy:
-      - no-referrer-when-downgrade
-      x-amz-id-2:
-      - wq6M1yZwJIx72g0bu4iZIqB+T9hOmWOv1FfzWTgBKB1TbMZ30Ydon1RMGSDDCK+jALCUKViQfNEPgSiC2QHfaEtHxEE2g0MYvKvIxiq7DyA=
-      x-amz-meta-mtime:
-      - '1714074779.458591481'
-      x-amz-request-id:
-      - N37TE359KA2AHSV6
-      x-amz-server-side-encryption:
-      - AES256
-      x-backend:
-      - web-i-0d85dbf6e0a8f4cc9
-      x-content-type-options:
-      - nosniff
-      x-rtd-domain:
-      - proj.org
-      x-rtd-force-addons:
-      - 'true'
-      x-rtd-path:
-      - /proxito/html/osgeo-proj/latest/schemas/v0.7/projjson.schema.json
-      x-rtd-project:
-      - osgeo-proj
-      x-rtd-project-method:
-      - custom_domain
-      x-rtd-resolver-filename:
-      - /schemas/v0.7/projjson.schema.json
-      x-rtd-version:
-      - latest
-      x-rtd-version-method:
-      - path
-      x-served:
-      - Nginx-Proxito-Sendfile
+    headers: {}
     status:
       code: 200
       message: OK

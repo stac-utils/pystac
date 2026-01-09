@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/item-spec/json-schema/item.json
   response:
@@ -90,55 +90,7 @@ interactions:
         title\",\n          \"type\": \"string\"\n        },\n        \"type\": {\n
         \         \"title\": \"Asset type\",\n          \"type\": \"string\"\n        }\n
         \     }\n    }\n  }\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '6074'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 18 Sep 2025 14:56:02 GMT
-      ETag:
-      - '"4e24763d74f0d463b0cb6c63fc099e0b59447c7a049b93ffda4c6eb9eb54ae95"'
-      Expires:
-      - Thu, 18 Sep 2025 15:01:02 GMT
-      Source-Age:
-      - '1'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 4fb23418e139dc18856d454393155d35bece245e
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - DDD5:286E0:D0F1D:FC0CF:68CC1D7C
-      X-Served-By:
-      - cache-bos4693-BOS
-      X-Timer:
-      - S1758207362.165377,VS0,VE1
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
@@ -146,7 +98,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/extensions/checksum/json-schema/schema.json
   response:
@@ -172,55 +124,7 @@ interactions:
         \"SHA2 checksum\"\n        },\n        \"checksum:sha3\": {\n          \"type\":
         \"string\",\n          \"pattern\": \"^[A-Fa-f0-9]+$\",\n          \"title\":
         \"SHA3 checksum\"\n        }\n      }\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '1469'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 18 Sep 2025 14:56:02 GMT
-      ETag:
-      - '"ceed674cee48a43076989957b8a4f96d8acba3f52df1d52a3745e28225923aac"'
-      Expires:
-      - Thu, 18 Sep 2025 15:01:02 GMT
-      Source-Age:
-      - '0'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - fb3c398d3b28c332c5248ccee0a62699818f247f
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - A80D:3428C5:C3D9C:EEEC9:68CC1D81
-      X-Served-By:
-      - cache-bos4680-BOS
-      X-Timer:
-      - S1758207362.239357,VS0,VE89
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK

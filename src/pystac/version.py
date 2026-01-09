@@ -1,18 +1,18 @@
-__version__ = "1.14.2"  # x-release-please-version
+__version__ = "1.14.3"  # x-release-please-version
 """Library version"""
 
 
 class STACVersion:
-    DEFAULT_STAC_VERSION = "1.1.0"
+    DEFAULT_STAC_VERSION: str = "1.1.0"
     """Latest STAC version supported by PySTAC"""
 
-    DEFAULT_STAC_API_VERSION = "1.0.0"
+    DEFAULT_STAC_API_VERSION: str = "1.0.0"
     """Latest STAC API version supported by PySTAC"""
 
     # Version that holds a user-set STAC version to use.
     _override_version: str | None = None
 
-    OVERRIDE_VERSION_ENV_VAR = "PYSTAC_STAC_VERSION_OVERRIDE"
+    OVERRIDE_VERSION_ENV_VAR: str = "PYSTAC_STAC_VERSION_OVERRIDE"
 
     @classmethod
     def get_stac_version(cls) -> str:

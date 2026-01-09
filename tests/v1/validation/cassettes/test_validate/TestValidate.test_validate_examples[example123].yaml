@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.3
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0/collection-spec/json-schema/collection.json
   response:
@@ -104,49 +104,7 @@ interactions:
         for arrays), but we can't validate that in JSON Schema yet. See the sumamry
         description in the STAC specification for details.\"\n            }\n          }\n
         \       ]\n      }\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '4'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '7209'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:57:02 GMT
-      ETag:
-      - '"66e1651c-1c29"'
-      Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Fastly-Request-ID:
-      - 78839c4f6322209c03fd56405e7252e395b228c8
-      X-GitHub-Request-Id:
-      - A7D1:3FED61:1CD3D5:1E813E:68CC1DB9
-      X-Served-By:
-      - cache-bos4663-BOS
-      X-Timer:
-      - S1758207422.391119,VS0,VE1
-      expires:
-      - Thu, 18 Sep 2025 15:06:57 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
