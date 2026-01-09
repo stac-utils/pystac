@@ -124,6 +124,8 @@ class LayoutTemplate:
         self.template_vars = template_vars
 
     def _get_template_value(self, stac_object: STACObject, template_var: str) -> Any:
+        from .item import Item
+
         if template_var in self.ITEM_TEMPLATE_VARS:
             if isinstance(stac_object, Item):
                 # Datetime
@@ -187,14 +189,12 @@ class LayoutTemplate:
 
             v: Any = prop_source
             for prop in template_var.split("."):
-                if isinstance(v, dict):
-                    if prop not in v:
-                        raise error
+                if prop in v:
                     v = v[prop]
-                else:
-                    if not hasattr(v, prop):
-                        raise error
+                elif hasattr(v, prop):
                     v = getattr(v, prop)
+                else:
+                    raise error
         except TemplateError as e:
             if template_var in self.defaults:
                 return self.defaults[template_var]

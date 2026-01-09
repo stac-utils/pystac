@@ -79,6 +79,9 @@ lint.select = ["E", "F", "I", "UP"]
 extend-exclude = ["tests/v1", "src/pystac/validation", "src/pystac/stac_io.py"]
 
 [tool.pytest.ini_options]
+filterwarnings = [
+    "ignore",  # FIXME: turn this into error
+]
 addopts = "--block-network --record-mode=none"
 
 [tool.uv]
