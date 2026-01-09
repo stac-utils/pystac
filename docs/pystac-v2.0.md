@@ -20,6 +20,7 @@ To do so, we have some specific implementation strategies.
 - **Do fewer things at once**: One of the biggest design problems of PySTAC v1.0 (in this author's opinion) was that many functions tried to be "helpful" by doing a lot of things at once.
   When possible, we should simplify methods to do just one thing, and provide intuitive patterns for doing complex operations using multiple method calls.
   Top-level functions can be used to "synthesize" complex operations, e.g. `pystac.read_file`.
+- **Don't mutate on read** (aka auto-migration)
 
 ## Key changes
 
