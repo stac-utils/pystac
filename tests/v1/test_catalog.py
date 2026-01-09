@@ -684,7 +684,9 @@ class TestCatalog:
             assert len(os.listdir(temporary_directory)) == 2
 
         with tempfile.TemporaryDirectory() as temporary_directory:
-            with pytest.raises(STACError, match="does not resolve to a STAC object"):
+            # We remove the error matching string for pystac v2
+            # with pytest.raises(STACError, match="does not resolve to a STAC object"):
+            with pytest.raises(STACError):
                 catalog.normalize_and_save(temporary_directory, skip_unresolved=False)
 
     def test_generate_subcatalogs_works_with_custom_properties(self) -> None:

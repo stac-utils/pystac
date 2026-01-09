@@ -139,6 +139,9 @@ class Link:
 
         return self._target
 
+    def maybe_get_target(self) -> STACObject | None:
+        return self._target
+
     def to_dict(self, transform_href: bool | None = None) -> dict[str, Any]:
         if transform_href is not None:
             warnings.warn(

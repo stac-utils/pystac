@@ -165,12 +165,14 @@ class Container(STACObject, ABC):
         self,
         root_href: str,
         catalog_type: CatalogType | None = None,  # pyright: ignore[reportDeprecated]
+        skip_unresolved: bool = False,
     ) -> None:
         from .catalog import CatalogType  # pyright: ignore[reportDeprecated]
 
         self.normalize_hrefs(
             root_href,
             use_absolute_links=catalog_type == CatalogType.ABSOLUTE_PUBLISHED,  # pyright: ignore[reportDeprecated]
+            skip_unresolved=skip_unresolved,
         )
         self.save_all()
 
@@ -278,7 +280,11 @@ class Container(STACObject, ABC):
 
         yield self
 
-        for child in self.get_children():
+        for child_link in self.get_child_links():
+            child = child_link.maybe_get_target()
+            if not child or not isinstance(child, Container):
+                continue
+
             if dest_href is not None:
                 if (child_self_href := child.get_self_href()) and self_href:
                     child_dest_href = make_absolute_href(
@@ -301,7 +307,11 @@ class Container(STACObject, ABC):
                     dest_href=None, writer=writer, include_self_links=include_self_links
                 )
 
-        for item in self.get_items():
+        for item_link in self.get_item_links():
+            item = item_link.maybe_get_target()
+            if not item:
+                continue
+
             if dest_href is not None:
                 if (item_self_href := item.get_self_href()) and self_href:
                     item_dest_href = make_absolute_href(
