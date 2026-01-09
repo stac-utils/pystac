@@ -116,6 +116,9 @@ class Link:
     def get_href(self) -> str | None:
         return self._href or self._target and self._target.get_self_href()
 
+    def set_href(self, href: str) -> None:
+        self._href = href
+
     @property
     @deprecated("target is deprecated, either use .get_href() or .get_target()")
     def target(self) -> str | STACObject | None:

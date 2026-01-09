@@ -301,27 +301,24 @@ class STACObject(ABC):
         links: list[Link] = []
         if root and (root_href := root.get_self_href()):
             links.append(
-                self._make_link(
-                    rel=RelType.ROOT,
-                    target=root,
+                self._update_link_href(
+                    Link(rel=RelType.ROOT, target=root),
                     href=root_href,
                     make_absolute=use_absolute_links,
                 )
             )
         if parent and (parent_href := parent.get_self_href()):
             links.append(
-                self._make_link(
-                    rel=RelType.PARENT,
-                    target=parent,
+                self._update_link_href(
+                    Link(rel=RelType.PARENT, target=parent),
                     href=parent_href,
                     make_absolute=use_absolute_links,
                 )
             )
         if collection and (collection_href := collection.get_self_href()):
             links.append(
-                self._make_link(
-                    rel=RelType.COLLECTION,
-                    target=collection,
+                self._update_link_href(
+                    Link(rel=RelType.COLLECTION, target=collection),
                     href=collection_href,
                     make_absolute=use_absolute_links,
                 )
@@ -338,9 +335,8 @@ class STACObject(ABC):
                     href = href_generator.get_child(self_href, stac_object)
                     stac_object.set_self_href(href)
                     links.append(
-                        self._make_link(
-                            rel=RelType.CHILD,
-                            target=stac_object,
+                        self._update_link_href(
+                            link,
                             href=href,
                             make_absolute=use_absolute_links,
                         )
@@ -349,9 +345,8 @@ class STACObject(ABC):
                     href = href_generator.get_item(self_href, stac_object)
                     stac_object.set_self_href(href)
                     links.append(
-                        self._make_link(
-                            rel=RelType.ITEM,
-                            target=stac_object,
+                        self._update_link_href(
+                            link,
                             href=href,
                             make_absolute=use_absolute_links,
                         )
@@ -410,14 +405,13 @@ class STACObject(ABC):
     def __repr__(self) -> str:
         return f"<{self.__class__} id={self.id}>"
 
-    def _make_link(
-        self, rel: str, target: STACObject, href: str, make_absolute: bool
-    ) -> Link:
+    def _update_link_href(self, link: Link, href: str, make_absolute: bool) -> Link:
         self_href = self.get_self_href()
         href = make_absolute_href(href, self_href, start_is_dir=False)
         if not make_absolute and self_href:
             href = make_relative_href(href, self_href, start_is_dir=False)
-        return Link(rel=rel, target=target, href=href)
+        link.set_href(href)
+        return link
 
     def _maybe_get_link_target(self, rel: str) -> STACObject | None:
         link = self.get_link(rel)
