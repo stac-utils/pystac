@@ -30,8 +30,7 @@ pystac.extensions
     sar.SarExtension
     sat.SatExtension
     scientific.ScientificExtension
-    storage.StorageSchemesExtension
-    storage.StorageRefsExtension
+    storage.StorageExtension
     table.TableExtension
     timestamps.TimestampsExtension
     version.VersionExtension
