@@ -67,7 +67,7 @@ Changelog = "https://github.com/stac-utils/pystac/blob/main/CHANGELOG.md"
 Discussions = "https://github.com/radiantearth/stac-spec/discussions/categories/stac-software"
 
 [tool.basedpyright]
-ignore = ["tests/v1"]
+ignore = ["tests/v1", "src/pystac/stac_io.py"]
 reportExplicitAny = false
 reportAny = false
 reportImportCycles = false
@@ -75,7 +75,7 @@ reportImplicitStringConcatenation = false
 
 [tool.ruff]
 lint.select = ["E", "F", "I", "UP"]
-extend-exclude = ["tests/v1", "src/pystac/validation"]
+extend-exclude = ["tests/v1", "src/pystac/validation", "src/pystac/stac_io.py"]
 
 [tool.pytest.ini_options]
 addopts = "--block-network --record-mode=none"

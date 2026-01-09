@@ -483,8 +483,8 @@ class StacIOWriter:
     def __init__(self, stac_io: StacIO) -> None:
         self.stac_io: StacIO = stac_io
 
-    def put_json(self, data: dict[str, Any], href: str | Path) -> None:  # pyright: ignore[reportUnusedParameter]
-        raise NotImplementedError
+    def put_json(self, data: dict[str, Any], href: str | Path) -> None:
+        self.stac_io.save_json(href, data)
 
     def delete(self, href: str | Path) -> None:  # pyright: ignore[reportUnusedParameter]
         raise NotImplementedError
