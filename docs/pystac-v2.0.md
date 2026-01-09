@@ -23,6 +23,8 @@ To do so, we have some specific implementation strategies.
 
 ## Key changes
 
+- **stac-geoparquet** and **async** support is provided via **rustac**
+- **pystac-client** has been merged in, and is can be used via an optional dependency
 - Rather than making `Collection` a subclass of `Catalog`, both `Catalog` and `Collection` are subclasses of an abstract `Container` class.
 - `CatalogType` is deprecated and not used.
   Instead, we provide arguments like `use_absolute_hrefs` and `include_self_href`.
