@@ -232,11 +232,20 @@ class Properties:
     def __getitem__(self, key: str) -> Any:
         return self.extra_fields[key]
 
+    def __setitem__(self, name: str, value: Any, /) -> None:
+        self.extra_fields[name] = value
+
     def __getattr__(self, key: str) -> Any:
         return self.extra_fields[key]
 
     def __contains__(self, key: str) -> bool:
         return key == "datetime" or key in self.extra_fields
+
+    def __deepcopy__(self, memo: dict[int, Any]) -> Properties:
+        return Properties(
+            datetime=self.datetime,
+            **copy.deepcopy(self.extra_fields, memo),
+        )
 
     @classmethod
     def try_from(

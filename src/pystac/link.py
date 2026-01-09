@@ -142,6 +142,9 @@ class Link:
     def maybe_get_target(self) -> STACObject | None:
         return self._target
 
+    def set_target(self, target: STACObject) -> None:
+        self._target = target
+
     def to_dict(self, transform_href: bool | None = None) -> dict[str, Any]:
         if transform_href is not None:
             warnings.warn(

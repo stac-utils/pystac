@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import copy
 import os.path
+import warnings
 from abc import ABC
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from typing import TYPE_CHECKING, Any
 
 from typing_extensions import deprecated
@@ -63,6 +65,40 @@ class Container(STACObject, ABC):
         for item in items:
             links.append(self.add_item(item))
         return links
+
+    def map_items(self, item_mapper: Callable[[Item], Item | list[Item]]) -> Container:
+        from .item import Item
+
+        def apply(container: Container) -> None:
+            links: list[Link] = []
+            for link in container.links:
+                if not link.is_item():
+                    links.append(link)
+                    continue
+
+                item = link.get_target(container.get_self_href(), container.reader)
+                if not isinstance(item, Item):
+                    warnings.warn("Item link does not point to an item")
+                    links.append(link)
+                    continue
+
+                item_or_items = item_mapper(item)
+                if isinstance(item_or_items, list):
+                    for new_item in item_or_items:
+                        new_link = copy.deepcopy(link)
+                        new_link.set_target(new_item)
+                        links.append(new_link)
+                else:
+                    link.set_target(item_or_items)
+                    links.append(link)
+            container.links = links
+
+        container = self.clone()
+        apply(container)
+        for child in container.get_children(recursive=True):
+            apply(child)
+
+        return container
 
     def remove_item(self, id: str) -> Item | None:
         from .item import Item
