@@ -1,26 +1,19 @@
 from __future__ import annotations
 
-import warnings
-
-warnings.warn(
-    message="pystac.layout is deprecated",
-    category=DeprecationWarning,
-)
-
 import posixpath
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
-import pystac
-from pystac.utils import is_file_path
+from .errors import STACError
+from .utils import is_file_path
 
 if TYPE_CHECKING:
-    from pystac.catalog import Catalog
-    from pystac.collection import Collection
-    from pystac.item import Item
-    from pystac.stac_object import STACObject
+    from .catalog import Catalog
+    from .collection import Collection
+    from .item import Item
+    from .stac_object import STACObject
 
 
 class TemplateError(Exception):
@@ -132,15 +125,16 @@ class LayoutTemplate:
 
     def _get_template_value(self, stac_object: STACObject, template_var: str) -> Any:
         if template_var in self.ITEM_TEMPLATE_VARS:
-            if isinstance(stac_object, pystac.Item):
+            if isinstance(stac_object, Item):
                 # Datetime
                 dt = stac_object.datetime
                 if dt is None:
                     dt = stac_object.common_metadata.start_datetime
                 if dt is None:
-                    raise pystac.TemplateError(
+                    raise TemplateError(
                         f"Item {stac_object} does not have a datetime or "
-                        f"datetime range set; cannot template {template_var} in {self.template}"
+                        f"datetime range set; cannot template {template_var} "
+                        f"in {self.template}"
                     )
 
                 if template_var == "year":
@@ -156,20 +150,22 @@ class LayoutTemplate:
                 if template_var == "collection":
                     if stac_object.collection_id is not None:
                         return stac_object.collection_id
-                    raise pystac.TemplateError(
+                    raise TemplateError(
                         f"Item {stac_object} does not have a collection ID set; "
                         f"cannot template {template_var} in {self.template}"
                     )
             else:
-                raise pystac.TemplateError(
-                    f'"{template_var}" cannot be used to template non-Item {stac_object} in {self.template}'
+                raise TemplateError(
+                    f'"{template_var}" cannot be used to template non-Item "'
+                    f"{stac_object} in {self.template}"
                 )
 
         # Allow dot-notation properties for arbitrary object values.
         props = template_var.split(".")
-        prop_source: pystac.STACObject | dict[str, Any] | None = None
-        error = pystac.TemplateError(
-            f"Cannot find property {template_var} on {stac_object} for template {self.template}"
+        prop_source: STACObject | dict[str, Any] | None = None
+        error = TemplateError(
+            f"Cannot find property {template_var} on {stac_object} for template "
+            f"{self.template}"
         )
 
         try:
@@ -199,7 +195,7 @@ class LayoutTemplate:
                     if not hasattr(v, prop):
                         raise error
                     v = getattr(v, prop)
-        except pystac.TemplateError as e:
+        except TemplateError as e:
             if template_var in self.defaults:
                 return self.defaults[template_var]
             raise e
@@ -222,7 +218,7 @@ class LayoutTemplate:
             stac object.
 
         Raises:
-            pystac.TemplateError: If a value for a template variable cannot be
+            TemplateError: If a value for a template variable cannot be
                 derived from the stac object and there is no default,
                 this error will be raised.
         """
@@ -268,14 +264,14 @@ class HrefLayoutStrategy(ABC):
         if is_file_path(parent_dir):
             parent_dir = os.path.dirname(parent_dir)
 
-        if isinstance(stac_object, pystac.Item):
+        if isinstance(stac_object, Item):
             return self.get_item_href(stac_object, parent_dir)
-        elif isinstance(stac_object, pystac.Collection):
+        elif isinstance(stac_object, Collection):
             return self.get_collection_href(stac_object, parent_dir, is_root)
-        elif isinstance(stac_object, pystac.Catalog):
+        elif isinstance(stac_object, Catalog):
             return self.get_catalog_href(stac_object, parent_dir, is_root)
         else:
-            raise pystac.STACError(f"Unknown STAC object type {stac_object}")
+            raise STACError(f"Unknown STAC object type {stac_object}")
 
     @abstractmethod
     def get_catalog_href(self, cat: Catalog, parent_dir: str, is_root: bool) -> str:

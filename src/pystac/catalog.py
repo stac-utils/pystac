@@ -42,6 +42,11 @@ class Catalog(Container):
     def catalog_type(self) -> CatalogType | None:  # pyright: ignore[reportDeprecated]
         return CatalogType.determine_type(self.to_dict())  # pyright: ignore[reportDeprecated]
 
+    @catalog_type.setter
+    @deprecated("catalog_type is deprecated, and setting it has no effect")
+    def catalog_type(self, _: CatalogType) -> None:  # pyright: ignore[reportDeprecated]
+        pass
+
     @override
     @classmethod
     def from_dict(

@@ -598,7 +598,7 @@ def test_resolve_collection_with_root(
     assert root.id == "root"
 
 
-@pytest.mark.vcr()
+@pytest.mark.xfail(reason="Setting the catalog type doesn't change behavior")
 def test_non_hierarchical_relative_link() -> None:
     root = pystac.Catalog("root", "root")
     a = pystac.Catalog("a", "a")
@@ -616,8 +616,7 @@ def test_non_hierarchical_relative_link() -> None:
     related_href = [link for link in a.links if link.rel == "related"][0].get_href()
 
     assert related_href is not None and not is_absolute_href(related_href)
-    # @gadomski thinks this is a bad assertion, and has removed it for v2
-    # assert a.target_in_hierarchy(b)
+    assert a.target_in_hierarchy(b)
     assert root.target_in_hierarchy(next(b.get_items()))
     assert root.target_in_hierarchy(root)
 

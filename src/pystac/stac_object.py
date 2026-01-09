@@ -71,14 +71,18 @@ class STACObject(ABC):
 
     @override
     def __setattr__(self, name: str, value: Any, /) -> None:
-        if name == "_stac_io":
-            warnings.warn("_stac_io is a deprecated attribute. Set .reader or .writer")
+        match name:
+            case "_stac_io":
+                warnings.warn(
+                    "_stac_io is a deprecated attribute. Set .reader or .writer"
+                )
 
-            from .stac_io import StacIOReader, StacIOWriter
+                from .stac_io import StacIOReader, StacIOWriter
 
-            self.reader = StacIOReader(value)
-            self.writer = StacIOWriter(value)
-        return super().__setattr__(name, value)
+                self.reader = StacIOReader(value)
+                self.writer = StacIOWriter(value)
+            case _:
+                return super().__setattr__(name, value)
 
     @classmethod
     def from_file[T: STACObject](

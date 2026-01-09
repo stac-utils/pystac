@@ -235,9 +235,6 @@ class Properties:
     def __setitem__(self, name: str, value: Any, /) -> None:
         self.extra_fields[name] = value
 
-    def __getattr__(self, key: str) -> Any:
-        return self.extra_fields[key]
-
     def __contains__(self, key: str) -> bool:
         return key == "datetime" or key in self.extra_fields
 
