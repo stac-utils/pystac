@@ -16,6 +16,20 @@ from .utils import ARBITRARY_BBOX, ARBITRARY_EXTENT, ARBITRARY_GEOM, TestCases
 HERE = Path(__file__).resolve().parent
 
 
+@pytest.fixture(scope="module")
+def vcr_config() -> dict[str, Any]:
+    def scrub_headers(response: dict[str, Any]) -> dict[str, Any]:
+        retain = ["location"]
+        response["headers"] = {
+            key: value
+            for (key, value) in response["headers"].items()
+            if key.lower() in retain
+        }
+        return response
+
+    return {"before_record_response": scrub_headers}
+
+
 @pytest.fixture
 def catalog() -> Catalog:
     return Catalog("test-catalog", "A test catalog")

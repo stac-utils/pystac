@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://stac-extensions.github.io/datacube/v2.2.0/schema.json
   response:
@@ -195,51 +195,7 @@ interactions:
         \         \"$ref\": \"https://proj.org/schemas/v0.4/projjson.schema.json\"\n
         \       }\n      ],\n      \"default\": 4326\n    },\n    \"description\":
         {\n      \"type\": \"string\"\n    }\n  }\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '1'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '13997'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:55:19 GMT
-      ETag:
-      - '"6852a0c7-36ad"'
-      Last-Modified:
-      - Wed, 18 Jun 2025 11:19:35 GMT
-      Server:
-      - GitHub.com
-      Strict-Transport-Security:
-      - max-age=31556952
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Fastly-Request-ID:
-      - 4bc4e175a372fd234ec8ce5d0e93d1d319bb29a0
-      X-GitHub-Request-Id:
-      - E5BA:358B9B:CCBE53:E723BF:68CC1D55
-      X-Served-By:
-      - cache-bos4668-BOS
-      X-Timer:
-      - S1758207320.551758,VS0,VE1
-      expires:
-      - Thu, 18 Sep 2025 15:05:18 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK

@@ -3,7 +3,7 @@ interactions:
     body: null
     headers:
       User-Agent:
-      - pystac/1.14.1
+      - pystac/1.14.2
     method: GET
     uri: https://stac-extensions.github.io/file/v2.1.0/schema.json
   response:
@@ -69,51 +69,7 @@ interactions:
         {\n        \"^(?!file:)\": {\n          \"$comment\": \"Above, change `template`
         to the prefix of this extension\"\n        }\n      },\n      \"additionalProperties\":
         false\n    }\n  }\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '1'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '4536'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:55:21 GMT
-      ETag:
-      - '"61b4cf00-11b8"'
-      Last-Modified:
-      - Sat, 11 Dec 2021 16:17:04 GMT
-      Server:
-      - GitHub.com
-      Strict-Transport-Security:
-      - max-age=31556952
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '2'
-      X-Fastly-Request-ID:
-      - ee37c23f8b96b22bd351c5e850638b9a83f8e7d4
-      X-GitHub-Request-Id:
-      - 4944:D006F:CE75D8:E8CE6C:68CC1D58
-      X-Served-By:
-      - cache-bos4636-BOS
-      X-Timer:
-      - S1758207322.721292,VS0,VE0
-      expires:
-      - Thu, 18 Sep 2025 15:05:20 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
