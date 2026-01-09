@@ -59,6 +59,17 @@ class Link:
             self._href = href or target
             self._target = None
 
+    def __fspath__(self) -> str:
+        if self._target and (href := self._target.get_self_href()):
+            return href
+        elif self._href:
+            return self._href
+        else:
+            raise ValueError(
+                "Link cannot be used for an __fspath__, target does not have a self "
+                "link and _href is not set"
+            )
+
     @override
     def __getattribute__(self, name: str, /) -> Any:
         if name == "owner":

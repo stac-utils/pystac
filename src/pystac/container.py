@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os.path
 from abc import ABC
 from collections.abc import Iterator
 from typing import TYPE_CHECKING
@@ -187,13 +188,23 @@ class Container(STACObject, ABC):
                 use_absolute_links=catalog_type == CatalogType.ABSOLUTE_PUBLISHED  # pyright: ignore[reportDeprecated]
             )
 
+            include_self_links = catalog_type not in (
+                CatalogType.RELATIVE_PUBLISHED,  # pyright: ignore[reportDeprecated]
+                CatalogType.SELF_CONTAINED,  # pyright: ignore[reportDeprecated]
+            )
+        else:
+            include_self_links = True
+
         if stac_io:
             from .writer import StacIOWriter  #  pyright: ignore[reportDeprecated]
 
             writer = StacIOWriter(stac_io)  #  pyright: ignore[reportDeprecated]
         else:
             writer = None
-        self.save_all(dest_href=dest_href, writer=writer)
+
+        self.save_all(
+            dest_href=dest_href, writer=writer, include_self_links=include_self_links
+        )
 
     def normalize_hrefs(self, root_href: str, use_absolute_links: bool = False) -> None:
         from .href_generator import BestPracticesHrefGenerator
@@ -217,13 +228,21 @@ class Container(STACObject, ABC):
             pass
 
     def save_all(
-        self, dest_href: str | None = None, writer: Writer | None = None
+        self,
+        dest_href: str | None = None,
+        writer: Writer | None = None,
+        include_self_links: bool = True,
     ) -> None:
-        for _ in self.save_iter(dest_href=dest_href, writer=writer):
+        for _ in self.save_iter(
+            dest_href=dest_href, writer=writer, include_self_links=include_self_links
+        ):
             pass
 
     def save_iter(
-        self, dest_href: str | None = None, writer: Writer | None = None
+        self,
+        dest_href: str | None = None,
+        writer: Writer | None = None,
+        include_self_links: bool = True,
     ) -> Iterator[STACObject]:
         self_href = self.get_self_href()
         if dest_href is not None:
@@ -236,9 +255,15 @@ class Container(STACObject, ABC):
             else:
                 raise ValueError("Cannot use dest_href without a self href")
 
-            self.save_object(dest_href=self_dest_href, writer=writer)
+            self.save_object(
+                dest_href=self_dest_href,
+                writer=writer,
+                include_self_link=include_self_links,
+            )
         else:
-            self.save_object(dest_href=None, writer=writer)
+            self.save_object(
+                dest_href=None, writer=writer, include_self_link=include_self_links
+            )
 
         yield self
 
@@ -255,9 +280,15 @@ class Container(STACObject, ABC):
                         "Cannot use dest_href unless both self and child have self "
                         "hrefs"
                     )
-                yield from child.save_iter(dest_href=child_dest_href, writer=writer)
+                yield from child.save_iter(
+                    dest_href=os.path.dirname(child_dest_href),
+                    writer=writer,
+                    include_self_links=include_self_links,
+                )
             else:
-                yield from child.save_iter(dest_href=None, writer=writer)
+                yield from child.save_iter(
+                    dest_href=None, writer=writer, include_self_links=include_self_links
+                )
 
         for item in self.get_items():
             if dest_href is not None:
@@ -271,9 +302,15 @@ class Container(STACObject, ABC):
                     raise ValueError(
                         "Cannot use dest_href unless both self and item have self hrefs"
                     )
-                item.save_object(dest_href=item_dest_href, writer=writer)
+                item.save_object(
+                    dest_href=item_dest_href,
+                    writer=writer,
+                    include_self_link=include_self_links,
+                )
             else:
-                item.save_object(dest_href=None, writer=writer)
+                item.save_object(
+                    dest_href=None, writer=writer, include_self_link=include_self_links
+                )
             yield item
 
     def walk(self) -> Iterator[tuple[Container, list[Container], list[Item]]]:
