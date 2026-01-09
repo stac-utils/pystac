@@ -17,9 +17,9 @@ class BestPracticesHrefGenerator:
         from .collection import Collection
 
         if isinstance(container, Catalog):
-            return make_absolute_href("./catalog.json", prefix, start_is_dir=True)
+            return make_absolute_href("catalog.json", prefix, start_is_dir=True)
         elif isinstance(container, Collection):
-            return make_absolute_href("./collection.json", prefix, start_is_dir=True)
+            return make_absolute_href("collection.json", prefix, start_is_dir=True)
         else:
             raise ValueError(f"Unsupported root type: {type(container)}")
 

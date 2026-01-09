@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     from .collection import Collection
     from .container import Container
     from .href_generator import HrefGenerator
+    from .writer import Writer
 
 
 class STACObject(ABC):
@@ -74,6 +75,16 @@ class STACObject(ABC):
     ) -> T:
         href = make_absolute_href(str(path))
         data = reader.get_json(href)
+        if "type" not in data:
+            if "properties" in data:
+                type_value = "Feature"
+            elif "extents" in data or "license" in data:
+                type_value = "Collection"
+            else:
+                type_value = "Catalog"
+            warnings.warn(f"Data does not have a 'type' field, guessed as {type_value}")
+            data["type"] = type_value
+
         stac_object = cls.from_dict(data)
         if not isinstance(stac_object, cls):
             raise ValueError(
@@ -134,8 +145,8 @@ class STACObject(ABC):
     def get_link(self, rel: str) -> Link | None:
         return next((link for link in self.links if link.rel == rel), None)
 
-    def get_links(self, rel: str) -> list[Link]:
-        return list(link for link in self.links if link.rel == rel)
+    def get_links(self, rel: str | None = None) -> list[Link]:
+        return list(link for link in self.links if rel is None or link.rel == rel)
 
     @deprecated("Use .get_link()")
     def get_single_link(self, rel: str) -> Link | None:
@@ -189,8 +200,10 @@ class STACObject(ABC):
             self.links.append(Link(rel="self", target=href))
 
     def get_root(self) -> Container | None:
+        from .container import Container
+
         if self._root is None:
-            root = self._maybe_get_link_target("root")
+            root = self._maybe_get_link_target(RelType.ROOT)
             if isinstance(root, Container):
                 self._root = root
             else:
@@ -198,6 +211,22 @@ class STACObject(ABC):
                     "The 'root' link does not point to a collection or catalog"
                 )
         return self._root
+
+    def remove_root(self) -> Container | None:
+        root = self._root
+        self._root = None
+        self.remove_links(RelType.ROOT)
+        return root
+
+    def get_parent(self) -> Container | None:
+        from .container import Container
+
+        stac_object = self._maybe_get_link_target(RelType.PARENT)
+        if isinstance(stac_object, Container):
+            return stac_object
+        else:
+            warnings.warn("The 'parent' link does not point to a collection or catalog")
+            return None
 
     def get_root_link(self) -> Link | None:
         return next((link for link in self.links if link.is_root()), None)
@@ -350,7 +379,10 @@ class STACObject(ABC):
         yield self
 
     def save_object(
-        self, include_self_link: bool = True, dest_href: str | None = None
+        self,
+        include_self_link: bool = True,
+        dest_href: str | None = None,
+        writer: Writer | None = None,
     ) -> None:
         href = dest_href or self._href
         if not href:
@@ -358,10 +390,12 @@ class STACObject(ABC):
                 "dest_href was not provided, and object does not have a self href"
             )
         href = make_absolute_href(href)
-        self.writer.put_json(self.to_dict(include_self_link), href)
+        if writer is None:
+            writer = self.writer
+        writer.put_json(self.to_dict(include_self_link), href)
 
     def clone[T: STACObject](self: T) -> T:
-        return self.from_dict(self.to_dict())
+        return copy.deepcopy(self)
 
     @override
     def __repr__(self) -> str:

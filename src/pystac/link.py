@@ -4,6 +4,8 @@ import copy
 import warnings
 from typing import TYPE_CHECKING, Any, override
 
+from typing_extensions import deprecated
+
 from pystac.errors import STACError
 from pystac.media_type import MediaType
 from pystac.rel_type import RelType
@@ -48,14 +50,14 @@ class Link:
 
         if isinstance(target, STACObject):
             self._href: str | None = href or target.get_self_href()
-            self.target: STACObject | None = target
+            self._target: STACObject | None = target
         elif href and target:
             raise ValueError("Both target and href were provided as strings")
         elif not href and not target:
             raise ValueError("Neither href nor target were provided")
         else:
             self._href = href or target
-            self.target = None
+            self._target = None
 
     @override
     def __getattribute__(self, name: str, /) -> Any:
@@ -98,22 +100,27 @@ class Link:
         return self.media_type in (MediaType.JSON, MediaType.GEOJSON)
 
     def get_href(self) -> str | None:
-        return self._href or self.target and self.target.get_self_href()
+        return self._href or self._target and self._target.get_self_href()
+
+    @property
+    @deprecated("target is deprecated, either use .get_href() or .get_target()")
+    def target(self) -> str | STACObject | None:
+        return self._target or self._href
 
     def get_target(self, start_href: str | None, reader: Reader) -> STACObject:
         from .stac_object import STACObject
 
-        if not self.target:
+        if not self._target:
             if not self._href:
                 raise ValueError("No target and no href on the link")
 
             href = make_absolute_href(self._href, start_href, start_is_dir=False)
             try:
-                self.target = STACObject.from_file(href, reader=reader)
+                self._target = STACObject.from_file(href, reader=reader)
             except Exception as e:
                 raise STACError(f"Error while resolving link: {e}")
 
-        return self.target
+        return self._target
 
     def to_dict(self, transform_href: bool | None = None) -> dict[str, Any]:
         if transform_href is not None:
@@ -127,7 +134,7 @@ class Link:
         data = copy.deepcopy(self.extra_fields)
         if self._href:
             data["href"] = self._href
-        elif self.target and (href := self.target.get_self_href()):
+        elif self._target and (href := self._target.get_self_href()):
             data["href"] = href
         else:
             raise ValueError("No href or target self href on the link")

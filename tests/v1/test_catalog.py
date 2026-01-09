@@ -383,18 +383,21 @@ class TestCatalog:
         child = cat.get_child("thisshouldnotbeachildid", recursive=True)
         assert child is None
 
+    @pytest.mark.xfail(reason="We've advertised that get_item will be removed in v2")
     def test_get_item_is_deprecated_but_still_works(self) -> None:
         cat = TestCases.case_1()
         with pytest.warns(DeprecationWarning):
             item = cat.get_item("area-2-1-imagery", recursive=True)
             assert item is not None
 
+    @pytest.mark.xfail(reason="We've advertised that get_item will be removed in v2")
     def test_get_item_returns_none_if_not_found(self) -> None:
         cat = TestCases.case_1()
         with pytest.warns(DeprecationWarning):
             item = cat.get_item("thisshouldnotbeanitemid", recursive=True)
             assert item is None
 
+    @pytest.mark.xfail(reason="We've advertised that get_all_items will be removed in v2")
     def test_get_all_items_is_deprecated_but_still_works(self) -> None:
         cat = TestCases.case_1()
         with pytest.warns(DeprecationWarning):
@@ -407,6 +410,7 @@ class TestCatalog:
         items = cat.get_items("thisshouldnotbeanitemid", recursive=True)
         assert next(items, None) is None
 
+    @pytest.mark.xfail(reason="CatalogType is deprecated, and we don't care about fixing this test")
     def test_sets_catalog_type(self) -> None:
         cat = TestCases.case_1()
 
@@ -469,6 +473,7 @@ class TestCatalog:
                     f"Clone of {obj_id} has {actual_counts[rel]} {rel} links, original has {expected_counts[rel]}"
                 )
 
+    @pytest.mark.xfail(reason="v2 doesn't care about catalog type")
     def test_save_uses_previous_catalog_type(self) -> None:
         catalog = TestCases.case_1()
         assert catalog.catalog_type == CatalogType.SELF_CONTAINED

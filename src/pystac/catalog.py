@@ -37,6 +37,11 @@ class Catalog(Container):
         )
         self.description: str = description
 
+    @property
+    @deprecated("catalog_type is deprecated")
+    def catalog_type(self) -> CatalogType | None:  # pyright: ignore[reportDeprecated]
+        return CatalogType.determine_type(self.to_dict())  # pyright: ignore[reportDeprecated]
+
     @override
     @classmethod
     def from_dict(
