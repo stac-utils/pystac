@@ -12,6 +12,7 @@ from typing_extensions import deprecated
 from pystac.errors import STACError
 from pystac.utils import make_absolute_href, make_relative_href
 
+from .asset import Asset
 from .layout import LayoutTemplate
 from .link import Link
 from .rel_type import RelType
@@ -99,6 +100,27 @@ class Container(STACObject, ABC):
             apply(child)
 
         return container
+
+    def map_assets(
+        self,
+        asset_mapper: Callable[
+            [str, Asset], Asset | tuple[str, Asset] | dict[str, Asset]
+        ],
+    ) -> Container:
+        def apply(item: Item) -> Item:
+            assets: dict[str, Asset] = dict()
+            for key, asset in item.assets.items():
+                value = asset_mapper(key, asset)
+                if isinstance(value, Asset):
+                    assets[key] = value
+                elif isinstance(value, tuple):
+                    assets[value[0]] = value[1]
+                else:
+                    assets.update(value)
+            item.assets = assets
+            return item
+
+        return self.map_items(apply)
 
     def remove_item(self, id: str) -> Item | None:
         from .item import Item
