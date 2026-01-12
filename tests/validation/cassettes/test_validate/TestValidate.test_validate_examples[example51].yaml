@@ -1,9 +1,7 @@
 interactions:
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.2
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/item.json
   response:
@@ -84,9 +82,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.2
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/basics.json
   response:
@@ -104,9 +100,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.2
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/datetimerange.json
   response:
@@ -129,9 +123,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.2
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/instrument.json
   response:
@@ -150,9 +142,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.2
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/licensing.json
   response:
@@ -167,9 +157,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.2
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/metadata.json
   response:
@@ -186,9 +174,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.2
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/provider.json
   response:
@@ -213,9 +199,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.2
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/label/json-schema/schema.json
   response:
@@ -272,9 +256,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.2
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/version/json-schema/schema.json
   response:
@@ -302,9 +284,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.2
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/collection-spec/json-schema/collection.json
   response:
@@ -385,9 +365,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.2
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/catalog-spec/json-schema/catalog.json
   response:

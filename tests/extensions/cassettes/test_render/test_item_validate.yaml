@@ -1,9 +1,7 @@
 interactions:
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.2
+    headers: {}
     method: GET
     uri: https://stac-extensions.github.io/render/v2.0.0/schema.json
   response:

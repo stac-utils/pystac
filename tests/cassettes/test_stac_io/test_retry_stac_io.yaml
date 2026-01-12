@@ -1,16 +1,14 @@
 interactions:
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.2
+    headers: {}
     method: GET
     uri: https://planetarycomputer.microsoft.com/api/stac/v1
   response:
     body:
       string: '{"type":"Catalog","id":"microsoft-pc","title":"Microsoft Planetary
         Computer STAC API","description":"Searchable spatiotemporal metadata describing
-        Earth science datasets hosted by the Microsoft Planetary Computer","stac_version":"1.0.0","conformsTo":["https://api.stacspec.org/v1.0.0/item-search#sort","https://api.stacspec.org/v1.0.0/core","https://api.stacspec.org/v1.0.0/item-search#query","http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/filter","https://api.stacspec.org/v1.0.0/item-search#fields","https://api.stacspec.org/v1.0.0/item-search","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson","http://www.opengis.net/spec/cql2/1.0/conf/basic-cql2","http://www.opengis.net/spec/cql2/1.0/conf/cql2-text","https://api.stacspec.org/v1.0.0/ogcapi-features","http://www.opengis.net/spec/cql2/1.0/conf/cql2-json","https://api.stacspec.org/v1.0.0-rc.2/item-search#filter","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30","https://api.stacspec.org/v1.0.0/collections"],"links":[{"rel":"self","type":"application/json","href":"https://planetarycomputer.microsoft.com/api/stac/v1/"},{"rel":"root","type":"application/json","href":"https://planetarycomputer.microsoft.com/api/stac/v1/"},{"rel":"data","type":"application/json","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections"},{"rel":"conformance","type":"application/json","title":"STAC/OGC
+        Earth science datasets hosted by the Microsoft Planetary Computer","stac_version":"1.0.0","conformsTo":["https://api.stacspec.org/v1.0.0/item-search","http://www.opengis.net/spec/cql2/1.0/conf/cql2-text","https://api.stacspec.org/v1.0.0/ogcapi-features","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson","https://api.stacspec.org/v1.0.0/item-search#query","http://www.opengis.net/spec/ogcapi-features-3/1.0/conf/filter","https://api.stacspec.org/v1.0.0-rc.2/item-search#filter","http://www.opengis.net/spec/cql2/1.0/conf/basic-cql2","https://api.stacspec.org/v1.0.0/item-search#sort","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30","http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core","https://api.stacspec.org/v1.0.0/item-search#fields","https://api.stacspec.org/v1.0.0/collections","https://api.stacspec.org/v1.0.0/core","http://www.opengis.net/spec/cql2/1.0/conf/cql2-json"],"links":[{"rel":"self","type":"application/json","href":"https://planetarycomputer.microsoft.com/api/stac/v1/"},{"rel":"root","type":"application/json","href":"https://planetarycomputer.microsoft.com/api/stac/v1/"},{"rel":"data","type":"application/json","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections"},{"rel":"conformance","type":"application/json","title":"STAC/OGC
         conformance classes implemented by this server","href":"https://planetarycomputer.microsoft.com/api/stac/v1/conformance"},{"rel":"search","type":"application/geo+json","title":"STAC
         search","href":"https://planetarycomputer.microsoft.com/api/stac/v1/search","method":"GET"},{"rel":"search","type":"application/geo+json","title":"STAC
         search","href":"https://planetarycomputer.microsoft.com/api/stac/v1/search","method":"POST"},{"rel":"http://www.opengis.net/def/rel/ogc/1.0/queryables","type":"application/schema+json","title":"Queryables","href":"https://planetarycomputer.microsoft.com/api/stac/v1/queryables","method":"GET"},{"rel":"child","type":"application/json","title":"Daymet
@@ -69,8 +67,7 @@ interactions:
         Land Surface Temperature/3-Band Emissivity 8-Day","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/modis-21A2-061"},{"rel":"child","type":"application/json","title":"US
         Census","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/us-census"},{"rel":"child","type":"application/json","title":"JRC
         Global Surface Water","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/jrc-gsw"},{"rel":"child","type":"application/json","title":"Deltares
-        Global Flood Maps","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/deltares-floods"},{"rel":"child","type":"application/json","title":"Whole
-        Atmosphere collection Met Office Global 10km deterministic weather forecast","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/met-office-global-deterministic-whole-atmosphere"},{"rel":"child","type":"application/json","title":"MODIS
+        Global Flood Maps","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/deltares-floods"},{"rel":"child","type":"application/json","title":"MODIS
         Nadir BRDF-Adjusted Reflectance (NBAR) Daily","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/modis-43A4-061"},{"rel":"child","type":"application/json","title":"MODIS
         Surface Reflectance 8-Day (250m)","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/modis-09Q1-061"},{"rel":"child","type":"application/json","title":"MODIS
         Thermal Anomalies/Fire Daily","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/modis-14A1-061"},{"rel":"child","type":"application/json","title":"HREA:
@@ -125,7 +122,8 @@ interactions:
         Snow Cover Daily","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/modis-10A1-061"},{"rel":"child","type":"application/json","title":"Sentinel-5P
         Level-2","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-5p-l2-netcdf"},{"rel":"child","type":"application/json","title":"Sentinel-3
         Water (Full Resolution)","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-3-olci-wfr-l2-netcdf"},{"rel":"child","type":"application/json","title":"Global
-        Ocean Heat Content CDR NetCDFs","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/noaa-cdr-ocean-heat-content-netcdf"},{"rel":"child","type":"application/json","title":"Harmonized
+        Ocean Heat Content CDR NetCDFs","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/noaa-cdr-ocean-heat-content-netcdf"},{"rel":"child","type":"application/json","title":"Whole
+        Atmosphere collection Met Office UKV 2km deterministic forecast","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/met-office-uk-deterministic-whole-atmosphere"},{"rel":"child","type":"application/json","title":"Harmonized
         Landsat Sentinel-2 (HLS) Version 2.0, Landsat Data","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/hls2-l30"},{"rel":"child","type":"application/json","title":"Pressure
         levels collection Met Office UKV 2km deterministic forecast","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/met-office-uk-deterministic-pressure"},{"rel":"child","type":"application/json","title":"Sentinel-3
         Global Aerosol","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-3-synergy-aod-l2-netcdf"},{"rel":"child","type":"application/json","title":"Sentinel-3
@@ -136,11 +134,11 @@ interactions:
         Sea Surface Temperature","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-3-slstr-wst-l2-netcdf"},{"rel":"child","type":"application/json","title":"Sentinel-3
         Ocean Radar Altimetry","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-3-sral-wat-l2-netcdf"},{"rel":"child","type":"application/json","title":"Harmonized
         Landsat Sentinel-2 (HLS) Version 2.0, Sentinel-2 Data","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/hls2-s30"},{"rel":"child","type":"application/json","title":"Microsoft
-        Building Footprints","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/ms-buildings"},{"rel":"child","type":"application/json","title":"Whole
-        Atmosphere collection Met Office UKV 2km deterministic forecast","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/met-office-uk-deterministic-whole-atmosphere"},{"rel":"child","type":"application/json","title":"Sentinel-3
+        Building Footprints","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/ms-buildings"},{"rel":"child","type":"application/json","title":"Sentinel-3
         Fire Radiative Power","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-3-slstr-frp-l2-netcdf"},{"rel":"child","type":"application/json","title":"Sentinel-3
         Land Surface Reflectance and Aerosol","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-3-synergy-syn-l2-netcdf"},{"rel":"child","type":"application/json","title":"Sentinel-3
-        Top of Atmosphere Reflectance (SPOT VEGETATION)","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-3-synergy-vgp-l2-netcdf"},{"rel":"child","type":"application/json","title":"Sentinel-3
+        Top of Atmosphere Reflectance (SPOT VEGETATION)","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-3-synergy-vgp-l2-netcdf"},{"rel":"child","type":"application/json","title":"Whole
+        Atmosphere collection Met Office UKV 2km deterministic forecast","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/met-office-uk-deterministic-whole-atmosphere-"},{"rel":"child","type":"application/json","title":"Sentinel-3
         1-Day Surface Reflectance and NDVI (SPOT VEGETATION)","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-3-synergy-vg1-l2-netcdf"},{"rel":"child","type":"application/json","title":"ESA
         WorldCover","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/esa-worldcover"},{"rel":"child","type":"application/json","title":"Near-surface
         level collection Met Office UKV 2km deterministic forecast","href":"https://planetarycomputer.microsoft.com/api/stac/v1/collections/met-office-uk-deterministic-near-surface"},{"rel":"child","type":"application/json","title":"Near-surface
