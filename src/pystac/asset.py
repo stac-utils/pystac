@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Protocol, override
 
 from typing_extensions import deprecated
 
+from .common import DataValue, Instrument
 from .media_type import MediaType
 from .utils import is_absolute_href, make_absolute_href, make_relative_href
 from .writer import Writer
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
     from .stac_object import STACObject
 
 
-class ItemAsset:
+class ItemAsset(DataValue, Instrument):
     def __init__(
         self,
         title: str | None = None,
@@ -54,6 +55,8 @@ class ItemAsset:
             data["type"] = self.type
         if self.roles is not None:
             data["roles"] = self.roles
+        if self.statistics:
+            data["statistics"] = self.statistics.to_dict()
         return data
 
 
