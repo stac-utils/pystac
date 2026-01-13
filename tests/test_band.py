@@ -38,6 +38,11 @@ def test_set_band_name() -> None:
     assert band["name"] == "B02"
 
 
+def test_band_repr() -> None:
+    band = Band(name="foo", field="one")
+    assert str(band) == "Band(name='foo')"
+
+
 def test_set_bands_on_asset() -> None:
     asset = Asset(href="foo", bands=[Band(name="B01")])
     assert asset.bands == [Band(name="B01")]

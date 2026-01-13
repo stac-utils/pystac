@@ -40,6 +40,10 @@ class Band:
             return NotImplemented
         return self.to_dict() == other.to_dict()
 
+    @override
+    def __repr__(self) -> str:
+        return f"Band(name={self.name!r})"
+
     @classmethod
     def try_from(cls, data: dict[str, Any] | Band) -> Band:
         if isinstance(data, Band):
