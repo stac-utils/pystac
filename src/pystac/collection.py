@@ -7,6 +7,7 @@ from typing import Any, ClassVar, TypedDict, cast, override
 from typing_extensions import deprecated
 
 from .asset import Asset, Assets, ItemAsset
+from .band import Band
 from .constants import DEFAULT_LICENSE, DEFAULT_STAC_VERSION, STAC_OBJECT_TYPE
 from .container import Container
 from .link import Link
@@ -46,6 +47,7 @@ class Collection(Container, Assets):
         stac_version: str = DEFAULT_STAC_VERSION,
         stac_extensions: list[str] | None = None,
         links: list[Link] | list[dict[str, Any]] | None = None,
+        bands: list[Band] | list[dict[str, Any]] | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(type, id, stac_version, stac_extensions, links, **kwargs)
@@ -58,6 +60,10 @@ class Collection(Container, Assets):
             if providers is not None
             else None
         )
+        if bands is not None:
+            self.bands: list[Band] | None = [Band.try_from(band) for band in bands]
+        else:
+            self.bands = None
         self.extent: Extent = Extent.try_from(extent)
         self.summaries: dict[str, Any] | None = summaries
         self.assets: dict[str, Asset] = (
@@ -108,6 +114,8 @@ class Collection(Container, Assets):
         data["extent"] = self.extent.to_dict()
         if self.summaries:
             data["summaries"] = self.summaries
+        if self.bands is not None:
+            data["bands"] = [band.to_dict() for band in self.bands]
         if self.assets:
             data["assets"] = {
                 key: asset.to_dict() for key, asset in self.assets.items()
