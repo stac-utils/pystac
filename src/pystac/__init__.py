@@ -3,6 +3,7 @@ from typing import Any
 from typing_extensions import deprecated
 
 from .asset import Asset
+from .band import Band
 from .catalog import Catalog
 from .collection import (
     Collection,
@@ -61,6 +62,7 @@ def __getattr__(name: str) -> Any:
 
 __all__ = [
     "Asset",
+    "Band",
     "Catalog",
     "Collection",
     "CommonMetadata",
