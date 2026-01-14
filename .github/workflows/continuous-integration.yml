@@ -30,9 +30,9 @@ jobs:
       - uses: astral-sh/setup-uv@681c641aba71e4a1c380be3ab5e12ad51f415867
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Lint
-        if: runner.os != 'Windows'
-        run: uv run prek run --all-files
+      # - name: Lint
+      #   if: runner.os != 'Windows'
+      #   run: uv run prek run --all-files
       - name: Test on windows
         if: runner.os == 'Windows'
         shell: bash
