@@ -2,11 +2,28 @@ from pathlib import Path
 from typing import Any, cast
 
 import pytest
-from pytest import FixtureRequest
+from pytest import Config, FixtureRequest, Parser
 
 import pystac.jsonschema
 from pystac import Catalog, Item
 from pystac.jsonschema import JSONSchemaValidator
+
+V1_DIR = Path(__file__).parent / "v1"
+
+
+def pytest_addoption(parser: Parser) -> None:
+    parser.addoption(
+        "--v1",
+        action="store_true",
+        default=False,
+        help="Run v1 tests (skipped by default)",
+    )
+
+
+def pytest_ignore_collect(collection_path: Path, config: Config) -> bool | None:
+    if collection_path.is_relative_to(V1_DIR) and not config.getoption("--v1"):
+        return True
+    return None
 
 
 @pytest.fixture(scope="module")
