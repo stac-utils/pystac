@@ -1,9 +1,7 @@
 interactions:
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://stac-extensions.github.io/mlm/v1.4.0/schema.json
   response:
@@ -451,9 +449,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://stac-extensions.github.io/raster/v1.1.0/schema.json
   response:

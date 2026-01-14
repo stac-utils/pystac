@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Any, cast
+from urllib.request import Request
 
 import pytest
 from pytest import Config, FixtureRequest, Parser
@@ -28,7 +29,7 @@ def pytest_ignore_collect(collection_path: Path, config: Config) -> bool | None:
 
 @pytest.fixture(scope="module")
 def vcr_config() -> dict[str, Any]:
-    def scrub_headers(response: dict[str, Any]) -> dict[str, Any]:
+    def scrub_response_headers(response: dict[str, Any]) -> dict[str, Any]:
         retain = ["location"]
         response["headers"] = {
             key: value
@@ -37,7 +38,17 @@ def vcr_config() -> dict[str, Any]:
         }
         return response
 
-    return {"before_record_response": scrub_headers}
+    def scrub_request_headers(request: Request) -> Request:
+        drop = ["User-Agent"]
+        for header in drop:
+            _ = request.headers.pop(header, None)
+
+        return request
+
+    return {
+        "before_record_response": scrub_response_headers,
+        "before_record_request": scrub_request_headers,
+    }
 
 
 @pytest.fixture(autouse=True)

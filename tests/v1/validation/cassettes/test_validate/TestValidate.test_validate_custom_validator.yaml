@@ -1,9 +1,7 @@
 interactions:
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://stac-extensions.github.io/custom-extension/v1.0.0/schema.json
   response:
@@ -54,9 +52,7 @@ interactions:
       message: Not Found
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://stac-extensions.github.io/custom-extension/v1.0.0/schema.json
   response:
