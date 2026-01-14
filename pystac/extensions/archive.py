@@ -61,14 +61,14 @@ class ArchiveExtension(
         title: str | None = None,
         description: str | None = None,
         bands: list[Band] | None = None,
-        archive: list[ArchiveExtension] | None = None, 
+        archive: list[ArchiveExtension] | None = None,
     ) -> None:
         """Applies Archive Extension properties to the extended
         :class:`~pystac.Collection`, :class:`~pystac.Item` or :class:`~pystac.Asset`.
 
         Args:
             href (str) : The location of the file within the archive specified by
-                        the href field.            
+                        the href field.
             type (str): The mimetype of the file within the archive specified by the
                         href field.
             roles (list[str]) : The roles.
