@@ -24,6 +24,7 @@ classifiers = [
 requires-python = ">=3.12"
 dependencies = [
     "python-dateutil>=2.9.0.post0",
+    "typing-extensions>=4.15.0",
 ]
 dynamic = ["version"]
 

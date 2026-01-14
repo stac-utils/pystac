@@ -712,6 +712,7 @@ name = "pystac"
 source = { editable = "." }
 dependencies = [
     { name = "python-dateutil" },
+    { name = "typing-extensions" },
 ]
 
 [package.optional-dependencies]
@@ -755,6 +756,7 @@ requires-dist = [
     { name = "obstore", marker = "extra == 'obstore'", specifier = ">=0.8.2" },
     { name = "python-dateutil", specifier = ">=2.9.0.post0" },
     { name = "referencing", marker = "extra == 'validation'", specifier = ">=0.37.0" },
+    { name = "typing-extensions", specifier = ">=4.15.0" },
 ]
 provides-extras = ["jinja2", "obstore", "validation"]
 
