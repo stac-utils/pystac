@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import Any, Generic, Literal, TypeVar, cast
 
 import pystac
-from pystac.extensions import item_assets
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -77,7 +76,7 @@ class ArchiveExtension(
             title (str) : The title of the file within the archive.
             description (str) : The description of the archive.
             bands (list[Band]) : The bands information of the archive.
-            archive (list[ArchiveExtension]) : The archives within the nested archive.            
+            archive (list[ArchiveExtension]) : The archives within the nested archive.
         """
         self.href = href
         self.type = type
