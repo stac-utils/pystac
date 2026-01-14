@@ -16,12 +16,12 @@ jobs:
     outputs:
       prs: ${{ steps.release-please.outputs.prs }}
     steps:
-      - uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      - uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf
         id: generate-token
         with:
           app-id: ${{ vars.RELEASE_BOT_CLIENT_ID }}
           private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
-      - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4.4.0
+      - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38
         id: release-please
         with:
           token: ${{ steps.generate-token.outputs.token }}
@@ -32,17 +32,17 @@ jobs:
     needs: release-please
     if: ${{ needs.release-please.outputs.prs }}
     steps:
-      - uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      - uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf
         id: generate-token
         with:
           app-id: ${{ vars.RELEASE_BOT_CLIENT_ID }}
           private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
       - name: Checkout PR branch
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
           token: ${{ steps.generate-token.outputs.token }}
           ref: ${{ fromJSON(needs.release-please.outputs.prs)[0].headBranchName }}
-      - uses: astral-sh/setup-uv@681c641aba71e4a1c380be3ab5e12ad51f415867 # v7.1.6
+      - uses: astral-sh/setup-uv@681c641aba71e4a1c380be3ab5e12ad51f415867
       - name: Run pull-static script
         run: uv run scripts/pull-static
       - name: Run pytest with rewrite mode
