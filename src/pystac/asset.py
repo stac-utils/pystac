@@ -46,18 +46,13 @@ class ItemAsset(DataValue, Instrument):
         return self.from_dict(self.to_dict())
 
     def to_dict(self) -> dict[str, Any]:
-        data = copy.deepcopy(self.extra_fields)
-        if self.title is not None:
-            data["title"] = self.title
-        if self.description is not None:
-            data["description"] = self.description
-        if self.type is not None:
-            data["type"] = self.type
-        if self.roles is not None:
-            data["roles"] = self.roles
-        if self.statistics:
-            data["statistics"] = self.statistics.to_dict()
-        return data
+        data: dict[str, Any] = copy.deepcopy(self.extra_fields)
+        data["title"] = self.title
+        data["description"] = self.description
+        data["type"] = self.type
+        data["roles"] = self.roles
+        data["statistics"] = self.statistics.to_dict() or None
+        return {k: v for k, v in data.items() if v is not None}
 
 
 class Asset(ItemAsset):
@@ -106,8 +101,7 @@ class Asset(ItemAsset):
     @override
     def to_dict(self) -> dict[str, Any]:
         data = super().to_dict()
-        data["href"] = self.href
-        return data
+        return {"href": self.href, **data}
 
 
 class Assets(Protocol):

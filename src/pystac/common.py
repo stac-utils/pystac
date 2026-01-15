@@ -2,132 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Any, Protocol
-
-
-class DataType(StrEnum):
-    int8 = "int8"
-    int16 = "int16"
-    int32 = "int32"
-    int64 = "int64"
-    uint8 = "uint8"
-    uint16 = "uint16"
-    uint32 = "uint32"
-    uint64 = "uint64"
-    float16 = "float16"
-    float32 = "float32"
-    float64 = "float64"
-    cint16 = "cint16"
-    cint32 = "cint32"
-    cfloat32 = "cfloat32"
-    cfloat64 = "cfloat64"
-    other = "other"
-
-
-@dataclass
-class Statistics:
-    statistics: dict[str, Any]
-
-    @property
-    def minimum(self) -> float | None:
-        return self.statistics.get("minimum")
-
-    @minimum.setter
-    def minimum(self, value: float | None) -> None:
-        self.statistics["minimum"] = value
-
-    @property
-    def maximum(self) -> float | None:
-        return self.statistics.get("maximum")
-
-    @maximum.setter
-    def maximum(self, value: float | None) -> None:
-        self.statistics["maximum"] = value
-
-    @property
-    def mean(self) -> float | None:
-        return self.statistics.get("mean")
-
-    @mean.setter
-    def mean(self, value: float | None) -> None:
-        self.statistics["mean"] = value
-
-    @property
-    def stddev(self) -> float | None:
-        return self.statistics.get("stddev")
-
-    @stddev.setter
-    def stddev(self, value: float | None) -> None:
-        self.statistics["stddev"] = value
-
-    @property
-    def count(self) -> int | None:
-        return self.statistics.get("count")
-
-    @count.setter
-    def count(self, value: int | None) -> None:
-        self.statistics["count"] = value
-
-    @property
-    def valid_percent(self) -> float | None:
-        return self.statistics.get("valid_percent")
-
-    @valid_percent.setter
-    def valid_percent(self, value: float | None) -> None:
-        self.statistics["valid_percent"] = value
-
-    def to_dict(self) -> dict[str, Any]:
-        return {k: v for k, v in self.statistics.items() if v is not None}
-
-
-class DataValue(Protocol):
-    extra_fields: dict[str, Any]
-
-    @property
-    def nodata(self) -> float | str | None:
-        """
-        The no-data value must be provided either as:
-
-        - a number
-        - a string:
-            nan - NaN (not a number) as defined in IEEE-754
-            inf - Positive Infinity
-            -inf - Negative Infinity
-        """
-        return self.extra_fields.get("nodata")
-
-    @nodata.setter
-    def nodata(self, value: float | str | None) -> None:
-        self.extra_fields["nodata"] = value
-
-    @property
-    def unit(self) -> str | None:
-        """
-        It is STRONGLY RECOMMENDED to provide units in one of the following two formats:
-
-        UCUM: The unit code that is compliant to the UCUM specification.
-        UDUNITS-2: The unit symbol if available, otherwise the singular unit name.
-        """
-        return self.extra_fields.get("unit")
-
-    @unit.setter
-    def unit(self, value: str | None) -> None:
-        self.extra_fields["unit"] = value
-
-    @property
-    def data_type(self) -> DataType | str | None:
-        return self.extra_fields.get("data_type")
-
-    @data_type.setter
-    def data_type(self, value: DataType | str | None) -> None:
-        self.extra_fields["data_type"] = value
-
-    @property
-    def statistics(self) -> Statistics:
-        if not self.extra_fields.get("statistics"):
-            statistics: dict[str, Any] = {}
-            self.extra_fields["statistics"] = statistics
-        return Statistics(self.extra_fields["statistics"])
+from typing import Any, Protocol, override
 
 
 class Basics(Protocol):
@@ -274,7 +149,7 @@ class Instrument(Protocol):
         self.extra_fields["mission"] = value
 
     @property
-    def gsd(self) -> float | None:
+    def gsd(self) -> int | None:
         """
         Ground Sample Distance at the sensor, in meters (m),
         must be greater than 0.
@@ -282,5 +157,134 @@ class Instrument(Protocol):
         return self.extra_fields.get("gsd")
 
     @gsd.setter
-    def gsd(self, value: float | None) -> None:
+    def gsd(self, value: int | None) -> None:
         self.extra_fields["gsd"] = value
+
+
+class DataType(StrEnum):
+    int8 = "int8"
+    int16 = "int16"
+    int32 = "int32"
+    int64 = "int64"
+    uint8 = "uint8"
+    uint16 = "uint16"
+    uint32 = "uint32"
+    uint64 = "uint64"
+    float16 = "float16"
+    float32 = "float32"
+    float64 = "float64"
+    cint16 = "cint16"
+    cint32 = "cint32"
+    cfloat32 = "cfloat32"
+    cfloat64 = "cfloat64"
+    other = "other"
+
+    @override
+    def __repr__(self):
+        return self.value
+
+
+@dataclass
+class Statistics:
+    statistics: dict[str, Any]
+
+    @property
+    def minimum(self) -> float | None:
+        return self.statistics.get("minimum")
+
+    @minimum.setter
+    def minimum(self, value: float | None) -> None:
+        self.statistics["minimum"] = value
+
+    @property
+    def maximum(self) -> float | None:
+        return self.statistics.get("maximum")
+
+    @maximum.setter
+    def maximum(self, value: float | None) -> None:
+        self.statistics["maximum"] = value
+
+    @property
+    def mean(self) -> float | None:
+        return self.statistics.get("mean")
+
+    @mean.setter
+    def mean(self, value: float | None) -> None:
+        self.statistics["mean"] = value
+
+    @property
+    def stddev(self) -> float | None:
+        return self.statistics.get("stddev")
+
+    @stddev.setter
+    def stddev(self, value: float | None) -> None:
+        self.statistics["stddev"] = value
+
+    @property
+    def count(self) -> int | None:
+        return self.statistics.get("count")
+
+    @count.setter
+    def count(self, value: int | None) -> None:
+        self.statistics["count"] = value
+
+    @property
+    def valid_percent(self) -> float | None:
+        return self.statistics.get("valid_percent")
+
+    @valid_percent.setter
+    def valid_percent(self, value: float | None) -> None:
+        self.statistics["valid_percent"] = value
+
+    def to_dict(self) -> dict[str, Any]:
+        return {k: v for k, v in self.statistics.items() if v is not None}
+
+
+class DataValue(Protocol):
+    extra_fields: dict[str, Any]
+
+    @property
+    def nodata(self) -> float | str | None:
+        """
+        The no-data value must be provided either as:
+
+        - a number
+        - a string:
+            nan - NaN (not a number) as defined in IEEE-754
+            inf - Positive Infinity
+            -inf - Negative Infinity
+        """
+        return self.extra_fields.get("nodata")
+
+    @nodata.setter
+    def nodata(self, value: float | str | None) -> None:
+        self.extra_fields["nodata"] = value
+
+    @property
+    def unit(self) -> str | None:
+        """
+        It is STRONGLY RECOMMENDED to provide units in one of the following two formats:
+
+        UCUM: The unit code that is compliant to the UCUM specification.
+        UDUNITS-2: The unit symbol if available, otherwise the singular unit name.
+        """
+        return self.extra_fields.get("unit")
+
+    @unit.setter
+    def unit(self, value: str | None) -> None:
+        self.extra_fields["unit"] = value
+
+    @property
+    def data_type(self) -> DataType | str | None:
+        return self.extra_fields.get("data_type")
+
+    @data_type.setter
+    def data_type(self, value: DataType | str | None) -> None:
+        self.extra_fields["data_type"] = DataType(value)
+
+    @property
+    def statistics(self) -> Statistics:
+        if not self.extra_fields.get("statistics"):
+            statistics: dict[str, Any] = {}
+            self.extra_fields["statistics"] = statistics
+        return Statistics(self.extra_fields["statistics"])
