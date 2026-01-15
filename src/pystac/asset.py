@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Protocol, override
 
 from typing_extensions import deprecated
 
+from .common import T_DataValue, T_Instrument
 from .media_type import MediaType
 from .utils import is_absolute_href, make_absolute_href, make_relative_href
 from .writer import Writer
@@ -26,7 +27,7 @@ class ItemAsset:
         self.description: str | None = description
         self.type: str | None = type
         self.roles: list[str] | None = roles
-        self.extra_fields: dict[str, Any] = kwargs
+        self.extra_fields: dict[str, Any] | T_DataValue | T_Instrument = kwargs
 
     @classmethod
     def try_from[T: ItemAsset](cls: type[T], data: T | dict[str, Any]) -> T:
@@ -45,7 +46,9 @@ class ItemAsset:
         return self.from_dict(self.to_dict())
 
     def to_dict(self) -> dict[str, Any]:
-        data = copy.deepcopy(self.extra_fields)
+        data: dict[str, Any] = {
+            k: v for k, v in copy.deepcopy(self.extra_fields).items()
+        }
         if self.title is not None:
             data["title"] = self.title
         if self.description is not None:
@@ -103,8 +106,7 @@ class Asset(ItemAsset):
     @override
     def to_dict(self) -> dict[str, Any]:
         data = super().to_dict()
-        data["href"] = self.href
-        return data
+        return {"href": self.href, **data}
 
 
 class Assets(Protocol):
