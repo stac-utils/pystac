@@ -61,7 +61,7 @@ class ArchiveExtension(
         title: str | None = None,
         description: str | None = None,
         bands: list[Band] | None = None,
-        archive: list["ArchiveExtension[T]"] | None = None,
+        archive: list[ArchiveExtension[T]] | None = None,
     ) -> None:
         """Applies Archive Extension properties to the extended
         :class:`~pystac.Collection`, :class:`~pystac.Item` or :class:`~pystac.Asset`.
@@ -76,7 +76,7 @@ class ArchiveExtension(
             title (str) : The title of the file within the archive.
             description (str) : The description of the archive.
             bands (list[Band]) : The bands information of the archive.
-            archive (list["ArchiveExtension[T]"]) : The archives within the nested 
+            archive (list["ArchiveExtension[T]"]) : The archives within the nested
                                                     archive.
         """
         self.href = href
@@ -155,12 +155,12 @@ class ArchiveExtension(
             self._set_property(ARCHIVE_BANDS_PROP, v)
 
     @property
-    def archive(self) -> list["ArchiveExtension[T]"] | None:
+    def archive(self) -> list[ArchiveExtension[T]] | None:
         """Get or sets the archive information of the archive."""
         return self._get_property(ARCHIVE_ARCHIVE_PROP, list["ArchiveExtension[T]"])
 
     @archive.setter
-    def archive(self, v: list["ArchiveExtension[T]"] | None) -> None:
+    def archive(self, v: list[ArchiveExtension[T]] | None) -> None:
         if v is None:
             self._set_property(ARCHIVE_ARCHIVE_PROP, None)
         else:
@@ -345,14 +345,14 @@ class SummariesArchiveExtension(SummariesExtension):
             self._set_summary(ARCHIVE_BANDS_PROP, v)
 
     @property
-    def archive(self) -> list[list["ArchiveExtension[T]"]] | None:
+    def archive(self) -> list[list[ArchiveExtension[T]]] | None:
         """Get or sets the summary of :attr:`ArchiveExtension.archive` values
         for this Collection.
         """
         return self.summaries.get_list(ARCHIVE_ARCHIVE_PROP)
 
     @archive.setter
-    def archive(self, v: list[list["ArchiveExtension[T]"]] | None) -> None:
+    def archive(self, v: list[list[ArchiveExtension[T]]] | None) -> None:
         if v is None:
             self._set_summary(ARCHIVE_ARCHIVE_PROP, None)
         else:

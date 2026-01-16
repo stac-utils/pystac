@@ -185,7 +185,7 @@ def test_summaries_range(archive_collection: Collection) -> None:
     # Get
     assert archive_summaries.range == col_dict["summaries"]["archive:range"]
     # Set
-    new_range_summary = [[100, 200], [ 400, 500]]
+    new_range_summary = [[100, 200], [400, 500]]
     assert archive_summaries.range != new_range_summary
     archive_summaries.range = new_range_summary
     assert archive_summaries.range == new_range_summary
@@ -233,7 +233,7 @@ def test_summaries_bands(archive_collection: Collection) -> None:
     # Get
     assert archive_summaries.bands == col_dict["summaries"]["archive:bands"]
     # Set
-    new_bands_summary = [[Band({"name": "B1"})], [Band({"name": "B2"})]] # type: list[list[Band]] | None
+    new_bands_summary = [[Band({"name": "B1"})], [Band({"name": "B2"})]]  # type: list[list[Band]] | None
     assert archive_summaries.bands != new_bands_summary
     archive_summaries.bands = new_bands_summary
     assert archive_summaries.bands == new_bands_summary
