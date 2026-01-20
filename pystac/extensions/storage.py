@@ -258,7 +258,6 @@ class StorageExtension(
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
 
-
     # For type checking purposes only, these methods are overridden in mixins
     def apply(
         self,
