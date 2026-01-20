@@ -5,6 +5,7 @@ https://github.com/stac-extensions/storage
 
 from __future__ import annotations
 
+import warnings
 from typing import (
     Any,
     Generic,
@@ -21,6 +22,7 @@ from pystac.extensions.base import (
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import StringEnum, get_required, map_opt
 
 T = TypeVar(
@@ -33,7 +35,12 @@ T = TypeVar(
     pystac.ItemAssetDefinition,
 )
 
-SCHEMA_URI: str = "https://stac-extensions.github.io/storage/v2.0.0/schema.json"
+SCHEMA_URI_PATTERN: str = (
+    "https://stac-extensions.github.io/storage/v{version}/schema.json"
+)
+DEFAULT_VERSION: str = "2.0.0"
+SUPPORTED_VERSIONS: list[str] = ["2.0.0", "1.0.0"]
+
 PREFIX: str = "storage:"
 
 # Field names
@@ -246,7 +253,8 @@ class StorageExtension(
 
     @classmethod
     def get_schema_uri(cls) -> str:
-        return SCHEMA_URI
+        return SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
+
 
     # For type checking purposes only, these methods are overridden in mixins
     def apply(
@@ -566,13 +574,145 @@ class SummariesStorageExtension(SummariesExtension):
 
 
 class StorageExtensionHooks(ExtensionHooks):
-    schema_uri: str = SCHEMA_URI
-    prev_extension_ids: set[str] = set()
+    schema_uri: str = SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
+    prev_extension_ids = {
+        SCHEMA_URI_PATTERN.format(version=v)
+        for v in SUPPORTED_VERSIONS
+        if v != DEFAULT_VERSION
+    }
     stac_object_types = {
         pystac.STACObjectType.CATALOG,
         pystac.STACObjectType.COLLECTION,
         pystac.STACObjectType.ITEM,
     }
+
+    # Mapping from v1.0.0 platform enum values to v2.0.0 type identifiers
+    # Only AWS and Azure have defined v2.0.0 platform definitions
+    _PLATFORM_TYPE_MAP: dict[str, str] = {
+        "AWS": "aws-s3",
+        "AZURE": "ms-azure",
+    }
+
+    # Mapping from v1.0.0 platform enum values to v2.0.0 platform URI templates
+    _PLATFORM_URI_MAP: dict[str, str] = {
+        "AWS": "https://{bucket}.s3.{region}.amazonaws.com",
+        "AZURE": "https://{account}.blob.core.windows.net",
+    }
+
+    # Mapping from v1.0.0 platform enum values to scheme key prefixes
+    _PLATFORM_KEY_PREFIX: dict[str, str] = {
+        "AWS": "aws",
+        "AZURE": "azure",
+    }
+
+    # Platforms that cannot be automatically migrated
+    _UNSUPPORTED_PLATFORMS: set[str] = {"GCP", "IBM", "ALIBABA", "ORACLE", "OTHER"}
+
+    def migrate(
+        self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    ) -> None:
+        if SCHEMA_URI_PATTERN.format(version="1.0.0") in info.extensions:
+            props = obj.get("properties", obj)
+
+            # v1 defined item level storage properties can
+            # be used across all assets
+            item_platform = props.get(PREFIX + "platform")
+            item_region = props.get(PREFIX + "region")
+            item_requester_pays = props.get(PREFIX + "requester_pays")
+            item_tier = props.get(PREFIX + "tier")
+
+            schemes: dict[str, dict[str, Any]] = {}
+            scheme_hash_to_key: dict[int, str] = {}
+            assets_with_tier: list[str] = []
+            unsupported_platforms: set[str] = set()
+            migrated_assets: list[str] = []
+
+            for asset_key, asset in obj.get("assets", {}).items():
+                platform = asset.get(PREFIX + "platform", item_platform)
+                region = asset.get(PREFIX + "region", item_region)
+                requester_pays = asset.get(
+                    PREFIX + "requester_pays", item_requester_pays
+                )
+                tier = asset.get(PREFIX + "tier", item_tier)
+
+                if tier is not None:
+                    assets_with_tier.append(asset_key)
+
+                # cannot migrate assets without a platform
+                if platform is None:
+                    continue
+
+                # cannot migrate assets with unsupported platforms
+                platform_upper = platform.upper()
+                if (
+                    platform_upper in self._UNSUPPORTED_PLATFORMS
+                    or platform_upper not in self._PLATFORM_TYPE_MAP
+                ):
+                    unsupported_platforms.add(platform_upper)
+                    continue
+
+                scheme: dict[str, Any] = {
+                    "type": self._PLATFORM_TYPE_MAP[platform_upper],
+                    "platform": self._PLATFORM_URI_MAP[platform_upper],
+                }
+                if region is not None:
+                    scheme["region"] = region
+                if requester_pays is not None:
+                    scheme["requester_pays"] = requester_pays
+
+                # Deduplicate schemes by content hash
+                scheme_hash = hash(frozenset(scheme.items()))
+
+                if scheme_hash in scheme_hash_to_key:
+                    scheme_key = scheme_hash_to_key[scheme_hash]
+                else:
+                    # Generate scheme key: provider-region or provider
+                    # if key would collide, appends an int suffix
+                    key_prefix = self._PLATFORM_KEY_PREFIX[platform_upper]
+                    base_key = (
+                        f"{key_prefix}-{region.lower()}" if region else key_prefix
+                    )
+
+                    scheme_key = base_key
+                    counter = 1
+
+                    while scheme_key in schemes:
+                        scheme_key = f"{base_key}-{counter}"
+                        counter += 1
+
+                    schemes[scheme_key] = scheme
+                    scheme_hash_to_key[scheme_hash] = scheme_key
+
+                asset.pop(PREFIX + "platform", None)
+                asset.pop(PREFIX + "region", None)
+                asset.pop(PREFIX + "requester_pays", None)
+                asset[REFS_PROP] = [scheme_key]
+                migrated_assets.append(asset_key)
+
+            if assets_with_tier:
+                warnings.warn(
+                    "storage:tier was removed in storage extension v2.0.0 and cannot "
+                    f"be migrated. Property left in place for: {assets_with_tier}",
+                    UserWarning,
+                )
+
+            if unsupported_platforms:
+                warnings.warn(
+                    "The following platforms cannot be automatically migrated to "
+                    f"storage extension v2.0.0: {unsupported_platforms}",
+                    UserWarning,
+                )
+
+            # Only remove item-level properties if all assets were migrated
+            if migrated_assets and not unsupported_platforms:
+                props.pop(PREFIX + "platform", None)
+                props.pop(PREFIX + "region", None)
+                props.pop(PREFIX + "requester_pays", None)
+
+            if schemes:
+                props[SCHEMES_PROP] = schemes
+
+        super().migrate(obj, version, info)
 
 
 STORAGE_EXTENSION_HOOKS: ExtensionHooks = StorageExtensionHooks()
