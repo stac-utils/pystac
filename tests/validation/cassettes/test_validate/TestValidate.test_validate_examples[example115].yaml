@@ -1,9 +1,7 @@
 interactions:
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-rc.2/item-spec/json-schema/item.json
   response:
@@ -98,9 +96,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-rc.2/item-spec/json-schema/basics.json
   response:
@@ -119,9 +115,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-rc.2/item-spec/json-schema/datetime.json
   response:
@@ -151,9 +145,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-rc.2/item-spec/json-schema/instrument.json
   response:
@@ -174,9 +166,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-rc.2/item-spec/json-schema/licensing.json
   response:
@@ -192,9 +182,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-rc.2/item-spec/json-schema/provider.json
   response:
@@ -221,9 +209,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://stac-extensions.github.io/eo/v1.1.0/schema.json
   response:
@@ -301,9 +287,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://stac-extensions.github.io/projection/v1.0.0/schema.json
   response:
@@ -375,9 +359,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://stac-extensions.github.io/scientific/v1.0.0/schema.json
   response:
@@ -463,9 +445,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://stac-extensions.github.io/view/v1.0.0/schema.json
   response:
@@ -523,9 +503,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://stac-extensions.github.io/remote-data/v1.0.0/schema.json
   response:

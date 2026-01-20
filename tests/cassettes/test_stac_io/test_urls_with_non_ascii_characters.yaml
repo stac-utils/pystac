@@ -1,9 +1,7 @@
 interactions:
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://capella-open-data.s3.us-west-2.amazonaws.com/stac/capella-open-data-by-capital/capella-open-data-mal%C3%A9/collection.json
   response:

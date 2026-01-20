@@ -1,9 +1,7 @@
 interactions:
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/item-spec/json-schema/item.json
   response:
@@ -96,9 +94,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.8.1/extensions/checksum/json-schema/schema.json
   response:

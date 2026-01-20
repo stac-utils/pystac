@@ -1,9 +1,7 @@
 interactions:
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/item.json
   response:
@@ -85,9 +83,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/basics.json
   response:
@@ -106,9 +102,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/datetime.json
   response:
@@ -157,9 +151,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/instrument.json
   response:
@@ -180,9 +172,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/licensing.json
   response:
@@ -198,9 +188,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/provider.json
   response:
@@ -226,9 +214,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/eo/json-schema/schema.json
   response:
@@ -266,9 +252,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/tiled-assets/json-schema/schema.json
   response:
@@ -375,9 +359,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/catalog-spec/json-schema/catalog.json
   response:
@@ -419,9 +401,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/collection-spec/json-schema/collection.json
   response:
