@@ -25,6 +25,9 @@ from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import StringEnum, get_required, map_opt
 
+#: Generalized version of :class:`~pystac.Catalog`, :class:`~pystac.Collection`,
+#: :class:`~pystac.Item`, :class:`~pystac.Asset`, :class:`~pystac.Link`,
+#: or :class:`~pystac.ItemAssetDefinition`
 T = TypeVar(
     "T",
     pystac.Catalog,
