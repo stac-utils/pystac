@@ -5,6 +5,7 @@ https://github.com/stac-extensions/storage
 
 from __future__ import annotations
 
+import re
 import warnings
 from typing import (
     Any,
@@ -610,6 +611,10 @@ class StorageExtensionHooks(ExtensionHooks):
     # Platforms that cannot be automatically migrated
     _UNSUPPORTED_PLATFORMS: set[str] = {"GCP", "IBM", "ALIBABA", "ORACLE", "OTHER"}
 
+    # Regex patterns for parsing cloud storage URLs
+    _S3_URL_PATTERN = re.compile(r"^s3://([^/]+)/")
+    _AZURE_BLOB_PATTERN = re.compile(r"^https://([^.]+)\.blob\.core\.windows\.net/")
+
     def migrate(
         self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
@@ -626,6 +631,7 @@ class StorageExtensionHooks(ExtensionHooks):
             schemes: dict[str, dict[str, Any]] = {}
             scheme_hash_to_key: dict[int, str] = {}
             assets_with_tier: list[str] = []
+            assets_failed_parsing: list[str] = []
             unsupported_platforms: set[str] = set()
             migrated_assets: list[str] = []
 
@@ -636,6 +642,7 @@ class StorageExtensionHooks(ExtensionHooks):
                     PREFIX + "requester_pays", item_requester_pays
                 )
                 tier = asset.get(PREFIX + "tier", item_tier)
+                href = asset.get("href", "")
 
                 if tier is not None:
                     assets_with_tier.append(asset_key)
@@ -661,6 +668,20 @@ class StorageExtensionHooks(ExtensionHooks):
                     scheme["region"] = region
                 if requester_pays is not None:
                     scheme["requester_pays"] = requester_pays
+
+                # Parse bucket/account info from href
+                if platform_upper == "AWS":
+                    if s3_match := self._S3_URL_PATTERN.match(href):
+                        scheme["bucket"] = s3_match.group(1)
+                    else:
+                        assets_failed_parsing.append(asset_key)
+                        continue
+                elif platform_upper == "AZURE":
+                    if azure_match := self._AZURE_BLOB_PATTERN.match(href):
+                        scheme["account"] = azure_match.group(1)
+                    else:
+                        assets_failed_parsing.append(asset_key)
+                        continue
 
                 # Deduplicate schemes by content hash
                 scheme_hash = hash(frozenset(scheme.items()))
@@ -688,6 +709,7 @@ class StorageExtensionHooks(ExtensionHooks):
                 asset.pop(PREFIX + "platform", None)
                 asset.pop(PREFIX + "region", None)
                 asset.pop(PREFIX + "requester_pays", None)
+                asset.pop(PREFIX + "tier", None)
                 asset[REFS_PROP] = [scheme_key]
                 migrated_assets.append(asset_key)
 
@@ -695,6 +717,13 @@ class StorageExtensionHooks(ExtensionHooks):
                 warnings.warn(
                     "storage:tier was removed in storage extension v2.0.0 and cannot "
                     f"be migrated. Property left in place for: {assets_with_tier}",
+                    UserWarning,
+                )
+
+            if assets_failed_parsing:
+                warnings.warn(
+                    "Could not parse bucket/account from href. "
+                    f"The following assets were not migrated: {assets_failed_parsing}",
                     UserWarning,
                 )
 
@@ -706,7 +735,7 @@ class StorageExtensionHooks(ExtensionHooks):
                 )
 
             # Only remove item-level properties if all assets were migrated
-            if migrated_assets and not unsupported_platforms:
+            if migrated_assets and not unsupported_platforms and not assets_failed_parsing:
                 props.pop(PREFIX + "platform", None)
                 props.pop(PREFIX + "region", None)
                 props.pop(PREFIX + "requester_pays", None)
