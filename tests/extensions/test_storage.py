@@ -18,6 +18,7 @@ from tests.utils import TestCases, assert_to_from_dict
 
 NAIP_EXAMPLE_URI = TestCases.get_path("data-files/storage/item-naip.json")
 NAIP_COLLECTION_URI = TestCases.get_path("data-files/storage/collection-naip.json")
+V1_MIGRATION_ITEM_URI = TestCases.get_path("data-files/storage/item-v1.0.0.json")
 
 
 @pytest.fixture
@@ -28,6 +29,13 @@ def naip_item() -> Item:
 @pytest.fixture
 def naip_collection() -> Collection:
     return Collection.from_file(NAIP_COLLECTION_URI)
+
+
+@pytest.fixture
+def v1_item() -> Item:
+    with open(V1_MIGRATION_ITEM_URI) as f:
+        item_dict = json.load(f)
+    return Item.from_dict(item_dict, migrate=False)
 
 
 @pytest.fixture
@@ -345,3 +353,54 @@ def test_item_asset_accessor() -> None:
         title="title", description="desc", media_type="media", roles=["a_role"]
     )
     assert isinstance(item_asset.ext.storage, StorageExtension)
+
+
+@pytest.mark.filterwarnings("ignore")
+def test_migrate(v1_item: Item) -> None:
+    item = Item.from_dict(
+        v1_item.to_dict(include_self_link=False, transform_hrefs=False), migrate=True
+    )
+
+    # Check schemes were created at item level
+    assert "storage:schemes" in item.properties
+    schemes = item.properties["storage:schemes"]
+
+    # AWS asset should be migrated
+    assert "storage:refs" in item.assets["AWS"].to_dict()
+    aws_refs = item.assets["AWS"].to_dict()["storage:refs"]
+    assert len(aws_refs) == 1
+    assert aws_refs[0] in schemes
+    assert schemes[aws_refs[0]]["type"] == "aws-s3"
+    assert schemes[aws_refs[0]]["region"] == "us-west-2"
+    assert schemes[aws_refs[0]]["requester_pays"] is True
+    assert schemes[aws_refs[0]]["bucket"] == "bucket"
+
+    # AWS_2 should a different scheme than AWS (same region, no requester_pays)
+    assert "storage:refs" in item.assets["AWS_2"].to_dict()
+    aws2_refs = item.assets["AWS_2"].to_dict()["storage:refs"]
+    assert aws2_refs != aws_refs
+    assert schemes[aws2_refs[0]]["bucket"] == "bucket2"
+
+    # AZURE asset should be migrated
+    assert "storage:refs" in item.assets["AZURE"].to_dict()
+    azure_refs = item.assets["AZURE"].to_dict()["storage:refs"]
+    assert len(azure_refs) == 1
+    assert azure_refs[0] in schemes
+    assert schemes[azure_refs[0]]["type"] == "ms-azure"
+    assert schemes[azure_refs[0]]["region"] == "westus2"
+    assert schemes[azure_refs[0]]["account"] == "project"
+
+    # GCP asset should NOT be migrated (unsupported platform)
+    assert "storage:refs" not in item.assets["GCP"].to_dict()
+    assert "storage:platform" in item.assets["GCP"].to_dict()
+
+    # Old properties should be removed from migrated assets
+    assert "storage:platform" not in item.assets["AWS"].to_dict()
+    assert "storage:region" not in item.assets["AWS"].to_dict()
+    assert "storage:platform" not in item.assets["AZURE"].to_dict()
+
+    # storage:tier should be removed from migrated assets
+    assert "storage:tier" not in item.assets["AWS"].to_dict()
+    assert "storage:tier" not in item.assets["AZURE"].to_dict()
+    # but preserved for unmigrated assets
+    assert item.assets["GCP"].to_dict().get("storage:tier") == "STANDARD"
