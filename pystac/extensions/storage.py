@@ -735,7 +735,11 @@ class StorageExtensionHooks(ExtensionHooks):
                 )
 
             # Only remove item-level properties if all assets were migrated
-            if migrated_assets and not unsupported_platforms and not assets_failed_parsing:
+            if (
+                migrated_assets
+                and not unsupported_platforms
+                and not assets_failed_parsing
+            ):
                 props.pop(PREFIX + "platform", None)
                 props.pop(PREFIX + "region", None)
                 props.pop(PREFIX + "requester_pays", None)
