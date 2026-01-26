@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 from collections.abc import Collection, Iterable, Iterator
-from copy import deepcopy
-from html import escape
 from typing import (
     Any,
     TypeAlias,
@@ -11,7 +9,6 @@ from typing import (
 
 import pystac
 from pystac.errors import STACTypeError
-from pystac.html.jinja_env import get_jinja_env
 from pystac.serialization.identify import identify_stac_object_type
 from pystac.utils import HREF, is_absolute_href, make_absolute_href, make_posix_style
 
@@ -147,6 +144,10 @@ class ItemCollection(Collection[pystac.Item]):
         }
 
     def _repr_html_(self) -> str:
+        from html import escape
+
+        from pystac.html.jinja_env import get_jinja_env
+
         jinja_env = get_jinja_env()
         if jinja_env:
             template = jinja_env.get_template("JSON.jinja2")
@@ -158,6 +159,8 @@ class ItemCollection(Collection[pystac.Item]):
         """Creates a clone of this instance. This clone is a deep copy; all
         :class:`~pystac.Item` instances are cloned and all additional top-level fields
         are deep copied."""
+        from copy import deepcopy
+
         return self.__class__(
             items=[item.clone() for item in self.items],
             extra_fields=deepcopy(self.extra_fields),
@@ -175,8 +178,8 @@ class ItemCollection(Collection[pystac.Item]):
         Arguments:
             d : The dictionary from which the :class:`ItemCollection` will be created
             preserve_dict: If False, the dict parameter ``d`` may be modified
-                during this method call. Otherwise the dict is not mutated.
-                Defaults to True, which results results in a deepcopy of the
+                during this method call. Otherwise, the dict is not mutated.
+                Defaults to True, which results in a deepcopy of the
                 parameter. Set to False when possible to avoid the performance
                 hit of a deepcopy.
         """

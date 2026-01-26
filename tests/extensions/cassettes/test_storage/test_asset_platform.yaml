@@ -1,9 +1,7 @@
 interactions:
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.1
+    headers: {}
     method: GET
     uri: https://stac-extensions.github.io/storage/v1.0.0/schema.json
   response:
@@ -47,51 +45,7 @@ interactions:
         {\n          \"type\": \"boolean\",\n          \"title\": \"Requester pays\",\n
         \         \"default\": false\n        },\n        \"storage:tier\": {\n          \"title\":
         \"Tier\",\n          \"type\": \"string\"\n        }\n      }\n    }\n  }\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '0'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '2963'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:55:33 GMT
-      ETag:
-      - '"6718ce4f-b93"'
-      Last-Modified:
-      - Wed, 23 Oct 2024 10:22:07 GMT
-      Server:
-      - GitHub.com
-      Strict-Transport-Security:
-      - max-age=31556952
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Fastly-Request-ID:
-      - 1ae6b4c625e9fa15141dce043fcf4955309b9ccd
-      X-GitHub-Request-Id:
-      - F43B:358B9B:CCD30F:E73A5D:68CC1D63
-      X-Served-By:
-      - cache-bos4677-BOS
-      X-Timer:
-      - S1758207333.407569,VS0,VE1
-      expires:
-      - Thu, 18 Sep 2025 15:05:33 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK

@@ -103,8 +103,8 @@ class STACValidationError(Exception):
 
     Args:
         source : Source of the exception. Type will be determined by the
-            validation implementation. For the default JsonSchemaValidator this will a
-            the ``jsonschema.ValidationError``.
+            validation implementation. For the default JsonSchemaValidator this will be
+            ``jsonschema.ValidationError``.
     """
 
     def __init__(self, message: str, source: Any | None = None):
