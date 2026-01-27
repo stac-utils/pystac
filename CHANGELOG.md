@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.4](https://github.com/stac-utils/pystac/compare/v1.14.3...v1.14.4) (2026-01-27)
+
+
+### Dependencies
+
+* floor aiohttp to remove a vuln (docs group only) ([#1631](https://github.com/stac-utils/pystac/issues/1631)) ([9bc7f70](https://github.com/stac-utils/pystac/commit/9bc7f7040a4f46a1eab758eba2889656ec802ed1))
+
 ## [1.14.3](https://github.com/stac-utils/pystac/compare/v1.14.2...v1.14.3) (2026-01-08)
 
 
