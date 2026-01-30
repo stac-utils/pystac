@@ -37,6 +37,10 @@ from pystac.extensions.timestamps import TimestampsExtension
 from pystac.extensions.version import BaseVersionExtension, VersionExtension
 from pystac.extensions.view import ViewExtension
 from pystac.extensions.xarray_assets import XarrayAssetsExtension
+from pystac.extensions.insar import InsarExtension
+from pystac.extensions.order import OrderExtension
+from pystac.extensions.product import ProductExtension
+from pystac.extensions.processing import ProcessingExtension
 
 #: Generalized version of :class:`~pystac.Asset`,
 #: :class:`~pystac.ItemAssetDefinition`, or :class:`~pystac.Link`
@@ -67,6 +71,10 @@ EXTENSION_NAMES = Literal[
     "version",
     "view",
     "xarray",
+    "insar",
+    "order",
+    "product",
+    "processing",
 ]
 
 EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
@@ -91,6 +99,10 @@ EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     VersionExtension.name: VersionExtension,
     ViewExtension.name: ViewExtension,
     XarrayAssetsExtension.name: XarrayAssetsExtension,
+    InsarExtension.name: InsarExtension,
+    OrderExtension.name: OrderExtension,
+    ProductExtension.name: ProductExtension,
+    ProcessingExtension.name: ProcessingExtension,
 }
 
 
@@ -288,7 +300,22 @@ class ItemExt:
     def xarray(self) -> XarrayAssetsExtension[Item]:
         return XarrayAssetsExtension.ext(self.stac_object)
 
-
+    @property
+    def insar(self) -> InsarExtension[Item]:
+        return InsarExtension.ext(self.stac_object)
+    
+    @property
+    def order(self) -> OrderExtension[Item]:
+        return OrderExtension.ext(self.stac_object)
+    
+    @property
+    def product(self) -> ProductExtension[Item]:
+        return ProductExtension.ext(self.stac_object)
+    
+    @property
+    def processing(self) -> ProcessingExtension[Item]:
+        return ProcessingExtension.ext(self.stac_object)
+    
 class _AssetsExt(Generic[T]):
     stac_object: T
 
@@ -390,7 +417,6 @@ class _AssetExt(_AssetsExt[U]):
     @property
     def view(self) -> ViewExtension[U]:
         return ViewExtension.ext(self.stac_object)
-
 
 @dataclass
 class AssetExt(_AssetExt[Asset]):
