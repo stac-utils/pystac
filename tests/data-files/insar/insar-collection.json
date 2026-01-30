@@ -1,0 +1,20 @@
+{
+  "stac_version": "1.0.0",
+  "type": "Collection",
+  "id": "insar-col",
+  "description": "Example collection",
+  "license": "proprietary",
+  "extent": {
+    "spatial": {"bbox": [[0,0,1,1]]},
+    "temporal": {"interval": [["2020-01-01T00:00:00Z", null]]}
+  },
+  "links": [],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/insar/v1.0.0/schema.json"
+  ],
+  "summaries": {
+    "insar:reference_datetime": ["2020-01-01T00:00:00Z"],
+    "insar:processing_dem": ["COPDEM"],
+    "insar:geocoding_dem": ["SRTM"]
+  }
+}

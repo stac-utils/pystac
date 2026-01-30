@@ -55,6 +55,15 @@ class ProductExtension(
         timeliness_category: str | None = None,
         acquisition_type: AcquisitionType | str | None = None,
     ) -> None:
+        """
+        Apply the Product Extension properties to the owning object.
+
+        Args:
+            product_type: The product type.
+            timeliness: The timeliness as an ISO 8601 duration string (e.g. "PT3H", "P1M").
+            timeliness_category: The timeliness category.
+            acquisition_type: The acquisition type.
+        """
         # Enforce the schema dependency: timeliness_category => timeliness
         if timeliness_category is not None and timeliness is None and self.timeliness is None:
             raise ValueError(
@@ -70,27 +79,51 @@ class ProductExtension(
 
     @property
     def product_type(self) -> str | None:
+        """
+        Gets the product type.
+        """
         return self._get_property(TYPE_PROP, str)
 
     @product_type.setter
     def product_type(self, v: str | None) -> None:
+        """Sets the product type.
+
+        Args:
+            v: The product type.
+        """
         self._set_property(TYPE_PROP, v)
 
     @property
     def timeliness(self) -> str | None:
+        """
+        Gets the timeliness as an ISO 8601 duration string (e.g. "PT3H", "P1M").
+        """
         # ISO 8601 duration string (e.g. "PT3H", "P1M")
         return self._get_property(TIMELINESS_PROP, str)
 
     @timeliness.setter
     def timeliness(self, v: str | None) -> None:
+        """Sets the timeliness.
+
+        Args:
+            v: The timeliness as an ISO 8601 duration string (e.g. "PT3H", "P1M").
+        """
         self._set_property(TIMELINESS_PROP, v)
 
     @property
     def timeliness_category(self) -> str | None:
+        """
+        Gets the timeliness category.
+        """
         return self._get_property(TIMELINESS_CATEGORY_PROP, str)
 
     @timeliness_category.setter
     def timeliness_category(self, v: str | None) -> None:
+        """Sets the timeliness category.
+
+        Args:
+            v: The timeliness category.
+        """
         if v is not None and (self.timeliness is None):
             raise ValueError(
                 f"'{TIMELINESS_CATEGORY_PROP}' requires '{TIMELINESS_PROP}' to be set."
@@ -99,6 +132,9 @@ class ProductExtension(
 
     @property
     def acquisition_type(self) -> AcquisitionType | str | None:
+        """
+        Gets the acquisition type.
+        """
         raw = self._get_property(ACQUISITION_TYPE_PROP, str)
         if raw is None:
             return None
@@ -110,10 +146,18 @@ class ProductExtension(
 
     @acquisition_type.setter
     def acquisition_type(self, v: AcquisitionType | str | None) -> None:
+        """Sets the acquisition type.
+
+        Args:
+            v: The acquisition type.
+        """
         self._set_property(ACQUISITION_TYPE_PROP, None if v is None else str(v))
 
     @classmethod
     def get_schema_uri(cls) -> str:
+        """
+        Gets the schema URI for the extension.
+        """
         return SCHEMA_URI
 
     @classmethod
@@ -143,15 +187,30 @@ class ProductExtension(
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
     ) -> "SummariesProductExtension":
+        """
+        Attach SummariesProductExtension to a Collection.
+
+        Use add_if_missing=True to append SCHEMA_URI to stac_extensions
+        on the owning Collection when needed.
+        """
         cls.ensure_has_extension(obj, add_if_missing)
         return SummariesProductExtension(obj)
 
 
 class CollectionProductExtension(ProductExtension[pystac.Collection]):
+    """
+    Attach ProductExtension to a Collection.
+    """
+
     collection: pystac.Collection
     properties: dict[str, Any]
 
     def __init__(self, collection: pystac.Collection):
+        """
+        Args:
+            collection: The Collection to extend.
+        """
+
         self.collection = collection
         # Product fields live at top-level in Collections (extra_fields)
         self.properties = collection.extra_fields
@@ -161,6 +220,10 @@ class CollectionProductExtension(ProductExtension[pystac.Collection]):
 
 
 class ItemProductExtension(ProductExtension[pystac.Item]):
+    """
+    Attach ProductExtension to an Item.
+    """
+
     item: pystac.Item
     properties: dict[str, Any]
 
@@ -173,11 +236,21 @@ class ItemProductExtension(ProductExtension[pystac.Item]):
 
 
 class AssetProductExtension(ProductExtension[pystac.Asset]):
+    """
+    Attach ProductExtension to an Asset.
+    """
+
+    asset: pystac.Asset
     asset_href: str
     properties: dict[str, Any]
     additional_read_properties: Iterable[dict[str, Any]] | None
 
     def __init__(self, asset: pystac.Asset):
+        """
+        Args:
+            asset: The Asset to extend.
+        """
+        self.asset = asset
         self.asset_href = asset.href
         self.properties = asset.extra_fields
         # Allow reads to fall back to owning Item properties (common PySTAC pattern)
@@ -187,56 +260,109 @@ class AssetProductExtension(ProductExtension[pystac.Asset]):
             self.additional_read_properties = None
 
     def __repr__(self) -> str:
+        """
+        Get a string representation of the extension.
+        """
         return f"<AssetProductExtension Asset href={self.asset_href}>"
 
 
 class ItemAssetsProductExtension(ProductExtension[pystac.ItemAssetDefinition]):
+    """
+    Attach ProductExtension to an ItemAssetDefinition.
+    """
+
     asset_defn: pystac.ItemAssetDefinition
     properties: dict[str, Any]
 
     def __init__(self, item_asset: pystac.ItemAssetDefinition):
+        """
+        Args:
+            item_asset: The ItemAssetDefinition to extend.
+        """
         self.asset_defn = item_asset
         self.properties = item_asset.properties
 
     def __repr__(self) -> str:
+        """
+        Get a string representation of the extension.
+        """
         return "<ItemAssetsProductExtension ItemAssetDefinition>"
 
 
 class SummariesProductExtension(SummariesExtension):
     @property
     def product_type(self) -> list[str] | None:
+        """
+        Get the product type from the summaries.
+        """
         return self.summaries.get_list(TYPE_PROP)
 
     @product_type.setter
     def product_type(self, v: list[str] | None) -> None:
+        """
+        Set the product type in the summaries.
+        
+        Args:
+            v: The product type.
+        """
         self._set_summary(TYPE_PROP, v)
 
     @property
     def timeliness(self) -> list[str] | None:
+        """
+        Get the timeliness from the summaries.
+        """
         return self.summaries.get_list(TIMELINESS_PROP)
 
     @timeliness.setter
     def timeliness(self, v: list[str] | None) -> None:
+        """
+        Set the timeliness in the summaries.
+
+        Args:
+            v: The timeliness.
+        """
         self._set_summary(TIMELINESS_PROP, v)
 
     @property
     def timeliness_category(self) -> list[str] | None:
+        """
+        Get the timeliness category from the summaries.
+        """
         return self.summaries.get_list(TIMELINESS_CATEGORY_PROP)
 
     @timeliness_category.setter
     def timeliness_category(self, v: list[str] | None) -> None:
+        """
+        Set the timeliness category in the summaries.
+
+        Args:
+            v: The timeliness category.
+        """
         self._set_summary(TIMELINESS_CATEGORY_PROP, v)
 
     @property
     def acquisition_type(self) -> list[str] | None:
+        """
+        Get the acquisition type from the summaries.
+        """
         return self.summaries.get_list(ACQUISITION_TYPE_PROP)
 
     @acquisition_type.setter
     def acquisition_type(self, v: list[str] | None) -> None:
+        """
+        Set the acquisition type in the summaries.
+
+        Args:
+            v: The acquisition type.
+        """
         self._set_summary(ACQUISITION_TYPE_PROP, v)
 
 
 class ProductExtensionHooks(ExtensionHooks):
+    """
+    Hooks for the Product extension.
+    """
     schema_uri: str = SCHEMA_URI
     # Helpful for discovery/migration if you later add older schema URIs here
     prev_extension_ids = {"product"}

@@ -43,6 +43,9 @@ EXPIRATION_DATE_PROP: str = PREFIX + "expiration_date"  # deprecated in schema
 
 
 class OrderStatus(StringEnum):
+    """
+    Enumeration of order statuses.
+    """
     ORDERABLE = "orderable"
     ORDERED = "ordered"
     PENDING = "pending"
@@ -93,10 +96,16 @@ class OrderExtension(
 
     @classmethod
     def get_schema_uri(cls) -> str:
+        """
+        Get the schema URI for the Order Extension.
+        """
         return SCHEMA_URI
 
     @property
     def status(self) -> OrderStatus:
+        """
+        Get the order status.
+        """
         return get_required(
             map_opt(lambda x: OrderStatus(x), self._get_property(STATUS_PROP, str)),
             self,
@@ -105,26 +114,53 @@ class OrderExtension(
 
     @status.setter
     def status(self, v: OrderStatus) -> None:
+        """
+        Set the order status.
+
+        Args:
+            v: The order status to set.
+        """
         self._set_property(STATUS_PROP, v.value, pop_if_none=False)
 
     @property
     def order_id(self) -> str | None:
+        """
+        Get the order identifier.
+        """
         return self._get_property(ID_PROP, str)
 
     @order_id.setter
     def order_id(self, v: str | None) -> None:
+        """
+        Set the order identifier.
+
+        Args:
+            v: The order identifier to set.
+        """
         self._set_property(ID_PROP, v, pop_if_none=True)
 
     @property
     def date(self) -> datetime | None:
+        """
+        Get the order datetime.
+        """
         return map_opt(lambda s: str_to_datetime(s), self._get_property(DATE_PROP, str))
 
     @date.setter
     def date(self, v: datetime | None) -> None:
+        """
+        Set the order datetime.
+
+        Args:
+            v: The order datetime to set.
+        """
         self._set_property(DATE_PROP, map_opt(datetime_to_str, v), pop_if_none=True)
 
     @property
     def expiration_date(self) -> datetime | None:
+        """
+        Get the expiration date.
+        """
         warnings.warn(
             f"'{EXPIRATION_DATE_PROP}' is deprecated in the Order Extension schema.",
             DeprecationWarning,
@@ -136,6 +172,12 @@ class OrderExtension(
 
     @expiration_date.setter
     def expiration_date(self, v: datetime | None) -> None:
+        """
+        Set the expiration date.
+
+        Args:
+            v: The expiration date to set.
+        """
         warnings.warn(
             f"'{EXPIRATION_DATE_PROP}' is deprecated in the Order Extension schema.",
             DeprecationWarning,
@@ -198,6 +240,9 @@ class ItemOrderExtension(OrderExtension[pystac.Item]):
     properties: dict[str, Any]
 
     def __init__(self, item: pystac.Item):
+        """
+        Initialize the ItemOrderExtension.
+        """
         self.item = item
         self.properties = item.properties
 
@@ -232,6 +277,9 @@ class AssetOrderExtension(OrderExtension[pystac.Asset]):
     additional_read_properties: Iterable[dict[str, Any]] | None = None
 
     def __init__(self, asset: pystac.Asset):
+        """
+        Initialize the AssetOrderExtension.
+        """
         self.asset_href = asset.href
         self.properties = asset.extra_fields
 
@@ -242,6 +290,9 @@ class AssetOrderExtension(OrderExtension[pystac.Asset]):
             self.additional_read_properties = [asset.owner.extra_fields]
 
     def __repr__(self) -> str:
+        """
+        Get a string representation of the AssetOrderExtension.
+        """
         return f"<AssetOrderExtension Asset href={self.asset_href}>"
 
 
@@ -252,10 +303,16 @@ class ItemAssetsOrderExtension(OrderExtension[pystac.ItemAssetDefinition]):
     properties: dict[str, Any]
 
     def __init__(self, item_asset: pystac.ItemAssetDefinition):
+        """
+        Initialize the ItemAssetsOrderExtension.
+        """
         self.asset_defn = item_asset
         self.properties = item_asset.properties
 
     def __repr__(self) -> str:
+        """
+        Get a string representation of the ItemAssetsOrderExtension.
+        """
         return "<ItemAssetsOrderExtension ItemAssetDefinition>"
 
 
@@ -264,25 +321,52 @@ class SummariesOrderExtension(SummariesExtension):
 
     @property
     def status(self) -> list[OrderStatus] | None:
+        """
+        Get the order status.
+        """
         return self.summaries.get_list(STATUS_PROP)
 
     @status.setter
     def status(self, v: list[OrderStatus] | None) -> None:
+        """
+        Set the order status.
+        
+        Args:
+            v: The order status to set.
+        """
         self._set_summary(STATUS_PROP, v)
 
     @property
     def order_id(self) -> list[str] | None:
+        """
+        Get the order ID.
+        """
         return self.summaries.get_list(ID_PROP)
 
     @order_id.setter
     def order_id(self, v: list[str] | None) -> None:
+        """
+        Set the order ID.
+
+        Args:
+            v: The order ID to set.
+        """
         self._set_summary(ID_PROP, v)
 
     @property
     def date(self) -> list[str] | None:
+        """
+        Get the expiration date.
+        """
         # Summaries commonly store datetimes as strings (STAC JSON), so keep as-is.
         return self.summaries.get_list(DATE_PROP)
 
     @date.setter
     def date(self, v: list[str] | None) -> None:
+        """
+        Set the expiration date.
+
+        Args:
+            v: The expiration date to set.
+        """
         self._set_summary(DATE_PROP, v)
