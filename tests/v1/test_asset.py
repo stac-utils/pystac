@@ -55,7 +55,8 @@ def test_alter_asset_relative_src_no_owner_fails(
     with pytest.raises(ValueError, match=f"Cannot {action} file") as e:
         getattr(asset, action)(new_href)
 
-    assert new_href not in str(e.value)
+    assert asset.href in str(e.value)
+    assert new_href in str(e.value)
     assert asset.href != new_href
 
 
@@ -74,6 +75,7 @@ def test_alter_asset_relative_dst_no_owner_fails(
     with pytest.raises(ValueError, match=f"Cannot {action} file") as e:
         getattr(asset, action)(new_href)
 
+    assert asset.href in str(e.value)
     assert new_href in str(e.value)
     assert asset.href != new_href
 
