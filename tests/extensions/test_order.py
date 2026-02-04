@@ -1,89 +1,122 @@
-# tests/extensions/test_order.py
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 
 import pytest
-
 import pystac
 
-# The Terradue branch defines this in pystac/extensions/order.py
-from pystac.extensions.order import OrderExtension, OrderEvent, OrderEventType
+from pystac.extensions.order import (
+    DATE_PROP,
+    EXPIRATION_DATE_PROP,
+    ID_PROP,
+    STATUS_PROP,
+    OrderExtension,
+    OrderStatus,
+)
 
 
-def _utc(dt: datetime) -> datetime:
-    """Force-aware UTC datetimes for stable serialization expectations."""
-    if dt.tzinfo is None:
-        return dt.replace(tzinfo=timezone.utc)
-    return dt.astimezone(timezone.utc)
+def _dt(s: str) -> datetime:
+    return datetime.fromisoformat(s.replace("Z", "+00:00"))
 
 
-def test_order_ext_adds_schema_and_sets_required_id(item: pystac.Item) -> None:
-    # Arrange
-    order_id = "ORDER-123"
-
-    # Act
-    ext = OrderExtension.ext(item, add_if_missing=True)
-    ext.apply(order_id=order_id, history=None)
-
-    # Assert: schema URI was added to stac_extensions
-    assert any("image-order" in uri or "order" in uri for uri in item.stac_extensions), (
-        "Expected Order extension schema URI to be present in item.stac_extensions"
+def make_item() -> pystac.Item:
+    return pystac.Item(
+        id="i",
+        geometry=None,
+        bbox=None,
+        datetime=_dt("2020-01-01T00:00:00Z"),
+        properties={},
+        start_datetime=None,
+        end_datetime=None,
     )
 
-    # Assert: required property written
-    assert item.properties.get("order:id") == order_id
 
-    # Assert: optional property absent when None (implementation typically pops)
-    assert "order:history" not in item.properties or item.properties["order:history"] is None
+def make_collection() -> pystac.Collection:
+    return pystac.Collection(
+        id="c",
+        description="d",
+        extent=pystac.Extent(
+            pystac.SpatialExtent([[-180, -90, 180, 90]]),
+            pystac.TemporalExtent([[None, None]]),
+        ),
+        license="proprietary",
+    )
 
 
-def test_order_ext_history_roundtrip(item: pystac.Item) -> None:
-    # Arrange
-    t0 = _utc(datetime(2024, 1, 1, 12, 0, 0))
-    t1 = _utc(t0 + timedelta(hours=6))
+def test_item_status_is_required() -> None:
+    item = make_item()
+    OrderExtension.ext(item, add_if_missing=True)
 
-    history = [
-        OrderEvent.create(OrderEventType.SUBMITTED, t0),
-        OrderEvent.create(OrderEventType.STARTED_PROCESSING, t1),
-    ]
+    # status missing -> get_required should raise
+    ext = OrderExtension.ext(item)
+    with pytest.raises(KeyError):
+        _ = ext.status
 
-    # Act
+
+def test_item_apply_roundtrip() -> None:
+    item = make_item()
     ext = OrderExtension.ext(item, add_if_missing=True)
-    ext.apply(order_id="ORDER-456", history=history)
 
-    # Assert: stored as list[dict] in properties
-    raw = item.properties.get("order:history")
-    assert isinstance(raw, list)
-    assert raw[0]["type"] == "submitted"
-    assert "timestamp" in raw[0]
+    d = _dt("2024-01-01T10:00:00Z")
+    ext.apply(status=OrderStatus.ORDERED, order_id="123", date=d)
 
-    # Assert: getter returns OrderEvent objects with correct typing
-    got = ext.history
-    assert got is not None
-    assert len(got) == 2
-    assert got[0].event_type == OrderEventType.SUBMITTED
-    assert got[1].event_type == OrderEventType.STARTED_PROCESSING
+    assert item.properties[STATUS_PROP] == "ordered"
+    assert item.properties[ID_PROP] == "123"
+    assert item.properties[DATE_PROP].endswith("Z")
+    assert ext.status == OrderStatus.ORDERED
+    assert ext.order_id == "123"
+    assert ext.date == d
 
-    # Ensure timestamps are parsed back to datetime
-    assert isinstance(got[0].timestamp, datetime)
-    assert isinstance(got[1].timestamp, datetime)
+    # pop_if_none on optional fields
+    ext.order_id = None
+    assert ID_PROP not in item.properties
 
 
-def test_order_id_is_required_on_read(item: pystac.Item) -> None:
-    # Arrange: ensure extension is present but property is missing
-    ext = OrderExtension.ext(item, add_if_missing=True)
-    if "order:id" in item.properties:
-        item.properties.pop("order:id")
+def test_collection_top_level_fields() -> None:
+    col = make_collection()
+    ext = OrderExtension.ext(col, add_if_missing=True)
 
-    # Act / Assert: accessing order_id should error (get_required(...) path)
-    with pytest.raises(Exception):
-        _ = ext.order_id
+    ext.status = OrderStatus.PENDING
+    ext.order_id = "abc"
+
+    assert col.extra_fields[STATUS_PROP] == "pending"
+    assert col.extra_fields[ID_PROP] == "abc"
 
 
-def test_order_ext_type_error_on_wrong_object() -> None:
-    # The extension should not apply to non-Item objects.
-    cat = pystac.Catalog(id="c", description="d")
+def test_asset_owner_type_validation() -> None:
+    # Asset with no owner is allowed (ensure_owner_has_extension is a no-op)
+    asset = pystac.Asset(href="s3://bucket/a.tif")
+    with pytest.raises(pystac.ExtensionNotImplemented):
+        OrderExtension.ext(asset, add_if_missing=False)
+
+    # Make it owned by something invalid (not Item/Collection)
+    cat = pystac.Catalog(id="cat", description="d")
+    bad_asset = pystac.Asset(href="s3://bucket/b.tif")
+    cat.add_asset("x", bad_asset)
 
     with pytest.raises(pystac.ExtensionTypeError):
-        OrderExtension.ext(cat, add_if_missing=False)  # type: ignore[arg-type]
+        OrderExtension.ext(bad_asset, add_if_missing=True)
+
+
+def test_expiration_date_is_deprecated_and_roundtrips() -> None:
+    item = make_item()
+    ext = OrderExtension.ext(item, add_if_missing=True)
+
+    exp = _dt("2024-02-01T00:00:00Z")
+    with pytest.warns(DeprecationWarning):
+        ext.expiration_date = exp
+
+    assert item.properties[EXPIRATION_DATE_PROP].endswith("Z")
+
+    with pytest.warns(DeprecationWarning):
+        got = ext.expiration_date
+    assert got == exp
+
+
+def test_summaries_wrapper_sets_lists() -> None:
+    col = make_collection()
+    sext = OrderExtension.summaries(col, add_if_missing=True)
+
+    sext.status = ["orderable", "ordered"]  # schema expects listy summaries
+
+    assert col.summaries.lists[STATUS_PROP] == ["orderable", "ordered"]

@@ -1,112 +1,96 @@
-# tests/extensions/test_product.py
 from __future__ import annotations
 
 import pytest
 import pystac
 
-# Terradue branch should provide these in pystac/extensions/product.py
-# If names differ in your branch, adjust imports accordingly.
-from pystac.extensions.product import (  # type: ignore
+from pystac.extensions.product import (
+    ACQUISITION_TYPE_PROP,
+    TIMELINESS_CATEGORY_PROP,
+    TIMELINESS_PROP,
+    TYPE_PROP,
+    AcquisitionType,
     ProductExtension,
-    ProductProviderExtension,
+    PRODUCT_EXTENSION_HOOKS,
 )
 
 
-def test_product_ext_item_apply_sets_fields_and_schema(item: pystac.Item) -> None:
-    """
-    Basic "apply + schema + raw properties + getters" test.
-    """
+def make_item() -> pystac.Item:
+    return pystac.Item(
+        id="i",
+        geometry=None,
+        bbox=None,
+        datetime=None,
+        properties={},
+        start_datetime=None,
+        end_datetime=None,
+    )
+
+
+def make_collection() -> pystac.Collection:
+    return pystac.Collection(
+        id="c",
+        description="d",
+        extent=pystac.Extent(
+            pystac.SpatialExtent([[-180, -90, 180, 90]]),
+            pystac.TemporalExtent([[None, None]]),
+        ),
+        license="proprietary",
+    )
+
+
+def test_apply_requires_timeliness_when_setting_category() -> None:
+    item = make_item()
     ext = ProductExtension.ext(item, add_if_missing=True)
 
-    # The Product extension is "generic product-related properties for STAC".
-    # Adjust the apply(...) signature to your implementation if needed.
+    with pytest.raises(ValueError):
+        ext.apply(timeliness_category="NRT")  # timeliness missing and not already set
+
+    # If timeliness is already set, setting category is allowed
+    ext.timeliness = "PT3H"
+    ext.apply(timeliness_category="NRT")
+    assert item.properties[TIMELINESS_CATEGORY_PROP] == "NRT"
+
+
+def test_item_apply_roundtrip_and_acquisition_type_enum() -> None:
+    item = make_item()
+    ext = ProductExtension.ext(item, add_if_missing=True)
+
     ext.apply(
-        name="S2MSI2A",
-        version="05.10",
-        type="OPTICAL",  # e.g. a product family / category if your impl supports it
+        product_type="SLC",
+        timeliness="PT3H",
+        timeliness_category="NRT",
+        acquisition_type=AcquisitionType.NOMINAL,
     )
 
-    # schema should be enabled on the item
-    assert any("product" in uri for uri in item.stac_extensions), (
-        "Expected Product extension schema URI to be present in item.stac_extensions"
-    )
+    assert item.properties[TYPE_PROP] == "SLC"
+    assert item.properties[TIMELINESS_PROP] == "PT3H"
+    assert item.properties[TIMELINESS_CATEGORY_PROP] == "NRT"
+    assert item.properties[ACQUISITION_TYPE_PROP] == "nominal"
+    assert ext.acquisition_type == AcquisitionType.NOMINAL
 
-    # raw properties (canonical keys)
-    assert item.properties["product:name"] == "S2MSI2A"
-    assert item.properties["product:version"] == "05.10"
-    assert item.properties["product:type"] == "OPTICAL"
-
-    # typed getters round-trip
-    assert ext.name == "S2MSI2A"
-    assert ext.version == "05.10"
-    assert ext.type == "OPTICAL"
+    # Unknown strings should roundtrip as raw strings
+    ext.acquisition_type = "nonstandard"
+    assert item.properties[ACQUISITION_TYPE_PROP] == "nonstandard"
+    assert ext.acquisition_type == "nonstandard"
 
 
-def test_product_ext_unset_optional_fields_are_absent(item: pystac.Item) -> None:
-    """
-    Ensure optional keys are not force-written when not supplied.
-    """
-    ext = ProductExtension.ext(item, add_if_missing=True)
-    ext.apply(name="S2MSI2A")  # minimal
+def test_collection_top_level_fields() -> None:
+    col = make_collection()
+    ext = ProductExtension.ext(col, add_if_missing=True)
 
-    # If your implementation requires additional fields, change the call above
-    # and keep the "optional keys" list aligned with product.py.
-    for k in (
-        "product:type",
-        "product:version",
-        "product:uri",
-        "product:timeliness",
-        "product:processing_level",
-    ):
-        assert k not in item.properties or item.properties[k] is None
+    ext.product_type = "L1C"
+    assert col.extra_fields[TYPE_PROP] == "L1C"
 
 
-def test_product_ext_required_name_on_read(item: pystac.Item) -> None:
-    """
-    If your extension marks product:name as required (common), accessing should error
-    when missing. Keep this if product.py uses get_required(...).
-    """
-    ext = ProductExtension.ext(item, add_if_missing=True)
+def test_summaries_wrapper_sets_lists() -> None:
+    col = make_collection()
+    sext = ProductExtension.summaries(col, add_if_missing=True)
 
-    item.properties.pop("product:name", None)
-
-    with pytest.raises(Exception):
-        _ = ext.name
+    sext.product_type = ["L1C", "L2A"]
+    assert col.summaries.lists[TYPE_PROP] == ["L1C", "L2A"]
 
 
-def test_product_provider_ext_writes_into_provider_extra_fields(collection: pystac.Collection) -> None:
-    """
-    Many PySTAC extensions support Provider objects via extra_fields.
-    This follows the same pattern used by other extension tests.
-    """
-    provider = pystac.Provider(
-        name="ACME Processing Center",
-        roles=["producer", "processor"],
-        url="https://example.invalid",
-    )
-    collection.providers = [provider]
-
-    pext = ProductProviderExtension.ext(provider, add_if_missing=True)
-    pext.apply(
-        name="S2MSI2A",
-        version="05.10",
-    )
-
-    extra = getattr(provider, "extra_fields", {})
-    assert extra["product:name"] == "S2MSI2A"
-    assert extra["product:version"] == "05.10"
-
-    assert pext.name == "S2MSI2A"
-    assert pext.version == "05.10"
-
-
-def test_product_ext_type_error_on_wrong_object() -> None:
-    cat = pystac.Catalog(id="c", description="d")
-
-    with pytest.raises(pystac.ExtensionTypeError):
-        ProductExtension.ext(cat, add_if_missing=False)  # type: ignore[arg-type]
-
-
-def test_product_provider_ext_type_error_on_wrong_object(item: pystac.Item) -> None:
-    with pytest.raises(pystac.ExtensionTypeError):
-        ProductProviderExtension.ext(item, add_if_missing=False)  # type: ignore[arg-type]
+def test_extension_hooks_are_declared() -> None:
+    assert PRODUCT_EXTENSION_HOOKS.schema_uri == ProductExtension.get_schema_uri()
+    assert "product" in PRODUCT_EXTENSION_HOOKS.prev_extension_ids
+    assert pystac.STACObjectType.COLLECTION in PRODUCT_EXTENSION_HOOKS.stac_object_types

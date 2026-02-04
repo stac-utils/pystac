@@ -1,114 +1,119 @@
-# tests/extensions/test_processing.py
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime
 
 import pytest
-
 import pystac
 
-# Terradue branch: expects pystac/extensions/processing.py
-# If the names differ in your branch, adjust these imports accordingly.
-from pystac.extensions.processing import (  # type: ignore
+from pystac.extensions.processing import (
+    DATETIME_PROP,
+    EXPRESSION_PROP,
+    FACILITY_PROP,
+    LEVEL_PROP,
+    LINEAGE_PROP,
+    SOFTWARE_PROP,
+    VERSION_PROP,
+    ProcessingExpression,
     ProcessingExtension,
-    ProcessingProviderExtension,
 )
 
 
-def _utc_rfc3339(dt: datetime) -> str:
-    """Stable UTC RFC3339 string for processing:datetime."""
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
-    return dt.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+def _dt(s: str) -> datetime:
+    return datetime.fromisoformat(s.replace("Z", "+00:00"))
 
 
-def test_processing_ext_item_apply_sets_fields_and_schema(item: pystac.Item) -> None:
-    processing_dt = datetime(2024, 1, 2, 3, 4, 5, tzinfo=timezone.utc)
-    software = {"IPF-S2L1C": "02.06", "my-lib": "1.2.3"}
+def make_item() -> pystac.Item:
+    return pystac.Item(
+        id="i",
+        geometry=None,
+        bbox=None,
+        datetime=_dt("2020-01-01T00:00:00Z"),
+        properties={},
+        start_datetime=None,
+        end_datetime=None,
+    )
 
+
+def make_collection() -> pystac.Collection:
+    return pystac.Collection(
+        id="c",
+        description="d",
+        extent=pystac.Extent(
+            pystac.SpatialExtent([[-180, -90, 180, 90]]),
+            pystac.TemporalExtent([[None, None]]),
+        ),
+        license="proprietary",
+    )
+
+
+def test_processing_expression_create_and_to_dict() -> None:
+    pe = ProcessingExpression.create(format="cwl", expression={"a": 1})
+    assert pe.format == "cwl"
+    assert pe.expression == {"a": 1}
+    assert pe.to_dict() == {"format": "cwl", "expression": {"a": 1}}
+    assert "ProcessingExpression" in repr(pe)
+
+
+def test_item_apply_roundtrip() -> None:
+    item = make_item()
     ext = ProcessingExtension.ext(item, add_if_missing=True)
+
+    pe = ProcessingExpression.create(format="cwl", expression={"steps": []})
+    dt = _dt("2024-01-01T12:00:00Z")
     ext.apply(
-        level="L1C",
-        facility="Copernicus S2 Processing and Archiving Facility",
-        lineage="Generation of Level-1C User Product",
-        datetime=_utc_rfc3339(processing_dt),
-        version="02.06",
-        software=software,
+        expression=pe,
+        lineage="L2 from L1",
+        level="L2A",
+        facility="ESA",
+        software={"snap": "9.0"},
+        version="1.0",
+        processing_datetime=dt,
     )
 
-    # extension schema should be enabled on the item
-    assert any("processing" in uri for uri in item.stac_extensions)
+    assert item.properties[EXPRESSION_PROP] == {"format": "cwl", "expression": {"steps": []}}
+    assert item.properties[LINEAGE_PROP] == "L2 from L1"
+    assert item.properties[LEVEL_PROP] == "L2A"
+    assert item.properties[FACILITY_PROP] == "ESA"
+    assert item.properties[SOFTWARE_PROP] == {"snap": "9.0"}
+    assert item.properties[VERSION_PROP] == "1.0"
+    assert item.properties[DATETIME_PROP].endswith("Z")
 
-    # raw properties written
-    assert item.properties["processing:level"] == "L1C"
-    assert item.properties["processing:facility"] == "Copernicus S2 Processing and Archiving Facility"
-    assert item.properties["processing:lineage"] == "Generation of Level-1C User Product"
-    assert item.properties["processing:datetime"] == _utc_rfc3339(processing_dt)
-    assert item.properties["processing:version"] == "02.06"
-    assert item.properties["processing:software"] == software
-
-    # typed getters (common PySTAC pattern)
-    assert ext.level == "L1C"
-    assert ext.facility == "Copernicus S2 Processing and Archiving Facility"
-    assert ext.lineage == "Generation of Level-1C User Product"
-    assert ext.datetime == _utc_rfc3339(processing_dt)
-    assert ext.version == "02.06"
-    assert ext.software == software
+    assert ext.expression is not None
+    assert ext.expression.format == "cwl"
+    assert ext.processing_datetime == dt
 
 
-def test_processing_ext_item_unset_optional_fields_are_absent(item: pystac.Item) -> None:
-    ext = ProcessingExtension.ext(item, add_if_missing=True)
-    ext.apply(level="L2A")  # minimal, required-by-your-impl (if any)
+def test_asset_read_falls_back_to_owner_item_properties() -> None:
+    item = make_item()
+    iext = ProcessingExtension.ext(item, add_if_missing=True)
+    iext.level = "L2B"
 
-    # Ensure unspecified optional keys are not forced into properties
-    for k in (
-        "processing:facility",
-        "processing:lineage",
-        "processing:datetime",
-        "processing:version",
-        "processing:software",
-    ):
-        assert k not in item.properties or item.properties[k] is None
+    asset = pystac.Asset(href="s3://bucket/a.tif")
+    item.add_asset("data", asset)
 
+    aext = ProcessingExtension.ext(asset, add_if_missing=True)
+    # Not set on asset, but should be readable via additional_read_properties fallback
+    assert aext.level == "L2B"
 
-def test_processing_provider_ext_writes_into_provider_extra_fields(collection: pystac.Collection) -> None:
-    """
-    Spec recommends placing processing fields in Collection Provider Objects for producer/processor.
-    This test checks provider.extra_fields (or equivalent) gets the processing:* keys. :contentReference[oaicite:1]{index=1}
-    """
-    provider = pystac.Provider(
-        name="European Union/ESA/Copernicus",
-        roles=["producer"],
-        url="https://sentinel.esa.int/web/sentinel/user-guides/sentinel-2-msi",
-    )
-    collection.providers = [provider]
-
-    pext = ProcessingProviderExtension.ext(provider, add_if_missing=True)
-    pext.apply(
-        level="L1C",
-        facility="Copernicus S2 Processing and Archiving Facility",
-        software={"IPF-S2L1C": "02.06"},
-    )
-
-    # Provider objects in PySTAC store unknown fields in extra_fields
-    extra = getattr(provider, "extra_fields", {})
-    assert extra["processing:level"] == "L1C"
-    assert extra["processing:facility"] == "Copernicus S2 Processing and Archiving Facility"
-    assert extra["processing:software"] == {"IPF-S2L1C": "02.06"}
-
-    # Typed getters round-trip
-    assert pext.level == "L1C"
-    assert pext.facility == "Copernicus S2 Processing and Archiving Facility"
-    assert pext.software == {"IPF-S2L1C": "02.06"}
+    aext.level = "L2C"
+    assert asset.extra_fields[LEVEL_PROP] == "L2C"
+    assert aext.level == "L2C"
 
 
-def test_processing_ext_type_error_on_wrong_object() -> None:
-    cat = pystac.Catalog(id="c", description="d")
+def test_summaries_wrapper_sets_lists_and_schema() -> None:
+    col = make_collection()
+    sext = ProcessingExtension.summaries(col, add_if_missing=True)
 
-    with pytest.raises(pystac.ExtensionTypeError):
-        ProcessingExtension.ext(cat, add_if_missing=False)  # type: ignore[arg-type]
+    sext.level = ["L1", "L2"]
+    sext.software = {"snap": {"type": "string"}}
+
+    assert col.summaries.lists[LEVEL_PROP] == ["L1", "L2"]
+    assert col.summaries.schemas[SOFTWARE_PROP] == {"snap": {"type": "string"}}
 
 
-def test_processing_provider_ext_type_error_on_wrong_object(item: pystac.Item) -> None:
-    with pytest.raises(pystac.ExtensionTypeError):
-        ProcessingProviderExtension.ext(item, add_if_missing=False)  # type: ignore[arg-type]
+def test_provider_wrapper_sets_extra_fields() -> None:
+    provider = pystac.Provider(name="ACME", roles=["processor"], url="https://example.com")
+    pext = ProcessingExtension.provider(provider)
+
+    pext.level = "L3"
+    assert provider.extra_fields[LEVEL_PROP] == "L3"
