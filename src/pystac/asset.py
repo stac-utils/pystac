@@ -115,8 +115,8 @@ class Asset(ItemAsset):
                 f"('{href}') is relative and owner is not set."
             )
 
-        new_href = shutil.move(src, dst)
-        self.href = new_href
+        _ = shutil.move(src, dst)
+        self.href = href
         return self
 
     def copy(self, href: str) -> Asset:
@@ -128,8 +128,8 @@ class Asset(ItemAsset):
                 f"Cannot copy file if source ('{self.href}') or destination "
                 f"('{href}') is relative and owner is not set."
             )
-        new_href = shutil.copy2(src, dst)
-        self.href = new_href
+        _ = shutil.copy2(src, dst)
+        self.href = href
         return self
 
     def delete(self) -> None:
