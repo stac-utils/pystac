@@ -8,7 +8,6 @@ from enum import Enum
 from typing import (
     Any,
     Literal,
-    TypeAlias,
     TypeVar,
     cast,
 )
@@ -21,7 +20,7 @@ from .constants import STAC_OBJECT_TYPE
 from .version import __version__
 
 #: HREF string or path-like object.
-HREF: TypeAlias = str | os.PathLike[str]
+HREF = str | os.PathLike[str]
 
 
 def get_stac_type(type: STAC_OBJECT_TYPE) -> Literal["Catalog", "Collection", "Item"]:
@@ -70,12 +69,9 @@ def safe_urlparse(href: str) -> URLParseResult:
         return URLParseResult(
             scheme="",
             netloc="",
-            path="{}:{}".format(
-                # We use this more complicated formulation because parsed.scheme
-                # converts to lower-case
-                href[: len(parsed.scheme)],
-                parsed.path,
-            ),
+            # We use this more complicated formulation because parsed.scheme
+            # converts to lower-case
+            path=f"{href[: len(parsed.scheme)]}:{parsed.path}",
             params=parsed.params,
             query=parsed.query,
             fragment=parsed.fragment,
@@ -413,6 +409,15 @@ def is_absolute_href(href: str, start_href: str | None = None) -> bool:
             "" if start_href is None else safe_urlparse(start_href).scheme
         )
         return parsed_start_scheme in ["", "file"] and os.path.isabs(parsed.path)
+
+
+def get_absolute_href(href: str, start_href: str | None) -> str | None:
+    if is_absolute_href(href, start_href):
+        return href
+    elif start_href:
+        return make_absolute_href(href, start_href, False)
+    else:
+        return None
 
 
 def datetime_to_str(dt: datetime, timespec: str = "auto") -> str:
