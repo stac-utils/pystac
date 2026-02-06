@@ -16,6 +16,8 @@ concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   test:
     name: test
@@ -32,8 +34,8 @@ jobs:
           - windows-latest
           - macos-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: astral-sh/setup-uv@61cb8a9741eeb8a550a1b8544337180c0fc8476b # v7.2.0
         with:
           python-version: ${{ matrix.python-version }}
       - name: Sync
@@ -54,9 +56,11 @@ jobs:
   coverage:
     name: coverage
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
-      - uses: actions/checkout@v5
-      - uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: astral-sh/setup-uv@61cb8a9741eeb8a550a1b8544337180c0fc8476b # v7.2.0
       - name: Install with dependencies
         run: uv sync --all-extras
       - name: Run coverage with orjson
@@ -70,12 +74,12 @@ jobs:
         # will trigger a failure for coverage drops in a later job
         run: uv run coverage xml --fail-under 0
       - name: Upload All coverage to Codecov
-        uses: codecov/codecov-action@v5
-        if: ${{ env.GITHUB_REPOSITORY }} == 'stac-utils/pystac'
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+        if: ${{ env.GITHUB_REPOSITORY == 'stac-utils/pystac' }}
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
           fail_ci_if_error: false
+          use_oidc: true
       - name: Check for coverage drop
         # This will use the configured fail-under, causing this job to fail if the
         # coverage drops.
@@ -84,8 +88,8 @@ jobs:
   without-orjson:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: astral-sh/setup-uv@61cb8a9741eeb8a550a1b8544337180c0fc8476b # v7.2.0
       - name: Sync
         run: uv sync
       - name: Uninstall orjson
@@ -96,14 +100,14 @@ jobs:
   check-benchmarks:
     # This checks to make sure any API changes haven't broken any of the
     # benchmarks. It doesn't do any actual benchmarking, since (IMO) that's not
-    # appropriate for CI on Github actions.
+    # appropriate for CI on GitHub actions.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.10"
-      - uses: astral-sh/setup-uv@v7
+      - uses: astral-sh/setup-uv@61cb8a9741eeb8a550a1b8544337180c0fc8476b # v7.2.0
         with:
           enable-cache: true
       - name: Sync
@@ -116,8 +120,8 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: astral-sh/setup-uv@v7
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: astral-sh/setup-uv@61cb8a9741eeb8a550a1b8544337180c0fc8476b # v7.2.0
       - name: Install pandoc
         run: sudo apt-get install pandoc
       - name: Sync

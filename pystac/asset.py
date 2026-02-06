@@ -1,13 +1,10 @@
 from __future__ import annotations
 
-import os
 import shutil
 from copy import copy, deepcopy
-from html import escape
 from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 
 from pystac import MediaType, STACError, common_metadata, utils
-from pystac.html.jinja_env import get_jinja_env
 from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 
 if TYPE_CHECKING:
@@ -105,13 +102,12 @@ class Asset:
             str: The absolute HREF of this asset, or None if an absolute HREF could not
                 be determined.
         """
-        if utils.is_absolute_href(self.href):
+        item_self = self.owner.get_self_href() if self.owner is not None else None
+        if utils.is_absolute_href(self.href, item_self):
             return self.href
         else:
-            if self.owner is not None:
-                item_self = self.owner.get_self_href()
-                if item_self is not None:
-                    return utils.make_absolute_href(self.href, item_self)
+            if item_self is not None:
+                return utils.make_absolute_href(self.href, item_self)
             return None
 
     def to_dict(self) -> dict[str, Any]:
@@ -182,6 +178,10 @@ class Asset:
         return f"<Asset href={self.href}>"
 
     def _repr_html_(self) -> str:
+        from html import escape
+
+        from pystac.html.jinja_env import get_jinja_env
+
         jinja_env = get_jinja_env()
         if jinja_env:
             template = jinja_env.get_template("JSON.jinja2")
@@ -259,6 +259,8 @@ class Asset:
 
         Does not modify the asset.
         """
+        import os
+
         href = _absolute_href(self.href, self.owner, "delete")
         os.remove(href)
 
@@ -341,7 +343,7 @@ class Assets(Protocol):
         """
         self_href = self.get_self_href()
         for asset in self.assets.values():
-            if is_absolute_href(asset.href):
+            if is_absolute_href(asset.href, self_href):
                 if self_href is None:
                     raise STACError(
                         "Cannot make asset HREFs relative if no self_href is set."
@@ -360,7 +362,7 @@ class Assets(Protocol):
         """
         self_href = self.get_self_href()
         for asset in self.assets.values():
-            if not is_absolute_href(asset.href):
+            if not is_absolute_href(asset.href, self_href):
                 if self_href is None:
                     raise STACError(
                         "Cannot make relative asset HREFs absolute "
@@ -380,10 +382,10 @@ class Assets(Protocol):
 
 
 def _absolute_href(href: str, owner: Assets | None, action: str = "access") -> str:
-    if utils.is_absolute_href(href):
+    item_self = owner.get_self_href() if owner else None
+    if utils.is_absolute_href(href, item_self):
         return href
     else:
-        item_self = owner.get_self_href() if owner else None
         if item_self is None:
             raise ValueError(
                 f"Cannot {action} file if asset href ('{href}') is relative "

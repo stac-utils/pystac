@@ -1,9 +1,7 @@
 interactions:
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.1
+    headers: {}
     method: GET
     uri: https://stac-extensions.github.io/eo/v1.1.0/schema.json
   response:
@@ -75,59 +73,13 @@ interactions:
         \"number\",\n            \"minimumExclusive\": 0\n          },\n          \"solar_illumination\":
         {\n            \"title\": \"Solar Illumination\",\n            \"type\": \"number\",\n
         \           \"minimum\": 0\n          }\n        }\n      }\n    }\n  }\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '143'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '5052'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:55:27 GMT
-      ETag:
-      - '"66df1c53-13bc"'
-      Last-Modified:
-      - Mon, 09 Sep 2024 16:03:31 GMT
-      Server:
-      - GitHub.com
-      Strict-Transport-Security:
-      - max-age=31556952
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Fastly-Request-ID:
-      - 67b6540f4e8d41f90c1d244dd252dbca1a1a06ee
-      X-GitHub-Request-Id:
-      - 98DE:39A2ED:1DBAAC:1F56C3:68CC1CD0
-      X-Served-By:
-      - cache-bos4667-BOS
-      X-Timer:
-      - S1758207327.351249,VS0,VE1
-      expires:
-      - Thu, 18 Sep 2025 15:03:04 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.1
+    headers: {}
     method: GET
     uri: https://stac-extensions.github.io/projection/v2.0.0/schema.json
   response:
@@ -189,133 +141,27 @@ interactions:
         \           }\n          ],\n          \"items\":{\n            \"type\":\"number\"\n
         \         }\n        }\n      },\n      \"patternProperties\": {\n        \"^(?!proj:)\":
         {}\n      },\n      \"additionalProperties\": false\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '143'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '4374'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:55:27 GMT
-      ETag:
-      - '"669e563b-1116"'
-      Last-Modified:
-      - Mon, 22 Jul 2024 12:53:15 GMT
-      Server:
-      - GitHub.com
-      Strict-Transport-Security:
-      - max-age=31556952
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Fastly-Request-ID:
-      - 552a28fae2dd59e57d90a6dd4ccedf23a83788a4
-      X-GitHub-Request-Id:
-      - 224F:32B3EB:191F90:1ABAB3:68CC1CCF
-      X-Served-By:
-      - cache-bos4675-BOS
-      X-Timer:
-      - S1758207327.417407,VS0,VE1
-      expires:
-      - Thu, 18 Sep 2025 15:03:04 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.1
+    headers: {}
     method: GET
     uri: https://proj.org/schemas/v0.7/projjson.schema.json
   response:
     body:
       string: ''
     headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '703'
-      CF-Cache-Status:
-      - HIT
-      CF-Ray:
-      - 9811af34ea8213c9-IAD
-      Cache-Control:
-      - max-age=1200
-      Connection:
-      - keep-alive
-      Content-Language:
-      - en
-      Content-Length:
-      - '0'
-      Content-Type:
-      - text/html; charset=utf-8
-      Date:
-      - Thu, 18 Sep 2025 14:55:27 GMT
       Location:
       - https://proj.org/en/latest/schemas/v0.7/projjson.schema.json
-      Server:
-      - cloudflare
-      Set-Cookie:
-      - __cf_bm=2Xl4xRqD61dK43NhFl8pVk2i_r3kzHKQEbILLMvHh3A-1758207327-1.0.1.1-ChVSRkZKv11IS4hoRsUC96zdfTlPK4mg3CxWdXhn8.NSxkuFBC.5qskJNx7ZVCmXL85vMdh_e6FSqFYkZMCf1gecuyHqKvtKI7EzTAJg5KY;
-        path=/; expires=Thu, 18-Sep-25 15:25:27 GMT; domain=.proj.org; HttpOnly; Secure;
-        SameSite=None
-      - _cfuvid=ORHVm5t3HNYLgI8unSva46irW90ycElC.mvlYSvm9DY-1758207327548-0.0.1.1-604800000;
-        path=/; domain=.proj.org; HttpOnly; Secure; SameSite=None
-      Vary:
-      - Accept-Language, Accept-Encoding
-      access-control-expose-headers:
-      - Location
-      alt-svc:
-      - h3=":443"; ma=86400
-      cdn-cache-control:
-      - public
-      cross-origin-opener-policy:
-      - same-origin
-      referrer-policy:
-      - no-referrer-when-downgrade
-      x-backend:
-      - web-i-046a40256d6a3b46c
-      x-content-type-options:
-      - nosniff
-      x-rtd-domain:
-      - proj.org
-      x-rtd-force-addons:
-      - 'true'
-      x-rtd-project:
-      - osgeo-proj
-      x-rtd-project-method:
-      - custom_domain
-      x-rtd-redirect:
-      - user
-      x-rtd-version-method:
-      - path
-      x-served:
-      - Proxito-404
     status:
       code: 302
       message: Found
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.1
+    headers: {}
     method: GET
     uri: https://proj.org/en/latest/schemas/v0.7/projjson.schema.json
   response:
@@ -840,77 +686,7 @@ interactions:
         {},\n        \"remarks\": {},\n        \"id\": {}, \"ids\": {}\n      },\n
         \     \"required\" : [ \"name\" ],\n      \"additionalProperties\": false\n
         \   }\n\n  }\n}\n"
-    headers:
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '4640'
-      CF-Cache-Status:
-      - HIT
-      CF-Ray:
-      - 9811af35cd3cc956-IAD
-      Cache-Control:
-      - max-age=1200
-      Connection:
-      - keep-alive
-      Content-Type:
-      - application/json
-      Date:
-      - Thu, 18 Sep 2025 14:55:27 GMT
-      ETag:
-      - W/"b36c7ce9824d274cfd711a16ef45d221"
-      Last-Modified:
-      - Thu, 25 Apr 2024 19:53:05 GMT
-      Server:
-      - cloudflare
-      Set-Cookie:
-      - __cf_bm=Iopqmiy4UVS1HRwN1RF.AJrwC0AdzAdKOiAMxhXI6B4-1758207327-1.0.1.1-4xdayVRVi8b6YnMP9C6pegzLtIVS4.Z5LQfI8MfUsnRcFGIk_VD1939y05QTkIkfntvPmhGQpWoK7q1TogbVwCl4yQwNp32lbnsg6lvD83s;
-        path=/; expires=Thu, 18-Sep-25 15:25:27 GMT; domain=.proj.org; HttpOnly; Secure;
-        SameSite=None
-      - _cfuvid=FBNg.5f0csn1Sl6NZz4.eQyLZHABFMc0RuNmdUuyC4Y-1758207327681-0.0.1.1-604800000;
-        path=/; domain=.proj.org; HttpOnly; Secure; SameSite=None
-      Transfer-Encoding:
-      - chunked
-      Vary:
-      - Accept-Encoding
-      access-control-allow-methods:
-      - HEAD, OPTIONS, GET
-      alt-svc:
-      - h3=":443"; ma=86400
-      cdn-cache-control:
-      - public
-      referrer-policy:
-      - no-referrer-when-downgrade
-      x-amz-id-2:
-      - wq6M1yZwJIx72g0bu4iZIqB+T9hOmWOv1FfzWTgBKB1TbMZ30Ydon1RMGSDDCK+jALCUKViQfNEPgSiC2QHfaEtHxEE2g0MYvKvIxiq7DyA=
-      x-amz-meta-mtime:
-      - '1714074779.458591481'
-      x-amz-request-id:
-      - N37TE359KA2AHSV6
-      x-amz-server-side-encryption:
-      - AES256
-      x-backend:
-      - web-i-0d85dbf6e0a8f4cc9
-      x-content-type-options:
-      - nosniff
-      x-rtd-domain:
-      - proj.org
-      x-rtd-force-addons:
-      - 'true'
-      x-rtd-path:
-      - /proxito/html/osgeo-proj/latest/schemas/v0.7/projjson.schema.json
-      x-rtd-project:
-      - osgeo-proj
-      x-rtd-project-method:
-      - custom_domain
-      x-rtd-resolver-filename:
-      - /schemas/v0.7/projjson.schema.json
-      x-rtd-version:
-      - latest
-      x-rtd-version-method:
-      - path
-      x-served:
-      - Nginx-Proxito-Sendfile
+    headers: {}
     status:
       code: 200
       message: OK

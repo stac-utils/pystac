@@ -1,9 +1,7 @@
 interactions:
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.1
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/file/v2.0.0/examples/item.json
   response:
@@ -42,55 +40,7 @@ interactions:
         \   },\n    {\n      \"rel\": \"root\",\n      \"href\": \"https://example.com/collections\",\n
         \     \"file:checksum\": \"1114fa4b9d69fdddc7c1be7bed9440621400b383b43f\"\n
         \   }\n  ]\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '2740'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 18 Sep 2025 14:55:21 GMT
-      ETag:
-      - '"2bad008be3e01a9750cc4e04bc605bca80229906ad21f17c6e7573fb367bb781"'
-      Expires:
-      - Thu, 18 Sep 2025 15:00:21 GMT
-      Source-Age:
-      - '0'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - fcac68f938700c18b5b1cf32687a5bd5c6c21a36
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 0AF3:3C536F:770E11:956C3F:68CC1D59
-      X-Served-By:
-      - cache-bos4638-BOS
-      X-Timer:
-      - S1758207322.899299,VS0,VE89
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK

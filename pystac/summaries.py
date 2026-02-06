@@ -1,11 +1,7 @@
 from __future__ import annotations
 
-import importlib.resources
-import json
-import numbers
 from abc import abstractmethod
 from collections.abc import Iterable
-from copy import deepcopy
 from enum import Enum
 from functools import lru_cache
 from typing import (
@@ -100,6 +96,9 @@ class RangeSummary(Generic[T]):
 @lru_cache(maxsize=None)
 def _get_fields_json(url: str | None) -> dict[str, Any]:
     if url is None:
+        import importlib.resources
+        import json
+
         # Every time pystac is released this file gets pulled from
         # https://cdn.jsdelivr.net/npm/@radiantearth/stac-fields/fields-normalized.json
         jsonfields: dict[str, Any] = json.loads(
@@ -128,7 +127,7 @@ class Summarizer:
     will be used.
 
     Only fields that are in the Item `properties` can be summarized.
-    Thus it is not possible to summarize the top-level fields such as `id` or `assets`.
+    Thus, it is not possible to summarize the top-level fields such as `id` or `assets`.
 
     For more information about the structure of the fields JSON file, see:
     https://github.com/stac-utils/stac-fields
@@ -138,7 +137,7 @@ class Summarizer:
     https://cdn.jsdelivr.net/npm/@radiantearth/stac-fields/fields-normalized.json
 
     Args:
-        fields: A string containing the path to the json file with field descriptions.
+        fields: A string containing the path to the JSON file with field descriptions.
             Alternatively, a dict with the field names as keys and SummaryStrategys
             as values.
             If nothing is passed, a default file with field descriptions will be used.
@@ -170,6 +169,8 @@ class Summarizer:
                 self.summaryfields[name] = strategy
 
     def _update_with_item(self, summaries: Summaries, item: Item) -> None:
+        import numbers
+
         for k, v in item.properties.items():
             if k in self.summaryfields:
                 strategy = self.summaryfields[k]
@@ -310,6 +311,8 @@ class Summaries:
         Returns:
             Summaries: The clone of this object
         """
+        from copy import deepcopy
+
         cls = self.__class__
         summaries = cls(summaries=deepcopy(self._summaries), maxcount=self.maxcount)
         summaries.lists = deepcopy(self.lists)

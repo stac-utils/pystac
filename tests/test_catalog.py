@@ -21,6 +21,7 @@ from pystac import (
     CatalogType,
     Collection,
     Item,
+    Link,
     MediaType,
 )
 from pystac.errors import STACError
@@ -1297,7 +1298,7 @@ class TestCatalog:
         cat = Catalog.from_file(stac_uri)
 
         # Iterate over the items. This was causing failure in
-        # in the later iterations as per issue #88
+        # the later iterations as per issue #88
         for item in cat.get_items(recursive=True):
             pass
 
@@ -2024,3 +2025,15 @@ def test_get_root_link_cares_about_media_type(catalog: pystac.Catalog) -> None:
     )
     root_link = catalog.get_root_link()
     assert root_link and root_link.target != "./self.json"
+
+
+def test_clone_extra_fields(catalog: Catalog) -> None:
+    catalog.extra_fields["foo"] = "bar"
+    cloned = catalog.clone()
+    assert cloned.extra_fields["foo"] == "bar"
+
+
+def test_warn_if_next_link_present(catalog: Catalog) -> None:
+    catalog.links.append(Link(rel="next", target="./next.json"))
+    with pytest.warns(UserWarning):
+        _ = list(catalog.get_children())

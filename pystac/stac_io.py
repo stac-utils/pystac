@@ -1,13 +1,10 @@
 from __future__ import annotations
 
 import json
-import logging
 import os
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
-from urllib.error import HTTPError
-from urllib.request import Request, urlopen
 
 import pystac
 from pystac.serialization import (
@@ -35,9 +32,6 @@ else:
 if TYPE_CHECKING:
     from pystac.catalog import Catalog
     from pystac.stac_object import STACObject
-
-
-logger = logging.getLogger(__name__)
 
 
 class StacIO(ABC):
@@ -95,9 +89,9 @@ class StacIO(ABC):
         """Method used internally by :class:`StacIO` instances to deserialize a
         dictionary from a JSON string.
 
-        This method may be overwritten in :class:`StacIO` sub-classes to provide custom
+        This method may be overwritten in :class:`StacIO` subclasses to provide custom
         deserialization logic. The method accepts arbitrary keyword arguments. These are
-        not used by the default implementation, but may be used by sub-class
+        not used by the default implementation, but may be used by subclass
         implementations.
 
         Args:
@@ -115,9 +109,9 @@ class StacIO(ABC):
         """Method used internally by :class:`StacIO` instances to serialize a dictionary
         to a JSON string.
 
-        This method may be overwritten in :class:`StacIO` sub-classes to provide custom
+        This method may be overwritten in :class:`StacIO` subclasses to provide custom
         serialization logic. The method accepts arbitrary keyword arguments. These are
-        not used by the default implementation, but may be used by sub-class
+        not used by the default implementation, but may be used by subclass
         implementations.
 
         Args:
@@ -138,7 +132,7 @@ class StacIO(ABC):
         root: Catalog | None = None,
         preserve_dict: bool = True,
     ) -> STACObject:
-        """Deserializes a :class:`~pystac.STACObject` sub-class instance from a
+        """Deserializes a :class:`~pystac.STACObject` subclass instance from a
         dictionary.
 
         Args:
@@ -148,8 +142,8 @@ class StacIO(ABC):
             root : Optional root :class:`~pystac.Catalog` to associate with the
                 STAC object.
             preserve_dict: If ``False``, the dict parameter ``d`` may be modified
-                during this method call. Otherwise the dict is not mutated.
-                Defaults to ``True``, which results results in a deepcopy of the
+                during this method call. Otherwise, the dict is not mutated.
+                Defaults to ``True``, which results in a deepcopy of the
                 parameter. Set to ``False`` when possible to avoid the performance
                 hit of a deepcopy.
         """
@@ -296,6 +290,11 @@ class DefaultStacIO(StacIO):
         """
         href_contents: str
         if _is_url(href):
+            import logging
+            from urllib.error import HTTPError
+            from urllib.request import Request, urlopen
+
+            logger = logging.getLogger(__name__)
             try:
                 logger.debug(f"GET {href} Headers: {self.headers}")
                 if HAS_URLLIB3:
@@ -451,6 +450,8 @@ if HAS_URLLIB3:
                 href : The URI of the file to open.
             """
             if _is_url(href):
+                from urllib.error import HTTPError
+
                 # TODO provide a pooled StacIO to enable more efficient network
                 # access (probably named `PooledStacIO`).
                 http = PoolManager()

@@ -133,6 +133,11 @@ def test_make_relative_href(source_href: str, start_href: str, expected: str) ->
             "file:///a/b/c/z/item.json",
         ),
         ("file:///a/b/c/item.json", None, "file:///a/b/c/item.json"),
+        (
+            "/vsigs/file.tif",
+            "https://stacspec.org/a/b/c/catalog.json",
+            "/vsigs/file.tif",
+        ),
     ),
 )
 def test_make_absolute_href(source_href: str, start_href: str, expected: str) -> None:
@@ -195,16 +200,19 @@ def test_make_absolute_href_windows(
 
 
 def test_is_absolute_href() -> None:
-    # Test cases of (href, expected)
+    # Test cases of (href, expected, start_href)
     test_cases = [
-        ("item.json", False),
-        ("./item.json", False),
-        ("../item.json", False),
-        ("http://stacspec.org/item.json", True),
+        ("item.json", False, None),
+        ("./item.json", False, None),
+        ("../item.json", False, None),
+        ("http://stacspec.org/item.json", True, None),
+        ("http://stacspec.org/item.json", True, "http://stacspec.org/"),
+        ("/vsigs/file.tiff", True, None),
+        ("/vsigs/file.tiff", True, "http://stacspec.org/"),
     ]
 
-    for href, expected in test_cases:
-        actual = is_absolute_href(href)
+    for href, expected, start_href in test_cases:
+        actual = is_absolute_href(href, start_href)
         assert actual == expected
 
 
@@ -214,15 +222,16 @@ def test_is_absolute_href_os_aware() -> None:
     is_windows = os.name == "nt"
     incl_drive_letter = path_includes_drive_letter()
     test_cases = [
-        ("/item.json", not incl_drive_letter),
-        ("/home/someuser/Downloads/item.json", not incl_drive_letter),
-        ("file:///home/someuser/Downloads/item.json", not incl_drive_letter),
-        ("d:/item.json", is_windows),
-        ("c:/files/more_files/item.json", is_windows),
+        ("/item.json", not incl_drive_letter, None),
+        ("/item.json", False, "http://stacspec.org/"),
+        ("/home/someuser/Downloads/item.json", not incl_drive_letter, None),
+        ("file:///home/someuser/Downloads/item.json", not incl_drive_letter, None),
+        ("d:/item.json", is_windows, None),
+        ("c:/files/more_files/item.json", is_windows, None),
     ]
 
-    for href, expected in test_cases:
-        actual = is_absolute_href(href)
+    for href, expected, start_href in test_cases:
+        actual = is_absolute_href(href, start_href)
         assert actual == expected
 
 
@@ -231,15 +240,15 @@ def test_is_absolute_href_windows() -> None:
     # Test cases of (href, expected)
 
     test_cases = [
-        ("item.json", False),
-        (".\\item.json", False),
-        ("..\\item.json", False),
-        ("c:\\item.json", True),
-        ("http://stacspec.org/item.json", True),
+        ("item.json", False, None),
+        (".\\item.json", False, None),
+        ("..\\item.json", False, None),
+        ("c:\\item.json", True, None),
+        ("http://stacspec.org/item.json", True, None),
     ]
 
-    for href, expected in test_cases:
-        actual = is_absolute_href(href)
+    for href, expected, start_href in test_cases:
+        actual = is_absolute_href(href, start_href)
         assert actual == expected
 
 

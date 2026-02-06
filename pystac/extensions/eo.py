@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import warnings
 from collections.abc import Iterable
 from typing import (
     Any,
@@ -279,7 +278,7 @@ class Band:
 
         Returns:
             str or None: If a recognized common name, returns a description including
-            the band range. Otherwise returns None.
+            the band range. Otherwise, returns None.
         """
         r = Band.band_range(common_name)
         if r is not None:
@@ -386,6 +385,8 @@ class EOExtension(
 
     @classmethod
     def get_schema_uris(cls) -> list[str]:
+        import warnings
+
         warnings.warn(
             "get_schema_uris is deprecated and will be removed in v2",
             DeprecationWarning,

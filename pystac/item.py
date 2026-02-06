@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from copy import copy, deepcopy
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
@@ -398,6 +397,7 @@ class Item(STACObject, Assets):
             stac_extensions=deepcopy(self.stac_extensions),
             collection=self.collection_id,
             assets={k: asset.clone() for k, asset in self.assets.items()},
+            extra_fields=deepcopy(self.extra_fields),
         )
         for link in self.links:
             clone.add_link(link.clone())
@@ -419,6 +419,8 @@ class Item(STACObject, Assets):
         migrate: bool = True,
         preserve_dict: bool = True,
     ) -> T:
+        import warnings
+
         from pystac.extensions.version import ItemVersionExtension
 
         if preserve_dict:

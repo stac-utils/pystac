@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from collections.abc import Iterable, Sequence
 from copy import deepcopy
 from datetime import datetime, timezone
@@ -11,8 +10,6 @@ from typing import (
     TypeVar,
     cast,
 )
-
-from dateutil import tz
 
 import pystac
 from pystac import CatalogType, STACObjectType
@@ -257,6 +254,8 @@ class TemporalExtent:
         parsed_intervals: list[list[datetime | None]] = []
         for i in d["interval"]:
             if isinstance(i, str):
+                import warnings
+
                 # d["interval"] is a list of strings, so we correct the list and
                 # try again
                 # https://github.com/stac-utils/pystac/issues/1221
@@ -384,6 +383,8 @@ class Extent:
             Extent: An Extent that spatially and temporally covers all of the
             given items.
         """
+        from dateutil import tz
+
         bounds_values: list[list[float]] = [
             [float("inf")],
             [float("inf")],
@@ -635,6 +636,8 @@ class Collection(Catalog, Assets):
         migrate: bool = True,
         preserve_dict: bool = True,
     ) -> C:
+        import warnings
+
         from pystac.extensions.version import CollectionVersionExtension
 
         if migrate:
