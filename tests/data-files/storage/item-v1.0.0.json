@@ -1,0 +1,90 @@
+{
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/storage/v1.0.0/schema.json"
+  ],
+  "id": "an_image",
+  "collection": "a_collection",
+  "type": "Feature",
+  "bbox": [
+    -97.7466867683867,
+    30.278398961994966,
+    -97.72990596574927,
+    30.288621181865743
+  ],
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -97.7466867683867,
+          30.28754662370266
+        ],
+        [
+          -97.74555747279238,
+          30.278398961994966
+        ],
+        [
+          -97.72990596574927,
+          30.27972380176124
+        ],
+        [
+          -97.73085242627444,
+          30.288621181865743
+        ],
+        [
+          -97.7466867683867,
+          30.28754662370266
+        ]
+      ]
+    ]
+  },
+  "properties": {
+    "datetime": "2019-08-22T18:35:18+00:00",
+    "mission": "SOME_MISSION",
+    "platform": "SOME_2",
+    "instrument": "IN_1",
+    "gsd": 1
+  },
+  "assets": {
+    "GCP": {
+      "href": "gs://bucket/data.tif",
+      "type": "image/vnd.stac.geotiff",
+      "storage:platform": "GCP",
+      "storage:region": "us-central1",
+      "storage:tier": "STANDARD"
+    },
+    "AWS": {
+      "href": "s3://bucket/data.png",
+      "type": "image/png",
+      "storage:platform": "AWS",
+      "storage:region": "us-west-2",
+      "storage:requester_pays": true,
+      "storage:tier": "Glacier"
+    },
+    "AZURE": {
+      "href": "https://project.blob.core.windows.net/images/data.tif",
+      "type": "image/vnd.stac.geotiff",
+      "storage:platform": "AZURE",
+      "storage:region": "westus2",
+      "storage:tier": "archive"
+    },
+    "AWS_2": {
+      "href": "s3://bucket2/data.png",
+      "type": "image/png",
+      "storage:platform": "AWS",
+      "storage:region": "us-west-2",
+      "storage:tier": "Glacier"
+    }
+  },
+  "links": [
+    {
+      "href": "https://example.com/examples/item.json",
+      "rel": "self"
+    },
+    {
+      "href": "https://example.com/examples/item.json",
+      "rel": "collection"
+    }
+  ]
+}
