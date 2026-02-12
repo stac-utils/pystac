@@ -84,6 +84,9 @@ filterwarnings = [
     "ignore",  # FIXME: turn this into error
 ]
 addopts = "--block-network --record-mode=none"
+markers = [
+    "passing_v2: v1 tests that are passing on pystac v2",
+]
 
 [tool.uv]
 default-groups = ["dev", "docs"]

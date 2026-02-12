@@ -3,7 +3,7 @@ from typing import Any, cast
 from urllib.request import Request
 
 import pytest
-from pytest import Config, FixtureRequest, Parser
+from pytest import FixtureRequest, Parser
 
 import pystac.jsonschema
 from pystac import Catalog, Item
@@ -19,12 +19,6 @@ def pytest_addoption(parser: Parser) -> None:
         default=False,
         help="Run v1 tests (skipped by default)",
     )
-
-
-def pytest_ignore_collect(collection_path: Path, config: Config) -> bool | None:
-    if collection_path.is_relative_to(V1_DIR) and not config.getoption("--v1"):
-        return True
-    return None
 
 
 @pytest.fixture(scope="module")

@@ -16,6 +16,16 @@ from .utils import ARBITRARY_BBOX, ARBITRARY_EXTENT, ARBITRARY_GEOM, TestCases
 HERE = Path(__file__).resolve().parent
 
 
+def pytest_collection_modifyitems(config, items):
+    """Skip all tests in v1 unless they are marked with `passing_v2` flag"""
+    if config.getoption("--v1"):
+        return
+    skip_v1 = pytest.mark.skip(reason="need --v1 option to run")
+    for item in items:
+        if "passing_v2" not in item.keywords:
+            item.add_marker(skip_v1)
+
+
 @pytest.fixture
 def catalog() -> Catalog:
     return Catalog("test-catalog", "A test catalog")

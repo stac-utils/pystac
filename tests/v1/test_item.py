@@ -27,6 +27,9 @@ from pystac.validation import validate_dict
 from .utils import TestCases, assert_to_from_dict
 
 
+pytestmark = pytest.mark.passing_v2
+
+
 def test_to_from_dict(sample_item_dict: dict[str, Any]) -> None:
     param_dict = deepcopy(sample_item_dict)
 
