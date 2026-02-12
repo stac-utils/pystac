@@ -680,9 +680,16 @@ def test_no_collection(item: Item) -> None:
 
 
 def test_migrate_by_default() -> None:
-    with open(
-        TestCases.get_path("data-files/projection/example-with-version-1.1.json")
-    ) as f:
+    path = (
+        Path(__file__).resolve().parent.parent
+        / "extensions"
+        / "projection"
+        / "tests"
+        / "data-files"
+        / "projection"
+        / "example-with-version-1.1.json"
+    )
+    with open(str(path)) as f:
         data = json.load(f)
     item = pystac.Item.from_dict(data)  # default used to be migrate=False
     assert item.ext.proj.code == "EPSG:32614"

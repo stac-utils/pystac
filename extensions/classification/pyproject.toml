@@ -1,0 +1,25 @@
+[project]
+name = "pystac-ext-classification"
+version = "2.0.0"
+requires-python = ">=3.10"
+dependencies = [
+    "pystac-core",
+    "pystac-ext-raster",
+]
+
+[tool.uv.sources]
+pystac-core = { workspace = true }
+pystac-ext-raster = { workspace = true }
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"pystac.extensions" = ["py.typed"]

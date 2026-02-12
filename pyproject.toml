@@ -1,5 +1,5 @@
 [project]
-name = "pystac"
+name = "pystac-core"
 description = "Python library for working with the SpatioTemporal Asset Catalog (STAC) specification"
 readme = "README.md"
 authors = [
@@ -21,7 +21,9 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 requires-python = ">=3.10"
-dependencies = ["python-dateutil>=2.7.0"]
+dependencies = [
+    "python-dateutil>=2.7.0",
+]
 dynamic = ["version"]
 
 [project.optional-dependencies]
@@ -123,10 +125,14 @@ addopts = "--block-network --record-mode=none"
 
 [tool.setuptools.packages.find]
 include = ["pystac*"]
-exclude = ["tests*", "benchmarks*"]
+exclude = ["tests*", "benchmarks*", "extensions*"]
 
 [tool.setuptools.dynamic]
 version = { attr = "pystac.version.__version__" }
+
+[tool.uv.workspace]
+members = ["extensions/*"]
+exclude = ["meta"]
 
 [build-system]
 requires = ["setuptools>=61.0"]

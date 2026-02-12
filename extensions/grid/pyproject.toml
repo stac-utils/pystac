@@ -1,0 +1,21 @@
+[project]
+name = "pystac-ext-grid"
+version = "1.1.0"
+requires-python = ">=3.10"
+dependencies = ["pystac-core"]
+
+[tool.uv.sources]
+pystac-core = { workspace = true }
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"pystac.extensions" = ["py.typed"]

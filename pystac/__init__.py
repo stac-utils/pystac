@@ -86,57 +86,49 @@ from pystac.item_collection import ItemCollection
 from pystac.provider import ProviderRole, Provider
 from pystac.utils import HREF
 
+import importlib
+
 import pystac.extensions.hooks
-import pystac.extensions.classification
-import pystac.extensions.datacube
-import pystac.extensions.eo
-import pystac.extensions.file
-import pystac.extensions.grid
-import pystac.extensions.item_assets
 
-with warnings.catch_warnings():
-    warnings.filterwarnings("ignore", category=DeprecationWarning)
-    import pystac.extensions.label
-import pystac.extensions.mgrs
-import pystac.extensions.mlm
-import pystac.extensions.pointcloud
-import pystac.extensions.projection
-import pystac.extensions.raster
-import pystac.extensions.sar
-import pystac.extensions.sat
-import pystac.extensions.scientific
-import pystac.extensions.storage
-import pystac.extensions.table
-import pystac.extensions.timestamps
-import pystac.extensions.version
-import pystac.extensions.view
-import pystac.extensions.xarray_assets
+_EXTENSION_MODULES = [
+    ("pystac.extensions.classification", "CLASSIFICATION_EXTENSION_HOOKS"),
+    ("pystac.extensions.datacube", "DATACUBE_EXTENSION_HOOKS"),
+    ("pystac.extensions.eo", "EO_EXTENSION_HOOKS"),
+    ("pystac.extensions.file", "FILE_EXTENSION_HOOKS"),
+    ("pystac.extensions.grid", "GRID_EXTENSION_HOOKS"),
+    ("pystac.extensions.item_assets", "ITEM_ASSETS_EXTENSION_HOOKS"),
+    ("pystac.extensions.label", "LABEL_EXTENSION_HOOKS"),
+    ("pystac.extensions.mgrs", "MGRS_EXTENSION_HOOKS"),
+    ("pystac.extensions.mlm", "MLM_EXTENSION_HOOKS"),
+    ("pystac.extensions.pointcloud", "POINTCLOUD_EXTENSION_HOOKS"),
+    ("pystac.extensions.projection", "PROJECTION_EXTENSION_HOOKS"),
+    ("pystac.extensions.raster", "RASTER_EXTENSION_HOOKS"),
+    ("pystac.extensions.sar", "SAR_EXTENSION_HOOKS"),
+    ("pystac.extensions.sat", "SAT_EXTENSION_HOOKS"),
+    ("pystac.extensions.scientific", "SCIENTIFIC_EXTENSION_HOOKS"),
+    ("pystac.extensions.storage", "STORAGE_EXTENSION_HOOKS"),
+    ("pystac.extensions.table", "TABLE_EXTENSION_HOOKS"),
+    ("pystac.extensions.timestamps", "TIMESTAMPS_EXTENSION_HOOKS"),
+    ("pystac.extensions.version", "VERSION_EXTENSION_HOOKS"),
+    ("pystac.extensions.view", "VIEW_EXTENSION_HOOKS"),
+    ("pystac.extensions.xarray_assets", "XARRAY_ASSETS_EXTENSION_HOOKS"),
+]
 
-EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
-    [
-        pystac.extensions.classification.CLASSIFICATION_EXTENSION_HOOKS,
-        pystac.extensions.datacube.DATACUBE_EXTENSION_HOOKS,
-        pystac.extensions.eo.EO_EXTENSION_HOOKS,
-        pystac.extensions.file.FILE_EXTENSION_HOOKS,
-        pystac.extensions.grid.GRID_EXTENSION_HOOKS,
-        pystac.extensions.item_assets.ITEM_ASSETS_EXTENSION_HOOKS,
-        pystac.extensions.label.LABEL_EXTENSION_HOOKS,
-        pystac.extensions.mgrs.MGRS_EXTENSION_HOOKS,
-        pystac.extensions.mlm.MLM_EXTENSION_HOOKS,
-        pystac.extensions.pointcloud.POINTCLOUD_EXTENSION_HOOKS,
-        pystac.extensions.projection.PROJECTION_EXTENSION_HOOKS,
-        pystac.extensions.raster.RASTER_EXTENSION_HOOKS,
-        pystac.extensions.sar.SAR_EXTENSION_HOOKS,
-        pystac.extensions.sat.SAT_EXTENSION_HOOKS,
-        pystac.extensions.scientific.SCIENTIFIC_EXTENSION_HOOKS,
-        pystac.extensions.storage.STORAGE_EXTENSION_HOOKS,
-        pystac.extensions.table.TABLE_EXTENSION_HOOKS,
-        pystac.extensions.timestamps.TIMESTAMPS_EXTENSION_HOOKS,
-        pystac.extensions.version.VERSION_EXTENSION_HOOKS,
-        pystac.extensions.view.VIEW_EXTENSION_HOOKS,
-        pystac.extensions.xarray_assets.XARRAY_ASSETS_EXTENSION_HOOKS,
-    ]
-)
+_hooks: list[pystac.extensions.hooks.ExtensionHooks] = []
+for _module_name, _hooks_attr in _EXTENSION_MODULES:
+    try:
+        if _module_name == "pystac.extensions.label":
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=DeprecationWarning)
+                _mod = importlib.import_module(_module_name)
+        else:
+            _mod = importlib.import_module(_module_name)
+        _hooks.append(getattr(_mod, _hooks_attr))
+    except ImportError:
+        pass
+
+EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(_hooks)
+del _hooks, _EXTENSION_MODULES
 
 
 def read_file(href: HREF, stac_io: StacIO | None = None) -> STACObject:
