@@ -26,7 +26,7 @@ class StandardLibraryReader:
             with open(href) as f:
                 return json.load(f)
         else:
-            raise ValueError(f"Unsupported scheme: {parsed_url.scheme}")
+            raise ValueError(f"Unsupported scheme: {parsed_url.scheme} for {href}")
 
 
 def set_default_reader(reader: Reader) -> None:
