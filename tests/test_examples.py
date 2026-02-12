@@ -6,8 +6,10 @@ import pytest
 import pystac
 from pystac.reader import StandardLibraryReader
 
-EXAMPLE_FILES = list(
-    (Path(__file__).parent / "data-files" / "examples").glob("**/*.json")
+EXAMPLE_FILES = sorted(
+    list(
+        (Path(__file__).parent / "data-files" / "examples").glob("**/*.json"),
+    )
 )
 
 

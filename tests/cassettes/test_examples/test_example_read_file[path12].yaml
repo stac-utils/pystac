@@ -134,58 +134,66 @@ interactions:
       Host:
       - stac-extensions.github.io
     method: GET
-    uri: https://stac-extensions.github.io/sat/v1.0.0/schema.json
+    uri: https://stac-extensions.github.io/projection/v2.0.0/schema.json
   response:
     body:
       string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
-        \"https://stac-extensions.github.io/sat/v1.0.0/schema.json\",\n  \"title\":
-        \"Satellite Extension\",\n  \"description\": \"STAC Sat Extension to a STAC
-        Item.\",\n  \"oneOf\": [\n    {\n      \"$comment\": \"This is the schema
-        for STAC Items.\",\n      \"allOf\": [\n        {\n          \"type\": \"object\",\n
-        \         \"required\": [\n            \"type\",\n            \"properties\",\n
-        \           \"assets\"\n          ],\n          \"properties\": {\n            \"type\":
-        {\n              \"const\": \"Feature\"\n            },\n            \"properties\":
-        {\n              \"allOf\": [\n                {\n                  \"anyOf\":
-        [\n                    {\n                      \"required\": [\n                        \"sat:platform_international_designator\"\n
-        \                     ]\n                    },\n                    {\n                      \"required\":
-        [\n                        \"sat:orbit_state\"\n                      ]\n
-        \                   },\n                    {\n                      \"required\":
-        [\n                        \"sat:absolute_orbit\"\n                      ]\n
-        \                   },\n                    {\n                      \"required\":
-        [\n                        \"sat:relative_orbit\"\n                      ]\n
-        \                   },\n                    {\n                      \"required\":
-        [\n                        \"sat:anx_datetime\"\n                      ]\n
-        \                   }\n                  ]\n                },\n                {\n
-        \                 \"$ref\": \"#/definitions/fields\"\n                }\n
-        \             ]\n            },\n            \"assets\": {\n              \"type\":
-        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
-        \"#/definitions/fields\"\n              }\n            }\n          }\n        },\n
-        \       {\n          \"$ref\": \"#/definitions/stac_extensions\"\n        }\n
-        \     ]\n    },\n    {\n      \"$comment\": \"This is the schema for STAC
-        Collections.\",\n      \"allOf\": [\n        {\n          \"type\": \"object\",\n
-        \         \"required\": [\n            \"type\"\n          ],\n          \"properties\":
-        {\n            \"type\": {\n              \"const\": \"Collection\"\n            },\n
-        \           \"assets\": {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        \"https://stac-extensions.github.io/projection/v2.0.0/schema.json\",\n  \"title\":
+        \"Projection Extension\",\n  \"description\": \"STAC Projection Extension
+        for STAC Items.\",\n  \"$comment\": \"This schema succeeds if the proj: fields
+        are not used at all, please keep this in mind.\",\n  \"oneOf\": [\n    {\n
+        \     \"$comment\": \"This is the schema for STAC Items.\",\n      \"allOf\":
+        [\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n        },\n
+        \       {\n          \"type\": \"object\",\n          \"required\": [\n            \"type\",\n
+        \           \"properties\",\n            \"assets\"\n          ],\n          \"properties\":
+        {\n            \"type\": {\n              \"const\": \"Feature\"\n            },\n
+        \           \"properties\": {\n              \"$ref\": \"#/definitions/fields\"\n
+        \           },\n            \"assets\": {\n              \"type\": \"object\",\n
+        \             \"additionalProperties\": {\n                \"$ref\": \"#/definitions/fields\"\n
+        \             }\n            }\n          }\n        }\n      ]\n    },\n
+        \   {\n      \"$comment\": \"This is the schema for STAC Collections.\",\n
+        \     \"allOf\": [\n        {\n          \"type\": \"object\",\n          \"required\":
+        [\n            \"type\"\n          ],\n          \"properties\": {\n            \"type\":
+        {\n              \"const\": \"Collection\"\n            },\n            \"assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
         {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            },\n
         \           \"item_assets\": {\n              \"type\": \"object\",\n              \"additionalProperties\":
         {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
-        \         }\n        }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
         {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
         \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
-        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/sat/v1.0.0/schema.json\"\n
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/projection/v2.0.0/schema.json\"\n
         \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"type\":
-        \"object\",\n      \"properties\": {\n        \"sat:platform_international_designator\":
-        {\n          \"type\": \"string\"\n        },\n        \"sat:orbit_state\":
-        {\n          \"title\": \"Orbit State\",\n          \"type\": \"string\",\n
-        \         \"enum\": [\n            \"ascending\",\n            \"descending\",\n
-        \           \"geostationary\"\n          ]\n        },\n        \"sat:absolute_orbit\":
-        {\n          \"type\": \"integer\",\n          \"minimum\": 1\n        },\n
-        \       \"sat:relative_orbit\": {\n          \"type\": \"integer\",\n          \"minimum\":
-        1\n        },\n        \"sat:anx_datetime\": {\n          \"type\": \"string\",\n
-        \         \"format\": \"date-time\"\n        }\n      },\n      \"patternProperties\":
-        {\n        \"^(?!sat:)\": {\n          \"$comment\": \"Do not allow unspecified
-        fields prefixed with sat:\"\n        }\n      },\n      \"additionalProperties\":
-        false\n    }\n  }\n}"
+        \"object\",\n      \"properties\": {\n        \"proj:code\":{\n          \"title\":\"Projection
+        code\",\n          \"type\":[\n            \"string\",\n            \"null\"\n
+        \         ]\n        },\n        \"proj:wkt2\":{\n          \"title\":\"Coordinate
+        Reference System in WKT2 format\",\n          \"type\":[\n            \"string\",\n
+        \           \"null\"\n          ]\n        },\n        \"proj:projjson\":
+        {\n          \"title\":\"Coordinate Reference System in PROJJSON format\",\n
+        \         \"oneOf\": [\n            {\n              \"$ref\": \"https://proj.org/schemas/v0.7/projjson.schema.json\"\n
+        \           },\n            {\n              \"type\": \"null\"\n            }\n
+        \         ]\n        },\n        \"proj:geometry\":{\n          \"$ref\":
+        \"https://geojson.org/schema/Geometry.json\"\n        },\n        \"proj:bbox\":{\n
+        \         \"title\":\"Extent\",\n          \"type\":\"array\",\n          \"oneOf\":
+        [\n            {\n              \"minItems\":4,\n              \"maxItems\":4\n
+        \           },\n            {\n              \"minItems\":6,\n              \"maxItems\":6\n
+        \           }\n          ],\n          \"items\":{\n            \"type\":\"number\"\n
+        \         }\n        },\n        \"proj:centroid\":{\n          \"title\":\"Centroid\",\n
+        \         \"type\":\"object\",\n          \"required\": [\n            \"lat\",\n
+        \           \"lon\"\n          ],\n          \"properties\": {\n            \"lat\":
+        {\n              \"type\": \"number\",\n              \"minimum\": -90,\n
+        \             \"maximum\": 90\n            },\n            \"lon\": {\n              \"type\":
+        \"number\",\n              \"minimum\": -180,\n              \"maximum\":
+        180\n            }\n          }\n        },\n        \"proj:shape\":{\n          \"title\":\"Shape\",\n
+        \         \"type\":\"array\",\n          \"minItems\":2,\n          \"maxItems\":2,\n
+        \         \"items\":{\n            \"type\":\"integer\"\n          }\n        },\n
+        \       \"proj:transform\":{\n          \"title\":\"Transform\",\n          \"type\":\"array\",\n
+        \         \"oneOf\": [\n            {\n              \"minItems\":6,\n              \"maxItems\":6\n
+        \           },\n            {\n              \"minItems\":9,\n              \"maxItems\":9\n
+        \           }\n          ],\n          \"items\":{\n            \"type\":\"number\"\n
+        \         }\n        }\n      },\n      \"patternProperties\": {\n        \"^(?!proj:)\":
+        {}\n      },\n      \"additionalProperties\": false\n    }\n  }\n}"
     headers: {}
     status:
       code: 200
