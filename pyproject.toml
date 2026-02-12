@@ -1,5 +1,6 @@
 [project]
 name = "pystac"
+version = "1.14.3"
 description = "Python library for working with the SpatioTemporal Asset Catalog (STAC) specification"
 readme = "README.md"
 authors = [
@@ -21,14 +22,31 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 requires-python = ">=3.10"
-dependencies = ["python-dateutil>=2.7.0"]
-dynamic = ["version"]
-
-[project.optional-dependencies]
-jinja2 = ["jinja2<4.0"]
-orjson = ["orjson>=3.5"]
-urllib3 = ["urllib3>=2.6.3"]
-validation = ["jsonschema~=4.18"]
+dependencies = [
+    "pystac-core",
+    "pystac-ext-classification",
+    "pystac-ext-datacube",
+    "pystac-ext-eo",
+    "pystac-ext-file",
+    "pystac-ext-grid",
+    "pystac-ext-item-assets",
+    "pystac-ext-label",
+    "pystac-ext-mgrs",
+    "pystac-ext-mlm",
+    "pystac-ext-pointcloud",
+    "pystac-ext-projection",
+    "pystac-ext-raster",
+    "pystac-ext-render",
+    "pystac-ext-sar",
+    "pystac-ext-sat",
+    "pystac-ext-scientific",
+    "pystac-ext-storage",
+    "pystac-ext-table",
+    "pystac-ext-timestamps",
+    "pystac-ext-version",
+    "pystac-ext-view",
+    "pystac-ext-xarray-assets",
+]
 
 [dependency-groups]
 dev = [
@@ -121,13 +139,34 @@ lint.select = ["E", "F", "I"]
 filterwarnings = ["error"]
 addopts = "--block-network --record-mode=none"
 
-[tool.setuptools.packages.find]
-include = ["pystac*"]
-exclude = ["tests*", "benchmarks*"]
-
-[tool.setuptools.dynamic]
-version = { attr = "pystac.version.__version__" }
-
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv.workspace]
+members = ["extensions/*", "core"]
+
+[tool.uv.sources]
+pystac-core = { workspace = true }
+pystac-ext-classification = { workspace = true }
+pystac-ext-datacube = { workspace = true }
+pystac-ext-eo = { workspace = true }
+pystac-ext-file = { workspace = true }
+pystac-ext-grid = { workspace = true }
+pystac-ext-item-assets = { workspace = true }
+pystac-ext-label = { workspace = true }
+pystac-ext-mgrs = { workspace = true }
+pystac-ext-mlm = { workspace = true }
+pystac-ext-pointcloud = { workspace = true }
+pystac-ext-projection = { workspace = true }
+pystac-ext-raster = { workspace = true }
+pystac-ext-render = { workspace = true }
+pystac-ext-sar = { workspace = true }
+pystac-ext-sat = { workspace = true }
+pystac-ext-scientific = { workspace = true }
+pystac-ext-storage = { workspace = true }
+pystac-ext-table = { workspace = true }
+pystac-ext-timestamps = { workspace = true }
+pystac-ext-version = { workspace = true }
+pystac-ext-view = { workspace = true }
+pystac-ext-xarray-assets = { workspace = true }

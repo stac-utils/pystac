@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 import pytest
 
@@ -13,7 +14,6 @@ from pystac.extensions.ext import (
     ItemExt,
     LinkExt,
 )
-from tests.conftest import get_data_file
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger()
@@ -21,7 +21,15 @@ logger = logging.getLogger()
 
 @pytest.fixture
 def eo_ext_item() -> Item:
-    ext_item_uri = get_data_file("eo/eo-landsat-example.json")
+    ext_item_uri = str(
+        Path(__file__).resolve().parent.parent.parent
+        / "extensions"
+        / "eo"
+        / "tests"
+        / "data-files"
+        / "eo"
+        / "eo-landsat-example.json"
+    )
     return Item.from_file(ext_item_uri)
 
 

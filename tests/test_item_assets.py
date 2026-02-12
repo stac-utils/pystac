@@ -1,20 +1,35 @@
+from pathlib import Path
+
 import pytest
 
 from pystac import Collection
 from pystac.errors import DeprecatedWarning
 from pystac.extensions.item_assets import AssetDefinition, ItemAssetsExtension
 from pystac.item_assets import ItemAssetDefinition
-from tests.utils import TestCases
 
-CLASSIFICATION_COLLECTION_RASTER_URI = TestCases.get_path(
-    "data-files/classification/collection-item-assets-raster-bands.json"
+EXTENSIONS_DIR = Path(__file__).resolve().parent.parent / "extensions"
+
+CLASSIFICATION_COLLECTION_RASTER_URI = str(
+    EXTENSIONS_DIR
+    / "classification"
+    / "tests"
+    / "data-files"
+    / "classification"
+    / "collection-item-assets-raster-bands.json"
 )
 
 
 @pytest.fixture
 def landsat8_collection() -> Collection:
     return Collection.from_file(
-        TestCases.get_path("data-files/item-assets/example-landsat8.json")
+        str(
+            EXTENSIONS_DIR
+            / "item_assets"
+            / "tests"
+            / "data-files"
+            / "item-assets"
+            / "example-landsat8.json"
+        )
     )
 
 
