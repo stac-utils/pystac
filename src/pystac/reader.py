@@ -1,4 +1,5 @@
 import json
+import os
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -22,7 +23,7 @@ class StandardLibraryReader:
             request = Request(href, headers={"User-Agent": get_user_agent()})
             with urllib.request.urlopen(request) as f:
                 return json.load(f)
-        elif not parsed_url.scheme:
+        elif not parsed_url.scheme or os.path.exists(href):
             with open(href) as f:
                 return json.load(f)
         else:
