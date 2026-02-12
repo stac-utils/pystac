@@ -22,7 +22,7 @@ def pytest_collection_modifyitems(config, items):
         return
     skip_v1 = pytest.mark.skip(reason="need --v1 option to run")
     for item in items:
-        if "passing_v2" not in item.keywords:
+        if item.parent.path.is_relative_to(HERE) and "passing_v2" not in item.keywords:
             item.add_marker(skip_v1)
 
 
