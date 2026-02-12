@@ -6,8 +6,6 @@ interactions:
       - close
       Host:
       - stac-extensions.github.io
-      User-Agent:
-      - pystac/1.14.2
     method: GET
     uri: https://stac-extensions.github.io/eo/v1.0.0/schema.json
   response:
@@ -84,8 +82,6 @@ interactions:
       - close
       Host:
       - stac-extensions.github.io
-      User-Agent:
-      - pystac/1.14.2
     method: GET
     uri: https://stac-extensions.github.io/projection/v1.0.0/schema.json
   response:

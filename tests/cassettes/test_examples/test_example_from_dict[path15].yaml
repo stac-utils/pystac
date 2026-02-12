@@ -6,73 +6,122 @@ interactions:
       - close
       Host:
       - stac-extensions.github.io
-      User-Agent:
-      - pystac/1.14.2
     method: GET
-    uri: https://stac-extensions.github.io/eo/v1.0.0/schema.json
+    uri: https://stac-extensions.github.io/eo/v2.0.0/schema.json
   response:
     body:
       string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
-        \"https://stac-extensions.github.io/eo/v1.0.0/schema.json#\",\n  \"title\":
-        \"EO Extension\",\n  \"description\": \"STAC EO Extension for STAC Items.\",\n
-        \ \"oneOf\": [\n    {\n      \"$comment\": \"This is the schema for STAC Items.\",\n
-        \     \"allOf\": [\n        {\n          \"type\": \"object\",\n          \"required\":
-        [\n            \"type\",\n            \"properties\",\n            \"assets\"\n
-        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
-        \"Feature\"\n            },\n            \"properties\": {\n              \"$ref\":
-        \"#/definitions/fields\"\n            },\n            \"assets\": {\n              \"type\":
-        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
-        \"#/definitions/fields\"\n              }\n            }\n          },\n          \"$comment\":
-        \"The if-then-else below checks whether the eo:bands is given in assets or
-        not. If yes, allows eo:bands in properties (else), otherwise, disallows eo:bands
-        in properties (then).\",\n          \"if\": {\n            \"required\": [\n
-        \             \"assets\"\n            ],\n            \"properties\": {\n
-        \             \"assets\": {\n                \"type\": \"object\",\n                \"additionalProperties\":
-        {\n                  \"properties\": {\n                    \"eo:bands\":
-        false\n                  }\n                }\n              }\n            }\n
-        \         },\n          \"then\": {\n            \"properties\": {\n              \"properties\":
-        {\n                \"properties\": {\n                  \"eo:bands\": false\n
-        \               }\n              }\n            }\n          },\n          \"else\":
-        {\n            \"properties\": {\n              \"properties\": {\n                \"properties\":
-        {\n                  \"eo:bands\": {\n                    \"$ref\": \"#/definitions/bands\"\n
-        \                 }\n                }\n              }\n            }\n          }\n
-        \       },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
-        \       }\n      ]\n    },\n    {\n      \"$comment\": \"This is the schema
-        for STAC Collections.\",\n      \"allOf\": [\n        {\n          \"type\":
-        \"object\",\n          \"required\": [\n            \"type\"\n          ],\n
-        \         \"properties\": {\n            \"type\": {\n              \"const\":
-        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
-        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
-        \"#/definitions/fields\"\n              }\n            },\n            \"item_assets\":
-        {\n              \"type\": \"object\",\n              \"additionalProperties\":
-        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
-        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
-        \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
-        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
-        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
-        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/eo/v1.0.0/schema.json\"\n
-        \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"type\":
-        \"object\",\n      \"properties\": {\n        \"eo:cloud_cover\": {\n          \"title\":
-        \"Cloud Cover\",\n          \"type\": \"number\",\n          \"minimum\":
-        0,\n          \"maximum\": 100\n        },\n        \"eo:bands\": {\n          \"$ref\":
-        \"#/definitions/bands\"\n        }\n      },\n      \"patternProperties\":
-        {\n        \"^(?!eo:)\": {}\n      },\n      \"additionalProperties\": false\n
-        \   },\n    \"bands\": {\n      \"title\": \"Bands\",\n      \"type\": \"array\",\n
-        \     \"minItems\": 1,\n      \"items\": {\n        \"title\": \"Band\",\n
-        \       \"type\": \"object\",\n        \"minProperties\": 1,\n        \"properties\":
-        {\n          \"name\": {\n            \"title\": \"Name of the band\",\n            \"type\":
-        \"string\"\n          },\n          \"common_name\": {\n            \"title\":
-        \"Common Name of the band\",\n            \"type\": \"string\",\n            \"enum\":
-        [\n              \"coastal\",\n              \"blue\",\n              \"green\",\n
-        \             \"red\",\n              \"rededge\",\n              \"yellow\",\n
-        \             \"pan\",\n              \"nir\",\n              \"nir08\",\n
-        \             \"nir09\",\n              \"cirrus\",\n              \"swir16\",\n
-        \             \"swir22\",\n              \"lwir\",\n              \"lwir11\",\n
-        \             \"lwir12\"\n            ]\n          },\n          \"center_wavelength\":
-        {\n            \"title\": \"Center Wavelength\",\n            \"type\": \"number\"\n
-        \         },\n          \"full_width_half_max\": {\n            \"title\":
-        \"Full Width Half Max (FWHM)\",\n            \"type\": \"number\"\n          }\n
-        \       }\n      }\n    }\n  }\n}"
+        \"https://stac-extensions.github.io/eo/v2.0.0/schema.json#\",\n  \"title\":
+        \"EO Extension\",\n  \"description\": \"STAC EO Extension for STAC Items and
+        STAC Collections.\",\n  \"type\": \"object\",\n  \"required\": [\"stac_extensions\",
+        \"type\"],\n  \"properties\": {\n    \"stac_extensions\": {\n      \"type\":
+        \"array\",\n      \"contains\": {\n        \"const\": \"https://stac-extensions.github.io/eo/v2.0.0/schema.json\"\n
+        \     }\n    }\n  },\n  \"allOf\": [\n    {\n      \"$comment\": \"Items\",\n
+        \     \"if\": {\n        \"properties\": {\n          \"type\": {\n            \"const\":
+        \"Feature\"\n          }\n        }\n      },\n      \"then\": {\n        \"allOf\":
+        [\n          {\n            \"properties\": {\n              \"properties\":
+        {\n                \"$ref\": \"#/definitions/validate_properties\"\n              }\n
+        \           }\n          },\n          {\n            \"$ref\": \"#/definitions/validate_assets\"\n
+        \         }\n        ],\n        \"anyOf\": [\n          {\n            \"required\":
+        [\"properties\"],\n            \"properties\": {\n              \"properties\":
+        {\n                \"$ref\": \"#/definitions/require_properties\"\n              }\n
+        \           }\n          },\n          {\n            \"$ref\": \"#/definitions/require_assets\"\n
+        \         }\n        ]\n      }\n    },\n    {\n      \"$comment\": \"Collections\",\n
+        \     \"if\": {\n        \"properties\": {\n          \"type\": {\n            \"const\":
+        \"Collection\"\n          }\n        }\n      },\n      \"then\": {\n        \"allOf\":
+        [\n          {\n            \"$ref\": \"#/definitions/validate_bands\"\n          },\n
+        \         {\n            \"$ref\": \"#/definitions/validate_assets\"\n          },\n
+        \         {\n            \"properties\": {\n              \"item_assets\":
+        {\n                \"additionalProperties\": {\n                  \"$ref\":
+        \"#/definitions/validate_properties\"\n                }\n              }\n
+        \           }\n          },\n          {\n            \"properties\": {\n
+        \             \"summaries\": {\n                \"type\": \"object\",\n                \"$comment\":
+        \"We can't properly validate summary objects types (min/max or schemas) yet.\",\n
+        \               \"allOf\": [\n                  {\n                    \"$ref\":
+        \"#/definitions/validate_bands\"\n                  },\n                  {\n
+        \                   \"properties\": {\n                      \"eo:cloud_cover\":
+        {\n                        \"type\": [\"array\", \"object\"],\n                        \"items\":
+        {\n                          \"$ref\": \"#/definitions/eo:cloud_cover\"\n
+        \                       }\n                      }\n                    }\n
+        \                 },\n                  {\n                    \"properties\":
+        {\n                      \"eo:snow_cover\": {\n                        \"type\":
+        [\"array\", \"object\"],\n                        \"items\": {\n                          \"$ref\":
+        \"#/definitions/eo:snow_cover\"\n                        }\n                      }\n
+        \                   }\n                  },\n                  {\n                    \"properties\":
+        {\n                      \"eo:common_name\": {\n                        \"type\":
+        [\"array\", \"object\"],\n                        \"items\": {\n                          \"$ref\":
+        \"#/definitions/eo:common_name\"\n                        }\n                      }\n
+        \                   }\n                  },\n                  {\n                    \"properties\":
+        {\n                      \"eo:center_wavelength\": {\n                        \"type\":
+        [\"array\", \"object\"],\n                        \"items\": {\n                          \"$ref\":
+        \"#/definitions/eo:center_wavelength\"\n                        }\n                      }\n
+        \                   }\n                  },\n                  {\n                    \"properties\":
+        {\n                      \"eo:full_width_half_max\": {\n                        \"type\":
+        [\"array\", \"object\"],\n                        \"items\": {\n                          \"$ref\":
+        \"#/definitions/eo:full_width_half_max\"\n                        }\n                      }\n
+        \                   }\n                  },\n                  {\n                    \"properties\":
+        {\n                      \"eo:solar_illumination\": {\n                        \"type\":
+        [\"array\", \"object\"],\n                        \"items\": {\n                          \"$ref\":
+        \"#/definitions/eo:solar_illumination\"\n                        }\n                      }\n
+        \                   }\n                  }\n                ]\n              }\n
+        \           }\n          }\n        ],\n        \"anyOf\": [\n          {\n
+        \           \"$ref\": \"#/definitions/require_in_bands\"\n          },\n          {\n
+        \           \"$ref\": \"#/definitions/require_assets\"\n          },\n          {\n
+        \           \"required\": [\"item_assets\"],\n            \"properties\":
+        {\n              \"item_assets\": {\n                \"$ref\": \"#/definitions/asset_contains\"\n
+        \             }\n            }\n          },\n          {\n            \"required\":
+        [\"summaries\"],\n            \"properties\": {\n              \"summaries\":
+        {\n                \"$ref\": \"#/definitions/require_properties\"\n              }\n
+        \           }\n          }\n        ]\n      }\n    }\n  ],\n  \"definitions\":
+        {\n    \"require_properties\": {\n      \"anyOf\": [\n        {\n          \"$ref\":
+        \"#/definitions/require_fields\"\n        },\n        {\n          \"$ref\":
+        \"#/definitions/require_in_bands\"\n        }\n      ]\n    },\n    \"validate_bands\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"bands\":
+        {\n          \"type\": \"array\",\n          \"items\": {\n            \"$ref\":
+        \"#/definitions/fields\"\n          }\n        }\n      }\n    },\n    \"validate_properties\":
+        {\n      \"allOf\": [\n        {\n          \"$ref\": \"#/definitions/fields\"\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/validate_bands\"\n
+        \       }\n      ]\n    },\n    \"require_assets\": {\n      \"required\":
+        [\"assets\"],\n      \"properties\": {\n        \"assets\": {\n          \"$ref\":
+        \"#/definitions/asset_contains\"\n        }\n      }\n    },\n    \"validate_assets\":
+        {\n      \"properties\": {\n        \"assets\": {\n          \"additionalProperties\":
+        {\n            \"$ref\": \"#/definitions/validate_properties\"\n          }\n
+        \       }\n      }\n    },\n    \"asset_contains\": {\n      \"type\": \"object\",\n
+        \     \"not\": {\n        \"additionalProperties\": {\n          \"not\":
+        {\n            \"$ref\": \"#/definitions/require_properties\"\n          }\n
+        \       }\n      }\n    },\n    \"require_in_bands\": {\n      \"required\":
+        [\"bands\"],\n      \"properties\": {\n        \"bands\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"$ref\": \"#/definitions/require_fields\"\n
+        \         }\n        }\n      }\n    },\n    \"require_fields\": {\n      \"anyOf\":
+        [\n        { \"required\": [\"eo:cloud_cover\"] },\n        { \"required\":
+        [\"eo:snow_cover\"] },\n        { \"required\": [\"eo:common_name\"] },\n
+        \       { \"required\": [\"eo:center_wavelength\"] },\n        { \"required\":
+        [\"eo:full_width_half_max\"] },\n        { \"required\": [\"eo:solar_illumination\"]
+        }\n      ]\n    },\n    \"fields\": {\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"eo:cloud_cover\": {\n          \"$ref\": \"#/definitions/eo:cloud_cover\"\n
+        \       },\n        \"eo:snow_cover\": {\n          \"$ref\": \"#/definitions/eo:snow_cover\"\n
+        \       },\n        \"eo:common_name\": {\n          \"$ref\": \"#/definitions/eo:common_name\"\n
+        \       },\n        \"eo:center_wavelength\": {\n          \"$ref\": \"#/definitions/eo:center_wavelength\"\n
+        \       },\n        \"eo:full_width_half_max\": {\n          \"$ref\": \"#/definitions/eo:full_width_half_max\"\n
+        \       },\n        \"eo:solar_illumination\": {\n          \"$ref\": \"#/definitions/eo:solar_illumination\"\n
+        \       }\n      },\n      \"patternProperties\": {\n        \"^(?!eo:)\":
+        {}\n      },\n      \"additionalProperties\": false\n    },\n    \"eo:cloud_cover\":
+        {\n      \"title\": \"Cloud Cover\",\n      \"type\": \"number\",\n      \"minimum\":
+        0,\n      \"maximum\": 100\n    },\n    \"eo:snow_cover\": {\n      \"title\":
+        \"Snow and Ice Cover\",\n      \"type\": \"number\",\n      \"minimum\": 0,\n
+        \     \"maximum\": 100\n    },\n    \"eo:common_name\": {\n      \"title\":
+        \"Common Name of the band\",\n      \"type\": \"string\",\n      \"enum\":
+        [\n        \"pan\",\n        \"coastal\",\n        \"blue\",\n        \"green\",\n
+        \       \"green05\",\n        \"yellow\",\n        \"red\",\n        \"rededge\",\n
+        \       \"rededge071\",\n        \"rededge075\",\n        \"rededge078\",\n
+        \       \"nir\",\n        \"nir08\",\n        \"nir09\",\n        \"cirrus\",\n
+        \       \"swir16\",\n        \"swir22\",\n        \"lwir\",\n        \"lwir11\",\n
+        \       \"lwir12\"\n      ]\n    },\n    \"eo:center_wavelength\": {\n      \"title\":
+        \"Center Wavelength\",\n      \"type\": \"number\",\n      \"minimumExclusive\":
+        0\n    },\n    \"eo:full_width_half_max\": {\n      \"title\": \"Full Width
+        Half Max (FWHM)\",\n      \"type\": \"number\",\n      \"minimumExclusive\":
+        0\n    },\n    \"eo:solar_illumination\": {\n      \"title\": \"Solar Illumination\",\n
+        \     \"type\": \"number\",\n      \"minimum\": 0\n    }\n  }\n}\n"
     headers: {}
     status:
       code: 200
@@ -84,51 +133,45 @@ interactions:
       - close
       Host:
       - stac-extensions.github.io
-      User-Agent:
-      - pystac/1.14.2
     method: GET
-    uri: https://stac-extensions.github.io/projection/v1.0.0/schema.json
+    uri: https://stac-extensions.github.io/projection/v2.0.0/schema.json
   response:
     body:
       string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
-        \"https://stac-extensions.github.io/projection/v1.0.0/schema.json\",\n  \"title\":
+        \"https://stac-extensions.github.io/projection/v2.0.0/schema.json\",\n  \"title\":
         \"Projection Extension\",\n  \"description\": \"STAC Projection Extension
-        for STAC Items.\",\n  \"oneOf\": [\n    {\n      \"$comment\": \"This is the
-        schema for STAC Items.\",\n      \"allOf\": [\n        {\n          \"type\":
-        \"object\",\n          \"required\": [\n            \"type\",\n            \"properties\",\n
-        \           \"assets\"\n          ],\n          \"properties\": {\n            \"type\":
-        {\n              \"const\": \"Feature\"\n            },\n            \"properties\":
-        {\n              \"allOf\": [\n                {\n                  \"$comment\":
-        \"Require fields here for item properties.\",\n                  \"required\":
-        [\n                    \"proj:epsg\"\n                  ]\n                },\n
-        \               {\n                  \"$ref\": \"#/definitions/fields\"\n
-        \               }\n              ]\n            },\n            \"assets\":
+        for STAC Items.\",\n  \"$comment\": \"This schema succeeds if the proj: fields
+        are not used at all, please keep this in mind.\",\n  \"oneOf\": [\n    {\n
+        \     \"$comment\": \"This is the schema for STAC Items.\",\n      \"allOf\":
+        [\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n        },\n
+        \       {\n          \"type\": \"object\",\n          \"required\": [\n            \"type\",\n
+        \           \"properties\",\n            \"assets\"\n          ],\n          \"properties\":
+        {\n            \"type\": {\n              \"const\": \"Feature\"\n            },\n
+        \           \"properties\": {\n              \"$ref\": \"#/definitions/fields\"\n
+        \           },\n            \"assets\": {\n              \"type\": \"object\",\n
+        \             \"additionalProperties\": {\n                \"$ref\": \"#/definitions/fields\"\n
+        \             }\n            }\n          }\n        }\n      ]\n    },\n
+        \   {\n      \"$comment\": \"This is the schema for STAC Collections.\",\n
+        \     \"allOf\": [\n        {\n          \"type\": \"object\",\n          \"required\":
+        [\n            \"type\"\n          ],\n          \"properties\": {\n            \"type\":
+        {\n              \"const\": \"Collection\"\n            },\n            \"assets\":
         {\n              \"type\": \"object\",\n              \"additionalProperties\":
-        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
-        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
-        \       }\n      ]\n    },\n    {\n      \"$comment\": \"This is the schema
-        for STAC Collections.\",\n      \"allOf\": [\n        {\n          \"type\":
-        \"object\",\n          \"required\": [\n            \"type\"\n          ],\n
-        \         \"properties\": {\n            \"type\": {\n              \"const\":
-        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
-        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
-        \"#/definitions/fields\"\n              }\n            },\n            \"item_assets\":
-        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            },\n
+        \           \"item_assets\": {\n              \"type\": \"object\",\n              \"additionalProperties\":
         {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
         \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
         \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
         {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
         \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
-        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/projection/v1.0.0/schema.json\"\n
-        \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"$comment\":
-        \"Add your new fields here. Don't require them here, do that above in the
-        item schema.\",\n      \"type\": \"object\",\n      \"properties\": {\n        \"proj:epsg\":{\n
-        \         \"title\":\"EPSG code\",\n          \"type\":[\n            \"integer\",\n
-        \           \"null\"\n          ]\n        },\n        \"proj:wkt2\":{\n          \"title\":\"Coordinate
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/projection/v2.0.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"type\":
+        \"object\",\n      \"properties\": {\n        \"proj:code\":{\n          \"title\":\"Projection
+        code\",\n          \"type\":[\n            \"string\",\n            \"null\"\n
+        \         ]\n        },\n        \"proj:wkt2\":{\n          \"title\":\"Coordinate
         Reference System in WKT2 format\",\n          \"type\":[\n            \"string\",\n
         \           \"null\"\n          ]\n        },\n        \"proj:projjson\":
         {\n          \"title\":\"Coordinate Reference System in PROJJSON format\",\n
-        \         \"oneOf\": [\n            {\n              \"$ref\": \"https://proj.org/schemas/v0.2/projjson.schema.json\"\n
+        \         \"oneOf\": [\n            {\n              \"$ref\": \"https://proj.org/schemas/v0.7/projjson.schema.json\"\n
         \           },\n            {\n              \"type\": \"null\"\n            }\n
         \         ]\n        },\n        \"proj:geometry\":{\n          \"$ref\":
         \"https://geojson.org/schema/Geometry.json\"\n        },\n        \"proj:bbox\":{\n
@@ -162,16 +205,14 @@ interactions:
       - close
       Host:
       - proj.org
-      User-Agent:
-      - pystac/1.14.2
     method: GET
-    uri: https://proj.org/schemas/v0.2/projjson.schema.json
+    uri: https://proj.org/schemas/v0.7/projjson.schema.json
   response:
     body:
       string: ''
     headers:
       Location:
-      - https://proj.org/en/latest/schemas/v0.2/projjson.schema.json
+      - https://proj.org/en/latest/schemas/v0.7/projjson.schema.json
     status:
       code: 302
       message: Found
@@ -182,32 +223,33 @@ interactions:
       - close
       Host:
       - proj.org
-      User-Agent:
-      - pystac/1.14.2
     method: GET
-    uri: https://proj.org/en/latest/schemas/v0.2/projjson.schema.json
+    uri: https://proj.org/en/latest/schemas/v0.7/projjson.schema.json
   response:
     body:
-      string: "{\n  \"$id\": \"https://proj.org/schemas/v0.2/projjson.schema.json\",\n
+      string: "{\n  \"$id\": \"https://proj.org/schemas/v0.7/projjson.schema.json\",\n
         \ \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"description\":
-        \"Schema for PROJJSON (v0.2.1)\",\n  \"$comment\": \"This document is copyright
-        Even Rouault and PROJ contributors, 2019-2020, and subject to the MIT license.
+        \"Schema for PROJJSON (v0.7)\",\n  \"$comment\": \"This document is copyright
+        Even Rouault and PROJ contributors, 2019-2023, and subject to the MIT license.
         This file exists both in data/ and in schemas/vXXX/. Keep both in sync. And
-        if changing the value of $id, change PROJJSON_CURRENT_VERSION accordingly
+        if changing the value of $id, change PROJJSON_DEFAULT_VERSION accordingly
         in io.cpp\",\n\n  \"oneOf\": [\n    { \"$ref\": \"#/definitions/crs\" },\n
         \   { \"$ref\": \"#/definitions/datum\" },\n    { \"$ref\": \"#/definitions/datum_ensemble\"
         },\n    { \"$ref\": \"#/definitions/ellipsoid\" },\n    { \"$ref\": \"#/definitions/prime_meridian\"
         },\n    { \"$ref\": \"#/definitions/single_operation\" },\n    { \"$ref\":
-        \"#/definitions/concatenated_operation\" }\n  ],\n\n  \"definitions\": {\n\n
-        \   \"abridged_transformation\": {\n      \"type\": \"object\",\n      \"properties\":
-        {\n        \"$schema\" : { \"type\": \"string\" },\n        \"type\": { \"type\":
-        \"string\", \"enum\": [\"AbridgedTransformation\"] },\n        \"name\": {
-        \"type\": \"string\" },\n        \"method\": { \"$ref\": \"#/definitions/method\"
-        },\n        \"parameters\": {\n            \"type\": \"array\",\n            \"items\":
-        { \"$ref\": \"#/definitions/parameter_value\" }\n        },\n        \"id\":
-        { \"$ref\": \"#/definitions/id\" },\n        \"ids\": { \"$ref\": \"#/definitions/ids\"
-        }\n      },\n      \"required\" : [ \"name\", \"method\", \"parameters\" ],\n
-        \     \"allOf\": [\n        { \"$ref\": \"#/definitions/id_ids_mutually_exclusive\"
+        \"#/definitions/concatenated_operation\" },\n    { \"$ref\": \"#/definitions/coordinate_metadata\"
+        }\n  ],\n\n  \"definitions\": {\n\n    \"abridged_transformation\": {\n      \"type\":
+        \"object\",\n      \"properties\": {\n        \"$schema\" : { \"type\": \"string\"
+        },\n        \"type\": { \"type\": \"string\", \"enum\": [\"AbridgedTransformation\"]
+        },\n        \"name\": { \"type\": \"string\" },\n        \"source_crs\": {\n
+        \           \"$ref\": \"#/definitions/crs\",\n            \"$comment\": \"Only
+        present when the source_crs of the bound_crs does not match the source_crs
+        of the AbridgedTransformation. No equivalent in WKT\"\n        },\n        \"method\":
+        { \"$ref\": \"#/definitions/method\" },\n        \"parameters\": {\n            \"type\":
+        \"array\",\n            \"items\": { \"$ref\": \"#/definitions/parameter_value\"
+        }\n        },\n        \"id\": { \"$ref\": \"#/definitions/id\" },\n        \"ids\":
+        { \"$ref\": \"#/definitions/ids\" }\n      },\n      \"required\" : [ \"name\",
+        \"method\", \"parameters\" ],\n      \"allOf\": [\n        { \"$ref\": \"#/definitions/id_ids_mutually_exclusive\"
         }\n      ],\n      \"additionalProperties\": false\n    },\n\n    \"axis\":
         {\n      \"type\": \"object\",\n      \"properties\": {\n        \"$schema\"
         : { \"type\": \"string\" },\n        \"type\": { \"type\": \"string\", \"enum\":
@@ -233,7 +275,10 @@ interactions:
         \                                \"counterClockwise\",\n                                 \"towards\",\n
         \                                \"awayFrom\",\n                                 \"future\",\n
         \                                \"past\",\n                                 \"unspecified\"
-        ] },\n        \"unit\": { \"$ref\": \"#/definitions/unit\" },\n        \"id\":
+        ] },\n        \"meridian\": { \"$ref\": \"#/definitions/meridian\" },\n        \"unit\":
+        { \"$ref\": \"#/definitions/unit\" },\n        \"minimum_value\": { \"type\":
+        \"number\" },\n        \"maximum_value\": { \"type\": \"number\" },\n        \"range_meaning\":
+        { \"type\": \"string\", \"enum\": [ \"exact\", \"wraparound\"] },\n        \"id\":
         { \"$ref\": \"#/definitions/id\" },\n        \"ids\": { \"$ref\": \"#/definitions/ids\"
         }\n      },\n      \"required\" : [ \"name\", \"abbreviation\", \"direction\"
         ],\n      \"allOf\": [\n        { \"$ref\": \"#/definitions/id_ids_mutually_exclusive\"
@@ -244,86 +289,103 @@ interactions:
         { \"type\": \"number\" }\n      },\n      \"required\" : [ \"east_longitude\",
         \"west_longitude\",\n                     \"south_latitude\", \"north_latitude\"
         ],\n      \"additionalProperties\": false\n    },\n\n    \"bound_crs\": {\n
-        \     \"type\": \"object\",\n      \"properties\": {\n        \"$schema\"
-        : { \"type\": \"string\" },\n        \"type\": { \"type\": \"string\", \"enum\":
-        [\"BoundCRS\"] },\n        \"source_crs\": { \"$ref\": \"#/definitions/crs\"
-        },\n        \"target_crs\": { \"$ref\": \"#/definitions/crs\" },\n        \"transformation\":
-        { \"$ref\": \"#/definitions/abridged_transformation\" }\n     },\n     \"required\"
-        : [ \"source_crs\", \"target_crs\", \"transformation\" ],\n     \"additionalProperties\":
-        false\n    },\n\n    \"compound_crs\": {\n      \"type\": \"object\",\n      \"allOf\":
-        [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\": {\n
-        \       \"type\": { \"type\": \"string\", \"enum\": [\"CompoundCRS\"] },\n
-        \       \"name\": { \"type\": \"string\" },\n        \"components\":  {\n
-        \          \"type\": \"array\",\n            \"items\": { \"$ref\": \"#/definitions/crs\"
+        \     \"type\": \"object\",\n      \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\"
+        }],\n      \"properties\": {\n        \"$schema\" : { \"type\": \"string\"
+        },\n        \"type\": { \"type\": \"string\", \"enum\": [\"BoundCRS\"] },\n
+        \       \"name\": { \"type\": \"string\" },\n        \"source_crs\": { \"$ref\":
+        \"#/definitions/crs\" },\n        \"target_crs\": { \"$ref\": \"#/definitions/crs\"
+        },\n        \"transformation\": { \"$ref\": \"#/definitions/abridged_transformation\"
+        },\n        \"scope\": {},\n        \"area\": {},\n        \"bbox\": {},\n
+        \       \"vertical_extent\": {},\n        \"temporal_extent\": {},\n        \"usages\":
+        {},\n        \"remarks\": {},\n        \"id\": {}, \"ids\": {}\n     },\n
+        \    \"required\" : [ \"source_crs\", \"target_crs\", \"transformation\" ],\n
+        \    \"additionalProperties\": false\n    },\n\n    \"compound_crs\": {\n
+        \     \"type\": \"object\",\n      \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\"
+        }],\n      \"properties\": {\n        \"type\": { \"type\": \"string\", \"enum\":
+        [\"CompoundCRS\"] },\n        \"name\": { \"type\": \"string\" },\n        \"components\":
+        \ {\n           \"type\": \"array\",\n            \"items\": { \"$ref\": \"#/definitions/crs\"
         }\n        },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\":
-        {},\n        \"bbox\": {},\n        \"usages\": {},\n        \"remarks\":
-        {},\n        \"id\": {}, \"ids\": {}\n      },\n      \"required\" : [ \"name\",
-        \"components\" ],\n      \"additionalProperties\": false\n    },\n\n    \"concatenated_operation\":
+        {},\n        \"bbox\": {},\n        \"vertical_extent\": {},\n        \"temporal_extent\":
+        {},\n        \"usages\": {},\n        \"remarks\": {},\n        \"id\": {},
+        \"ids\": {}\n      },\n      \"required\" : [ \"name\", \"components\" ],\n
+        \     \"additionalProperties\": false\n    },\n\n    \"concatenated_operation\":
         {\n      \"type\": \"object\",\n      \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\"
         }],\n      \"properties\": {\n        \"type\": { \"type\": \"string\", \"enum\":
         [\"ConcatenatedOperation\"] },\n        \"name\": { \"type\": \"string\" },\n
         \       \"source_crs\": { \"$ref\": \"#/definitions/crs\" },\n        \"target_crs\":
         { \"$ref\": \"#/definitions/crs\" },\n        \"steps\":  {\n           \"type\":
         \"array\",\n            \"items\": { \"$ref\": \"#/definitions/single_operation\"
-        }\n        },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\":
-        {},\n        \"bbox\": {},\n        \"usages\": {},\n        \"remarks\":
-        {},\n        \"id\": {}, \"ids\": {}\n      },\n      \"required\" : [ \"name\",
-        \"source_crs\", \"target_crs\", \"steps\" ],\n      \"additionalProperties\":
-        false\n    },\n\n    \"conversion\": {\n      \"type\": \"object\",\n      \"properties\":
-        {\n        \"$schema\" : { \"type\": \"string\" },\n        \"type\": { \"type\":
-        \"string\", \"enum\": [\"Conversion\"] },\n        \"name\": { \"type\": \"string\"
-        },\n        \"method\": { \"$ref\": \"#/definitions/method\" },\n        \"parameters\":
-        {\n            \"type\": \"array\",\n            \"items\": { \"$ref\": \"#/definitions/parameter_value\"
+        }\n        },\n        \"accuracy\": { \"type\": \"string\" },\n        \"$schema\"
+        : {},\n        \"scope\": {},\n        \"area\": {},\n        \"bbox\": {},\n
+        \       \"vertical_extent\": {},\n        \"temporal_extent\": {},\n        \"usages\":
+        {},\n        \"remarks\": {},\n        \"id\": {}, \"ids\": {}\n      },\n
+        \     \"required\" : [ \"name\", \"source_crs\", \"target_crs\", \"steps\"
+        ],\n      \"additionalProperties\": false\n    },\n\n    \"conversion\": {\n
+        \     \"type\": \"object\",\n      \"properties\": {\n        \"$schema\"
+        : { \"type\": \"string\" },\n        \"type\": { \"type\": \"string\", \"enum\":
+        [\"Conversion\"] },\n        \"name\": { \"type\": \"string\" },\n        \"method\":
+        { \"$ref\": \"#/definitions/method\" },\n        \"parameters\": {\n            \"type\":
+        \"array\",\n            \"items\": { \"$ref\": \"#/definitions/parameter_value\"
         }\n        },\n        \"id\": { \"$ref\": \"#/definitions/id\" },\n        \"ids\":
         { \"$ref\": \"#/definitions/ids\" }\n      },\n      \"required\" : [ \"name\",
         \"method\" ],\n      \"allOf\": [\n        { \"$ref\": \"#/definitions/id_ids_mutually_exclusive\"
-        }\n      ],\n      \"additionalProperties\": false\n    },\n\n    \"coordinate_system\":
+        }\n      ],\n      \"additionalProperties\": false\n    },\n\n    \"coordinate_metadata\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"$schema\"
+        : { \"type\": \"string\" },\n        \"type\": { \"type\": \"string\", \"enum\":
+        [\"CoordinateMetadata\"] },\n        \"crs\": { \"$ref\": \"#/definitions/crs\"
+        },\n        \"coordinateEpoch\": { \"type\": \"number\" }\n      },\n      \"required\"
+        : [ \"crs\" ],\n      \"additionalProperties\": false\n    },\n\n    \"coordinate_system\":
         {\n      \"type\": \"object\",\n      \"properties\": {\n        \"$schema\"
         : { \"type\": \"string\" },\n        \"type\": { \"type\": \"string\", \"enum\":
         [\"CoordinateSystem\"] },\n        \"name\": { \"type\": \"string\" },\n        \"subtype\":
         { \"type\": \"string\",\n                     \"enum\": [\"Cartesian\",\n
         \                             \"spherical\",\n                              \"ellipsoidal\",\n
         \                             \"vertical\",\n                              \"ordinal\",\n
-        \                             \"parametric\",\n                              \"TemporalDateTime\",\n
-        \                             \"TemporalCount\",\n                              \"TemporalMeasure\"]
-        \ },\n        \"axis\": {\n            \"type\": \"array\",\n            \"items\":
-        { \"$ref\": \"#/definitions/axis\" }\n        },\n        \"id\": { \"$ref\":
-        \"#/definitions/id\" },\n        \"ids\": { \"$ref\": \"#/definitions/ids\"
-        }\n      },\n      \"required\" : [ \"subtype\", \"axis\" ],\n      \"allOf\":
-        [\n        { \"$ref\": \"#/definitions/id_ids_mutually_exclusive\" }\n      ],\n
-        \     \"additionalProperties\": false\n    },\n\n    \"crs\": {\n      \"oneOf\":
-        [\n        { \"$ref\": \"#/definitions/bound_crs\" },\n        { \"$ref\":
-        \"#/definitions/compound_crs\" },\n        { \"$ref\": \"#/definitions/derived_engineering_crs\"
-        },\n        { \"$ref\": \"#/definitions/derived_geodetic_crs\" },\n        {
-        \"$ref\": \"#/definitions/derived_parametric_crs\" },\n        { \"$ref\":
-        \"#/definitions/derived_projected_crs\" },\n        { \"$ref\": \"#/definitions/derived_temporal_crs\"
-        },\n        { \"$ref\": \"#/definitions/derived_vertical_crs\" },\n        {
-        \"$ref\": \"#/definitions/engineering_crs\" },\n        { \"$ref\": \"#/definitions/geodetic_crs\"
-        },\n        { \"$ref\": \"#/definitions/parametric_crs\" },\n        { \"$ref\":
-        \"#/definitions/projected_crs\" },\n        { \"$ref\": \"#/definitions/temporal_crs\"
-        },\n        { \"$ref\": \"#/definitions/vertical_crs\" }\n      ]\n    },\n\n
-        \   \"datum\": {\n      \"oneOf\": [\n        { \"$ref\": \"#/definitions/geodetic_reference_frame\"
-        },\n        { \"$ref\": \"#/definitions/vertical_reference_frame\" },\n        {
-        \"$ref\": \"#/definitions/dynamic_geodetic_reference_frame\" },\n        {
-        \"$ref\": \"#/definitions/dynamic_vertical_reference_frame\" },\n        {
-        \"$ref\": \"#/definitions/temporal_datum\" },\n        { \"$ref\": \"#/definitions/parametric_datum\"
-        },\n        { \"$ref\": \"#/definitions/engineering_datum\" }\n      ]\n    },\n\n
-        \   \"datum_ensemble\": {\n      \"type\": \"object\",\n      \"properties\":
-        {\n        \"$schema\" : { \"type\": \"string\" },\n        \"type\": { \"type\":
-        \"string\", \"enum\": [\"DatumEnsemble\"] },\n        \"name\": { \"type\":
-        \"string\" },\n        \"members\": {\n            \"type\": \"array\",\n
-        \           \"items\": {\n                \"type\": \"object\",\n                \"properties\":
-        {\n                    \"name\": { \"type\": \"string\" },\n                    \"id\":
-        { \"$ref\": \"#/definitions/id\" },\n                    \"ids\": { \"$ref\":
-        \"#/definitions/ids\" }\n                },\n                \"required\"
-        : [ \"name\" ],\n                \"allOf\": [\n                    { \"$ref\":
-        \"#/definitions/id_ids_mutually_exclusive\" }\n                ],\n                \"additionalProperties\":
-        false\n            }\n        },\n        \"ellipsoid\": { \"$ref\": \"#/definitions/ellipsoid\"
+        \                             \"parametric\",\n                              \"affine\",\n
+        \                             \"TemporalDateTime\",\n                              \"TemporalCount\",\n
+        \                             \"TemporalMeasure\"]  },\n        \"axis\":
+        {\n            \"type\": \"array\",\n            \"items\": { \"$ref\": \"#/definitions/axis\"
+        }\n        },\n        \"id\": { \"$ref\": \"#/definitions/id\" },\n        \"ids\":
+        { \"$ref\": \"#/definitions/ids\" }\n      },\n      \"required\" : [ \"subtype\",
+        \"axis\" ],\n      \"allOf\": [\n        { \"$ref\": \"#/definitions/id_ids_mutually_exclusive\"
+        }\n      ],\n      \"additionalProperties\": false\n    },\n\n    \"crs\":
+        {\n      \"oneOf\": [\n        { \"$ref\": \"#/definitions/bound_crs\" },\n
+        \       { \"$ref\": \"#/definitions/compound_crs\" },\n        { \"$ref\":
+        \"#/definitions/derived_engineering_crs\" },\n        { \"$ref\": \"#/definitions/derived_geodetic_crs\"
+        },\n        { \"$ref\": \"#/definitions/derived_parametric_crs\" },\n        {
+        \"$ref\": \"#/definitions/derived_projected_crs\" },\n        { \"$ref\":
+        \"#/definitions/derived_temporal_crs\" },\n        { \"$ref\": \"#/definitions/derived_vertical_crs\"
+        },\n        { \"$ref\": \"#/definitions/engineering_crs\" },\n        { \"$ref\":
+        \"#/definitions/geodetic_crs\" },\n        { \"$ref\": \"#/definitions/parametric_crs\"
+        },\n        { \"$ref\": \"#/definitions/projected_crs\" },\n        { \"$ref\":
+        \"#/definitions/temporal_crs\" },\n        { \"$ref\": \"#/definitions/vertical_crs\"
+        }\n      ]\n    },\n\n    \"datum\": {\n      \"oneOf\": [\n        { \"$ref\":
+        \"#/definitions/geodetic_reference_frame\" },\n        { \"$ref\": \"#/definitions/vertical_reference_frame\"
+        },\n        { \"$ref\": \"#/definitions/dynamic_geodetic_reference_frame\"
+        },\n        { \"$ref\": \"#/definitions/dynamic_vertical_reference_frame\"
+        },\n        { \"$ref\": \"#/definitions/temporal_datum\" },\n        { \"$ref\":
+        \"#/definitions/parametric_datum\" },\n        { \"$ref\": \"#/definitions/engineering_datum\"
+        }\n      ]\n    },\n\n    \"datum_ensemble\": {\n      \"type\": \"object\",\n
+        \     \"properties\": {\n        \"$schema\" : { \"type\": \"string\" },\n
+        \       \"type\": { \"type\": \"string\", \"enum\": [\"DatumEnsemble\"] },\n
+        \       \"name\": { \"type\": \"string\" },\n        \"members\": {\n            \"type\":
+        \"array\",\n            \"items\": {\n                \"type\": \"object\",\n
+        \               \"properties\": {\n                    \"name\": { \"type\":
+        \"string\" },\n                    \"id\": { \"$ref\": \"#/definitions/id\"
+        },\n                    \"ids\": { \"$ref\": \"#/definitions/ids\" }\n                },\n
+        \               \"required\" : [ \"name\" ],\n                \"allOf\": [\n
+        \                   { \"$ref\": \"#/definitions/id_ids_mutually_exclusive\"
+        }\n                ],\n                \"additionalProperties\": false\n            }\n
+        \       },\n        \"ellipsoid\": { \"$ref\": \"#/definitions/ellipsoid\"
         },\n        \"accuracy\": { \"type\": \"string\" },\n        \"id\": { \"$ref\":
         \"#/definitions/id\" },\n        \"ids\": { \"$ref\": \"#/definitions/ids\"
         }\n      },\n      \"required\" : [ \"name\", \"members\", \"accuracy\" ],\n
         \     \"allOf\": [\n        { \"$ref\": \"#/definitions/id_ids_mutually_exclusive\"
-        }\n      ],\n      \"additionalProperties\": false\n    },\n\n    \"derived_engineering_crs\":
+        }\n      ],\n      \"additionalProperties\": false\n    },\n\n    \"deformation_model\":
+        {\n      \"description\": \"Association to a PointMotionOperation\",\n      \"type\":
+        \"object\",\n      \"properties\": {\n        \"name\": { \"type\": \"string\"
+        },\n        \"id\": { \"$ref\": \"#/definitions/id\" }\n      },\n      \"required\"
+        : [ \"name\" ],\n      \"additionalProperties\": false\n    },\n\n    \"derived_engineering_crs\":
         {\n      \"type\": \"object\",\n      \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\"
         }],\n      \"properties\": {\n        \"type\": { \"type\": \"string\",\n
         \                 \"enum\": [\"DerivedEngineeringCRS\"] },\n        \"name\":
@@ -331,30 +393,32 @@ interactions:
         },\n        \"conversion\": { \"$ref\": \"#/definitions/conversion\" },\n
         \       \"coordinate_system\": { \"$ref\": \"#/definitions/coordinate_system\"
         },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\": {},\n
-        \       \"bbox\": {},\n        \"usages\": {},\n        \"remarks\": {},\n
-        \       \"id\": {}, \"ids\": {}\n     },\n     \"required\" : [ \"name\",
-        \"base_crs\", \"conversion\", \"coordinate_system\" ],\n     \"additionalProperties\":
-        false\n    },\n\n    \"derived_geodetic_crs\": {\n      \"type\": \"object\",\n
-        \     \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\":
-        {\n        \"type\": { \"type\": \"string\",\n                  \"enum\":
-        [\"DerivedGeodeticCRS\",\n                           \"DerivedGeographicCRS\"]
+        \       \"bbox\": {},\n        \"vertical_extent\": {},\n        \"temporal_extent\":
+        {},\n        \"usages\": {},\n        \"remarks\": {},\n        \"id\": {},
+        \"ids\": {}\n     },\n     \"required\" : [ \"name\", \"base_crs\", \"conversion\",
+        \"coordinate_system\" ],\n     \"additionalProperties\": false\n    },\n\n
+        \   \"derived_geodetic_crs\": {\n      \"type\": \"object\",\n      \"allOf\":
+        [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\": {\n
+        \       \"type\": { \"type\": \"string\",\n                  \"enum\": [\"DerivedGeodeticCRS\",\n
+        \                          \"DerivedGeographicCRS\"] },\n        \"name\":
+        { \"type\": \"string\" },\n        \"base_crs\": { \"$ref\": \"#/definitions/geodetic_crs\"
+        },\n        \"conversion\": { \"$ref\": \"#/definitions/conversion\" },\n
+        \       \"coordinate_system\": { \"$ref\": \"#/definitions/coordinate_system\"
+        },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\": {},\n
+        \       \"bbox\": {},\n        \"vertical_extent\": {},\n        \"temporal_extent\":
+        {},\n        \"usages\": {},\n        \"remarks\": {},\n        \"id\": {},
+        \"ids\": {}\n     },\n     \"required\" : [ \"name\", \"base_crs\", \"conversion\",
+        \"coordinate_system\" ],\n     \"additionalProperties\": false\n    },\n\n
+        \   \"derived_parametric_crs\": {\n      \"type\": \"object\",\n      \"allOf\":
+        [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\": {\n
+        \       \"type\": { \"type\": \"string\",\n                  \"enum\": [\"DerivedParametricCRS\"]
         },\n        \"name\": { \"type\": \"string\" },\n        \"base_crs\": { \"$ref\":
-        \"#/definitions/geodetic_crs\" },\n        \"conversion\": { \"$ref\": \"#/definitions/conversion\"
+        \"#/definitions/parametric_crs\" },\n        \"conversion\": { \"$ref\": \"#/definitions/conversion\"
         },\n        \"coordinate_system\": { \"$ref\": \"#/definitions/coordinate_system\"
         },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\": {},\n
-        \       \"bbox\": {},\n        \"usages\": {},\n        \"remarks\": {},\n
-        \       \"id\": {}, \"ids\": {}\n     },\n     \"required\" : [ \"name\",
-        \"base_crs\", \"conversion\", \"coordinate_system\" ],\n     \"additionalProperties\":
-        false\n    },\n\n    \"derived_parametric_crs\": {\n      \"type\": \"object\",\n
-        \     \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\":
-        {\n        \"type\": { \"type\": \"string\",\n                  \"enum\":
-        [\"DerivedParametricCRS\"] },\n        \"name\": { \"type\": \"string\" },\n
-        \       \"base_crs\": { \"$ref\": \"#/definitions/parametric_crs\" },\n        \"conversion\":
-        { \"$ref\": \"#/definitions/conversion\" },\n        \"coordinate_system\":
-        { \"$ref\": \"#/definitions/coordinate_system\" },\n        \"$schema\" :
-        {},\n        \"scope\": {},\n        \"area\": {},\n        \"bbox\": {},\n
-        \       \"usages\": {},\n        \"remarks\": {},\n        \"id\": {}, \"ids\":
-        {}\n     },\n     \"required\" : [ \"name\", \"base_crs\", \"conversion\",
+        \       \"bbox\": {},\n        \"vertical_extent\": {},\n        \"temporal_extent\":
+        {},\n        \"usages\": {},\n        \"remarks\": {},\n        \"id\": {},
+        \"ids\": {}\n     },\n     \"required\" : [ \"name\", \"base_crs\", \"conversion\",
         \"coordinate_system\" ],\n     \"additionalProperties\": false\n    },\n\n
         \   \"derived_projected_crs\": {\n      \"type\": \"object\",\n      \"allOf\":
         [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\": {\n
@@ -363,19 +427,20 @@ interactions:
         \"#/definitions/projected_crs\" },\n        \"conversion\": { \"$ref\": \"#/definitions/conversion\"
         },\n        \"coordinate_system\": { \"$ref\": \"#/definitions/coordinate_system\"
         },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\": {},\n
-        \       \"bbox\": {},\n        \"usages\": {},\n        \"remarks\": {},\n
-        \       \"id\": {}, \"ids\": {}\n     },\n     \"required\" : [ \"name\",
-        \"base_crs\", \"conversion\", \"coordinate_system\" ],\n     \"additionalProperties\":
-        false\n    },\n\n    \"derived_temporal_crs\": {\n      \"type\": \"object\",\n
-        \     \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\":
-        {\n        \"type\": { \"type\": \"string\",\n                  \"enum\":
-        [\"DerivedTemporalCRS\"] },\n        \"name\": { \"type\": \"string\" },\n
-        \       \"base_crs\": { \"$ref\": \"#/definitions/temporal_crs\" },\n        \"conversion\":
-        { \"$ref\": \"#/definitions/conversion\" },\n        \"coordinate_system\":
-        { \"$ref\": \"#/definitions/coordinate_system\" },\n        \"$schema\" :
-        {},\n        \"scope\": {},\n        \"area\": {},\n        \"bbox\": {},\n
-        \       \"usages\": {},\n        \"remarks\": {},\n        \"id\": {}, \"ids\":
-        {}\n     },\n     \"required\" : [ \"name\", \"base_crs\", \"conversion\",
+        \       \"bbox\": {},\n        \"vertical_extent\": {},\n        \"temporal_extent\":
+        {},\n        \"usages\": {},\n        \"remarks\": {},\n        \"id\": {},
+        \"ids\": {}\n     },\n     \"required\" : [ \"name\", \"base_crs\", \"conversion\",
+        \"coordinate_system\" ],\n     \"additionalProperties\": false\n    },\n\n
+        \   \"derived_temporal_crs\": {\n      \"type\": \"object\",\n      \"allOf\":
+        [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\": {\n
+        \       \"type\": { \"type\": \"string\",\n                  \"enum\": [\"DerivedTemporalCRS\"]
+        },\n        \"name\": { \"type\": \"string\" },\n        \"base_crs\": { \"$ref\":
+        \"#/definitions/temporal_crs\" },\n        \"conversion\": { \"$ref\": \"#/definitions/conversion\"
+        },\n        \"coordinate_system\": { \"$ref\": \"#/definitions/coordinate_system\"
+        },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\": {},\n
+        \       \"bbox\": {},\n        \"vertical_extent\": {},\n        \"temporal_extent\":
+        {},\n        \"usages\": {},\n        \"remarks\": {},\n        \"id\": {},
+        \"ids\": {}\n     },\n     \"required\" : [ \"name\", \"base_crs\", \"conversion\",
         \"coordinate_system\" ],\n     \"additionalProperties\": false\n    },\n\n
         \   \"derived_vertical_crs\": {\n      \"type\": \"object\",\n      \"allOf\":
         [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\": {\n
@@ -384,67 +449,69 @@ interactions:
         \"#/definitions/vertical_crs\" },\n        \"conversion\": { \"$ref\": \"#/definitions/conversion\"
         },\n        \"coordinate_system\": { \"$ref\": \"#/definitions/coordinate_system\"
         },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\": {},\n
-        \       \"bbox\": {},\n        \"usages\": {},\n        \"remarks\": {},\n
-        \       \"id\": {}, \"ids\": {}\n     },\n     \"required\" : [ \"name\",
-        \"base_crs\", \"conversion\", \"coordinate_system\" ],\n     \"additionalProperties\":
-        false\n    },\n\n    \"dynamic_geodetic_reference_frame\": {\n      \"type\":
-        \"object\",\n      \"allOf\": [{ \"$ref\": \"#/definitions/geodetic_reference_frame\"
-        }],\n      \"properties\": {\n        \"type\": { \"type\": \"string\", \"enum\":
-        [\"DynamicGeodeticReferenceFrame\"] },\n        \"name\": {},\n        \"anchor\":
+        \       \"bbox\": {},\n        \"vertical_extent\": {},\n        \"temporal_extent\":
+        {},\n        \"usages\": {},\n        \"remarks\": {},\n        \"id\": {},
+        \"ids\": {}\n     },\n     \"required\" : [ \"name\", \"base_crs\", \"conversion\",
+        \"coordinate_system\" ],\n     \"additionalProperties\": false\n    },\n\n
+        \   \"dynamic_geodetic_reference_frame\": {\n      \"type\": \"object\",\n
+        \     \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\":
+        {\n        \"type\": { \"type\": \"string\", \"enum\": [\"DynamicGeodeticReferenceFrame\"]
+        },\n        \"name\": {},\n        \"anchor\": {},\n        \"anchor_epoch\":
         {},\n        \"ellipsoid\": {},\n        \"prime_meridian\": {},\n        \"frame_reference_epoch\":
-        { \"type\": \"number\" },\n        \"deformation_model\": { \"type\": \"string\"
-        },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\": {},\n
-        \       \"bbox\": {},\n        \"usages\": {},\n        \"remarks\": {},\n
-        \       \"id\": {}, \"ids\": {}\n      },\n      \"required\" : [ \"name\",
+        { \"type\": \"number\" },\n        \"$schema\" : {},\n        \"scope\": {},\n
+        \       \"area\": {},\n        \"bbox\": {},\n        \"vertical_extent\":
+        {},\n        \"temporal_extent\": {},\n        \"usages\": {},\n        \"remarks\":
+        {},\n        \"id\": {}, \"ids\": {}\n      },\n      \"required\" : [ \"name\",
         \"ellipsoid\", \"frame_reference_epoch\" ],\n      \"additionalProperties\":
         false\n    },\n\n    \"dynamic_vertical_reference_frame\": {\n      \"type\":
-        \"object\",\n      \"allOf\": [{ \"$ref\": \"#/definitions/vertical_reference_frame\"
+        \"object\",\n      \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\"
         }],\n      \"properties\": {\n        \"type\": { \"type\": \"string\", \"enum\":
         [\"DynamicVerticalReferenceFrame\"] },\n        \"name\": {},\n        \"anchor\":
-        {},\n        \"frame_reference_epoch\": { \"type\": \"number\" },\n        \"deformation_model\":
-        { \"type\": \"string\" },\n        \"$schema\" : {},\n        \"scope\": {},\n
-        \       \"area\": {},\n        \"bbox\": {},\n        \"usages\": {},\n        \"remarks\":
-        {},\n        \"id\": {}, \"ids\": {}\n      },\n      \"required\" : [ \"name\",
-        \"frame_reference_epoch\" ],\n      \"additionalProperties\": false\n    },\n\n
-        \   \"ellipsoid\": {\n      \"type\": \"object\",\n      \"oneOf\":[\n        {\n
-        \         \"properties\": {\n            \"$schema\" : { \"type\": \"string\"
-        },\n            \"type\": { \"type\": \"string\", \"enum\": [\"Ellipsoid\"]
-        },\n            \"name\": { \"type\": \"string\" },\n            \"semi_major_axis\":
-        { \"$ref\": \"#/definitions/value_in_metre_or_value_and_unit\" },\n            \"semi_minor_axis\":
-        { \"$ref\": \"#/definitions/value_in_metre_or_value_and_unit\" },\n            \"id\":
-        { \"$ref\": \"#/definitions/id\" },\n            \"ids\": { \"$ref\": \"#/definitions/ids\"
-        }\n          },\n          \"required\" : [ \"name\", \"semi_major_axis\",
-        \"semi_minor_axis\" ],\n          \"additionalProperties\": false\n        },\n
-        \       {\n          \"properties\": {\n            \"$schema\" : { \"type\":
-        \"string\" },\n            \"type\": { \"type\": \"string\", \"enum\": [\"Ellipsoid\"]
-        },\n            \"name\": { \"type\": \"string\" },\n            \"semi_major_axis\":
-        { \"$ref\": \"#/definitions/value_in_metre_or_value_and_unit\" },\n            \"inverse_flattening\":
-        { \"type\": \"number\" },\n            \"id\": { \"$ref\": \"#/definitions/id\"
-        },\n           \"ids\": { \"$ref\": \"#/definitions/ids\" }\n          },\n
-        \         \"required\" : [ \"name\", \"semi_major_axis\", \"inverse_flattening\"
-        ],\n          \"additionalProperties\": false\n        },\n        {\n          \"properties\":
+        {},\n        \"anchor_epoch\": {},\n        \"frame_reference_epoch\": { \"type\":
+        \"number\" },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\":
+        {},\n        \"bbox\": {},\n        \"vertical_extent\": {},\n        \"temporal_extent\":
+        {},\n        \"usages\": {},\n        \"remarks\": {},\n        \"id\": {},
+        \"ids\": {}\n      },\n      \"required\" : [ \"name\", \"frame_reference_epoch\"
+        ],\n      \"additionalProperties\": false\n    },\n\n    \"ellipsoid\": {\n
+        \     \"type\": \"object\",\n      \"oneOf\":[\n        {\n          \"properties\":
         {\n            \"$schema\" : { \"type\": \"string\" },\n            \"type\":
         { \"type\": \"string\", \"enum\": [\"Ellipsoid\"] },\n            \"name\":
-        { \"type\": \"string\" },\n            \"radius\": { \"$ref\": \"#/definitions/value_in_metre_or_value_and_unit\"
+        { \"type\": \"string\" },\n            \"semi_major_axis\": { \"$ref\": \"#/definitions/value_in_metre_or_value_and_unit\"
+        },\n            \"semi_minor_axis\": { \"$ref\": \"#/definitions/value_in_metre_or_value_and_unit\"
         },\n            \"id\": { \"$ref\": \"#/definitions/id\" },\n            \"ids\":
         { \"$ref\": \"#/definitions/ids\" }\n          },\n          \"required\"
-        : [ \"name\", \"radius\" ],\n         \"additionalProperties\": false\n        }\n
-        \     ],\n      \"allOf\": [\n        { \"$ref\": \"#/definitions/id_ids_mutually_exclusive\"
+        : [ \"name\", \"semi_major_axis\", \"semi_minor_axis\" ],\n          \"additionalProperties\":
+        false\n        },\n        {\n          \"properties\": {\n            \"$schema\"
+        : { \"type\": \"string\" },\n            \"type\": { \"type\": \"string\",
+        \"enum\": [\"Ellipsoid\"] },\n            \"name\": { \"type\": \"string\"
+        },\n            \"semi_major_axis\": { \"$ref\": \"#/definitions/value_in_metre_or_value_and_unit\"
+        },\n            \"inverse_flattening\": { \"type\": \"number\" },\n            \"id\":
+        { \"$ref\": \"#/definitions/id\" },\n           \"ids\": { \"$ref\": \"#/definitions/ids\"
+        }\n          },\n          \"required\" : [ \"name\", \"semi_major_axis\",
+        \"inverse_flattening\" ],\n          \"additionalProperties\": false\n        },\n
+        \       {\n          \"properties\": {\n            \"$schema\" : { \"type\":
+        \"string\" },\n            \"type\": { \"type\": \"string\", \"enum\": [\"Ellipsoid\"]
+        },\n            \"name\": { \"type\": \"string\" },\n            \"radius\":
+        { \"$ref\": \"#/definitions/value_in_metre_or_value_and_unit\" },\n            \"id\":
+        { \"$ref\": \"#/definitions/id\" },\n            \"ids\": { \"$ref\": \"#/definitions/ids\"
+        }\n          },\n          \"required\" : [ \"name\", \"radius\" ],\n         \"additionalProperties\":
+        false\n        }\n      ],\n      \"allOf\": [\n        { \"$ref\": \"#/definitions/id_ids_mutually_exclusive\"
         }\n      ]\n    },\n\n    \"engineering_crs\": {\n      \"type\": \"object\",\n
         \     \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\":
         {\n        \"type\": { \"type\": \"string\", \"enum\": [\"EngineeringCRS\"]
         },\n        \"name\": { \"type\": \"string\" },\n        \"datum\": { \"$ref\":
         \"#/definitions/engineering_datum\" },\n        \"coordinate_system\": { \"$ref\":
         \"#/definitions/coordinate_system\" },\n        \"$schema\" : {},\n        \"scope\":
-        {},\n        \"area\": {},\n        \"bbox\": {},\n        \"usages\": {},\n
-        \       \"remarks\": {},\n        \"id\": {}, \"ids\": {}\n      },\n      \"required\"
-        : [ \"name\", \"datum\" ],\n      \"additionalProperties\": false\n    },\n\n
-        \   \"engineering_datum\": {\n      \"type\": \"object\",\n      \"allOf\":
-        [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\": {\n
-        \       \"type\": { \"type\": \"string\", \"enum\": [\"EngineeringDatum\"]
-        },\n        \"name\": { \"type\": \"string\" },\n        \"anchor\": { \"type\":
-        \"string\" },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\":
-        {},\n        \"bbox\": {},\n        \"usages\": {},\n        \"remarks\":
+        {},\n        \"area\": {},\n        \"bbox\": {},\n        \"vertical_extent\":
+        {},\n        \"temporal_extent\": {},\n        \"usages\": {},\n        \"remarks\":
+        {},\n        \"id\": {}, \"ids\": {}\n      },\n      \"required\" : [ \"name\",
+        \"datum\" ],\n      \"additionalProperties\": false\n    },\n\n    \"engineering_datum\":
+        {\n      \"type\": \"object\",\n      \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\"
+        }],\n      \"properties\": {\n        \"type\": { \"type\": \"string\", \"enum\":
+        [\"EngineeringDatum\"] },\n        \"name\": { \"type\": \"string\" },\n        \"anchor\":
+        { \"type\": \"string\" },\n        \"$schema\" : {},\n        \"scope\": {},\n
+        \       \"area\": {},\n        \"bbox\": {},\n        \"vertical_extent\":
+        {},\n        \"temporal_extent\": {},\n        \"usages\": {},\n        \"remarks\":
         {},\n        \"id\": {}, \"ids\": {}\n      },\n      \"required\" : [ \"name\"
         ],\n      \"additionalProperties\": false\n    },\n\n    \"geodetic_crs\":
         {\n      \"type\": \"object\",\n      \"properties\": {\n        \"type\":
@@ -454,30 +521,41 @@ interactions:
         },\n                { \"$ref\": \"#/definitions/dynamic_geodetic_reference_frame\"
         }\n            ]\n        },\n        \"datum_ensemble\": { \"$ref\": \"#/definitions/datum_ensemble\"
         },\n        \"coordinate_system\": { \"$ref\": \"#/definitions/coordinate_system\"
-        },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\": {},\n
-        \       \"bbox\": {},\n        \"usages\": {},\n        \"remarks\": {},\n
-        \       \"id\": {}, \"ids\": {}\n      },\n      \"required\" : [ \"name\"
-        ],\n      \"description\": \"One and only one of datum and datum_ensemble
-        must be provided\",\n      \"allOf\": [\n        { \"$ref\": \"#/definitions/object_usage\"
-        },\n        { \"$ref\": \"#/definitions/one_and_only_one_of_datum_or_datum_ensemble\"
-        }\n      ],\n      \"additionalProperties\": false\n    },\n\n    \"geodetic_reference_frame\":
+        },\n        \"deformation_models\": {\n          \"type\": \"array\",\n          \"items\":
+        { \"$ref\": \"#/definitions/deformation_model\" }\n        },\n        \"$schema\"
+        : {},\n        \"scope\": {},\n        \"area\": {},\n        \"bbox\": {},\n
+        \       \"vertical_extent\": {},\n        \"temporal_extent\": {},\n        \"usages\":
+        {},\n        \"remarks\": {},\n        \"id\": {}, \"ids\": {}\n      },\n
+        \     \"required\" : [ \"name\" ],\n      \"description\": \"One and only
+        one of datum and datum_ensemble must be provided\",\n      \"allOf\": [\n
+        \       { \"$ref\": \"#/definitions/object_usage\" },\n        { \"$ref\":
+        \"#/definitions/one_and_only_one_of_datum_or_datum_ensemble\" }\n      ],\n
+        \     \"additionalProperties\": false\n    },\n\n    \"geodetic_reference_frame\":
         {\n      \"type\": \"object\",\n      \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\"
         }],\n      \"properties\": {\n        \"type\": { \"type\": \"string\", \"enum\":
         [\"GeodeticReferenceFrame\"] },\n        \"name\": { \"type\": \"string\"
-        },\n        \"anchor\": { \"type\": \"string\" },\n        \"ellipsoid\":
-        { \"$ref\": \"#/definitions/ellipsoid\" },\n        \"prime_meridian\": {
-        \"$ref\": \"#/definitions/prime_meridian\" },\n        \"$schema\" : {},\n
-        \       \"scope\": {},\n        \"area\": {},\n        \"bbox\": {},\n        \"usages\":
-        {},\n        \"remarks\": {},\n        \"id\": {}, \"ids\": {}\n      },\n
-        \     \"required\" : [ \"name\", \"ellipsoid\" ],\n      \"additionalProperties\":
-        false\n    },\n\n    \"id\": {\n      \"type\": \"object\",\n      \"properties\":
-        {\n        \"authority\": { \"type\": \"string\" },\n        \"code\": {\n
-        \         \"oneOf\": [ { \"type\": \"string\" }, { \"type\": \"integer\" }
-        ]\n        }\n      },\n      \"required\" : [ \"authority\", \"code\" ],\n
-        \     \"additionalProperties\": false\n    },\n\n    \"ids\": {\n      \"type\":
-        \"array\",\n      \"items\": { \"$ref\": \"#/definitions/id\" }\n    },\n\n
-        \   \"method\": {\n      \"type\": \"object\",\n      \"properties\": {\n
-        \       \"$schema\" : { \"type\": \"string\" },\n        \"type\": { \"type\":
+        },\n        \"anchor\": { \"type\": \"string\" },\n        \"anchor_epoch\":
+        { \"type\": \"number\" },\n        \"ellipsoid\": { \"$ref\": \"#/definitions/ellipsoid\"
+        },\n        \"prime_meridian\": { \"$ref\": \"#/definitions/prime_meridian\"
+        },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\": {},\n
+        \       \"bbox\": {},\n        \"vertical_extent\": {},\n        \"temporal_extent\":
+        {},\n        \"usages\": {},\n        \"remarks\": {},\n        \"id\": {},
+        \"ids\": {}\n      },\n      \"required\" : [ \"name\", \"ellipsoid\" ],\n
+        \     \"additionalProperties\": false\n    },\n\n    \"geoid_model\": {\n
+        \     \"type\": \"object\",\n      \"properties\": {\n        \"name\": {
+        \"type\": \"string\" },\n        \"interpolation_crs\": { \"$ref\": \"#/definitions/crs\"
+        },\n        \"id\": { \"$ref\": \"#/definitions/id\" }\n      },\n      \"required\"
+        : [ \"name\" ],\n      \"additionalProperties\": false\n    },\n\n    \"id\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"authority\":
+        { \"type\": \"string\" },\n        \"code\": {\n          \"oneOf\": [ { \"type\":
+        \"string\" }, { \"type\": \"integer\" } ]\n        },\n        \"version\":
+        {\n          \"oneOf\": [ { \"type\": \"string\" }, { \"type\": \"number\"
+        } ]\n        },\n        \"authority_citation\": { \"type\": \"string\" },\n
+        \       \"uri\": { \"type\": \"string\" }\n      },\n      \"required\" :
+        [ \"authority\", \"code\" ],\n      \"additionalProperties\": false\n    },\n\n
+        \   \"ids\": {\n      \"type\": \"array\",\n      \"items\": { \"$ref\": \"#/definitions/id\"
+        }\n    },\n\n    \"method\": {\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"$schema\" : { \"type\": \"string\" },\n        \"type\": { \"type\":
         \"string\", \"enum\": [\"OperationMethod\"]},\n        \"name\": { \"type\":
         \"string\" },\n        \"id\": { \"$ref\": \"#/definitions/id\" },\n        \"ids\":
         { \"$ref\": \"#/definitions/ids\" }\n      },\n      \"required\" : [ \"name\"
@@ -490,23 +568,33 @@ interactions:
         ]\n            }\n        },\n        {\n            \"oneOf\": [\n                {
         \"type\": \"object\", \"required\": [\"datum\"] },\n                { \"type\":
         \"object\", \"required\": [\"datum_ensemble\"] }\n            ]\n        }\n
-        \     ]\n    },\n\n    \"object_usage\": {\n      \"anyOf\": [\n      {\n
-        \       \"type\": \"object\",\n        \"properties\": {\n            \"$schema\"
-        : { \"type\": \"string\" },\n            \"scope\": { \"type\": \"string\"
-        },\n            \"area\": { \"type\": \"string\" },\n            \"bbox\":
-        { \"$ref\": \"#/definitions/bbox\" },\n            \"remarks\": { \"type\":
+        \     ]\n    },\n\n    \"meridian\": {\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"$schema\" : { \"type\": \"string\" },\n        \"type\": { \"type\":
+        \"string\", \"enum\": [\"Meridian\"] },\n        \"longitude\": { \"$ref\":
+        \"#/definitions/value_in_degree_or_value_and_unit\" },\n        \"id\": {
+        \"$ref\": \"#/definitions/id\" },\n        \"ids\": { \"$ref\": \"#/definitions/ids\"
+        }\n      },\n      \"required\" : [ \"longitude\" ],\n      \"allOf\": [\n
+        \       { \"$ref\": \"#/definitions/id_ids_mutually_exclusive\" }\n      ],\n
+        \     \"additionalProperties\": false\n    },\n\n    \"object_usage\": {\n
+        \     \"anyOf\": [\n      {\n        \"type\": \"object\",\n        \"properties\":
+        {\n            \"$schema\" : { \"type\": \"string\" },\n            \"scope\":
+        { \"type\": \"string\" },\n            \"area\": { \"type\": \"string\" },\n
+        \           \"bbox\": { \"$ref\": \"#/definitions/bbox\" },\n            \"vertical_extent\":
+        { \"$ref\": \"#/definitions/vertical_extent\" },\n            \"temporal_extent\":
+        { \"$ref\": \"#/definitions/temporal_extent\" },\n            \"remarks\":
+        { \"type\": \"string\" },\n            \"id\": { \"$ref\": \"#/definitions/id\"
+        },\n            \"ids\": { \"$ref\": \"#/definitions/ids\" }\n        },\n
+        \       \"allOf\": [\n            { \"$ref\": \"#/definitions/id_ids_mutually_exclusive\"
+        }\n        ]\n      },\n      {\n        \"type\": \"object\",\n        \"properties\":
+        {\n            \"$schema\" : { \"type\": \"string\" },\n            \"usages\":
+        { \"$ref\": \"#/definitions/usages\" },\n            \"remarks\": { \"type\":
         \"string\" },\n            \"id\": { \"$ref\": \"#/definitions/id\" },\n            \"ids\":
         { \"$ref\": \"#/definitions/ids\" }\n        },\n        \"allOf\": [\n            {
-        \"$ref\": \"#/definitions/id_ids_mutually_exclusive\" }\n        ]\n      },\n
-        \     {\n        \"type\": \"object\",\n        \"properties\": {\n            \"$schema\"
-        : { \"type\": \"string\" },\n            \"usages\": { \"$ref\": \"#/definitions/usages\"
-        },\n            \"remarks\": { \"type\": \"string\" },\n            \"id\":
-        { \"$ref\": \"#/definitions/id\" },\n            \"ids\": { \"$ref\": \"#/definitions/ids\"
-        }\n        },\n        \"allOf\": [\n            { \"$ref\": \"#/definitions/id_ids_mutually_exclusive\"
-        }\n        ]\n      }\n      ]\n    },\n\n    \"parameter_value\": {\n      \"type\":
-        \"object\",\n      \"properties\": {\n        \"$schema\" : { \"type\": \"string\"
-        },\n        \"type\": { \"type\": \"string\", \"enum\": [\"ParameterValue\"]
-        },\n        \"name\": { \"type\": \"string\" },\n        \"value\": {\n          \"oneOf\":
+        \"$ref\": \"#/definitions/id_ids_mutually_exclusive\" }\n        ]\n      }\n
+        \     ]\n    },\n\n    \"parameter_value\": {\n      \"type\": \"object\",\n
+        \     \"properties\": {\n        \"$schema\" : { \"type\": \"string\" },\n
+        \       \"type\": { \"type\": \"string\", \"enum\": [\"ParameterValue\"] },\n
+        \       \"name\": { \"type\": \"string\" },\n        \"value\": {\n          \"oneOf\":
         [\n            { \"type\": \"string\" },\n            { \"type\": \"number\"
         }\n           ]\n        },\n        \"unit\": { \"$ref\": \"#/definitions/unit\"
         },\n        \"id\": { \"$ref\": \"#/definitions/id\" },\n        \"ids\":
@@ -519,84 +607,107 @@ interactions:
         { \"$ref\": \"#/definitions/parametric_datum\" },\n        \"coordinate_system\":
         { \"$ref\": \"#/definitions/coordinate_system\" },\n        \"$schema\" :
         {},\n        \"scope\": {},\n        \"area\": {},\n        \"bbox\": {},\n
-        \       \"usages\": {},\n        \"remarks\": {},\n        \"id\": {}, \"ids\":
-        {}\n      },\n      \"required\" : [ \"name\", \"datum\" ],\n      \"additionalProperties\":
+        \       \"vertical_extent\": {},\n        \"temporal_extent\": {},\n        \"usages\":
+        {},\n        \"remarks\": {},\n        \"id\": {}, \"ids\": {}\n      },\n
+        \     \"required\" : [ \"name\", \"datum\" ],\n      \"additionalProperties\":
         false\n    },\n\n    \"parametric_datum\": {\n      \"type\": \"object\",\n
         \     \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\":
         {\n        \"type\": { \"type\": \"string\", \"enum\": [\"ParametricDatum\"]
         },\n        \"name\": { \"type\": \"string\" },\n        \"anchor\": { \"type\":
         \"string\" },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\":
-        {},\n        \"bbox\": {},\n        \"usages\": {},\n        \"remarks\":
-        {},\n        \"id\": {}, \"ids\": {}\n      },\n      \"required\" : [ \"name\"
-        ],\n      \"additionalProperties\": false\n    },\n\n    \"prime_meridian\":
-        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"$schema\"
-        : { \"type\": \"string\" },\n        \"type\": { \"type\": \"string\", \"enum\":
-        [\"PrimeMeridian\"] },\n        \"name\": { \"type\": \"string\" },\n        \"longitude\":
-        { \"$ref\": \"#/definitions/value_in_degree_or_value_and_unit\" },\n        \"id\":
-        { \"$ref\": \"#/definitions/id\" },\n        \"ids\": { \"$ref\": \"#/definitions/ids\"
+        {},\n        \"bbox\": {},\n        \"vertical_extent\": {},\n        \"temporal_extent\":
+        {},\n        \"usages\": {},\n        \"remarks\": {},\n        \"id\": {},
+        \"ids\": {}\n      },\n      \"required\" : [ \"name\" ],\n      \"additionalProperties\":
+        false\n    },\n\n    \"point_motion_operation\": {\n      \"$comment\": \"Not
+        implemented in PROJ (at least as of PROJ 9.1)\",\n      \"type\": \"object\",\n
+        \     \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\":
+        {\n        \"type\": { \"type\": \"string\", \"enum\": [\"PointMotionOperation\"]
+        },\n        \"name\": { \"type\": \"string\" },\n        \"source_crs\": {
+        \"$ref\": \"#/definitions/crs\" },\n        \"method\": { \"$ref\": \"#/definitions/method\"
+        },\n        \"parameters\": {\n            \"type\": \"array\",\n            \"items\":
+        { \"$ref\": \"#/definitions/parameter_value\" }\n        },\n        \"accuracy\":
+        { \"type\": \"string\" },\n        \"$schema\" : {},\n        \"scope\": {},\n
+        \       \"area\": {},\n        \"bbox\": {},\n        \"vertical_extent\":
+        {},\n        \"temporal_extent\": {},\n        \"usages\": {},\n        \"remarks\":
+        {},\n        \"id\": {}, \"ids\": {}\n      },\n      \"required\" : [ \"name\",
+        \"source_crs\", \"method\", \"parameters\" ],\n      \"additionalProperties\":
+        false\n    },\n\n    \"prime_meridian\": {\n      \"type\": \"object\",\n
+        \     \"properties\": {\n        \"$schema\" : { \"type\": \"string\" },\n
+        \       \"type\": { \"type\": \"string\", \"enum\": [\"PrimeMeridian\"] },\n
+        \       \"name\": { \"type\": \"string\" },\n        \"longitude\": { \"$ref\":
+        \"#/definitions/value_in_degree_or_value_and_unit\" },\n        \"id\": {
+        \"$ref\": \"#/definitions/id\" },\n        \"ids\": { \"$ref\": \"#/definitions/ids\"
         }\n      },\n      \"required\" : [ \"name\" ],\n      \"allOf\": [\n        {
         \"$ref\": \"#/definitions/id_ids_mutually_exclusive\" }\n      ],\n      \"additionalProperties\":
         false\n    },\n\n    \"single_operation\": {\n      \"oneOf\": [\n        {
         \"$ref\": \"#/definitions/conversion\" },\n        { \"$ref\": \"#/definitions/transformation\"
-        }\n      ]\n    },\n\n    \"projected_crs\": {\n      \"type\": \"object\",\n
-        \     \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\":
-        {\n        \"type\": { \"type\": \"string\",\n                  \"enum\":
-        [\"ProjectedCRS\"] },\n        \"name\": { \"type\": \"string\" },\n        \"base_crs\":
-        { \"$ref\": \"#/definitions/geodetic_crs\" },\n        \"conversion\": { \"$ref\":
-        \"#/definitions/conversion\" },\n        \"coordinate_system\": { \"$ref\":
-        \"#/definitions/coordinate_system\" },\n        \"$schema\" : {},\n        \"scope\":
-        {},\n        \"area\": {},\n        \"bbox\": {},\n        \"usages\": {},\n
-        \       \"remarks\": {},\n        \"id\": {}, \"ids\": {}\n     },\n     \"required\"
-        : [ \"name\", \"base_crs\", \"conversion\", \"coordinate_system\" ],\n     \"additionalProperties\":
-        false\n    },\n\n    \"temporal_crs\": {\n      \"type\": \"object\",\n      \"allOf\":
+        },\n        { \"$ref\": \"#/definitions/point_motion_operation\" }\n      ]\n
+        \   },\n\n    \"projected_crs\": {\n      \"type\": \"object\",\n      \"allOf\":
         [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\": {\n
-        \       \"type\": { \"type\": \"string\", \"enum\": [\"TemporalCRS\"] },\n
-        \       \"name\": { \"type\": \"string\" },\n        \"datum\": { \"$ref\":
-        \"#/definitions/temporal_datum\" },\n        \"coordinate_system\": { \"$ref\":
-        \"#/definitions/coordinate_system\" },\n        \"$schema\" : {},\n        \"scope\":
-        {},\n        \"area\": {},\n        \"bbox\": {},\n        \"usages\": {},\n
-        \       \"remarks\": {},\n        \"id\": {}, \"ids\": {}\n      },\n      \"required\"
-        : [ \"name\", \"datum\" ],\n      \"additionalProperties\": false\n    },\n\n
-        \   \"temporal_datum\": {\n      \"type\": \"object\",\n      \"allOf\": [{
+        \       \"type\": { \"type\": \"string\",\n                  \"enum\": [\"ProjectedCRS\"]
+        },\n        \"name\": { \"type\": \"string\" },\n        \"base_crs\": { \"$ref\":
+        \"#/definitions/geodetic_crs\" },\n        \"conversion\": { \"$ref\": \"#/definitions/conversion\"
+        },\n        \"coordinate_system\": { \"$ref\": \"#/definitions/coordinate_system\"
+        },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\": {},\n
+        \       \"bbox\": {},\n        \"vertical_extent\": {},\n        \"temporal_extent\":
+        {},\n        \"usages\": {},\n        \"remarks\": {},\n        \"id\": {},
+        \"ids\": {}\n     },\n     \"required\" : [ \"name\", \"base_crs\", \"conversion\",
+        \"coordinate_system\" ],\n     \"additionalProperties\": false\n    },\n\n
+        \   \"temporal_crs\": {\n      \"type\": \"object\",\n      \"allOf\": [{
         \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\": {\n        \"type\":
-        { \"type\": \"string\", \"enum\": [\"TemporalDatum\"] },\n        \"name\":
-        { \"type\": \"string\" },\n        \"calendar\": { \"type\": \"string\" },\n
-        \       \"time_origin\": { \"type\": \"string\" },\n        \"$schema\" :
-        {},\n        \"scope\": {},\n        \"area\": {},\n        \"bbox\": {},\n
-        \       \"usages\": {},\n        \"remarks\": {},\n        \"id\": {}, \"ids\":
-        {}\n      },\n      \"required\" : [ \"name\", \"calendar\" ],\n      \"additionalProperties\":
-        false\n    },\n\n    \"transformation\": {\n      \"type\": \"object\",\n
+        { \"type\": \"string\", \"enum\": [\"TemporalCRS\"] },\n        \"name\":
+        { \"type\": \"string\" },\n        \"datum\": { \"$ref\": \"#/definitions/temporal_datum\"
+        },\n        \"coordinate_system\": { \"$ref\": \"#/definitions/coordinate_system\"
+        },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\": {},\n
+        \       \"bbox\": {},\n        \"vertical_extent\": {},\n        \"temporal_extent\":
+        {},\n        \"usages\": {},\n        \"remarks\": {},\n        \"id\": {},
+        \"ids\": {}\n      },\n      \"required\" : [ \"name\", \"datum\" ],\n      \"additionalProperties\":
+        false\n    },\n\n    \"temporal_datum\": {\n      \"type\": \"object\",\n
         \     \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\":
-        {\n        \"type\": { \"type\": \"string\", \"enum\": [\"Transformation\"]
-        },\n        \"name\": { \"type\": \"string\" },\n        \"source_crs\": {
-        \"$ref\": \"#/definitions/crs\" },\n        \"target_crs\": { \"$ref\": \"#/definitions/crs\"
-        },\n        \"interpolation_crs\": { \"$ref\": \"#/definitions/crs\" },\n
-        \       \"method\": { \"$ref\": \"#/definitions/method\" },\n        \"parameters\":
+        {\n        \"type\": { \"type\": \"string\", \"enum\": [\"TemporalDatum\"]
+        },\n        \"name\": { \"type\": \"string\" },\n        \"calendar\": { \"type\":
+        \"string\" },\n        \"time_origin\": { \"type\": \"string\" },\n        \"$schema\"
+        : {},\n        \"scope\": {},\n        \"area\": {},\n        \"bbox\": {},\n
+        \       \"vertical_extent\": {},\n        \"temporal_extent\": {},\n        \"usages\":
+        {},\n        \"remarks\": {},\n        \"id\": {}, \"ids\": {}\n      },\n
+        \     \"required\" : [ \"name\", \"calendar\" ],\n      \"additionalProperties\":
+        false\n    },\n\n    \"temporal_extent\": {\n      \"type\": \"object\",\n
+        \     \"properties\": {\n        \"start\": { \"type\": \"string\" },\n        \"end\":
+        { \"type\": \"string\" }\n      },\n      \"required\" : [ \"start\", \"end\"
+        ],\n      \"additionalProperties\": false\n    },\n\n    \"transformation\":
+        {\n      \"type\": \"object\",\n      \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\"
+        }],\n      \"properties\": {\n        \"type\": { \"type\": \"string\", \"enum\":
+        [\"Transformation\"] },\n        \"name\": { \"type\": \"string\" },\n        \"source_crs\":
+        { \"$ref\": \"#/definitions/crs\" },\n        \"target_crs\": { \"$ref\":
+        \"#/definitions/crs\" },\n        \"interpolation_crs\": { \"$ref\": \"#/definitions/crs\"
+        },\n        \"method\": { \"$ref\": \"#/definitions/method\" },\n        \"parameters\":
         {\n            \"type\": \"array\",\n            \"items\": { \"$ref\": \"#/definitions/parameter_value\"
         }\n        },\n        \"accuracy\": { \"type\": \"string\" },\n        \"$schema\"
         : {},\n        \"scope\": {},\n        \"area\": {},\n        \"bbox\": {},\n
-        \       \"usages\": {},\n        \"remarks\": {},\n        \"id\": {}, \"ids\":
-        {}\n      },\n      \"required\" : [ \"name\", \"source_crs\", \"target_crs\",
-        \"method\", \"parameters\" ],\n      \"additionalProperties\": false\n    },\n\n
-        \   \"unit\": {\n      \"oneOf\": [\n      {\n        \"type\": \"string\",\n
-        \       \"enum\": [\"metre\", \"degree\", \"unity\"]\n      },\n      {\n
-        \       \"type\": \"object\",\n        \"properties\": {\n          \"type\":
-        { \"type\": \"string\",\n                    \"enum\": [\"LinearUnit\", \"AngularUnit\",
-        \"ScaleUnit\",\n                             \"TimeUnit\", \"ParametricUnit\",
-        \"Unit\"] },\n          \"name\": { \"type\": \"string\" },\n          \"conversion_factor\":
-        { \"type\": \"number\" },\n          \"id\": { \"$ref\": \"#/definitions/id\"
-        },\n          \"ids\": { \"$ref\": \"#/definitions/ids\" }\n         },\n
-        \        \"required\" : [ \"type\", \"name\" ],\n         \"allOf\": [\n            {
-        \"$ref\": \"#/definitions/id_ids_mutually_exclusive\" }\n          ],\n         \"additionalProperties\":
-        false\n      }\n      ]\n    },\n\n    \"usages\": {\n        \"type\": \"array\",\n
-        \       \"items\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"scope\": { \"type\": \"string\" },\n            \"area\":
-        { \"type\": \"string\" },\n            \"bbox\": { \"$ref\": \"#/definitions/bbox\"
-        }\n           },\n          \"additionalProperties\": false\n        }\n    },\n\n
-        \   \"value_and_unit\": {\n      \"type\": \"object\",\n      \"properties\":
-        {\n        \"value\": { \"type\": \"number\" },\n        \"unit\": { \"$ref\":
-        \"#/definitions/unit\" }\n      },\n      \"required\" : [ \"value\", \"unit\"
-        ],\n      \"additionalProperties\": false\n    },\n\n    \"value_in_degree_or_value_and_unit\":
+        \       \"vertical_extent\": {},\n        \"temporal_extent\": {},\n        \"usages\":
+        {},\n        \"remarks\": {},\n        \"id\": {}, \"ids\": {}\n      },\n
+        \     \"required\" : [ \"name\", \"source_crs\", \"target_crs\", \"method\",
+        \"parameters\" ],\n      \"additionalProperties\": false\n    },\n\n    \"unit\":
+        {\n      \"oneOf\": [\n      {\n        \"type\": \"string\",\n        \"enum\":
+        [\"metre\", \"degree\", \"unity\"]\n      },\n      {\n        \"type\": \"object\",\n
+        \       \"properties\": {\n          \"type\": { \"type\": \"string\",\n                    \"enum\":
+        [\"LinearUnit\", \"AngularUnit\", \"ScaleUnit\",\n                             \"TimeUnit\",
+        \"ParametricUnit\", \"Unit\"] },\n          \"name\": { \"type\": \"string\"
+        },\n          \"conversion_factor\": { \"type\": \"number\" },\n          \"id\":
+        { \"$ref\": \"#/definitions/id\" },\n          \"ids\": { \"$ref\": \"#/definitions/ids\"
+        }\n         },\n         \"required\" : [ \"type\", \"name\" ],\n         \"allOf\":
+        [\n            { \"$ref\": \"#/definitions/id_ids_mutually_exclusive\" }\n
+        \         ],\n         \"additionalProperties\": false\n      }\n      ]\n
+        \   },\n\n    \"usages\": {\n        \"type\": \"array\",\n        \"items\":
+        {\n          \"type\": \"object\",\n          \"properties\": {\n            \"scope\":
+        { \"type\": \"string\" },\n            \"area\": { \"type\": \"string\" },\n
+        \           \"bbox\": { \"$ref\": \"#/definitions/bbox\" },\n            \"vertical_extent\":
+        { \"$ref\": \"#/definitions/vertical_extent\" },\n            \"temporal_extent\":
+        { \"$ref\": \"#/definitions/temporal_extent\" }\n           },\n          \"additionalProperties\":
+        false\n        }\n    },\n\n    \"value_and_unit\": {\n      \"type\": \"object\",\n
+        \     \"properties\": {\n        \"value\": { \"type\": \"number\" },\n        \"unit\":
+        { \"$ref\": \"#/definitions/unit\" }\n      },\n      \"required\" : [ \"value\",
+        \"unit\" ],\n      \"additionalProperties\": false\n    },\n\n    \"value_in_degree_or_value_and_unit\":
         {\n      \"oneOf\": [\n        { \"type\": \"number\" },\n        { \"$ref\":
         \"#/definitions/value_and_unit\" }\n      ]\n    },\n\n    \"value_in_metre_or_value_and_unit\":
         {\n      \"oneOf\": [\n        { \"type\": \"number\" },\n        { \"$ref\":
@@ -608,22 +719,31 @@ interactions:
         \               { \"$ref\": \"#/definitions/dynamic_vertical_reference_frame\"
         }\n            ]\n        },\n        \"datum_ensemble\": { \"$ref\": \"#/definitions/datum_ensemble\"
         },\n        \"coordinate_system\": { \"$ref\": \"#/definitions/coordinate_system\"
-        },\n        \"geoid_model\": {\n          \"type\": \"object\",\n          \"properties\":
-        {\n            \"name\": { \"type\": \"string\" },\n            \"interpolation_crs\":
-        { \"$ref\": \"#/definitions/crs\" },\n            \"id\": { \"$ref\": \"#/definitions/id\"
-        }\n          },\n          \"required\" : [ \"name\" ],\n          \"additionalProperties\":
-        false\n        },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\":
-        {},\n        \"bbox\": {},\n        \"usages\": {},\n        \"remarks\":
-        {},\n        \"id\": {}, \"ids\": {}\n      },\n      \"required\" : [ \"name\"],\n
-        \     \"description\": \"One and only one of datum and datum_ensemble must
-        be provided\",\n      \"allOf\": [\n        { \"$ref\": \"#/definitions/object_usage\"
-        },\n        { \"$ref\": \"#/definitions/one_and_only_one_of_datum_or_datum_ensemble\"
-        }\n      ],\n      \"additionalProperties\": false\n    },\n\n    \"vertical_reference_frame\":
-        {\n      \"type\": \"object\",\n      \"allOf\": [{ \"$ref\": \"#/definitions/object_usage\"
-        }],\n      \"properties\": {\n        \"type\": { \"type\": \"string\", \"enum\":
-        [\"VerticalReferenceFrame\"] },\n        \"name\": { \"type\": \"string\"
-        },\n        \"anchor\": { \"type\": \"string\" },\n        \"$schema\" : {},\n
-        \       \"scope\": {},\n        \"area\": {},\n        \"bbox\": {},\n        \"usages\":
+        },\n        \"geoid_model\": { \"$ref\": \"#/definitions/geoid_model\" },\n
+        \       \"geoid_models\": {\n          \"type\": \"array\",\n          \"items\":
+        { \"$ref\": \"#/definitions/geoid_model\" }\n        },\n        \"deformation_models\":
+        {\n          \"type\": \"array\",\n          \"items\": { \"$ref\": \"#/definitions/deformation_model\"
+        }\n        },\n        \"$schema\" : {},\n        \"scope\": {},\n        \"area\":
+        {},\n        \"bbox\": {},\n        \"vertical_extent\": {},\n        \"temporal_extent\":
+        {},\n        \"usages\": {},\n        \"remarks\": {},\n        \"id\": {},
+        \"ids\": {}\n      },\n      \"required\" : [ \"name\"],\n      \"description\":
+        \"One and only one of datum and datum_ensemble must be provided\",\n      \"allOf\":
+        [\n        { \"$ref\": \"#/definitions/object_usage\" },\n        { \"$ref\":
+        \"#/definitions/one_and_only_one_of_datum_or_datum_ensemble\" },\n        {\n
+        \           \"not\": {\n                \"type\": \"object\",\n                \"required\":
+        [ \"geoid_model\", \"geoid_models\" ]\n            }\n        }\n      ],\n
+        \     \"additionalProperties\": false\n    },\n\n    \"vertical_extent\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"minimum\":
+        { \"type\": \"number\" },\n        \"maximum\": { \"type\": \"number\" },\n
+        \       \"unit\": { \"$ref\": \"#/definitions/unit\" }\n      },\n      \"required\"
+        : [ \"minimum\", \"maximum\" ],\n      \"additionalProperties\": false\n    },\n\n
+        \   \"vertical_reference_frame\": {\n      \"type\": \"object\",\n      \"allOf\":
+        [{ \"$ref\": \"#/definitions/object_usage\" }],\n      \"properties\": {\n
+        \       \"type\": { \"type\": \"string\", \"enum\": [\"VerticalReferenceFrame\"]
+        },\n        \"name\": { \"type\": \"string\" },\n        \"anchor\": { \"type\":
+        \"string\" },\n        \"anchor_epoch\": { \"type\": \"number\" },\n        \"$schema\"
+        : {},\n        \"scope\": {},\n        \"area\": {},\n        \"bbox\": {},\n
+        \       \"vertical_extent\": {},\n        \"temporal_extent\": {},\n        \"usages\":
         {},\n        \"remarks\": {},\n        \"id\": {}, \"ids\": {}\n      },\n
         \     \"required\" : [ \"name\" ],\n      \"additionalProperties\": false\n
         \   }\n\n  }\n}\n"
