@@ -14,11 +14,11 @@
   ],
   "packages": {
     ".": {
-      "component": "pystac-core",
-      "extra-files": ["pystac/version.py"]
-    },
-    "meta": {
       "component": "pystac"
+    },
+    "core": {
+      "component": "pystac-core",
+      "extra-files": ["src/pystac/version.py"]
     },
     "extensions/classification": { "component": "pystac-ext-classification" },
     "extensions/datacube": { "component": "pystac-ext-datacube" },
