@@ -1,4 +1,5 @@
 import json
+import os
 import urllib.parse
 from pathlib import Path
 from typing import Any, Protocol
@@ -11,7 +12,11 @@ class Writer(Protocol):
 
 class StandardLibraryWriter:
     def put_json(self, data: dict[str, Any], href: str | Path) -> None:
-        if isinstance(href, Path) or not urllib.parse.urlparse(href).scheme:
+        if (
+            isinstance(href, Path)
+            or not (scheme := urllib.parse.urlparse(href).scheme)
+            or (os.name == "nt" and scheme not in ("http", "https"))
+        ):
             Path(href).parent.mkdir(parents=True, exist_ok=True)
             with open(href, "w") as f:
                 json.dump(
@@ -22,7 +27,11 @@ class StandardLibraryWriter:
             raise ValueError("StandardLibraryWriter cannot write to urls")
 
     def delete(self, href: str | Path) -> None:
-        if isinstance(href, Path) or not urllib.parse.urlparse(href).scheme:
+        if (
+            isinstance(href, Path)
+            or not (scheme := urllib.parse.urlparse(href).scheme)
+            or (os.name == "nt" and scheme not in ("http", "https"))
+        ):
             Path(href).unlink()
         else:
             raise ValueError("StandardLibraryWriter cannot delete urls")
