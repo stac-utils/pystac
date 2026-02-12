@@ -6,6 +6,9 @@ import pytest
 import pystac
 
 
+pytestmark = pytest.mark.passing_v2
+
+
 @pytest.mark.parametrize("action", ["copy", "move"])
 def test_alter_asset_absolute_path(
     action: str, tmp_asset: pystac.Asset, tmp_path: Path
