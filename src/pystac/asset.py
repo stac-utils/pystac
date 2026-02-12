@@ -42,6 +42,14 @@ class ItemAsset(DataValue, Instrument):
             self.bands = None
         self.extra_fields: dict[str, Any] = kwargs
 
+    @override
+    def __eq__(self, other: Any) -> bool:
+        return self.to_dict() == other.to_dict()
+
+    def create(self):
+        # TODO deprecated version of __init__
+        ...
+
     @classmethod
     def try_from[T: ItemAsset](cls: type[T], data: T | dict[str, Any]) -> T:
         if isinstance(data, cls):
