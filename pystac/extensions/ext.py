@@ -197,6 +197,10 @@ class CollectionExt(CatalogExt):
         return ScientificExtension.ext(self.stac_object)
 
     @property
+    def storage(self) -> StorageExtension[Collection]:
+        return StorageExtension.ext(self.stac_object)
+
+    @property
     def table(self) -> TableExtension[Collection]:
         from pystac.extensions.table import TableExtension
 
@@ -533,6 +537,10 @@ class ItemAssetExt(_AssetExt[ItemAssetDefinition]):
 
         return MLMExtension.ext(self.stac_object)
 
+    @property
+    def storage(self) -> StorageExtension[ItemAssetDefinition]:
+        return StorageExtension.ext(self.stac_object)
+
 
 @dataclass
 class LinkExt(_AssetsExt[Link]):
@@ -547,3 +555,7 @@ class LinkExt(_AssetsExt[Link]):
         from pystac.extensions.file import FileExtension
 
         return FileExtension.ext(self.stac_object)
+
+    @property
+    def storage(self) -> StorageExtension[Link]:
+        return StorageExtension.ext(self.stac_object)
