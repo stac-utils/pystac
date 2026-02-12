@@ -1,12 +1,19 @@
 from __future__ import annotations
 
 import copy
+import os
+import shutil
 from typing import TYPE_CHECKING, Any, Protocol, override
 
 from typing_extensions import deprecated
 
 from .media_type import MediaType
-from .utils import is_absolute_href, make_absolute_href, make_relative_href
+from .utils import (
+    get_absolute_href,
+    is_absolute_href,
+    make_absolute_href,
+    make_relative_href,
+)
 from .writer import Writer
 
 if TYPE_CHECKING:
@@ -27,6 +34,14 @@ class ItemAsset:
         self.type: str | None = type
         self.roles: list[str] | None = roles
         self.extra_fields: dict[str, Any] = kwargs
+
+    @override
+    def __eq__(self, other: Any) -> bool:
+        return self.to_dict() == other.to_dict()
+
+    def create(self):
+        # TODO deprecated version of __init__
+        ...
 
     @classmethod
     def try_from[T: ItemAsset](cls: type[T], data: T | dict[str, Any]) -> T:
@@ -72,7 +87,7 @@ class Asset(ItemAsset):
         )
         self.href: str = href
 
-        self._owner: STACObject | None = None
+        self.owner: STACObject | None = None
 
     @staticmethod
     def update_hrefs(
@@ -85,26 +100,54 @@ class Asset(ItemAsset):
                         make_absolute_href(asset.href, start_href), end_href
                     )
 
-    @property
-    def owner(self) -> STACObject | None:
-        return self._owner
-
     def set_owner(self, owner: STACObject | None) -> None:
-        self._owner = owner
+        self.owner = owner
 
     def get_absolute_href(self) -> str | None:
-        if is_absolute_href(self.href):
-            return self.href
-        elif self._owner and (owner_href := self._owner.get_self_href()):
-            return make_absolute_href(self.href, owner_href, False)
-        else:
-            return None
+        owner_href = self.owner.get_self_href() if self.owner else None
+        return get_absolute_href(self.href, owner_href)
 
     @override
     def to_dict(self) -> dict[str, Any]:
         data = super().to_dict()
         data["href"] = self.href
         return data
+
+    def move(self, href: str) -> Asset:
+        owner_href = self.owner.get_self_href() if self.owner else None
+        src = get_absolute_href(self.href, owner_href)
+        dst = get_absolute_href(href, owner_href)
+        if src is None or dst is None:
+            raise ValueError(
+                f"Cannot move file if source ('{self.href}') or destination "
+                f"('{href}') is relative and owner is not set."
+            )
+
+        _ = shutil.move(src, dst)
+        self.href = href
+        return self
+
+    def copy(self, href: str) -> Asset:
+        owner_href = self.owner.get_self_href() if self.owner else None
+        src = get_absolute_href(self.href, owner_href)
+        dst = get_absolute_href(href, owner_href)
+        if src is None or dst is None:
+            raise ValueError(
+                f"Cannot copy file if source ('{self.href}') or destination "
+                f"('{href}') is relative and owner is not set."
+            )
+        _ = shutil.copy2(src, dst)
+        self.href = href
+        return self
+
+    def delete(self) -> None:
+        href = self.get_absolute_href()
+        if href is None:
+            raise ValueError(
+                f"Cannot delete file if asset href ('{self.href}') is relative "
+                "and owner is not set."
+            )
+        os.remove(href)
 
 
 class Assets(Protocol):
@@ -130,12 +173,23 @@ class Assets(Protocol):
         self.assets[key] = asset
 
     def make_asset_hrefs_relative(self) -> None:
-        if self.get_self_href():
-            # TODO actually implement
-            pass
+        if owner_href := self.get_self_href():
+            for asset in self.assets.values():
+                if is_absolute_href(asset.href, owner_href):
+                    asset.href = make_relative_href(asset.href, owner_href)
         else:
             raise ValueError(
                 "Cannot make asset hrefs relative, item does not have a self href"
+            )
+
+    def make_asset_hrefs_absolute(self) -> None:
+        if owner_href := self.get_self_href():
+            for asset in self.assets.values():
+                if not is_absolute_href(asset.href, owner_href):
+                    asset.href = make_absolute_href(asset.href, owner_href)
+        else:
+            raise ValueError(
+                "Cannot make asset hrefs absolute, item does not have a self href"
             )
 
     # TODO do we want to deprecate this? I think so...
