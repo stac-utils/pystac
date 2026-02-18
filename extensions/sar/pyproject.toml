@@ -1,0 +1,36 @@
+[project]
+name = "pystac-ext-sar"
+description = "SAR extension for PySTAC"
+readme = "README.md"
+version = "1.0.0"
+authors = []
+maintainers = []
+keywords = ["pystac", "imagery", "raster", "catalog", "STAC", "sar"]
+license = { text = "Apache-2.0" }
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+requires-python = ">=3.10"
+dependencies = ["pystac-core"]
+
+[project.urls]
+Documentation = "https://pystac.readthedocs.io"
+Repository = "https://github.com/stac-utils/pystac"
+Issues = "https://github.com/stac-utils/pystac/issues"
+Changelog = "https://github.com/stac-utils/pystac/blob/main/CHANGELOG.md"
+Discussions = "https://github.com/radiantearth/stac-spec/discussions/categories/stac-software"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pystac"]

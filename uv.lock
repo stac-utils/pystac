@@ -18,7 +18,28 @@ resolution-markers = [
 members = [
     "pystac",
     "pystac-core",
+    "pystac-ext-classification",
+    "pystac-ext-datacube",
+    "pystac-ext-eo",
+    "pystac-ext-file",
+    "pystac-ext-grid",
+    "pystac-ext-item-assets",
+    "pystac-ext-label",
+    "pystac-ext-mgrs",
+    "pystac-ext-mlm",
+    "pystac-ext-pointcloud",
     "pystac-ext-projection",
+    "pystac-ext-raster",
+    "pystac-ext-render",
+    "pystac-ext-sar",
+    "pystac-ext-sat",
+    "pystac-ext-scientific",
+    "pystac-ext-storage",
+    "pystac-ext-table",
+    "pystac-ext-timestamps",
+    "pystac-ext-version",
+    "pystac-ext-view",
+    "pystac-ext-xarray-assets",
 ]
 
 [[package]]
@@ -1138,7 +1159,7 @@ name = "exceptiongroup"
 version = "1.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/50/79/66800aadf48771f6b62f7eb014e352e5d06856655206165d775e675a02c9/exceptiongroup-1.3.1.tar.gz", hash = "sha256:8b412432c6055b0b7d14c310000ae93352ed6754f70fa8f7c34141f91c4e3219", size = 30371, upload-time = "2025-11-21T23:01:54.787Z" }
 wheels = [
@@ -3002,7 +3023,7 @@ name = "pexpect"
 version = "4.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "ptyprocess" },
+    { name = "ptyprocess", marker = "(python_full_version < '3.11' and sys_platform == 'emscripten') or (python_full_version < '3.11' and sys_platform == 'win32') or (sys_platform != 'emscripten' and sys_platform != 'win32')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/42/92/cc564bf6381ff43ce1f4d06852fc19a2f11d180f23dc32d9588bee2f149d/pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f", size = 166450, upload-time = "2023-11-25T09:07:26.339Z" }
 wheels = [
@@ -3586,7 +3607,28 @@ version = "1.14.3"
 source = { editable = "." }
 dependencies = [
     { name = "pystac-core" },
+    { name = "pystac-ext-classification" },
+    { name = "pystac-ext-datacube" },
+    { name = "pystac-ext-eo" },
+    { name = "pystac-ext-file" },
+    { name = "pystac-ext-grid" },
+    { name = "pystac-ext-item-assets" },
+    { name = "pystac-ext-label" },
+    { name = "pystac-ext-mgrs" },
+    { name = "pystac-ext-mlm" },
+    { name = "pystac-ext-pointcloud" },
     { name = "pystac-ext-projection" },
+    { name = "pystac-ext-raster" },
+    { name = "pystac-ext-render" },
+    { name = "pystac-ext-sar" },
+    { name = "pystac-ext-sat" },
+    { name = "pystac-ext-scientific" },
+    { name = "pystac-ext-storage" },
+    { name = "pystac-ext-table" },
+    { name = "pystac-ext-timestamps" },
+    { name = "pystac-ext-version" },
+    { name = "pystac-ext-view" },
+    { name = "pystac-ext-xarray-assets" },
 ]
 
 [package.optional-dependencies]
@@ -3670,7 +3712,28 @@ requires-dist = [
     { name = "jsonschema", marker = "extra == 'validation'", specifier = "~=4.18" },
     { name = "orjson", marker = "extra == 'orjson'", specifier = ">=3.5" },
     { name = "pystac-core", editable = "core" },
+    { name = "pystac-ext-classification", editable = "extensions/classification" },
+    { name = "pystac-ext-datacube", editable = "extensions/datacube" },
+    { name = "pystac-ext-eo", editable = "extensions/eo" },
+    { name = "pystac-ext-file", editable = "extensions/file" },
+    { name = "pystac-ext-grid", editable = "extensions/grid" },
+    { name = "pystac-ext-item-assets", editable = "extensions/item_assets" },
+    { name = "pystac-ext-label", editable = "extensions/label" },
+    { name = "pystac-ext-mgrs", editable = "extensions/mgrs" },
+    { name = "pystac-ext-mlm", editable = "extensions/mlm" },
+    { name = "pystac-ext-pointcloud", editable = "extensions/pointcloud" },
     { name = "pystac-ext-projection", editable = "extensions/projection" },
+    { name = "pystac-ext-raster", editable = "extensions/raster" },
+    { name = "pystac-ext-render", editable = "extensions/render" },
+    { name = "pystac-ext-sar", editable = "extensions/sar" },
+    { name = "pystac-ext-sat", editable = "extensions/sat" },
+    { name = "pystac-ext-scientific", editable = "extensions/scientific" },
+    { name = "pystac-ext-storage", editable = "extensions/storage" },
+    { name = "pystac-ext-table", editable = "extensions/table" },
+    { name = "pystac-ext-timestamps", editable = "extensions/timestamps" },
+    { name = "pystac-ext-version", editable = "extensions/version" },
+    { name = "pystac-ext-view", editable = "extensions/view" },
+    { name = "pystac-ext-xarray-assets", editable = "extensions/xarray_assets" },
     { name = "urllib3", marker = "extra == 'urllib3'", specifier = ">=2.6.3" },
 ]
 provides-extras = ["jinja2", "orjson", "urllib3", "validation"]
@@ -3753,9 +3816,240 @@ dependencies = [
 requires-dist = [{ name = "python-dateutil", specifier = ">=2.7.0" }]
 
 [[package]]
+name = "pystac-ext-classification"
+version = "2.0.0"
+source = { editable = "extensions/classification" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-datacube"
+version = "2.2.0"
+source = { editable = "extensions/datacube" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-eo"
+version = "1.1.0"
+source = { editable = "extensions/eo" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-file"
+version = "2.1.0"
+source = { editable = "extensions/file" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-grid"
+version = "1.1.0"
+source = { editable = "extensions/grid" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-item-assets"
+version = "1.0.0"
+source = { editable = "extensions/item_assets" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-label"
+version = "1.0.1"
+source = { editable = "extensions/label" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-mgrs"
+version = "1.0.0"
+source = { editable = "extensions/mgrs" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-mlm"
+version = "1.4.0"
+source = { editable = "extensions/mlm" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-pointcloud"
+version = "1.0.0"
+source = { editable = "extensions/pointcloud" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
 name = "pystac-ext-projection"
 version = "2.0.0"
 source = { editable = "extensions/projection" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-raster"
+version = "1.1.0"
+source = { editable = "extensions/raster" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-render"
+version = "2.0.0"
+source = { editable = "extensions/render" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-sar"
+version = "1.0.0"
+source = { editable = "extensions/sar" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-sat"
+version = "1.0.0"
+source = { editable = "extensions/sat" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-scientific"
+version = "1.0.0"
+source = { editable = "extensions/scientific" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-storage"
+version = "2.0.0"
+source = { editable = "extensions/storage" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-table"
+version = "1.2.0"
+source = { editable = "extensions/table" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-timestamps"
+version = "1.1.0"
+source = { editable = "extensions/timestamps" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-version"
+version = "1.2.0"
+source = { editable = "extensions/version" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-view"
+version = "1.0.0"
+source = { editable = "extensions/view" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-xarray-assets"
+version = "1.0.0"
+source = { editable = "extensions/xarray_assets" }
 dependencies = [
     { name = "pystac-core" },
 ]

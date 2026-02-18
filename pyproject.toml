@@ -22,7 +22,31 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 requires-python = ">=3.10"
-dependencies = ["pystac-core", "pystac-ext-projection"]
+dependencies = [
+    "pystac-core",
+    "pystac-ext-classification",
+    "pystac-ext-datacube",
+    "pystac-ext-eo",
+    "pystac-ext-file",
+    "pystac-ext-grid",
+    "pystac-ext-item-assets",
+    "pystac-ext-label",
+    "pystac-ext-mgrs",
+    "pystac-ext-mlm",
+    "pystac-ext-pointcloud",
+    "pystac-ext-projection",
+    "pystac-ext-raster",
+    "pystac-ext-render",
+    "pystac-ext-sar",
+    "pystac-ext-sat",
+    "pystac-ext-scientific",
+    "pystac-ext-storage",
+    "pystac-ext-table",
+    "pystac-ext-timestamps",
+    "pystac-ext-version",
+    "pystac-ext-view",
+    "pystac-ext-xarray-assets",
+]
 
 [project.optional-dependencies]
 jinja2 = ["jinja2<4.0"]
@@ -108,7 +132,31 @@ max-line-length = 88
 [tool.mypy]
 show_error_codes = true
 strict = true
-mypy_path = ["core", "extensions/projection"]
+mypy_path = [
+    "core",
+    "extensions/classification",
+    "extensions/datacube",
+    "extensions/eo",
+    "extensions/file",
+    "extensions/grid",
+    "extensions/item_assets",
+    "extensions/label",
+    "extensions/mgrs",
+    "extensions/mlm",
+    "extensions/pointcloud",
+    "extensions/projection",
+    "extensions/raster",
+    "extensions/render",
+    "extensions/sar",
+    "extensions/sat",
+    "extensions/scientific",
+    "extensions/storage",
+    "extensions/table",
+    "extensions/timestamps",
+    "extensions/version",
+    "extensions/view",
+    "extensions/xarray_assets",
+]
 explicit_package_bases = true
 
 [[tool.mypy.overrides]]
@@ -131,7 +179,28 @@ only-include = ["README.md"]
 
 [tool.uv.sources]
 pystac-core = { workspace = true }
+pystac-ext-classification = { workspace = true }
+pystac-ext-datacube = { workspace = true }
+pystac-ext-eo = { workspace = true }
+pystac-ext-file = { workspace = true }
+pystac-ext-grid = { workspace = true }
+pystac-ext-item-assets = { workspace = true }
+pystac-ext-label = { workspace = true }
+pystac-ext-mgrs = { workspace = true }
+pystac-ext-mlm = { workspace = true }
+pystac-ext-pointcloud = { workspace = true }
 pystac-ext-projection = { workspace = true }
+pystac-ext-raster = { workspace = true }
+pystac-ext-render = { workspace = true }
+pystac-ext-sar = { workspace = true }
+pystac-ext-sat = { workspace = true }
+pystac-ext-scientific = { workspace = true }
+pystac-ext-storage = { workspace = true }
+pystac-ext-table = { workspace = true }
+pystac-ext-timestamps = { workspace = true }
+pystac-ext-version = { workspace = true }
+pystac-ext-view = { workspace = true }
+pystac-ext-xarray-assets = { workspace = true }
 
 [tool.uv.workspace]
 members = ["core", "extensions/*"]
