@@ -19,6 +19,7 @@
   "build_command": [
     "pip install build",
     "python -m build {build_dir}/core",
+    "python -m build {build_dir}/extensions/projection",
     "PIP_NO_BUILD_ISOLATION=false python -mpip wheel --no-deps --no-index -w {build_cache_dir} {build_dir}/core"
   ]
 }
