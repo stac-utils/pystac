@@ -2,6 +2,7 @@
 name = "pystac"
 description = "Python library for working with the SpatioTemporal Asset Catalog (STAC) specification"
 readme = "README.md"
+version = "1.14.3"
 authors = [
     { name = "Rob Emanuele", email = "rdemanuele@gmail.com" },
     { name = "Jon Duckworth", email = "duckontheweb@gmail.com" },
@@ -21,8 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 requires-python = ">=3.10"
-dependencies = ["python-dateutil>=2.7.0"]
-dynamic = ["version"]
+dependencies = ["pystac-core"]
 
 [project.optional-dependencies]
 jinja2 = ["jinja2<4.0"]
@@ -121,13 +121,15 @@ lint.select = ["E", "F", "I"]
 filterwarnings = ["error"]
 addopts = "--block-network --record-mode=none"
 
-[tool.setuptools.packages.find]
-include = ["pystac*"]
-exclude = ["tests*", "benchmarks*"]
+[tool.hatch.build.targets.wheel]
+packages = []
 
-[tool.setuptools.dynamic]
-version = { attr = "pystac.version.__version__" }
+[tool.uv.sources]
+pystac-core = { workspace = true }
+
+[tool.uv.workspace]
+members = ["core"]
 
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

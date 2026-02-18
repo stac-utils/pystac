@@ -10,6 +10,12 @@ resolution-markers = [
     "python_full_version < '3.11' and platform_python_implementation != 'PyPy'",
 ]
 
+[manifest]
+members = [
+    "pystac",
+    "pystac-core",
+]
+
 [[package]]
 name = "accessible-pygments"
 version = "0.0.5"
@@ -3225,9 +3231,10 @@ wheels = [
 
 [[package]]
 name = "pystac"
+version = "1.14.3"
 source = { editable = "." }
 dependencies = [
-    { name = "python-dateutil" },
+    { name = "pystac-core" },
 ]
 
 [package.optional-dependencies]
@@ -3304,7 +3311,7 @@ requires-dist = [
     { name = "jinja2", marker = "extra == 'jinja2'", specifier = "<4.0" },
     { name = "jsonschema", marker = "extra == 'validation'", specifier = "~=4.18" },
     { name = "orjson", marker = "extra == 'orjson'", specifier = ">=3.5" },
-    { name = "python-dateutil", specifier = ">=2.7.0" },
+    { name = "pystac-core", editable = "core" },
     { name = "urllib3", marker = "extra == 'urllib3'", specifier = ">=2.6.3" },
 ]
 provides-extras = ["jinja2", "orjson", "urllib3", "validation"]
@@ -3374,6 +3381,17 @@ sdist = { url = "https://files.pythonhosted.org/packages/c5/8d/b98aeffd325fc208e
 wheels = [
     { url = "https://files.pythonhosted.org/packages/5d/d2/5f6367b14c9f250d1a6725d18bd1e9584f5ab1587e292f3a847e59189598/pystac_client-0.9.0-py3-none-any.whl", hash = "sha256:eed146b5980f93646aaa3a59080f11f1dcab6000b0bfbc28b1d0c6fd0a61eda1", size = 41826, upload-time = "2025-07-18T15:44:40.197Z" },
 ]
+
+[[package]]
+name = "pystac-core"
+version = "1.14.3"
+source = { editable = "core" }
+dependencies = [
+    { name = "python-dateutil" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "python-dateutil", specifier = ">=2.7.0" }]
 
 [[package]]
 name = "pytest"
