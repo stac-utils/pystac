@@ -123,8 +123,11 @@ lint.select = ["E", "F", "I"]
 filterwarnings = ["error"]
 addopts = "--block-network --record-mode=none"
 
+[tool.hatch.build.targets.sdist]
+only-include = ["README.md", "LICENSE"]
+
 [tool.hatch.build.targets.wheel]
-packages = []
+only-include = ["README.md"]
 
 [tool.uv.sources]
 pystac-core = { workspace = true }
