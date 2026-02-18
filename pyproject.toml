@@ -68,10 +68,11 @@ dev = [
     "orjson>=3.10.7",
     "packaging>=24.1",
     "pre-commit>=4.0.1",
-    "pytest>=8.3.3",
     "pytest-cov>=5.0.0",
     "pytest-mock>=3.14.0",
+    "pytest-pystac",
     "pytest-recording>=0.13.2",
+    "pytest>=8.3.3",
     "requests-mock>=1.12.1",
     "ruff>=0.6.9",
     "types-html5lib>=1.1.11.20240806",
@@ -132,6 +133,7 @@ max-line-length = 88
 [tool.mypy]
 show_error_codes = true
 strict = true
+exclude = ["conftest\\.py$"]
 mypy_path = [
     "core",
     "extensions/classification",
@@ -201,9 +203,10 @@ pystac-ext-timestamps = { workspace = true }
 pystac-ext-version = { workspace = true }
 pystac-ext-view = { workspace = true }
 pystac-ext-xarray-assets = { workspace = true }
+pytest-pystac = { workspace = true }
 
 [tool.uv.workspace]
-members = ["core", "extensions/*"]
+members = ["core", "extensions/*", "pytest-pystac"]
 
 [build-system]
 requires = ["hatchling"]

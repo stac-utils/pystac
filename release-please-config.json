@@ -1,5 +1,6 @@
 {
   "release-type": "python",
+  "prerelease": true,
   "packages": {
     ".": {
       "changelog-path": "CHANGELOG.md",
