@@ -5,13 +5,13 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any, cast
 
-import pytest
-
 import pystac
+import pytest
 from pystac import Collection, Item, Link
 from pystac.errors import STACError
 from pystac.link import HIERARCHICAL_LINKS
 from pystac.utils import make_posix_style
+
 from tests.utils.test_cases import ARBITRARY_EXTENT
 
 TEST_DATETIME: datetime = datetime(2020, 3, 14, 16, 32)

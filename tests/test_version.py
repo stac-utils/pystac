@@ -2,9 +2,9 @@ import os
 from collections.abc import Generator
 from unittest.mock import patch
 
+import pystac
 import pytest
 
-import pystac
 from tests.utils import TestCases
 
 

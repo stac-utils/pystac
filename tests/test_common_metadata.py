@@ -2,8 +2,8 @@ from datetime import datetime
 from typing import Any
 
 import pytest
-
 from pystac import CommonMetadata, Item, Provider, ProviderRole, utils
+
 from tests.utils import TestCases
 
 
