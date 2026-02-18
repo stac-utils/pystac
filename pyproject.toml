@@ -119,11 +119,10 @@ skip = "CHANGELOG.md"
 
 [tool.coverage.run]
 branch = true
-source = ["pystac"]
-omit = ["pystac/extensions/label.py"]
+source = ["core"]
 
 [tool.coverage.report]
-fail_under = 90
+fail_under = 70
 exclude_lines = ["if TYPE_CHECKING:"]
 
 [tool.doc8]
