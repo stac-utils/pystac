@@ -3,14 +3,14 @@
 from datetime import datetime
 from typing import Any
 
-import pytest
-
 import pystac
+import pytest
 from pystac import Collection, ExtensionTypeError, Item
 from pystac.extensions import sat
 from pystac.extensions.sat import OrbitState, SatExtension, SummariesSatExtension
 from pystac.summaries import RangeSummary
 from pystac.utils import datetime_to_str, str_to_datetime
+
 from tests.utils import TestCases
 
 

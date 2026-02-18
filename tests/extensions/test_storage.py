@@ -3,9 +3,8 @@ import random
 from copy import deepcopy
 from string import ascii_letters
 
-import pytest
-
 import pystac
+import pytest
 from pystac import ExtensionTypeError, Item, ItemAssetDefinition
 from pystac.collection import Collection
 from pystac.errors import RequiredPropertyMissing
@@ -14,6 +13,7 @@ from pystac.extensions.storage import (
     StorageScheme,
     StorageSchemeType,
 )
+
 from tests.utils import TestCases, assert_to_from_dict
 
 NAIP_EXAMPLE_URI = TestCases.get_path("data-files/storage/item-naip.json")

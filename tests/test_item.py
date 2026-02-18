@@ -10,10 +10,9 @@ from pathlib import Path
 from typing import Any, cast
 
 import dateutil.relativedelta
-import pytest
-
 import pystac
 import pystac.serialization.common_properties
+import pytest
 from pystac import Asset, Catalog, Collection, Item, Link, STACValidationError
 from pystac.utils import (
     datetime_to_str,
@@ -23,6 +22,7 @@ from pystac.utils import (
     str_to_datetime,
 )
 from pystac.validation import validate_dict
+
 from tests.utils import TestCases, assert_to_from_dict
 
 

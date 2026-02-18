@@ -3,9 +3,8 @@ import logging
 from copy import deepcopy
 from typing import Any, cast
 
-import pytest
-
 import pystac.errors
+import pytest
 from pystac import Asset, Collection, Item, ItemAssetDefinition
 from pystac.errors import STACError
 from pystac.extensions.classification import Classification
@@ -31,6 +30,7 @@ from pystac.extensions.mlm import (
     ValueScalingType,
 )
 from pystac.extensions.raster import DataType
+
 from tests.utils import TestCases
 
 logging.basicConfig(level=logging.DEBUG)

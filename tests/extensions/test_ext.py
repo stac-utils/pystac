@@ -1,7 +1,6 @@
 import logging
 
 import pytest
-
 from pystac import Asset, Catalog, Collection, Item, Link
 from pystac.errors import ExtensionNotImplemented
 from pystac.extensions.ext import (
@@ -13,6 +12,7 @@ from pystac.extensions.ext import (
     ItemExt,
     LinkExt,
 )
+
 from tests.conftest import get_data_file
 
 logging.basicConfig(level=logging.DEBUG)

@@ -9,7 +9,6 @@ from typing import Any
 from urllib.request import Request
 
 import pytest
-
 from pystac import Asset, Catalog, Collection, Item, ItemCollection, Link
 
 from .utils import ARBITRARY_BBOX, ARBITRARY_EXTENT, ARBITRARY_GEOM, TestCases

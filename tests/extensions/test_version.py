@@ -4,7 +4,6 @@ from collections.abc import Generator
 from datetime import datetime
 
 import pytest
-
 from pystac import (
     Asset,
     Catalog,
@@ -23,6 +22,7 @@ from pystac.extensions.version import (
     VersionRelType,
     ignore_deprecated,
 )
+
 from tests.utils import TestCases
 
 URL_TEMPLATE: str = "http://example.com/catalog/%s.json"

@@ -4,9 +4,8 @@ from datetime import datetime
 from random import choice
 from string import ascii_letters
 
-import pytest
-
 import pystac
+import pytest
 from pystac import ExtensionTypeError
 from pystac.extensions import sar
 from pystac.extensions.sar import (
@@ -16,6 +15,7 @@ from pystac.extensions.sar import (
     SarExtension,
 )
 from pystac.summaries import RangeSummary
+
 from tests.utils import TestCases
 
 

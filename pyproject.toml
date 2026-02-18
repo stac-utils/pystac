@@ -22,7 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 requires-python = ">=3.10"
-dependencies = ["pystac-core"]
+dependencies = ["pystac-core", "pystac-ext-projection"]
 
 [project.optional-dependencies]
 jinja2 = ["jinja2<4.0"]
@@ -108,6 +108,8 @@ max-line-length = 88
 [tool.mypy]
 show_error_codes = true
 strict = true
+mypy_path = ["core", "extensions/projection"]
+explicit_package_bases = true
 
 [[tool.mypy.overrides]]
 module = ["jinja2"]
@@ -126,9 +128,10 @@ packages = []
 
 [tool.uv.sources]
 pystac-core = { workspace = true }
+pystac-ext-projection = { workspace = true }
 
 [tool.uv.workspace]
-members = ["core"]
+members = ["core", "extensions/*"]
 
 [build-system]
 requires = ["hatchling"]

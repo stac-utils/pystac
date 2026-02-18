@@ -4,10 +4,9 @@ from copy import deepcopy
 from datetime import datetime
 from typing import Any, cast
 
+import pystac
 import pytest
 from dateutil.parser import parse
-
-import pystac
 from pystac import Collection, Item
 from pystac.extensions.classification import (
     CLASSES_PROP,
@@ -19,6 +18,7 @@ from pystac.extensions.classification import (
     ClassificationExtension,
 )
 from pystac.extensions.raster import RasterBand, RasterExtension
+
 from tests.utils import TestCases
 
 logging.basicConfig(level=logging.DEBUG)

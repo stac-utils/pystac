@@ -2,10 +2,10 @@
 
 import json
 
-import pytest
-
 import pystac
+import pytest
 from pystac.extensions.xarray_assets import XarrayAssetsExtension
+
 from tests.conftest import get_data_file
 
 

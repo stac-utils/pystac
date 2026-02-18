@@ -3,12 +3,12 @@
 import json
 from typing import Any
 
-import pytest
-
 import pystac
 import pystac.extensions.datacube as dc
+import pytest
 from pystac import Asset, Item
 from pystac.errors import ExtensionTypeError
+
 from tests.conftest import get_data_file
 
 

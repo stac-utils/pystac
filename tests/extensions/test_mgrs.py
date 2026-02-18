@@ -2,10 +2,10 @@
 
 import json
 
-import pytest
-
 import pystac
+import pytest
 from pystac.extensions.mgrs import MgrsExtension
+
 from tests.conftest import get_data_file
 
 

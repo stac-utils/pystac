@@ -1,9 +1,9 @@
 import pytest
-
 from pystac import Collection
 from pystac.errors import DeprecatedWarning
 from pystac.extensions.item_assets import AssetDefinition, ItemAssetsExtension
 from pystac.item_assets import ItemAssetDefinition
+
 from tests.utils import TestCases
 
 CLASSIFICATION_COLLECTION_RASTER_URI = TestCases.get_path(

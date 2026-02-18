@@ -1,13 +1,13 @@
 import json
 from datetime import datetime
 
-import pytest
-
 import pystac
+import pytest
 from pystac import Collection, ExtensionTypeError, Item
 from pystac.extensions.timestamps import TimestampsExtension
 from pystac.summaries import RangeSummary
 from pystac.utils import datetime_to_str, get_opt, str_to_datetime
+
 from tests.utils import TestCases, assert_to_from_dict
 
 EXAMPLE_URI = TestCases.get_path("data-files/timestamps/example-landsat8.json")

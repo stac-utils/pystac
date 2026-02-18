@@ -2,13 +2,13 @@ import json
 from copy import deepcopy
 from typing import Any
 
-import pytest
-
 import pystac
+import pytest
 from pystac import ExtensionTypeError, Item
 from pystac.errors import ExtensionNotImplemented
 from pystac.extensions.projection import ProjectionExtension
 from pystac.utils import get_opt
+
 from tests.utils import TestCases, assert_to_from_dict
 
 WKT2 = """

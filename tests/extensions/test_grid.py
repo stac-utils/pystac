@@ -6,12 +6,12 @@
 from datetime import datetime
 from typing import Any
 
-import pytest
-
 import pystac
+import pytest
 from pystac import ExtensionTypeError
 from pystac.extensions import grid
 from pystac.extensions.grid import GridExtension
+
 from tests.conftest import get_data_file
 from tests.utils import TestCases
 
