@@ -11,9 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, cast
 
-import pytest
-
 import pystac
+import pytest
 from pystac import (
     HIERARCHICAL_LINKS,
     Asset,
@@ -37,6 +36,7 @@ from pystac.utils import (
     make_posix_style,
     make_relative_href,
 )
+
 from tests.utils import (
     ARBITRARY_BBOX,
     ARBITRARY_EXTENT,
