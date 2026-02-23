@@ -10,10 +10,9 @@ from pathlib import Path
 from typing import Any, cast
 
 import dateutil.relativedelta
-import pytest
-
 import pystac
 import pystac.serialization.common_properties
+import pytest
 from pystac import Asset, Catalog, Collection, Item, Link, STACValidationError
 from pystac.utils import (
     datetime_to_str,
@@ -23,6 +22,7 @@ from pystac.utils import (
     str_to_datetime,
 )
 from pystac.validation import validate_dict
+
 from tests.utils import TestCases, assert_to_from_dict
 
 
@@ -677,15 +677,6 @@ def test_copy_with_unresolveable_root(item: Item) -> None:
 def test_no_collection(item: Item) -> None:
     # https://github.com/stac-utils/stac-api-validator/issues/527
     assert item.collection is None
-
-
-def test_migrate_by_default() -> None:
-    with open(
-        TestCases.get_path("data-files/projection/example-with-version-1.1.json")
-    ) as f:
-        data = json.load(f)
-    item = pystac.Item.from_dict(data)  # default used to be migrate=False
-    assert item.ext.proj.code == "EPSG:32614"
 
 
 def test_clone_extra_fields(item: Item) -> None:

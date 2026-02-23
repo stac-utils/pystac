@@ -2,11 +2,11 @@ import sys
 from typing import Any
 
 import html5lib
+import pystac
 import pytest
+from pystac.html.jinja_env import get_jinja_env
 from pytest_mock import MockerFixture
 
-import pystac
-from pystac.html.jinja_env import get_jinja_env
 from tests.utils import TestCases
 
 

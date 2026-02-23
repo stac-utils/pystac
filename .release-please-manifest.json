@@ -1,6 +1,26 @@
 {
   ".": "1.14.3",
-  "extra-files": [
-    "pystac/version.py"
-  ]
+  "core": "1.14.3",
+  "extensions/classification": "2.0.0",
+  "extensions/datacube": "2.2.0",
+  "extensions/eo": "1.1.0",
+  "extensions/file": "2.1.0",
+  "extensions/grid": "1.1.0",
+  "extensions/item_assets": "1.0.0",
+  "extensions/label": "1.0.1",
+  "extensions/mgrs": "1.0.0",
+  "extensions/mlm": "1.4.0",
+  "extensions/pointcloud": "1.0.0",
+  "extensions/projection": "2.0.0",
+  "extensions/raster": "1.1.0",
+  "extensions/render": "2.0.0",
+  "extensions/sar": "1.0.0",
+  "extensions/sat": "1.0.0",
+  "extensions/scientific": "1.0.0",
+  "extensions/storage": "2.0.0",
+  "extensions/table": "1.2.0",
+  "extensions/timestamps": "1.1.0",
+  "extensions/version": "1.2.0",
+  "extensions/view": "1.0.0",
+  "extensions/xarray_assets": "1.0.0"
 }
