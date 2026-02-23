@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.15.0](https://github.com/stac-utils/pystac/compare/v1.14.3...v1.15.0) (2026-02-23)
+
+
+### Features
+
+* update storage extension to v2.0.0 ([#1561](https://github.com/stac-utils/pystac/issues/1561)) ([89189ad](https://github.com/stac-utils/pystac/commit/89189ad23016dacb591918e639c1c48c7a5e3e43))
+
+
+### Dependencies
+
+* floor aiohttp to remove a vuln (docs group only) ([#1631](https://github.com/stac-utils/pystac/issues/1631)) ([9bc7f70](https://github.com/stac-utils/pystac/commit/9bc7f7040a4f46a1eab758eba2889656ec802ed1))
+
 ## [1.14.3](https://github.com/stac-utils/pystac/compare/v1.14.2...v1.14.3) (2026-01-08)
 
 
