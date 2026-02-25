@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Protocol, override
 
 from typing_extensions import deprecated
 
+from .band import Band
 from .media_type import MediaType
 from .utils import is_absolute_href, make_absolute_href, make_relative_href
 from .writer import Writer
@@ -20,12 +21,17 @@ class ItemAsset:
         description: str | None = None,
         type: str | None = None,
         roles: list[str] | None = None,
+        bands: list[Band] | list[dict[str, Any]] | None = None,
         **kwargs: Any,
     ):
         self.title: str | None = title
         self.description: str | None = description
         self.type: str | None = type
         self.roles: list[str] | None = roles
+        if bands is not None:
+            self.bands: list[Band] | None = [Band.try_from(band) for band in bands]
+        else:
+            self.bands = None
         self.extra_fields: dict[str, Any] = kwargs
 
     @classmethod
@@ -54,6 +60,8 @@ class ItemAsset:
             data["type"] = self.type
         if self.roles is not None:
             data["roles"] = self.roles
+        if self.bands is not None:
+            data["bands"] = [band.to_dict() for band in self.bands]
         return data
 
 
@@ -65,10 +73,16 @@ class Asset(ItemAsset):
         description: str | None = None,
         type: str | None = None,
         roles: list[str] | None = None,
+        bands: list[Band] | list[dict[str, Any]] | None = None,
         **kwargs: Any,
     ):
         super().__init__(
-            title=title, description=description, type=type, roles=roles, **kwargs
+            title=title,
+            description=description,
+            type=type,
+            roles=roles,
+            bands=bands,
+            **kwargs,
         )
         self.href: str = href
 
