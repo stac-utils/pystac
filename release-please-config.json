@@ -1,13 +1,87 @@
 {
+  "release-type": "python",
+  "prerelease": true,
   "packages": {
     ".": {
       "changelog-path": "CHANGELOG.md",
-      "release-type": "python",
-      "bump-minor-pre-major": false,
-      "bump-patch-for-minor-pre-major": false,
-      "draft": false,
-      "prerelease": false
+      "component": "pystac"
+    },
+    "core": {
+      "component": "pystac-core"
+    },
+    "extensions/classification": {
+      "component": "pystac-ext-classification"
+    },
+    "extensions/datacube": {
+      "component": "pystac-ext-datacube"
+    },
+    "extensions/eo": {
+      "component": "pystac-ext-eo"
+    },
+    "extensions/file": {
+      "component": "pystac-ext-file"
+    },
+    "extensions/grid": {
+      "component": "pystac-ext-grid"
+    },
+    "extensions/item_assets": {
+      "component": "pystac-ext-item-assets"
+    },
+    "extensions/label": {
+      "component": "pystac-ext-label"
+    },
+    "extensions/mgrs": {
+      "component": "pystac-ext-mgrs"
+    },
+    "extensions/mlm": {
+      "component": "pystac-ext-mlm"
+    },
+    "extensions/pointcloud": {
+      "component": "pystac-ext-pointcloud"
+    },
+    "extensions/projection": {
+      "component": "pystac-ext-projection"
+    },
+    "extensions/raster": {
+      "component": "pystac-ext-raster"
+    },
+    "extensions/render": {
+      "component": "pystac-ext-render"
+    },
+    "extensions/sar": {
+      "component": "pystac-ext-sar"
+    },
+    "extensions/sat": {
+      "component": "pystac-ext-sat"
+    },
+    "extensions/scientific": {
+      "component": "pystac-ext-scientific"
+    },
+    "extensions/storage": {
+      "component": "pystac-ext-storage"
+    },
+    "extensions/table": {
+      "component": "pystac-ext-table"
+    },
+    "extensions/timestamps": {
+      "component": "pystac-ext-timestamps"
+    },
+    "extensions/version": {
+      "component": "pystac-ext-version"
+    },
+    "extensions/view": {
+      "component": "pystac-ext-view"
+    },
+    "extensions/xarray_assets": {
+      "component": "pystac-ext-xarray-assets"
     }
   },
+  "plugins": [
+    {
+      "type": "linked-versions",
+      "groupName": "pystac",
+      "components": ["pystac", "pystac-core"]
+    }
+  ],
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
 }

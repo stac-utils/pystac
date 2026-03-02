@@ -4,9 +4,8 @@ from collections.abc import Generator
 from datetime import datetime
 from typing import Any, Generic, TypeVar, cast
 
-import pytest
-
 import pystac
+import pytest
 from pystac import (
     Asset,
     Catalog,

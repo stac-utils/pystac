@@ -3,9 +3,9 @@ import os
 from datetime import datetime
 from pathlib import Path
 
+import pystac
 import pytest
 
-import pystac
 from tests.conftest import get_data_file
 from tests.utils import ARBITRARY_BBOX, ARBITRARY_EXTENT, ARBITRARY_GEOM
 

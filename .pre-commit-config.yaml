@@ -47,4 +47,5 @@ repos:
         language: system
         stages: [pre-commit]
         types: [python]
+        exclude: conftest\.py$
         require_serial: true
