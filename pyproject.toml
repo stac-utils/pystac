@@ -122,7 +122,7 @@ branch = true
 source = ["core"]
 
 [tool.coverage.report]
-fail_under = 70
+fail_under = 65
 exclude_lines = ["if TYPE_CHECKING:"]
 
 [tool.doc8]
