@@ -9,6 +9,7 @@ import pystac
 pytestmark = pytest.mark.passing_v2
 
 
+@pytest.mark.xfail(reason="Asset copy/move/delete are removed in pystac v2")
 @pytest.mark.parametrize("action", ["copy", "move"])
 def test_alter_asset_absolute_path(
     action: str, tmp_asset: pystac.Asset, tmp_path: Path
@@ -29,6 +30,7 @@ def test_alter_asset_absolute_path(
         assert os.path.exists(old_href)
 
 
+@pytest.mark.xfail(reason="Asset copy/move/delete are removed in pystac v2")
 @pytest.mark.parametrize("action", ["copy", "move"])
 def test_alter_asset_relative_path(action: str, tmp_asset: pystac.Asset) -> None:
     asset = tmp_asset
@@ -48,6 +50,7 @@ def test_alter_asset_relative_path(action: str, tmp_asset: pystac.Asset) -> None
         assert os.path.exists(old_href)
 
 
+@pytest.mark.xfail(reason="Asset copy/move/delete are removed in pystac v2")
 @pytest.mark.parametrize("action", ["copy", "move"])
 def test_alter_asset_relative_src_no_owner_fails(
     action: str, tmp_asset: pystac.Asset
@@ -63,6 +66,7 @@ def test_alter_asset_relative_src_no_owner_fails(
     assert asset.href != new_href
 
 
+@pytest.mark.xfail(reason="Asset copy/move/delete are removed in pystac v2")
 @pytest.mark.parametrize("action", ["copy", "move"])
 def test_alter_asset_relative_dst_no_owner_fails(
     action: str, tmp_asset: pystac.Asset
@@ -83,6 +87,7 @@ def test_alter_asset_relative_dst_no_owner_fails(
     assert asset.href != new_href
 
 
+@pytest.mark.xfail(reason="Asset copy/move/delete are removed in pystac v2")
 def test_delete_asset(tmp_asset: pystac.Asset) -> None:
     asset = tmp_asset
     href = asset.get_absolute_href()
@@ -94,6 +99,7 @@ def test_delete_asset(tmp_asset: pystac.Asset) -> None:
     assert not os.path.exists(href)
 
 
+@pytest.mark.xfail(reason="Asset copy/move/delete are removed in pystac v2")
 def test_delete_asset_relative_no_owner_fails(tmp_asset: pystac.Asset) -> None:
     asset = tmp_asset
     href = asset.get_absolute_href()
