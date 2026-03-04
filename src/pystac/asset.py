@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import copy
-import os
-import shutil
 from typing import TYPE_CHECKING, Any, Protocol, override
 
 from typing_extensions import deprecated
@@ -25,6 +23,7 @@ if TYPE_CHECKING:
 class ItemAsset(DataValue, Instrument):
     def __init__(
         self,
+        *,
         title: str | None = None,
         description: str | None = None,
         type: str | None = None,
@@ -46,9 +45,10 @@ class ItemAsset(DataValue, Instrument):
     def __eq__(self, other: Any) -> bool:
         return self.to_dict() == other.to_dict()
 
-    def create(self):
-        # TODO deprecated version of __init__
-        ...
+    @classmethod
+    @deprecated("Instantiate the class directly instead")
+    def create[T: ItemAsset](cls: type[T], **kwargs: Any) -> T:
+        return cls(**kwargs)
 
     @classmethod
     def try_from[T: ItemAsset](cls: type[T], data: T | dict[str, Any]) -> T:
@@ -82,6 +82,7 @@ class Asset(ItemAsset):
     def __init__(
         self,
         href: str,
+        *,
         title: str | None = None,
         description: str | None = None,
         type: str | None = None,
@@ -123,42 +124,6 @@ class Asset(ItemAsset):
     def to_dict(self) -> dict[str, Any]:
         data = super().to_dict()
         return {"href": self.href, **data}
-
-    def move(self, href: str) -> Asset:
-        owner_href = self.owner.get_self_href() if self.owner else None
-        src = get_absolute_href(self.href, owner_href)
-        dst = get_absolute_href(href, owner_href)
-        if src is None or dst is None:
-            raise ValueError(
-                f"Cannot move file if source ('{self.href}') or destination "
-                f"('{href}') is relative and owner is not set."
-            )
-
-        _ = shutil.move(src, dst)
-        self.href = href
-        return self
-
-    def copy(self, href: str) -> Asset:
-        owner_href = self.owner.get_self_href() if self.owner else None
-        src = get_absolute_href(self.href, owner_href)
-        dst = get_absolute_href(href, owner_href)
-        if src is None or dst is None:
-            raise ValueError(
-                f"Cannot copy file if source ('{self.href}') or destination "
-                f"('{href}') is relative and owner is not set."
-            )
-        _ = shutil.copy2(src, dst)
-        self.href = href
-        return self
-
-    def delete(self) -> None:
-        href = self.get_absolute_href()
-        if href is None:
-            raise ValueError(
-                f"Cannot delete file if asset href ('{self.href}') is relative "
-                "and owner is not set."
-            )
-        os.remove(href)
 
 
 class Assets(Protocol):
@@ -203,7 +168,10 @@ class Assets(Protocol):
                 "Cannot make asset hrefs absolute, item does not have a self href"
             )
 
-    # TODO do we want to deprecate this? I think so...
+    @deprecated(
+        "delete_asset is deprecated, just delete the asset directly from the "
+        "assets dictionary"
+    )
     def delete_asset(self, key: str) -> None:
         asset = self.assets[key]
         try:
