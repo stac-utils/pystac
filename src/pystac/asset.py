@@ -6,7 +6,12 @@ from typing import TYPE_CHECKING, Any, Protocol, override
 from typing_extensions import deprecated
 
 from .media_type import MediaType
-from .utils import is_absolute_href, make_absolute_href, make_relative_href
+from .utils import (
+    get_absolute_href,
+    is_absolute_href,
+    make_absolute_href,
+    make_relative_href,
+)
 from .writer import Writer
 
 if TYPE_CHECKING:
@@ -16,6 +21,7 @@ if TYPE_CHECKING:
 class ItemAsset:
     def __init__(
         self,
+        *,
         title: str | None = None,
         description: str | None = None,
         type: str | None = None,
@@ -27,6 +33,15 @@ class ItemAsset:
         self.type: str | None = type
         self.roles: list[str] | None = roles
         self.extra_fields: dict[str, Any] = kwargs
+
+    @override
+    def __eq__(self, other: Any) -> bool:
+        return self.to_dict() == other.to_dict()
+
+    @classmethod
+    @deprecated("Instantiate the class directly instead")
+    def create[T: ItemAsset](cls: type[T], **kwargs: Any) -> T:
+        return cls(**kwargs)
 
     @classmethod
     def try_from[T: ItemAsset](cls: type[T], data: T | dict[str, Any]) -> T:
@@ -61,6 +76,7 @@ class Asset(ItemAsset):
     def __init__(
         self,
         href: str,
+        *,
         title: str | None = None,
         description: str | None = None,
         type: str | None = None,
@@ -72,7 +88,7 @@ class Asset(ItemAsset):
         )
         self.href: str = href
 
-        self._owner: STACObject | None = None
+        self.owner: STACObject | None = None
 
     @staticmethod
     def update_hrefs(
@@ -85,20 +101,12 @@ class Asset(ItemAsset):
                         make_absolute_href(asset.href, start_href), end_href
                     )
 
-    @property
-    def owner(self) -> STACObject | None:
-        return self._owner
-
     def set_owner(self, owner: STACObject | None) -> None:
-        self._owner = owner
+        self.owner = owner
 
     def get_absolute_href(self) -> str | None:
-        if is_absolute_href(self.href):
-            return self.href
-        elif self._owner and (owner_href := self._owner.get_self_href()):
-            return make_absolute_href(self.href, owner_href, False)
-        else:
-            return None
+        owner_href = self.owner.get_self_href() if self.owner else None
+        return get_absolute_href(self.href, owner_href)
 
     @override
     def to_dict(self) -> dict[str, Any]:
@@ -130,15 +138,29 @@ class Assets(Protocol):
         self.assets[key] = asset
 
     def make_asset_hrefs_relative(self) -> None:
-        if self.get_self_href():
-            # TODO actually implement
-            pass
+        if owner_href := self.get_self_href():
+            for asset in self.assets.values():
+                if is_absolute_href(asset.href, owner_href):
+                    asset.href = make_relative_href(asset.href, owner_href)
         else:
             raise ValueError(
                 "Cannot make asset hrefs relative, item does not have a self href"
             )
 
-    # TODO do we want to deprecate this? I think so...
+    def make_asset_hrefs_absolute(self) -> None:
+        if owner_href := self.get_self_href():
+            for asset in self.assets.values():
+                if not is_absolute_href(asset.href, owner_href):
+                    asset.href = make_absolute_href(asset.href, owner_href)
+        else:
+            raise ValueError(
+                "Cannot make asset hrefs absolute, item does not have a self href"
+            )
+
+    @deprecated(
+        "delete_asset is deprecated, just delete the asset directly from the "
+        "assets dictionary"
+    )
     def delete_asset(self, key: str) -> None:
         asset = self.assets[key]
         try:
