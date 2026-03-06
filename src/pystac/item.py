@@ -11,7 +11,14 @@ from pystac.rel_type import RelType
 
 from .asset import Asset, Assets
 from .band import Band
-from .common_metadata import CommonMetadata, DateTime
+from .common_metadata import (
+    Basics,
+    CommonMetadata,
+    DateTime,
+    Instrument,
+    Licensing,
+    Providers,
+)
 from .constants import DEFAULT_STAC_VERSION, STAC_OBJECT_TYPE
 from .container import Container
 from .geo_interface import GeoInterface
@@ -221,8 +228,9 @@ class Item(STACObject, Assets):
     def __geo_interface__(self) -> dict[str, Any]:
         return self.to_dict(include_self_link=False)
 
+
 @final
-class Properties(DateTime):
+class Properties(Basics, DateTime, Licensing, Providers, Instrument):
     def __init__(
         self,
         *,
@@ -240,7 +248,6 @@ class Properties(DateTime):
             self.bands: list[Band] | None = [Band.try_from(band) for band in bands]
         else:
             self.bands = None
-
 
     def __getitem__(self, key: str) -> Any:
         return self.extra_fields[key]
