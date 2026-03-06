@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Protocol, override
 from typing_extensions import deprecated
 
 from .band import Band
+from .common_metadata import DataValue, Instrument
 from .media_type import MediaType
 from .utils import is_absolute_href, make_absolute_href, make_relative_href
 from .writer import Writer
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
     from .stac_object import STACObject
 
 
-class ItemAsset:
+class ItemAsset(DataValue, Instrument):
     def __init__(
         self,
         title: str | None = None,
@@ -51,18 +52,15 @@ class ItemAsset:
         return self.from_dict(self.to_dict())
 
     def to_dict(self) -> dict[str, Any]:
-        data = copy.deepcopy(self.extra_fields)
-        if self.title is not None:
-            data["title"] = self.title
-        if self.description is not None:
-            data["description"] = self.description
-        if self.type is not None:
-            data["type"] = self.type
-        if self.roles is not None:
-            data["roles"] = self.roles
+        data: dict[str, Any] = copy.deepcopy(self.extra_fields)
+        data["title"] = self.title
+        data["description"] = self.description
+        data["type"] = self.type
+        data["roles"] = self.roles
+        data["statistics"] = self.statistics.to_dict() or None
         if self.bands is not None:
             data["bands"] = [band.to_dict() for band in self.bands]
-        return data
+        return {k: v for k, v in data.items() if v is not None}
 
 
 class Asset(ItemAsset):
@@ -117,8 +115,7 @@ class Asset(ItemAsset):
     @override
     def to_dict(self) -> dict[str, Any]:
         data = super().to_dict()
-        data["href"] = self.href
-        return data
+        return {"href": self.href, **data}
 
 
 class Assets(Protocol):
