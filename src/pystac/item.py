@@ -3,7 +3,7 @@ from __future__ import annotations
 import copy
 import datetime as dt
 import warnings
-from typing import TYPE_CHECKING, Any, ClassVar, override
+from typing import TYPE_CHECKING, Any, ClassVar, final, override
 
 from typing_extensions import deprecated
 
@@ -11,6 +11,7 @@ from pystac.rel_type import RelType
 
 from .asset import Asset, Assets
 from .band import Band
+from .common_metadata import CommonMetadata, DateTime
 from .constants import DEFAULT_STAC_VERSION, STAC_OBJECT_TYPE
 from .container import Container
 from .geo_interface import GeoInterface
@@ -67,10 +68,8 @@ class Item(STACObject, Assets):
         self.bbox: list[float | int] | None = list(bbox) if bbox else None
 
         self.properties: Properties = Properties.try_from(properties)
-        if isinstance(datetime, dt.datetime):
+        if datetime:
             self.properties.datetime = datetime
-        elif isinstance(datetime, str):
-            self.properties.datetime = str_to_datetime(datetime)
 
         if assets:
             self.assets: dict[str, Asset] = {}
@@ -117,7 +116,7 @@ class Item(STACObject, Assets):
         if asset and (datetime := asset.extra_fields.get("datetime")):
             return str_to_datetime(datetime)
         else:
-            return self.datetime
+            return self.properties.datetime
 
     @deprecated("Set the datetime on the asset directly")
     def set_datetime(self, datetime: dt.datetime, asset: Asset | None = None) -> None:
@@ -130,6 +129,11 @@ class Item(STACObject, Assets):
     def set_self_href(self, href: str | None) -> None:
         Asset.update_hrefs(self.assets, self.get_self_href(), href)
         return super().set_self_href(href)
+
+    @property
+    @deprecated("Access common metadata fields directly on properties")
+    def common_metadata(self):
+        return CommonMetadata(self)
 
     def get_collection(self) -> Collection | None:
         from .collection import Collection
@@ -217,26 +221,26 @@ class Item(STACObject, Assets):
     def __geo_interface__(self) -> dict[str, Any]:
         return self.to_dict(include_self_link=False)
 
-
-class Properties:
+@final
+class Properties(DateTime):
     def __init__(
         self,
+        *,
         datetime: dt.datetime | str | None = None,
+        start_datetime: dt.datetime | str | None = None,
+        end_datetime: dt.datetime | str | None = None,
         bands: list[Band] | list[dict[str, Any]] | None = None,
         **kwargs: Any,
     ):
-        if isinstance(datetime, str):
-            self.datetime: dt.datetime | None = str_to_datetime(datetime)
-        elif isinstance(datetime, dt.datetime):
-            self.datetime = datetime
-        else:
-            # TODO check for start and end datetime
-            self.datetime = dt.datetime.now(tz=dt.UTC)
+        self.extra_fields: dict[str, Any] = kwargs
+        self.datetime = datetime or dt.datetime.now(tz=dt.UTC)
+        self.start_datetime = start_datetime
+        self.end_datetime = end_datetime
         if bands is not None:
             self.bands: list[Band] | None = [Band.try_from(band) for band in bands]
         else:
             self.bands = None
-        self.extra_fields: dict[str, Any] = kwargs
+
 
     def __getitem__(self, key: str) -> Any:
         return self.extra_fields[key]
@@ -245,11 +249,10 @@ class Properties:
         self.extra_fields[name] = value
 
     def __contains__(self, key: str) -> bool:
-        return key in ("datetime", "bands") or key in self.extra_fields
+        return key == "bands" or key in self.extra_fields
 
     def __deepcopy__(self, memo: dict[int, Any]) -> Properties:
         return Properties(
-            datetime=self.datetime,
             bands=self.bands,
             **copy.deepcopy(self.extra_fields, memo),
         )
@@ -272,7 +275,6 @@ class Properties:
 
     def to_dict(self) -> dict[str, Any]:
         data = copy.deepcopy(self.extra_fields)
-        data["datetime"] = datetime_to_str(self.datetime) if self.datetime else None
         if self.bands is not None:
             data["bands"] = [band.to_dict() for band in self.bands]
-        return data
+        return {k: v for k, v in data.items() if v is not None}
