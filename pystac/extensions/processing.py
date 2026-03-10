@@ -106,7 +106,7 @@ class ProcessingExpression:
     @classmethod
     def create(cls, format: str, expression: Any) -> ProcessingExpression:
         """
-        Create a new ProcessingExpression.
+        Create a new :class:`ProcessingExpression` from its component parts.
 
         Args:
             format: The format of the processing expression.
@@ -303,15 +303,13 @@ class ProcessingExtension(
     @classmethod
     def get_schema_uri(cls) -> str:
         """
-        Get the schema URI for the processing extension.
+        Return the published schema URI for this extension.
         """
         return SCHEMA_URI
 
     @classmethod
     def ext(cls, obj: T, add_if_missing: bool = False) -> ProcessingExtension[T]:
-        """
-        Get the ProcessingExtension for the given object.
-        """
+        """Extend an Item, Asset, or ItemAssetDefinition with processing fields."""
         if isinstance(obj, pystac.Item):
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(ProcessingExtension[T], ItemProcessingExtension(obj))
@@ -328,17 +326,13 @@ class ProcessingExtension(
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
     ) -> SummariesProcessingExtension:
-        """
-        Helper wrapper for Collection.summaries.
-        """
+        """Return the Processing summaries helper for a collection."""
         cls.ensure_has_extension(obj, add_if_missing)
         return SummariesProcessingExtension(obj)
 
     @classmethod
     def provider(cls, provider: pystac.Provider) -> ProviderProcessingExtension:
-        """
-        Helper wrapper for Provider objects (providers do not track stac_extensions).
-        """
+        """Wrap a :class:`~pystac.Provider` with processing field accessors."""
         return ProviderProcessingExtension(provider)
 
 
@@ -727,6 +721,8 @@ class ProviderProcessingExtension(PropertiesExtension):
 
 
 class ProcessingExtensionHooks(ExtensionHooks):
+    """Hook registration used when reading or migrating STAC objects."""
+
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"processing"}
     stac_object_types = {

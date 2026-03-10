@@ -724,6 +724,98 @@ have a default value of ``None``:
    item.ext.eo.apply(0.5, bands, cloud_cover=None)
 
 
+The same pattern is used by the newer Earthquake, InSAR, Order, Processing, and
+Product extensions:
+
+.. code-block:: python
+
+   import datetime as dt
+
+   import pystac
+   from pystac.extensions.earthquake import EarthquakeExtension
+   from pystac.extensions.insar import InsarExtension
+   from pystac.extensions.order import OrderExtension, OrderStatus
+   from pystac.extensions.processing import ProcessingExtension
+   from pystac.extensions.product import AcquisitionType, ProductExtension
+
+   item = pystac.Item(
+       id="example",
+       geometry=None,
+       bbox=None,
+       datetime=dt.datetime(2024, 1, 1, tzinfo=dt.timezone.utc),
+       properties={},
+   )
+
+   EarthquakeExtension.ext(item, add_if_missing=True).apply(
+       magnitude=6.1,
+       sources=[{"name": "usgs", "code": "ak021"}],
+       magnitude_type="mww",
+       status="reviewed",
+       depth=8.4,
+   )
+
+   InsarExtension.ext(item, add_if_missing=True).apply(
+       perpendicular_baseline=123.4,
+       temporal_baseline=12,
+       reference_datetime=dt.datetime(2024, 1, 1, tzinfo=dt.timezone.utc),
+       secondary_datetime=dt.datetime(2024, 1, 13, tzinfo=dt.timezone.utc),
+       processing_dem="COPDEM",
+       geocoding_dem="SRTM",
+   )
+
+   ProductExtension.ext(item, add_if_missing=True).apply(
+       product_type="SLC",
+       timeliness="PT3H",
+       timeliness_category="NRT",
+       acquisition_type=AcquisitionType.NOMINAL,
+   )
+
+   ProcessingExtension.ext(item, add_if_missing=True).apply(
+       lineage="L2 from L1",
+       level="L2A",
+       software={"snap": "9.0"},
+   )
+
+   order = OrderExtension.ext(item, add_if_missing=True)
+   order.apply(
+       status=OrderStatus.ORDERED,
+       order_id="123",
+       date=dt.datetime(2024, 1, 2, tzinfo=dt.timezone.utc),
+   )
+
+   asset = pystac.Asset(href="s3://example-bucket/data.tif")
+   item.add_asset("data", asset)
+
+   # Asset-level access uses the same extension classes.
+   item.assets["data"].ext.processing.level = "L2B"
+
+   collection = pystac.Collection(
+       id="example-collection",
+       description="Example collection",
+       extent=pystac.Extent(
+           pystac.SpatialExtent([[-180.0, -90.0, 180.0, 90.0]]),
+           pystac.TemporalExtent([[None, None]]),
+       ),
+       license="proprietary",
+   )
+
+   # InSAR, Processing, Product, and Order also expose Collection summaries helpers.
+   InsarExtension.summaries(collection, add_if_missing=True).processing_dem = "COPDEM"
+   ProcessingExtension.summaries(collection).level = ["L1", "L2A"]
+   ProductExtension.summaries(collection).product_type = ["SLC", "GRD"]
+   OrderExtension.summaries(collection).status = [
+       OrderStatus.ORDERABLE,
+       OrderStatus.ORDERED,
+   ]
+
+   provider = pystac.Provider(
+       name="ACME",
+       roles=[pystac.ProviderRole.PROCESSOR],
+       url="https://example.com",
+   )
+   ProcessingExtension.provider(provider).level = "L3"
+
+
 Adding an Extension
 -------------------
 

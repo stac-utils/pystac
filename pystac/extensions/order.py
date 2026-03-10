@@ -45,9 +45,7 @@ EXPIRATION_DATE_PROP: str = PREFIX + "expiration_date"  # deprecated in schema
 
 
 class OrderStatus(StringEnum):
-    """
-    Enumeration of order statuses.
-    """
+    """Known values for :data:`order:status <STATUS_PROP>`."""
 
     ORDERABLE = "orderable"
     ORDERED = "ordered"
@@ -235,7 +233,7 @@ class OrderExtension(
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
     ) -> SummariesOrderExtension:
-        """Returns the extended summaries object for the given collection."""
+        """Return the Order summaries helper for a collection."""
         cls.ensure_has_extension(obj, add_if_missing)
         return SummariesOrderExtension(obj)
 
@@ -324,7 +322,7 @@ class ItemAssetsOrderExtension(OrderExtension[pystac.ItemAssetDefinition]):
 
 
 class SummariesOrderExtension(SummariesExtension):
-    """Concrete implementation extending :attr:`pystac.Collection.summaries`."""
+    """Concrete implementation for ``order:*`` values in collection summaries."""
 
     @property
     def status(self) -> list[OrderStatus] | None:
@@ -380,6 +378,8 @@ class SummariesOrderExtension(SummariesExtension):
 
 
 class OrderExtensionHooks(ExtensionHooks):
+    """Hook registration used when reading or migrating STAC objects."""
+
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"order"}
     stac_object_types = {

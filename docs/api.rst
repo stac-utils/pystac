@@ -104,11 +104,16 @@ Extensions
 PySTAC provides support for the following STAC Extensions:
 
 * :mod:`Datacube <pystac.extensions.datacube>`
+* :mod:`Earthquake <pystac.extensions.earthquake>`
 * :mod:`Electro-Optical <pystac.extensions.eo>`
 * :mod:`File Info <pystac.extensions.file>`
+* :mod:`InSAR <pystac.extensions.insar>`
 * :mod:`Item Assets <pystac.extensions.item_assets>`
 * :mod:`MGRS <pystac.extensions.mgrs>`
+* :mod:`Order <pystac.extensions.order>`
 * :mod:`Point Cloud <pystac.extensions.pointcloud>`
+* :mod:`Processing <pystac.extensions.processing>`
+* :mod:`Product <pystac.extensions.product>`
 * :mod:`Projection <pystac.extensions.projection>`
 * :mod:`Raster <pystac.extensions.raster>`
 * :mod:`SAR <pystac.extensions.sar>`

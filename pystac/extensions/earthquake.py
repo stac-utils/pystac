@@ -1,3 +1,5 @@
+"""Implementation of the STAC :stac-ext:`Earthquake Extension <earthquake>`."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -40,7 +42,7 @@ StatusType = Literal["automatic", "reviewed", "deleted"]
 
 
 class EarthquakeSource(TypedDict, total=False):
-    """One element of eq:sources."""
+    """A single source entry stored in :data:`eq:sources <SOURCES_PROP>`."""
 
     name: str  # required by schema
     code: str  # required by schema
@@ -108,13 +110,19 @@ class EarthquakeExtension(
     # ---- schema hooks ----
     @classmethod
     def get_schema_uri(cls) -> str:
+        """Return the published schema URI for this extension."""
         return SCHEMA_URI
 
     # ---- factory ----
     @classmethod
     def ext(cls, obj: T, add_if_missing: bool = False) -> EarthquakeExtension[T]:
         """
-        Extend a STAC object (Item, Asset, ItemAssetDefinition) with Earthquake fields.
+        Extend an Item, Asset, or ItemAssetDefinition with earthquake fields.
+
+        Args:
+            obj: The PySTAC object to wrap.
+            add_if_missing: If ``True``, add the earthquake schema URI to the owning
+                Item or Collection before returning the extension wrapper.
         """
         if isinstance(obj, pystac.Item):
             cls.ensure_has_extension(obj, add_if_missing)
@@ -141,7 +149,7 @@ class EarthquakeExtension(
         depth: float | None = None,
     ) -> None:
         """
-        Apply Earthquake fields.
+        Apply earthquake fields to the wrapped object.
 
         Note: schema marks `eq:magnitude` and `eq:sources` as required.
         """
@@ -156,6 +164,7 @@ class EarthquakeExtension(
     # ---- properties ----
     @property
     def magnitude(self) -> float | None:
+        """Magnitude of the earthquake event."""
         return self._get_property(MAGNITUDE_PROP, float)
 
     @magnitude.setter
@@ -164,6 +173,7 @@ class EarthquakeExtension(
 
     @property
     def magnitude_type(self) -> MagnitudeType | None:
+        """Magnitude scale used to compute :attr:`magnitude`."""
         return cast(
             MagnitudeType | None,
             self._get_property(MAGNITUDE_TYPE_PROP, str),
@@ -175,6 +185,7 @@ class EarthquakeExtension(
 
     @property
     def felt(self) -> int | None:
+        """Reported number of people who felt the event."""
         return self._get_property(FELT_PROP, int)
 
     @felt.setter
@@ -183,6 +194,7 @@ class EarthquakeExtension(
 
     @property
     def status(self) -> StatusType | None:
+        """Review status of the event metadata."""
         return cast(StatusType | None, self._get_property(STATUS_PROP, str))
 
     @status.setter
@@ -191,6 +203,7 @@ class EarthquakeExtension(
 
     @property
     def tsunami(self) -> bool | None:
+        """Whether the event was associated with a tsunami."""
         return self._get_property(TSUNAMI_PROP, bool)
 
     @tsunami.setter
@@ -199,6 +212,7 @@ class EarthquakeExtension(
 
     @property
     def depth(self) -> float | None:
+        """Depth of the event in kilometers."""
         return self._get_property(DEPTH_PROP, float)
 
     @depth.setter
@@ -212,6 +226,7 @@ class EarthquakeExtension(
 
     @property
     def sources(self) -> list[EarthquakeSource] | None:
+        """Provider-specific source records associated with this event."""
         return self._get_property(SOURCES_PROP, list[dict[str, Any]])  # type: ignore[return-value]
 
     @sources.setter
@@ -220,6 +235,8 @@ class EarthquakeExtension(
 
 
 class ItemEarthquakeExtension(EarthquakeExtension[pystac.Item]):
+    """Concrete earthquake implementation for :class:`~pystac.Item` objects."""
+
     item: pystac.Item
     properties: dict[str, Any]
 
@@ -232,6 +249,8 @@ class ItemEarthquakeExtension(EarthquakeExtension[pystac.Item]):
 
 
 class AssetEarthquakeExtension(EarthquakeExtension[pystac.Asset]):
+    """Concrete earthquake implementation for :class:`~pystac.Asset` objects."""
+
     asset_href: str
     properties: dict[str, Any]
     additional_read_properties: Iterable[dict[str, Any]] | None = None
@@ -248,6 +267,8 @@ class AssetEarthquakeExtension(EarthquakeExtension[pystac.Asset]):
 
 
 class ItemAssetsEarthquakeExtension(EarthquakeExtension[pystac.ItemAssetDefinition]):
+    """Concrete earthquake implementation for item asset definitions."""
+
     asset_defn: pystac.ItemAssetDefinition
     properties: dict[str, Any]
 
@@ -257,6 +278,8 @@ class ItemAssetsEarthquakeExtension(EarthquakeExtension[pystac.ItemAssetDefiniti
 
 
 class EarthquakeExtensionHooks(ExtensionHooks):
+    """Hook registration used when reading or migrating STAC objects."""
+
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {"earthquake", "eq"}
     stac_object_types = {
