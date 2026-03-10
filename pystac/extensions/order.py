@@ -7,8 +7,9 @@ Schema: https://stac-extensions.github.io/order/v1.1.0/schema.json
 from __future__ import annotations
 
 import warnings
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Any, Generic, Iterable, Literal, TypeVar, cast
+from typing import Any, Generic, Literal, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -47,6 +48,7 @@ class OrderStatus(StringEnum):
     """
     Enumeration of order statuses.
     """
+
     ORDERABLE = "orderable"
     ORDERED = "ordered"
     PENDING = "pending"
@@ -232,7 +234,7 @@ class OrderExtension(
     @classmethod
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
-    ) -> "SummariesOrderExtension":
+    ) -> SummariesOrderExtension:
         """Returns the extended summaries object for the given collection."""
         cls.ensure_has_extension(obj, add_if_missing)
         return SummariesOrderExtension(obj)
@@ -335,7 +337,7 @@ class SummariesOrderExtension(SummariesExtension):
     def status(self, v: list[OrderStatus] | None) -> None:
         """
         Set the order status.
-        
+
         Args:
             v: The order status to set.
         """

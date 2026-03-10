@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Generic, Iterable, Literal, Optional, TypedDict, TypeVar, cast
+from collections.abc import Iterable
+from typing import Any, Generic, Literal, TypedDict, TypeVar, cast
 
 import pystac
 from pystac.errors import ExtensionTypeError
@@ -233,7 +234,7 @@ class ItemEarthquakeExtension(EarthquakeExtension[pystac.Item]):
 class AssetEarthquakeExtension(EarthquakeExtension[pystac.Asset]):
     asset_href: str
     properties: dict[str, Any]
-    additional_read_properties: Optional[Iterable[dict[str, Any]]] = None
+    additional_read_properties: Iterable[dict[str, Any]] | None = None
 
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href

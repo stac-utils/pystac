@@ -86,7 +86,7 @@ class ProcessingExpression:
     def expression(self, v: Any) -> None:
         """
         Set the expression of the processing expression.
-        
+
         Args:
             v: The expression value to set.
         """
@@ -104,7 +104,7 @@ class ProcessingExpression:
         self.expression = expression
 
     @classmethod
-    def create(cls, format: str, expression: Any) -> "ProcessingExpression":
+    def create(cls, format: str, expression: Any) -> ProcessingExpression:
         """
         Create a new ProcessingExpression.
 
@@ -157,7 +157,7 @@ class ProcessingExtension(
     ) -> None:
         """
         Apply the processing extension.
-        
+
         Args:
             expression: The processing expression.
             lineage: The processing lineage.
@@ -189,7 +189,7 @@ class ProcessingExtension(
     def expression(self, v: ProcessingExpression | dict[str, Any] | None) -> None:
         """
         Set the processing expression.
-        
+
         Args:
             v: The processing expression to set.
         """
@@ -209,7 +209,7 @@ class ProcessingExtension(
     def lineage(self, v: str | None) -> None:
         """
         Set the processing lineage.
-        
+
         Args:
             v: The processing lineage to set.
         """
@@ -308,7 +308,7 @@ class ProcessingExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> "ProcessingExtension[T]":
+    def ext(cls, obj: T, add_if_missing: bool = False) -> ProcessingExtension[T]:
         """
         Get the ProcessingExtension for the given object.
         """
@@ -327,7 +327,7 @@ class ProcessingExtension(
     @classmethod
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
-    ) -> "SummariesProcessingExtension":
+    ) -> SummariesProcessingExtension:
         """
         Helper wrapper for Collection.summaries.
         """
@@ -335,7 +335,7 @@ class ProcessingExtension(
         return SummariesProcessingExtension(obj)
 
     @classmethod
-    def provider(cls, provider: pystac.Provider) -> "ProviderProcessingExtension":
+    def provider(cls, provider: pystac.Provider) -> ProviderProcessingExtension:
         """
         Helper wrapper for Provider objects (providers do not track stac_extensions).
         """
@@ -368,6 +368,7 @@ class AssetProcessingExtension(ProcessingExtension[pystac.Asset]):
     """
     Processing extension for Asset objects.
     """
+
     asset_href: str
     properties: dict[str, Any]
     additional_read_properties: list[dict[str, Any]] | None = None
@@ -395,6 +396,7 @@ class ItemAssetsProcessingExtension(ProcessingExtension[pystac.ItemAssetDefiniti
     """
     Processing extension for ItemAssetDefinition objects.
     """
+
     asset_defn: pystac.ItemAssetDefinition
     properties: dict[str, Any]
 
@@ -432,7 +434,7 @@ class SummariesProcessingExtension(SummariesExtension):
     def expression(self, v: dict[str, Any] | None) -> None:
         """
         Set the processing expression summary.
-        
+
         Args:
             v: The processing expression summary to set.
         """

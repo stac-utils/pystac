@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any, TypeAlias, cast
 
 import pytest
 
@@ -11,9 +12,12 @@ from pystac.extensions.order import (
     EXPIRATION_DATE_PROP,
     ID_PROP,
     STATUS_PROP,
+    AssetOrderExtension,
     OrderExtension,
     OrderStatus,
 )
+
+TemporalIntervals: TypeAlias = list[list[datetime | None]]
 
 
 def _dt(s: str) -> datetime:
@@ -33,12 +37,13 @@ def make_item() -> pystac.Item:
 
 
 def make_collection() -> pystac.Collection:
+    temporal_intervals: TemporalIntervals = [[None, None]]
     return pystac.Collection(
         id="c",
         description="d",
         extent=pystac.Extent(
-            pystac.SpatialExtent([[-180, -90, 180, 90]]),
-            pystac.TemporalExtent([[None, None]]),
+            pystac.SpatialExtent([[-180.0, -90.0, 180.0, 90.0]]),
+            pystac.TemporalExtent(temporal_intervals),
         ),
         license="proprietary",
     )
@@ -88,12 +93,13 @@ def test_asset_owner_type_validation() -> None:
     # Asset with no owner is allowed when add_if_missing is False.
     asset = pystac.Asset(href="s3://bucket/a.tif")
     ext = OrderExtension.ext(asset, add_if_missing=False)
+    assert isinstance(ext, AssetOrderExtension)
     assert ext.asset_href == "s3://bucket/a.tif"
 
     # Make it owned by something invalid (not Item/Collection)
     cat = pystac.Catalog(id="cat", description="d")
     bad_asset = pystac.Asset(href="s3://bucket/b.tif")
-    bad_asset.set_owner(cat)
+    bad_asset.owner = cast(Any, cat)
 
     with pytest.raises(pystac.ExtensionTypeError):
         OrderExtension.ext(bad_asset, add_if_missing=True)
@@ -118,6 +124,9 @@ def test_summaries_wrapper_sets_lists() -> None:
     col = make_collection()
     sext = OrderExtension.summaries(col, add_if_missing=True)
 
-    sext.status = ["orderable", "ordered"]  # schema expects listy summaries
+    sext.status = [OrderStatus.ORDERABLE, OrderStatus.ORDERED]
 
-    assert col.summaries.lists[STATUS_PROP] == ["orderable", "ordered"]
+    assert col.summaries.lists[STATUS_PROP] == [
+        OrderStatus.ORDERABLE,
+        OrderStatus.ORDERED,
+    ]

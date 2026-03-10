@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any, TypeAlias, cast
 
 import pytest
 
@@ -15,6 +16,8 @@ from pystac.extensions.insar import (
     TEMP_BASELINE_PROP,
     InsarExtension,
 )
+
+TemporalIntervals: TypeAlias = list[list[datetime | None]]
 
 
 def _dt(s: str) -> datetime:
@@ -35,12 +38,13 @@ def make_item() -> pystac.Item:
 
 
 def make_collection() -> pystac.Collection:
+    temporal_intervals: TemporalIntervals = [[None, None]]
     return pystac.Collection(
         id="c",
         description="d",
         extent=pystac.Extent(
-            pystac.SpatialExtent([[-180, -90, 180, 90]]),
-            pystac.TemporalExtent([[None, None]]),
+            pystac.SpatialExtent([[-180.0, -90.0, 180.0, 90.0]]),
+            pystac.TemporalExtent(temporal_intervals),
         ),
         license="proprietary",
     )
@@ -121,7 +125,7 @@ def test_asset_ext_adds_extension_to_owner() -> None:
 def test_collection_ext_is_not_supported() -> None:
     col = make_collection()
     with pytest.raises(pystac.ExtensionTypeError):
-        InsarExtension.ext(col)  # type: ignore[arg-type]
+        InsarExtension.ext(cast(Any, col))
 
 
 def test_collection_summaries_singleton_storage_and_removal() -> None:

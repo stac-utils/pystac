@@ -63,7 +63,7 @@ class InsarExtension(
     # ---------------- factories ----------------
 
     @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> "InsarExtension[T]":
+    def ext(cls, obj: T, add_if_missing: bool = False) -> InsarExtension[T]:
         """
         Applies to:
           - Item (properties)
@@ -94,7 +94,7 @@ class InsarExtension(
     @classmethod
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
-    ) -> "SummariesInsarExtension":
+    ) -> SummariesInsarExtension:
         """
         Collection-level InSAR lives under `collection.summaries`.
         """
@@ -272,6 +272,7 @@ class ItemInsarExtension(InsarExtension[pystac.Item]):
     """
     Item extension for InSAR properties.
     """
+
     item: pystac.Item
     properties: dict[str, Any]
 
@@ -293,6 +294,7 @@ class AssetInsarExtension(InsarExtension[pystac.Asset]):
     """
     Asset extension for InSAR properties.
     """
+
     asset_href: str
     properties: dict[str, Any]
 
@@ -314,6 +316,7 @@ class ItemAssetsInsarExtension(InsarExtension[pystac.ItemAssetDefinition]):
     """
     ItemAssetDefinition extension for InSAR properties.
     """
+
     asset_defn: pystac.ItemAssetDefinition
     properties: dict[str, Any]
 
@@ -325,8 +328,7 @@ class ItemAssetsInsarExtension(InsarExtension[pystac.ItemAssetDefinition]):
         self.properties = item_asset.properties
 
     def __repr__(self) -> str:
-        """Returns a string representation of the ItemAssetsInsarExtension.
-        """
+        """Returns a string representation of the ItemAssetsInsarExtension."""
         return "<ItemAssetsInsarExtension ItemAssetDefinition>"
 
 

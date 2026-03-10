@@ -31,6 +31,7 @@ ACQUISITION_TYPE_PROP: str = PREFIX + "acquisition_type"
 
 class AcquisitionType(StringEnum):
     """Allowed values for product:acquisition_type."""
+
     NOMINAL = "nominal"
     CALIBRATION = "calibration"
     OTHER = "other"
@@ -196,7 +197,7 @@ class ProductExtension(
     @classmethod
     def summaries(
         cls, obj: pystac.Collection, add_if_missing: bool = False
-    ) -> "SummariesProductExtension":
+    ) -> SummariesProductExtension:
         """
         Attach SummariesProductExtension to a Collection.
 
@@ -311,7 +312,7 @@ class SummariesProductExtension(SummariesExtension):
     def product_type(self, v: list[str] | None) -> None:
         """
         Set the product type in the summaries.
-        
+
         Args:
             v: The product type.
         """
@@ -373,6 +374,7 @@ class ProductExtensionHooks(ExtensionHooks):
     """
     Hooks for the Product extension.
     """
+
     schema_uri: str = SCHEMA_URI
     # Helpful for discovery/migration if you later add older schema URIs here
     prev_extension_ids = {"product"}

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any, cast
 
 import pytest
 
@@ -15,6 +16,7 @@ from pystac.extensions.earthquake import (
     STATUS_PROP,
     TSUNAMI_PROP,
     EarthquakeExtension,
+    EarthquakeSource,
 )
 
 
@@ -38,7 +40,7 @@ def test_item_apply_roundtrip() -> None:
     item = make_item()
     ext = EarthquakeExtension.ext(item, add_if_missing=True)
 
-    sources = [{"name": "usgs", "code": "ak021"}]
+    sources: list[EarthquakeSource] = [{"name": "usgs", "code": "ak021"}]
     ext.apply(
         magnitude=6.1,
         sources=sources,
@@ -77,7 +79,7 @@ def test_validation_errors() -> None:
         ext.sources = []
 
     with pytest.raises(ValueError):
-        ext.sources = [{"name": "usgs"}]  # type: ignore[list-item]
+        ext.sources = cast(Any, [{"name": "usgs"}])
 
 
 def test_asset_reads_from_owner_and_writes_to_asset() -> None:

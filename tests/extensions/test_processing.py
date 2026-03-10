@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import TypeAlias
 
 import pystac
 from pystac.extensions.processing import (
@@ -14,6 +15,8 @@ from pystac.extensions.processing import (
     ProcessingExpression,
     ProcessingExtension,
 )
+
+TemporalIntervals: TypeAlias = list[list[datetime | None]]
 
 
 def _dt(s: str) -> datetime:
@@ -33,12 +36,13 @@ def make_item() -> pystac.Item:
 
 
 def make_collection() -> pystac.Collection:
+    temporal_intervals: TemporalIntervals = [[None, None]]
     return pystac.Collection(
         id="c",
         description="d",
         extent=pystac.Extent(
-            pystac.SpatialExtent([[-180, -90, 180, 90]]),
-            pystac.TemporalExtent([[None, None]]),
+            pystac.SpatialExtent([[-180.0, -90.0, 180.0, 90.0]]),
+            pystac.TemporalExtent(temporal_intervals),
         ),
         license="proprietary",
     )
@@ -113,7 +117,11 @@ def test_summaries_wrapper_sets_lists_and_schema() -> None:
 
 
 def test_provider_wrapper_sets_extra_fields() -> None:
-    provider = pystac.Provider(name="ACME", roles=["processor"], url="https://example.com")
+    provider = pystac.Provider(
+        name="ACME",
+        roles=[pystac.ProviderRole.PROCESSOR],
+        url="https://example.com",
+    )
     pext = ProcessingExtension.provider(provider)
 
     pext.level = "L3"

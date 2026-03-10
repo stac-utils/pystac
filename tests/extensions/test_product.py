@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import TypeAlias
 
 import pytest
 
@@ -14,6 +15,8 @@ from pystac.extensions.product import (
     AcquisitionType,
     ProductExtension,
 )
+
+TemporalIntervals: TypeAlias = list[list[datetime | None]]
 
 
 def _dt(s: str) -> datetime:
@@ -33,12 +36,13 @@ def make_item() -> pystac.Item:
 
 
 def make_collection() -> pystac.Collection:
+    temporal_intervals: TemporalIntervals = [[None, None]]
     return pystac.Collection(
         id="c",
         description="d",
         extent=pystac.Extent(
-            pystac.SpatialExtent([[-180, -90, 180, 90]]),
-            pystac.TemporalExtent([[None, None]]),
+            pystac.SpatialExtent([[-180.0, -90.0, 180.0, 90.0]]),
+            pystac.TemporalExtent(temporal_intervals),
         ),
         license="proprietary",
     )

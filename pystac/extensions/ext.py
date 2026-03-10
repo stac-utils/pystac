@@ -331,6 +331,7 @@ class ItemExt:
     def processing(self) -> ProcessingExtension[Item]:
         return ProcessingExtension.ext(self.stac_object)
 
+
 class _AssetsExt(Generic[T]):
     stac_object: T
 
@@ -452,6 +453,7 @@ class _AssetExt(_AssetsExt[U]):
     @property
     def view(self) -> ViewExtension[U]:
         return ViewExtension.ext(self.stac_object)
+
 
 @dataclass
 class AssetExt(_AssetExt[Asset]):
