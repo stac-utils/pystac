@@ -67,6 +67,9 @@ The core PySTAC API follows [Semantic Versioning](https://semver.org/).
 As of [Spring 2026](https://github.com/stac-utils/pystac/pull/1650), our [extension](https://stac-extensions.github.io/) implementations have moved to their own Python packages, so they can be versioned independently of the core PySTAC API.
 Breaking changes to the API of extension packages are _not_ considered breaking changes for the purposes of PySTAC versioning.
 
+The STAC extension packages' version will match the version extension itself, e.g. **pystac-ext-projection** v2.0.0 corresponds to the [v2.0.0](https://github.com/stac-extensions/projection/releases/tag/v2.0.0) release of the **projection** extension.
+Any changes to the software (not the extension) will be released via [post releases](https://packaging.python.org/en/latest/discussions/versioning/#valid-version-numbers).
+
 ## Documentation
 
 See the [documentation page](https://pystac.readthedocs.io/en/latest/) for the latest docs.
