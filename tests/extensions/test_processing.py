@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-import pytest
 import pystac
-
 from pystac.extensions.processing import (
     DATETIME_PROP,
     EXPRESSION_PROP,
@@ -70,7 +68,10 @@ def test_item_apply_roundtrip() -> None:
         processing_datetime=dt,
     )
 
-    assert item.properties[EXPRESSION_PROP] == {"format": "cwl", "expression": {"steps": []}}
+    assert item.properties[EXPRESSION_PROP] == {
+        "format": "cwl",
+        "expression": {"steps": []},
+    }
     assert item.properties[LINEAGE_PROP] == "L2 from L1"
     assert item.properties[LEVEL_PROP] == "L2A"
     assert item.properties[FACILITY_PROP] == "ESA"

@@ -23,6 +23,7 @@ from pystac.extensions.base import (
     PropertiesExtension,
     SummariesExtension,
 )
+from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import datetime_to_str, get_required, map_opt, str_to_datetime
 
 # Generalized version of pystac.Item, pystac.Asset, or pystac.ItemAssetDefinition
@@ -65,7 +66,7 @@ class ProcessingExpression:
         """
         Get the format of the processing expression.
         """
-        return get_required(self.properties.get("format"), self, "format")
+        return cast(str, get_required(self.properties.get("format"), self, "format"))
 
     @format.setter
     def format(self, v: str) -> None:
@@ -137,7 +138,7 @@ class ProcessingExtension(
     Implements the STAC Processing Extension for:
     - Items (Item.properties)
     - Assets (Asset.extra_fields; requires owner implements extension)
-    - ItemAssetDefinition (ItemAssetDefinition.properties; requires owner implements extension)
+    - ItemAssetDefinition (properties; requires owner implements extension)
 
     For Collection summaries, use ProcessingExtension.summaries(collection).
     """
@@ -721,3 +722,15 @@ class ProviderProcessingExtension(PropertiesExtension):
         Get a string representation of the processing extension.
         """
         return f"<ProviderProcessingExtension Provider name={self.provider.name!r}>"
+
+
+class ProcessingExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+    prev_extension_ids = {"processing"}
+    stac_object_types = {
+        pystac.STACObjectType.COLLECTION,
+        pystac.STACObjectType.ITEM,
+    }
+
+
+PROCESSING_EXTENSION_HOOKS: ExtensionHooks = ProcessingExtensionHooks()

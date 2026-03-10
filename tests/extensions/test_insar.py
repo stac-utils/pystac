@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime
 
 import pytest
-import pystac
 
+import pystac
 from pystac.extensions.insar import (
     GEOC_DEM_PROP,
     HOA_PROP,

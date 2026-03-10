@@ -12,7 +12,13 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum
 
-T = TypeVar("T", pystac.Collection, pystac.Item, pystac.Asset, pystac.ItemAssetDefinition)
+T = TypeVar(
+    "T",
+    pystac.Collection,
+    pystac.Item,
+    pystac.Asset,
+    pystac.ItemAssetDefinition,
+)
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/product/v1.0.0/schema.json"
 PREFIX: str = "product:"
@@ -60,12 +66,16 @@ class ProductExtension(
 
         Args:
             product_type: The product type.
-            timeliness: The timeliness as an ISO 8601 duration string (e.g. "PT3H", "P1M").
+            timeliness: The timeliness as an ISO 8601 duration string.
             timeliness_category: The timeliness category.
             acquisition_type: The acquisition type.
         """
         # Enforce the schema dependency: timeliness_category => timeliness
-        if timeliness_category is not None and timeliness is None and self.timeliness is None:
+        if (
+            timeliness_category is not None
+            and timeliness is None
+            and self.timeliness is None
+        ):
             raise ValueError(
                 f"'{TIMELINESS_CATEGORY_PROP}' requires '{TIMELINESS_PROP}' to be set."
             )

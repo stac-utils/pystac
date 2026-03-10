@@ -5,6 +5,7 @@ from typing import Any, Generic, Iterable, Literal, Optional, TypedDict, TypeVar
 import pystac
 from pystac.errors import ExtensionTypeError
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
+from pystac.extensions.hooks import ExtensionHooks
 
 # ----------------------------
 # STAC Earthquake extension
@@ -61,7 +62,9 @@ def _validate_felt(v: int | None) -> int | None:
     return int(v)
 
 
-def _validate_sources(v: list[EarthquakeSource] | None) -> list[EarthquakeSource] | None:
+def _validate_sources(
+    v: list[EarthquakeSource] | None,
+) -> list[EarthquakeSource] | None:
     if v is None:
         return None
     if len(v) < 1:
@@ -69,14 +72,17 @@ def _validate_sources(v: list[EarthquakeSource] | None) -> list[EarthquakeSource
     for i, s in enumerate(v):
         if "name" not in s or "code" not in s:
             raise ValueError(
-                f"{SOURCES_PROP}[{i}] must include required keys 'name' and 'code'. Got: {s}"
+                f"{SOURCES_PROP}[{i}] must include required keys "
+                f"'name' and 'code'. Got: {s}"
             )
         if not isinstance(s["name"], str) or not s["name"]:
             raise ValueError(f"{SOURCES_PROP}[{i}].name must be a non-empty string.")
         if not isinstance(s["code"], str) or not s["code"]:
             raise ValueError(f"{SOURCES_PROP}[{i}].code must be a non-empty string.")
         if "catalog" in s and (not isinstance(s["catalog"], str) or not s["catalog"]):
-            raise ValueError(f"{SOURCES_PROP}[{i}].catalog must be a non-empty string if set.")
+            raise ValueError(
+                f"{SOURCES_PROP}[{i}].catalog must be a non-empty string if set."
+            )
     return v
 
 
@@ -92,10 +98,10 @@ class EarthquakeExtension(
     Implements the STAC Earthquake Extension for Items and also supports reading/writing
     extension fields on Assets and Collection Item Asset Definitions.
 
-    Schema: https://stac-extensions.github.io/earthquake/v1.0.0/schema.json :contentReference[oaicite:1]{index=1}
+    Schema: https://stac-extensions.github.io/earthquake/v1.0.0/schema.json
     """
 
-    # Use the extension's field prefix as the "name" (common PySTAC pattern, e.g. 'eo', 'proj')
+    # Use the extension's field prefix as the name to match existing PySTAC patterns.
     name: Literal["eq"] = "eq"
 
     # ---- schema hooks ----
@@ -136,7 +142,7 @@ class EarthquakeExtension(
         """
         Apply Earthquake fields.
 
-        Note: Schema marks `eq:magnitude` and `eq:sources` as REQUIRED. :contentReference[oaicite:2]{index=2}
+        Note: schema marks `eq:magnitude` and `eq:sources` as required.
         """
         self.magnitude = magnitude
         self.sources = sources
@@ -157,7 +163,10 @@ class EarthquakeExtension(
 
     @property
     def magnitude_type(self) -> MagnitudeType | None:
-        return self._get_property(MAGNITUDE_TYPE_PROP, str)  # type: ignore[return-value]
+        return cast(
+            MagnitudeType | None,
+            self._get_property(MAGNITUDE_TYPE_PROP, str),
+        )
 
     @magnitude_type.setter
     def magnitude_type(self, v: MagnitudeType | None) -> None:
@@ -173,7 +182,7 @@ class EarthquakeExtension(
 
     @property
     def status(self) -> StatusType | None:
-        return self._get_property(STATUS_PROP, str)  # type: ignore[return-value]
+        return cast(StatusType | None, self._get_property(STATUS_PROP, str))
 
     @status.setter
     def status(self, v: StatusType | None) -> None:
@@ -194,7 +203,11 @@ class EarthquakeExtension(
     @depth.setter
     def depth(self, v: float | None) -> None:
         # schema only says "number" (no range); keep permissive
-        self._set_property(DEPTH_PROP, None if v is None else float(v), pop_if_none=True)
+        self._set_property(
+            DEPTH_PROP,
+            None if v is None else float(v),
+            pop_if_none=True,
+        )
 
     @property
     def sources(self) -> list[EarthquakeSource] | None:
@@ -240,3 +253,15 @@ class ItemAssetsEarthquakeExtension(EarthquakeExtension[pystac.ItemAssetDefiniti
     def __init__(self, item_asset: pystac.ItemAssetDefinition):
         self.asset_defn = item_asset
         self.properties = item_asset.properties
+
+
+class EarthquakeExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+    prev_extension_ids = {"earthquake", "eq"}
+    stac_object_types = {
+        pystac.STACObjectType.COLLECTION,
+        pystac.STACObjectType.ITEM,
+    }
+
+
+EARTHQUAKE_EXTENSION_HOOKS: ExtensionHooks = EarthquakeExtensionHooks()

@@ -1,17 +1,23 @@
 from __future__ import annotations
 
-import pytest
-import pystac
+from datetime import datetime
 
+import pytest
+
+import pystac
 from pystac.extensions.product import (
     ACQUISITION_TYPE_PROP,
+    PRODUCT_EXTENSION_HOOKS,
     TIMELINESS_CATEGORY_PROP,
     TIMELINESS_PROP,
     TYPE_PROP,
     AcquisitionType,
     ProductExtension,
-    PRODUCT_EXTENSION_HOOKS,
 )
+
+
+def _dt(s: str) -> datetime:
+    return datetime.fromisoformat(s.replace("Z", "+00:00"))
 
 
 def make_item() -> pystac.Item:
@@ -19,7 +25,7 @@ def make_item() -> pystac.Item:
         id="i",
         geometry=None,
         bbox=None,
-        datetime=None,
+        datetime=_dt("2020-01-01T00:00:00Z"),
         properties={},
         start_datetime=None,
         end_datetime=None,

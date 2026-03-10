@@ -3,8 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 
 import pytest
-import pystac
 
+import pystac
+from pystac.errors import RequiredPropertyMissing
 from pystac.extensions.order import (
     DATE_PROP,
     EXPIRATION_DATE_PROP,
@@ -49,7 +50,7 @@ def test_item_status_is_required() -> None:
 
     # status missing -> get_required should raise
     ext = OrderExtension.ext(item)
-    with pytest.raises(KeyError):
+    with pytest.raises(RequiredPropertyMissing):
         _ = ext.status
 
 
@@ -84,15 +85,15 @@ def test_collection_top_level_fields() -> None:
 
 
 def test_asset_owner_type_validation() -> None:
-    # Asset with no owner is allowed (ensure_owner_has_extension is a no-op)
+    # Asset with no owner is allowed when add_if_missing is False.
     asset = pystac.Asset(href="s3://bucket/a.tif")
-    with pytest.raises(pystac.ExtensionNotImplemented):
-        OrderExtension.ext(asset, add_if_missing=False)
+    ext = OrderExtension.ext(asset, add_if_missing=False)
+    assert ext.asset_href == "s3://bucket/a.tif"
 
     # Make it owned by something invalid (not Item/Collection)
     cat = pystac.Catalog(id="cat", description="d")
     bad_asset = pystac.Asset(href="s3://bucket/b.tif")
-    cat.add_asset("x", bad_asset)
+    bad_asset.set_owner(cat)
 
     with pytest.raises(pystac.ExtensionTypeError):
         OrderExtension.ext(bad_asset, add_if_missing=True)

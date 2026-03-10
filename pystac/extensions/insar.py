@@ -9,8 +9,8 @@ from pystac.extensions.base import (
     PropertiesExtension,
     SummariesExtension,
 )
+from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import datetime_to_str, map_opt, str_to_datetime
-
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/insar/v1.0.0/schema.json"
 PREFIX: str = "insar:"
@@ -67,7 +67,7 @@ class InsarExtension(
         """
         Applies to:
           - Item (properties)
-          - Asset (extra_fields) [Item assets AND Collection assets are allowed by schema]  :contentReference[oaicite:2]{index=2}
+          - Asset (extra_fields), including Item and Collection assets
           - ItemAssetDefinition (collection.item_assets[*].properties)
         """
         if isinstance(obj, pystac.Item):
@@ -82,8 +82,8 @@ class InsarExtension(
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(InsarExtension[T], ItemAssetsInsarExtension(obj))
 
-        # Keep the same user experience as SAR: Collection uses .summaries(...) instead. :contentReference[oaicite:3]{index=3}
-        if isinstance(obj, pystac.Collection):  # type: ignore[unreachable]
+        # Keep the same user experience as SAR: Collection uses .summaries(...) instead.
+        if isinstance(obj, pystac.Collection):
             raise pystac.ExtensionTypeError(
                 "InSAR extension does not apply to type 'Collection'. "
                 "Hint: Did you mean to use `InsarExtension.summaries` instead?"
@@ -96,7 +96,7 @@ class InsarExtension(
         cls, obj: pystac.Collection, add_if_missing: bool = False
     ) -> "SummariesInsarExtension":
         """
-        Collection-level InSAR lives under `collection.summaries` per updated schema. :contentReference[oaicite:4]{index=4}
+        Collection-level InSAR lives under `collection.summaries`.
         """
         cls.ensure_has_extension(obj, add_if_missing)
         return SummariesInsarExtension(obj)
@@ -116,7 +116,7 @@ class InsarExtension(
     ) -> None:
         """
         Sets the properties for the InSAR extension.
-        
+
         Args:
             perpendicular_baseline: The perpendicular baseline in meters.
             temporal_baseline: The temporal baseline in days.
@@ -126,7 +126,7 @@ class InsarExtension(
             processing_dem: The DEM used during interferogram processing.
             geocoding_dem: The DEM used during geocoding.
         """
-        
+
         self.perpendicular_baseline = perpendicular_baseline
         self.temporal_baseline = temporal_baseline
         self.height_of_ambiguity = height_of_ambiguity
@@ -149,12 +149,14 @@ class InsarExtension(
     def perpendicular_baseline(self, v: float | int | None) -> None:
         """
         Sets the perpendicular baseline in meters.
-        
+
         Args:
             v: The perpendicular baseline in meters, or None to remove the property.
         """
         self._set_property(
-            PERP_BASELINE_PROP, _validated_number(v, PERP_BASELINE_PROP), pop_if_none=True
+            PERP_BASELINE_PROP,
+            _validated_number(v, PERP_BASELINE_PROP),
+            pop_if_none=True,
         )
 
     @property
@@ -173,7 +175,9 @@ class InsarExtension(
             v: The temporal baseline in days, or None to remove the property.
         """
         self._set_property(
-            TEMP_BASELINE_PROP, _validated_number(v, TEMP_BASELINE_PROP), pop_if_none=True
+            TEMP_BASELINE_PROP,
+            _validated_number(v, TEMP_BASELINE_PROP),
+            pop_if_none=True,
         )
 
     @property
@@ -236,7 +240,11 @@ class InsarExtension(
         Args:
             v: The processing DEM, or None to remove the property.
         """
-        self._set_property(PROC_DEM_PROP, _validated_str(v, PROC_DEM_PROP), pop_if_none=True)
+        self._set_property(
+            PROC_DEM_PROP,
+            _validated_str(v, PROC_DEM_PROP),
+            pop_if_none=True,
+        )
 
     @property
     def geocoding_dem(self) -> str | None:
@@ -253,7 +261,11 @@ class InsarExtension(
         Args:
             v: The geocoding DEM, or None to remove the property.
         """
-        self._set_property(GEOC_DEM_PROP, _validated_str(v, GEOC_DEM_PROP), pop_if_none=True)
+        self._set_property(
+            GEOC_DEM_PROP,
+            _validated_str(v, GEOC_DEM_PROP),
+            pop_if_none=True,
+        )
 
 
 class ItemInsarExtension(InsarExtension[pystac.Item]):
@@ -332,7 +344,7 @@ class SummariesInsarExtension(SummariesExtension):
     def _get_singleton_list_value(self, key: str) -> Any | None:
         """
         Gets a singleton list value from the summaries.
-        
+
         Args:
             key: The summaries key to retrieve.
         """
@@ -367,7 +379,7 @@ class SummariesInsarExtension(SummariesExtension):
     ) -> None:
         """
         Applies the InSAR properties to the summaries.
-        
+
         Args:
             reference_datetime: The reference acquisition datetime.
             processing_dem: The DEM used during interferogram processing.
@@ -388,7 +400,8 @@ class SummariesInsarExtension(SummariesExtension):
         if isinstance(raw, str):
             return str_to_datetime(raw)
         raise ValueError(
-            f"Invalid {REF_DT_PROP} summary: expected RFC3339 string in list, got {type(raw).__name__}"
+            f"Invalid {REF_DT_PROP} summary: expected RFC3339 string in list, "
+            f"got {type(raw).__name__}"
         )
 
     @reference_datetime.setter
@@ -409,7 +422,8 @@ class SummariesInsarExtension(SummariesExtension):
         if isinstance(raw, str):
             return raw
         raise ValueError(
-            f"Invalid {PROC_DEM_PROP} summary: expected string in list, got {type(raw).__name__}"
+            f"Invalid {PROC_DEM_PROP} summary: expected string in list, "
+            f"got {type(raw).__name__}"
         )
 
     @processing_dem.setter
@@ -430,15 +444,28 @@ class SummariesInsarExtension(SummariesExtension):
         if isinstance(raw, str):
             return raw
         raise ValueError(
-            f"Invalid {GEOC_DEM_PROP} summary: expected string in list, got {type(raw).__name__}"
+            f"Invalid {GEOC_DEM_PROP} summary: expected string in list, "
+            f"got {type(raw).__name__}"
         )
 
     @geocoding_dem.setter
     def geocoding_dem(self, v: str | None) -> None:
         """
         Sets the DEM used during geocoding.
-        
+
         Args:
             v: The geocoding DEM, or None to remove the property.
         """
         self._set_singleton_list_value(GEOC_DEM_PROP, _validated_str(v, GEOC_DEM_PROP))
+
+
+class InsarExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+    prev_extension_ids = {"insar"}
+    stac_object_types = {
+        pystac.STACObjectType.COLLECTION,
+        pystac.STACObjectType.ITEM,
+    }
+
+
+INSAR_EXTENSION_HOOKS: ExtensionHooks = InsarExtensionHooks()

@@ -16,6 +16,7 @@ from pystac.extensions.base import (
     PropertiesExtension,
     SummariesExtension,
 )
+from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import (
     StringEnum,
     datetime_to_str,
@@ -36,7 +37,7 @@ T = TypeVar(
 SCHEMA_URI: str = "https://stac-extensions.github.io/order/v1.1.0/schema.json"
 PREFIX: str = "order:"
 
-STATUS_PROP: str = PREFIX + "status"  # required on Items; required top-level on Collections (per schema)
+STATUS_PROP: str = PREFIX + "status"
 ID_PROP: str = PREFIX + "id"
 DATE_PROP: str = PREFIX + "date"
 EXPIRATION_DATE_PROP: str = PREFIX + "expiration_date"  # deprecated in schema
@@ -92,7 +93,8 @@ class OrderExtension(
         self.status = status
         self.order_id = order_id
         self.date = date
-        self.expiration_date = expiration_date
+        if expiration_date is not None:
+            self.expiration_date = expiration_date
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -210,10 +212,13 @@ class OrderExtension(
             return cast(OrderExtension[T], CollectionOrderExtension(obj))
 
         if isinstance(obj, pystac.Asset):
-            # Allow both Item assets and Collection assets; validate owner type if present.
-            if obj.owner is not None and not isinstance(obj.owner, (pystac.Item, pystac.Collection)):
+            # Allow both Item and Collection assets; validate owner type if present.
+            if obj.owner is not None and not isinstance(
+                obj.owner, (pystac.Item, pystac.Collection)
+            ):
                 raise pystac.ExtensionTypeError(
-                    "Order extension only applies to Assets owned by Item or Collection."
+                    "Order extension only applies to Assets "
+                    "owned by Item or Collection."
                 )
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(OrderExtension[T], AssetOrderExtension(obj))
@@ -370,3 +375,15 @@ class SummariesOrderExtension(SummariesExtension):
             v: The expiration date to set.
         """
         self._set_summary(DATE_PROP, v)
+
+
+class OrderExtensionHooks(ExtensionHooks):
+    schema_uri: str = SCHEMA_URI
+    prev_extension_ids = {"order"}
+    stac_object_types = {
+        pystac.STACObjectType.COLLECTION,
+        pystac.STACObjectType.ITEM,
+    }
+
+
+ORDER_EXTENSION_HOOKS: ExtensionHooks = OrderExtensionHooks()
