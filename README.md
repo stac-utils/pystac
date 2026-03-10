@@ -61,6 +61,12 @@ python -m pip install .
 See the [installation page](https://pystac.readthedocs.io/en/latest/installation.html)
 for more options.
 
+## Versioning
+
+The core PySTAC API follows [Semantic Versioning](https://semver.org/).
+As of [Spring 2026](https://github.com/stac-utils/pystac/pull/1650), our [extension](https://stac-extensions.github.io/) implementations have moved to their own Python packages, so they can be versioned independently of the core PySTAC API.
+Breaking changes to the API of extension packages are _not_ considered breaking changes for the purposes of PySTAC versioning.
+
 ## Documentation
 
 See the [documentation page](https://pystac.readthedocs.io/en/latest/) for the latest docs.
