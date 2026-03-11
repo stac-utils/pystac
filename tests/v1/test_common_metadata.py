@@ -8,6 +8,9 @@ from pystac import CommonMetadata, Item, Provider, ProviderRole, utils
 from .utils import TestCases
 
 
+pytestmark = pytest.mark.passing_v2
+
+
 @pytest.fixture
 def date_time_range_item() -> Item:
     return Item.from_file(
@@ -235,6 +238,7 @@ class TestAssetCommonMetadata:
             TestCases.get_path("data-files/item/sample-item-asset-properties.json")
         )
 
+    @pytest.mark.xfail(reason="title not part of common metadata for assets in pystac v2")
     def test_title(self, item: Item) -> None:
         cm = item.common_metadata
         analytic = item.assets["analytic"]
@@ -256,6 +260,7 @@ class TestAssetCommonMetadata:
         assert analytic_cm.title == set_value
         assert analytic.to_dict()["title"] == set_value
 
+    @pytest.mark.xfail(reason="description not part of common metadata for assets in pystac v2")
     def test_description(self, item: Item) -> None:
         cm = item.common_metadata
         analytic = item.assets["analytic"]
@@ -541,6 +546,7 @@ class TestAssetCommonMetadata:
         assert analytic_cm.keywords == set_value
         assert analytic.to_dict()["keywords"] == set_value
 
+    @pytest.mark.xfail(reason="roles not part of common metadata for assets in pystac v2")
     def test_roles(self, item: Item) -> None:
         cm = item.common_metadata
         analytic = item.assets["analytic"]

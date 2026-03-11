@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 from enum import StrEnum
-from typing import Any
+from typing import Any, override
 
 
 class Provider:
@@ -19,6 +19,12 @@ class Provider:
         self.roles: list[ProviderRole | str] | None = roles
         self.url: str | None = url
         self.extra_fields: dict[str, Any] = kwargs
+
+    @override
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, Provider):
+            return NotImplemented
+        return self.to_dict() == other.to_dict()
 
     @classmethod
     def try_from(cls, data: Provider | dict[str, Any]) -> Provider:
