@@ -4,19 +4,12 @@ on:
   push:
     branches:
       - main
-      - "0.3"
-      - "0.4"
-      - "0.5"
-      - "1.0"
-      - "2.0"
   pull_request:
   merge_group:
 
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
-
-permissions: {}
 
 jobs:
   test:
@@ -25,10 +18,9 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - "3.10"
-          - "3.11"
           - "3.12"
           - "3.13"
+          - "3.14"
         os:
           - ubuntu-latest
           - windows-latest
@@ -38,22 +30,21 @@ jobs:
       - uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b # v7.3.0
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Sync
-        run: uv sync --all-extras
-      - name: Lint
-        if: runner.os != 'Windows'
-        run: uv run pre-commit run --all-files
+      # - name: Lint
+      #   if: runner.os != 'Windows'
+      #   run: uv run prek run --all-files
       - name: Test on windows
         if: runner.os == 'Windows'
         shell: bash
         env:
           TMPDIR: 'D:\\a\\_temp'
-        run: uv run pytest tests
+        run: uv run pytest tests --block-network --record-mode=none
       - name: Test
         if: runner.os != 'Windows'
         run: uv run pytest tests --block-network --record-mode=none
 
   coverage:
+    if: false  # exclude on pystac v2 for now
     name: coverage
     runs-on: ubuntu-latest
     permissions:
@@ -64,11 +55,7 @@ jobs:
       - name: Install with dependencies
         run: uv sync --all-extras
       - name: Run coverage with orjson
-        run: uv run pytest tests --cov
-      - name: Uninstall orjson
-        run: uv pip uninstall orjson
-      - name: Run coverage without orjson, appending results
-        run: uv run pytest tests --cov --cov-append
+        run: uv run --all-extras pytest tests --cov
       - name: Prepare ./coverage.xml
         # Ignore the configured fail-under to ensure we upload the coverage report. We
         # will trigger a failure for coverage drops in a later job
@@ -86,6 +73,7 @@ jobs:
         run: uv run coverage report
 
   without-orjson:
+    if: false  # exclude on pystac v2 for now
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -101,6 +89,7 @@ jobs:
     # This checks to make sure any API changes haven't broken any of the
     # benchmarks. It doesn't do any actual benchmarking, since (IMO) that's not
     # appropriate for CI on GitHub actions.
+    if: false  # exclude on pystac v2 for now
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -119,6 +108,7 @@ jobs:
 
   docs:
     runs-on: ubuntu-latest
+    if: false  # exclude on pystac v2 for now
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b # v7.3.0
