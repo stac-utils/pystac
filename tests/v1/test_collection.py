@@ -30,6 +30,10 @@ from pystac.validation import validate_dict
 
 from .utils import ARBITRARY_BBOX, ARBITRARY_GEOM, TestCases
 
+
+pytestmark = pytest.mark.passing_v2
+
+
 TEST_DATETIME = datetime(2020, 3, 14, 16, 32)
 
 
