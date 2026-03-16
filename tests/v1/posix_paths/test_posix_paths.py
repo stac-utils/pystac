@@ -10,10 +10,12 @@ import pystac
 from ..conftest import get_data_file
 from ..utils import ARBITRARY_BBOX, ARBITRARY_EXTENT, ARBITRARY_GEOM
 
+pytestmark = pytest.mark.passing_v2
+
 
 def check_link(link: pystac.Link | None) -> None:
     assert link is not None
-    href = link.get_target_str()
+    href = link.get_href()
     assert href is not None
     assert "\\" not in href
 
