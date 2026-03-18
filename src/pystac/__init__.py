@@ -2,7 +2,7 @@ from typing import Any
 
 from typing_extensions import deprecated
 
-from .asset import Asset
+from .asset import Asset, ItemAsset
 from .band import Band
 from .catalog import Catalog
 from .collection import (
@@ -73,6 +73,7 @@ __all__ = [
     "RelType",
     "DEFAULT_STAC_VERSION",
     "Item",
+    "ItemAsset",
     "ItemAssetDefinition",
     "ItemCollection",
     "Link",

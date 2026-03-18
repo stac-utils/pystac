@@ -7,6 +7,10 @@ from pystac.item_assets import ItemAssetDefinition
 
 from .utils import TestCases
 
+
+pytestmark = pytest.mark.passing_v2
+
+
 CLASSIFICATION_COLLECTION_RASTER_URI = TestCases.get_path(
     "data-files/classification/collection-item-assets-raster-bands.json"
 )
@@ -39,6 +43,7 @@ def test_example(landsat8_collection: Collection) -> None:
     )
 
 
+@pytest.mark.xfail(reason="setting item_assets using a dict is no longer supported")
 def test_set_using_dict(landsat8_collection: Collection) -> None:
     assert len(landsat8_collection.item_assets) == 13
 
@@ -62,6 +67,7 @@ def test_set_using_dict(landsat8_collection: Collection) -> None:
 
 
 class TestAssetDefinition:
+    @pytest.mark.xfail(reason="Item assets don't pretend to be dict in pystac v2")
     def test_eq(self, landsat8_collection: Collection) -> None:
         assert landsat8_collection.item_assets["B1"] != {"title": "Coastal Band (B1)"}
 
@@ -134,6 +140,7 @@ class TestAssetDefinition:
         assert asset_definition.owner == landsat8_collection
 
 
+@pytest.mark.xfail(reason="ItemAssets have no owner in pystac v2")
 def test_extra_fields(collection: Collection) -> None:
     asset_definition = ItemAssetDefinition.create(
         title=None,
@@ -159,6 +166,7 @@ def test_extra_fields(collection: Collection) -> None:
     assert collection.ext.has("raster")
 
 
+@pytest.mark.xfail(reason="ItemAssets have no owner in pystac v2")
 def test_set_item_asset(collection: Collection) -> None:
     asset_definition = ItemAssetDefinition.create(
         title=None,
@@ -172,6 +180,7 @@ def test_set_item_asset(collection: Collection) -> None:
     assert collection.item_assets["data"].owner == collection
 
 
+@pytest.mark.xfail(reason="ItemAssets Extension deprecation cycle is complete")
 def test_item_assets_extension_is_deprecated() -> None:
     collection = Collection.from_file(CLASSIFICATION_COLLECTION_RASTER_URI)
 
@@ -197,6 +206,7 @@ def test_item_assets_extension_is_deprecated() -> None:
     item_asset_ext.item_assets["thumbnail"] = asset_definition
 
 
+@pytest.mark.xfail(reason="ItemAssets Extension deprecation cycle is complete")
 def test_item_assets_extension_asset_definition_is_deprecated() -> None:
     with pytest.warns(
         DeprecationWarning, match="Please use ``pystac.ItemAssetDefinition``"
