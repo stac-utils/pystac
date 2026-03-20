@@ -26,7 +26,7 @@ def landsat8_collection() -> Collection:
 def test_example(landsat8_collection: Collection) -> None:
     assert len(landsat8_collection.item_assets) == 13
 
-    assert landsat8_collection.item_assets["B1"] == ItemAssetDefinition(
+    assert landsat8_collection.item_assets["B1"].to_dict() == ItemAssetDefinition(
         {
             "type": "image/tiff; application=geotiff",
             "eo:bands": [
@@ -40,7 +40,7 @@ def test_example(landsat8_collection: Collection) -> None:
             "title": "Coastal Band (B1)",
             "description": "Coastal Band Top Of the Atmosphere",
         }
-    )
+    ).to_dict()
 
 
 @pytest.mark.xfail(reason="setting item_assets using a dict is no longer supported")
