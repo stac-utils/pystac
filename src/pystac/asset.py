@@ -43,6 +43,8 @@ class ItemAsset(DataValue, Instrument):
 
     @override
     def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, ItemAsset):
+            return NotImplemented
         return self.to_dict() == other.to_dict()
 
     @classmethod
