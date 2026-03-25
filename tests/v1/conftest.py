@@ -37,6 +37,13 @@ def collection() -> Catalog:
 
 
 @pytest.fixture
+def self_link_collection() -> Catalog:
+    c = Collection("test-collection", "A test collection", ARBITRARY_EXTENT)
+    c.set_self_href("file:///a/real/url.json")
+    return c
+
+
+@pytest.fixture
 def multi_extent_collection() -> Collection:
     # TODO this code is repeated many times; refactor to use this fixture
     return Collection.from_file(
