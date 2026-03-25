@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 import warnings
-from typing import TYPE_CHECKING, Any, override
+from typing import TYPE_CHECKING, Any, Self, override
 
 from typing_extensions import deprecated
 
@@ -14,6 +14,7 @@ from pystac.utils import make_absolute_href, make_posix_style
 from .reader import Reader
 
 if TYPE_CHECKING:
+    from . import Catalog, Collection, Item
     from .stac_object import STACObject
 
 HIERARCHICAL_LINKS = [
@@ -50,6 +51,7 @@ class Link:
 
         if isinstance(target, STACObject):
             self._href: str | None = href or target.get_self_href()
+            self.title = title or getattr(target, "title", None)
             self._target: STACObject | None = target
         elif href and target:
             raise ValueError("Both target and href were provided as strings")
@@ -81,6 +83,9 @@ class Link:
             return None
         else:
             return super().__getattribute__(name)
+
+    def clone(self: Self) -> Self:
+        return copy.deepcopy(self)
 
     @classmethod
     def try_from(cls, data: dict[str, Any] | Link) -> Link:
@@ -120,6 +125,12 @@ class Link:
     def get_href(self) -> str | None:
         return self._href or self._target and self._target.get_self_href()
 
+    def get_absolute_href(self, start_href: str = "") -> str | None:
+        href = self.get_href()
+        if href is None:
+            return href
+        return make_absolute_href(href, start_href, start_is_dir=False)
+
     def set_href(self, href: str) -> None:
         self._href = href
 
@@ -127,6 +138,20 @@ class Link:
     @deprecated("target is deprecated, either use .get_href() or .get_target()")
     def target(self) -> str | STACObject | None:
         return self._target or self._href
+
+    @target.setter
+    @deprecated("target is deprecated, either use .set_href() or .set_target()")
+    def target(self, value: str | STACObject) -> None:
+        if isinstance(value, str):
+            warnings.warn(
+                "Setting Link.target to href is no longer supported pystac v2.  "
+                "Assigning value to href instead."
+            )
+            self.set_href(value)
+        else:
+            self.set_target(value)
+            if href := value.get_self_href():
+                self.set_href(href)
 
     def get_target(self, start_href: str | None, reader: Reader) -> STACObject:
         from .stac_object import STACObject
@@ -181,3 +206,50 @@ class Link:
     @override
     def __repr__(self) -> str:
         return f"Link(rel={self.rel}, href={self._href})"
+
+    ##### Convenience methods for Link creation #####
+    @classmethod
+    def collection(cls: type[Self], c: Collection) -> Self:
+        """Creates a link to a Collection."""
+        return cls(RelType.COLLECTION, c, media_type=MediaType.JSON)
+
+    @classmethod
+    def self_href(cls: type[Self], href: str) -> Self:
+        """Creates a self link to a file's location."""
+        return cls(RelType.SELF, href, media_type=MediaType.JSON)
+
+    @classmethod
+    def child(cls: type[Self], c: Catalog, title: str | None = None) -> Self:
+        """Creates a link to a child Catalog or Collection."""
+        return cls(RelType.CHILD, c, title=title, media_type=MediaType.JSON)
+
+    @classmethod
+    def item(cls: type[Self], item: Item, title: str | None = None) -> Self:
+        """Creates a link to an Item."""
+        return cls(RelType.ITEM, item, title=title, media_type=MediaType.GEOJSON)
+
+    @classmethod
+    def derived_from(
+        cls: type[Self], item: Item | str, title: str | None = None
+    ) -> Self:
+        """Creates a link to a derived_from Item."""
+        return cls(
+            RelType.DERIVED_FROM,
+            item,
+            title=title,
+            media_type=MediaType.JSON,
+        )
+
+    @classmethod
+    def canonical(
+        cls: type[Self],
+        item_or_collection: Item | Collection,
+        title: str | None = None,
+    ) -> Self:
+        """Creates a canonical link to an Item or Collection."""
+        return cls(
+            RelType.CANONICAL,
+            item_or_collection,
+            title=title,
+            media_type=MediaType.JSON,
+        )
