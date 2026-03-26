@@ -106,7 +106,8 @@ class STACObject(ABC):
                 f"Expected {cls.__name__}, got {type(stac_object).__name__}"
             )
         stac_object.reader = reader
-        stac_object.set_self_href(href)
+        if stac_object.get_self_href() is None:
+            stac_object.set_self_href(str(href))
         return stac_object
 
     @classmethod
