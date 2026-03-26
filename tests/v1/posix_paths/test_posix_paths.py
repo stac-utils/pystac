@@ -71,6 +71,16 @@ def test_create_item_containing_posix_hrefs(tmp_path: Path) -> None:
     pystac.read_file(collection_href)
 
 
+def test_posix_self_link(tmp_path: Path) -> None:
+    href = get_data_file("item/sample-item.json")
+    item = pystac.Item.from_file(href)
+    item.links.append(pystac.Link(rel="self", href=href))
+    check_link(item.get_single_link(rel="self"))
+    item2 = pystac.read_file(href)
+    item2.links.append(pystac.Link(rel="self", href=href))
+    check_link(item2.get_single_link(rel="self"))
+
+
 @pytest.mark.skipif(os.name != "nt", reason="windows only test")
 def test_posix_self_link_from_absolute_href(tmp_path: Path) -> None:
     # Check that we convert to a windows style (\\) absolute href to posix style
