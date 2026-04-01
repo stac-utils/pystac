@@ -63,7 +63,7 @@ ARBITRARY_BBOX: list[float] = [
 ]
 
 ARBITRARY_EXTENT = Extent(
-    spatial=SpatialExtent.from_coordinates(ARBITRARY_GEOM["coordinates"]),
+    spatial=SpatialExtent(ARBITRARY_BBOX),
     temporal=TemporalExtent.from_now(),
 )
 

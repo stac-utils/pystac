@@ -1,12 +1,24 @@
+from __future__ import annotations
+
+import copy
 from collections.abc import Iterator
-from typing import override
+from pathlib import Path
+from typing import Any, Literal, TypedDict, override
 
 from .item import Item
+from .reader import DEFAULT_READER, Reader
+from .utils import make_absolute_href
+
+
+class T_ItemCollection(TypedDict):
+    type: Literal["FeatureCollection"]
+    features: list[dict[str, Any]]
 
 
 class ItemCollection:
-    def __init__(self, items: list[Item]):
+    def __init__(self, items: list[Item], **kwargs: Any):
         self.items: list[Item] = items
+        self.extra_fields: dict[str, Any] = kwargs
 
     def __len__(self) -> int:
         return len(self.items)
@@ -20,3 +32,41 @@ class ItemCollection:
     @override
     def __repr__(self) -> str:
         return f"ItemCollection({self.items})"
+
+    def to_dict(self) -> dict[str, Any]:
+        data = copy.deepcopy(self.extra_fields)
+        return {
+            "type": "FeatureCollection",
+            "features": [item.to_dict() for item in self.items],
+            **data,
+        }
+
+    @classmethod
+    def try_from(cls, data: dict[str, Any] | ItemCollection) -> ItemCollection:
+        if isinstance(data, ItemCollection):
+            return data
+        else:
+            return cls(**data)
+
+    @classmethod
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        preserve_dict: bool = True,
+    ) -> ItemCollection:
+        if preserve_dict:
+            data = copy.deepcopy(data)
+
+        items = data.get("features", [])
+        extra_fields = {k: v for k, v in data.items() if k not in ("features", "type")}
+
+        return cls(items=[Item.from_dict(item) for item in items], **extra_fields)
+
+    @classmethod
+    def from_file(
+        cls, path: str | Path, reader: Reader = DEFAULT_READER
+    ) -> ItemCollection:
+        href = make_absolute_href(str(path))
+        data = reader.get_json(href)
+
+        return ItemCollection.from_dict(data)
