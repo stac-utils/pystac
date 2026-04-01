@@ -24,7 +24,7 @@ from .container import Container
 from .geo_interface import GeoInterface
 from .link import Link
 from .stac_object import STACObject
-from .utils import datetime_to_str, str_to_datetime
+from .utils import datetime_to_str, make_posix_style, str_to_datetime
 
 if TYPE_CHECKING:
     from .collection import Collection
@@ -134,8 +134,13 @@ class Item(STACObject, Assets):
 
     @override
     def set_self_href(self, href: str | None) -> None:
-        Asset.update_hrefs(self.assets, self.get_self_href(), href)
-        return super().set_self_href(href)
+        new_href = None if href is None else make_posix_style(href)
+        Asset.update_hrefs(
+            self.assets,
+            self.get_self_href(),
+            new_href,
+        )
+        return super().set_self_href(new_href)
 
     @property
     @deprecated("Access common metadata fields directly on properties")

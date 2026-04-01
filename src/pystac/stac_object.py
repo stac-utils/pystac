@@ -17,7 +17,12 @@ from pystac.writer import DEFAULT_WRITER
 from .constants import STAC_OBJECT_TYPE
 from .link import Link
 from .reader import DEFAULT_READER, Reader
-from .utils import is_absolute_href, make_absolute_href, make_relative_href
+from .utils import (
+    is_absolute_href,
+    make_absolute_href,
+    make_posix_style,
+    make_relative_href,
+)
 from .validator import Validator
 from .writer import Writer
 
@@ -106,8 +111,7 @@ class STACObject(ABC):
                 f"Expected {cls.__name__}, got {type(stac_object).__name__}"
             )
         stac_object.reader = reader
-        if stac_object.get_self_href() is None:
-            stac_object.set_self_href(str(href))
+        stac_object.set_self_href(str(href))
         return stac_object
 
     @classmethod
@@ -210,10 +214,7 @@ class STACObject(ABC):
         return self._href
 
     def set_self_href(self, href: str | None) -> None:
-        self._href = href
-        self.links = list(link for link in self.links if not link.is_self())
-        if href:
-            self.links.append(Link(rel="self", target=href))
+        self._href = make_posix_style(href) if href is not None else None
 
     def get_root(self) -> Container | None:
         from .container import Container
