@@ -239,17 +239,12 @@ class Properties(Basics, DateTime, Licensing, Providers, Instrument):
     def __init__(
         self,
         *,
-        datetime: dt.datetime | str | None = None,
-        start_datetime: dt.datetime | str | None = None,
-        end_datetime: dt.datetime | str | None = None,
         bands: list[Band] | list[dict[str, Any]] | None = None,
         **kwargs: Any,
     ):
         self.extra_fields: dict[str, Any] = kwargs
-        self.datetime = datetime
-        self.start_datetime = start_datetime
-        self.end_datetime = end_datetime
-        if not any([datetime, start_datetime, end_datetime]):
+
+        if not any([self.datetime, self.start_datetime, self.end_datetime]):
             self.datetime = dt.datetime.now(tz=dt.UTC)
 
         if bands is not None:

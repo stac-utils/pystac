@@ -281,7 +281,7 @@ class Extent:
                 [
                     d if d.tzinfo else d.replace(tzinfo=dt.UTC)
                     for d in datetimes + starts
-                ]  # pyright ignore[reportUnknownMemberType]
+                ]
             )
         if not any(datetimes + ends):
             end_timestamp = None
