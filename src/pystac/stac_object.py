@@ -20,7 +20,6 @@ from .reader import DEFAULT_READER, Reader
 from .utils import (
     is_absolute_href,
     make_absolute_href,
-    make_posix_style,
     make_relative_href,
 )
 from .validator import Validator
@@ -214,7 +213,7 @@ class STACObject(ABC):
         return self._href
 
     def set_self_href(self, href: str | None) -> None:
-        self._href = make_posix_style(href) if href is not None else None
+        self._href = make_absolute_href(href) if href is not None else None
 
     def get_root(self) -> Container | None:
         from .container import Container
