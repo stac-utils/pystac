@@ -234,16 +234,14 @@ class Properties(Basics, DateTime, Licensing, Providers, Instrument):
     def __init__(
         self,
         *,
-        datetime: dt.datetime | str | None = None,
-        start_datetime: dt.datetime | str | None = None,
-        end_datetime: dt.datetime | str | None = None,
         bands: list[Band] | list[dict[str, Any]] | None = None,
         **kwargs: Any,
     ):
         self.extra_fields: dict[str, Any] = kwargs
-        self.datetime = datetime or dt.datetime.now(tz=dt.UTC)
-        self.start_datetime = start_datetime
-        self.end_datetime = end_datetime
+
+        if not any([self.datetime, self.start_datetime, self.end_datetime]):
+            self.datetime = dt.datetime.now(tz=dt.UTC)
+
         if bands is not None:
             self.bands: list[Band] | None = [Band.try_from(band) for band in bands]
         else:
@@ -263,6 +261,12 @@ class Properties(Basics, DateTime, Licensing, Providers, Instrument):
             bands=self.bands,
             **copy.deepcopy(self.extra_fields, memo),
         )
+
+    def get(self, key: str, default: Any = None) -> Any:
+        try:
+            return self[key]
+        except KeyError:
+            return default
 
     @classmethod
     def try_from(
@@ -284,4 +288,4 @@ class Properties(Basics, DateTime, Licensing, Providers, Instrument):
         data = copy.deepcopy(self.extra_fields)
         if self.bands is not None:
             data["bands"] = [band.to_dict() for band in self.bands]
-        return {k: v for k, v in data.items() if v is not None}
+        return {k: v for k, v in data.items() if v is not None or k == "datetime"}

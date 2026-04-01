@@ -2,7 +2,17 @@ from __future__ import annotations
 
 import copy
 import datetime as dt
-from typing import Any, ClassVar, TypedDict, cast, override
+import warnings
+from collections.abc import Iterable
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ClassVar,
+    Self,
+    TypedDict,
+    cast,
+    override,
+)
 
 from typing_extensions import deprecated
 
@@ -13,6 +23,10 @@ from .container import Container
 from .link import Link
 from .provider import Provider
 from .utils import datetime_to_str
+
+if TYPE_CHECKING:
+    from .item import Item
+    from .item_collection import ItemCollection
 
 SpatialExtentBboxType = list[float | int] | list[list[float | int]]
 TemporalExtentIntervalType = (
@@ -64,13 +78,22 @@ class Collection(Container, Assets):
             self.bands: list[Band] | None = [Band.try_from(band) for band in bands]
         else:
             self.bands = None
+
+        if extent is None:
+            warnings.warn(
+                "Collection is missing extent, setting default spatial and "
+                "temporal extents"
+            )
         self.extent: Extent = Extent.try_from(extent)
         self.summaries: dict[str, Any] | None = summaries
-        self.assets: dict[str, Asset] = (
-            {key: Asset.try_from(value) for (key, value) in assets.items()}
-            if assets is not None
-            else {}
-        )
+
+        self.assets: dict[str, Asset] = {}
+        if assets is not None:
+            for key, value in assets.items():
+                asset = Asset.try_from(value)
+                asset.set_owner(self)
+                self.assets[key] = asset
+
         self.item_assets: dict[str, ItemAsset] | None = (
             {key: ItemAsset.try_from(value) for (key, value) in item_assets.items()}
             if item_assets is not None
@@ -79,16 +102,77 @@ class Collection(Container, Assets):
 
     @override
     @classmethod
-    def from_dict(
-        cls,
+    def from_dict[T: Collection](
+        cls: type[T],
         data: dict[str, Any],
         preserve_dict: bool = True,
         migrate: bool | None = None,
         root: Container | None = None,
-    ) -> Collection:
+    ) -> T:
         if preserve_dict:
             data = copy.deepcopy(data)
-        return Collection(**data)
+        return cls(**data)
+
+    @classmethod
+    def from_items[T: Collection](
+        cls: type[T],
+        items: Iterable[Item] | ItemCollection,
+        *,
+        id: str | None = None,
+    ) -> T:
+        """Create a :class:`Collection` from iterable of items or an
+        :class:`~pystac.ItemCollection`.
+
+        Will try to pull collection attributes from
+        :attr:`~pystac.ItemCollection.extra_fields` and items when possible.
+
+        Args:
+            items : Iterable of :class:`~pystac.Item` instances to include in the
+                :class:`Collection`. This can be a :class:`~pystac.ItemCollection`.
+            id : Identifier for the collection. If not set, must be available on the
+                items and they must all match.
+        """
+        from .item_collection import ItemCollection
+
+        if id is None:
+            values = {item.collection_id for item in items}
+            if len(values) == 1:
+                id = next(iter(values))
+        if id is None:
+            raise ValueError(
+                "Collection id must be defined. Either by specifying collection_id "
+                "on every item, or as a keyword argument to this function."
+            )
+
+        kwargs: dict[str, Any] = {}
+        if isinstance(items, ItemCollection):
+            kwargs = copy.deepcopy(items.extra_fields)
+
+        if "description" not in kwargs:
+            values = {item.properties.description for item in items}
+            if len(values) == 1:
+                kwargs["description"] = next(iter(values))
+
+        if "title" not in kwargs:
+            values = {item.properties.title for item in items}
+            if len(values) == 1:
+                kwargs["title"] = next(iter(values))
+
+        collection = cls(
+            id=id,
+            description=kwargs.pop("description"),
+            extent=Extent.from_items(items),
+            **kwargs,
+        )
+
+        _ = collection.add_items(items)
+
+        return collection
+
+    @property
+    @deprecated("use .type instead")
+    def STAC_OBJECT_TYPE(self) -> STAC_OBJECT_TYPE:
+        return self.type
 
     @override
     def set_self_href(self, href: str | None) -> None:
@@ -127,15 +211,23 @@ class Collection(Container, Assets):
             }
         return data
 
+    def update_extent_from_items(self) -> None:
+        """
+        Update datetime and bbox based on all items to a single bbox and time window.
+        """
+        self.extent = Extent.from_items(self.get_items(recursive=True))
+
 
 class Extent:
     def __init__(
         self,
         spatial: SpatialExtent | SpatialExtentDict | None = None,
         temporal: TemporalExtent | TemporalExtentDict | None = None,
+        **kwargs: Any,
     ):
         self.spatial: SpatialExtent = SpatialExtent.try_from(spatial)
         self.temporal: TemporalExtent = TemporalExtent.try_from(temporal)
+        self.extra_fields: dict[str, Any] = kwargs
 
     @classmethod
     def try_from(cls, extent: Extent | dict[str, Any] | None) -> Extent:
@@ -147,21 +239,120 @@ class Extent:
             return Extent()
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> Extent:
-        return Extent(**data)
+    def from_dict[T: Extent](cls: type[T], data: dict[str, Any]) -> T:
+        return cls(**data)
+
+    @classmethod
+    def from_items(cls: type[Self], items: Iterable[Item]) -> Extent:
+        """Create an Extent based on the datetimes and bboxes of a list of items.
+
+        Args:
+            items : A list of items to derive the extent from.
+
+        Returns:
+            Extent: An Extent that spatially and temporally covers all of the
+            given items.
+        """
+        bounds_values: list[list[float]] = [
+            [float("inf")],
+            [float("inf")],
+            [float("-inf")],
+            [float("-inf")],
+        ]
+        datetimes: list[dt.datetime] = []
+        starts: list[dt.datetime] = []
+        ends: list[dt.datetime] = []
+
+        for item in items:
+            if item.bbox is not None:
+                for i in range(0, 4):
+                    bounds_values[i].append(item.bbox[i])
+            if item.datetime is not None:
+                datetimes.append(item.datetime)
+            if item.properties.start_datetime is not None:
+                starts.append(item.properties.start_datetime)
+            if item.properties.end_datetime is not None:
+                ends.append(item.properties.end_datetime)
+
+        if not any(datetimes + starts):
+            start_timestamp = None
+        else:
+            start_timestamp = min(
+                [
+                    d if d.tzinfo else d.replace(tzinfo=dt.UTC)
+                    for d in datetimes + starts
+                ]
+            )
+        if not any(datetimes + ends):
+            end_timestamp = None
+        else:
+            end_timestamp = max(
+                [d if d.tzinfo else d.replace(tzinfo=dt.UTC) for d in datetimes + ends]
+            )
+
+        spatial = SpatialExtent(
+            [
+                [
+                    min(bounds_values[0]),
+                    min(bounds_values[1]),
+                    max(bounds_values[2]),
+                    max(bounds_values[3]),
+                ]
+            ]
+        )
+        temporal = TemporalExtent(
+            [
+                [
+                    to_datetime_str(start_timestamp),
+                    to_datetime_str(end_timestamp),
+                ]
+            ]
+        )
+
+        return Extent(spatial=spatial, temporal=temporal)
+
+    def clone[T: Extent](self: T) -> T:
+        return self.from_dict(self.to_dict())
 
     def to_dict(self) -> dict[str, Any]:
+        data = copy.deepcopy(self.extra_fields)
         return {
             "spatial": self.spatial.to_dict(),
             "temporal": self.temporal.to_dict(),
+            **data,
         }
 
 
 class TemporalExtent:
-    def __init__(self, interval: list[list[str | None]] | None = None) -> None:
-        self.interval: list[list[str | None]] = interval or [
-            [datetime_to_str(dt.datetime.now()), None]
-        ]
+    def __init__(
+        self,
+        interval: TemporalExtentIntervalType | str | dt.datetime | None = None,
+        **kwargs: Any,
+    ) -> None:
+        if interval is None and "intervals" in kwargs:
+            warnings.warn(
+                "intervals is deprecated and will be removed in a future version. "
+                "Use interval instead",
+                FutureWarning,
+            )
+            interval = kwargs.pop("intervals")
+
+        self.interval: list[list[str | None]]
+        if interval is None:
+            self.interval = [[None, None]]
+        elif isinstance(interval, (str, dt.datetime)):
+            self.interval = [to_interval([interval, None])]
+        elif isinstance(interval[0], list):
+            self.interval = [
+                to_interval(cast(list[dt.datetime | str | None], dates))
+                for dates in interval
+            ]
+        else:
+            self.interval = [
+                to_interval(cast(list[dt.datetime | str | None], interval))
+            ]
+
+        self.extra_fields: dict[str, Any] = kwargs
 
     @classmethod
     def try_from(
@@ -172,30 +363,44 @@ class TemporalExtent:
             return data
         elif not data:
             return TemporalExtent()
-        elif isinstance(data["interval"][0], list):
-            return TemporalExtent(
-                [
-                    to_interval(cast(list[dt.datetime | str | None], interval))
-                    for interval in data["interval"]
-                ]
-            )
         else:
-            return TemporalExtent(
-                [to_interval(cast(list[dt.datetime | str | None], data["interval"]))]
-            )
+            return TemporalExtent(**data)
+
+    @property
+    @deprecated("Use interval instead")
+    def intervals(self) -> list[list[str | None]]:
+        return self.interval
 
     @classmethod
-    @deprecated("Use default initializer instead")
+    @deprecated("Use `TemporalExtent(dt.datetime.now())` instead")
     def from_now(cls) -> TemporalExtent:
-        return TemporalExtent()
+        return TemporalExtent(interval=dt.datetime.now())
 
     def to_dict(self) -> dict[str, Any]:
-        return {"interval": self.interval}
+        data = copy.deepcopy(self.extra_fields)
+        return {"interval": self.interval, **data}
 
 
 class SpatialExtent:
-    def __init__(self, bbox: list[list[float | int]] | None = None) -> None:
-        self.bbox: list[list[float | int]] = bbox or [[-180, -90, 180, 90]]
+    def __init__(
+        self, bbox: SpatialExtentBboxType | None = None, **kwargs: Any
+    ) -> None:
+        if bbox is None and "bboxes" in kwargs:
+            warnings.warn(
+                "bboxes is deprecated and will be removed in a future version. "
+                "Use bbox instead",
+                FutureWarning,
+            )
+            bbox = kwargs.pop("bboxes")
+
+        self.bbox: list[list[float | int]]
+        if bbox is None:
+            self.bbox = [[-180, -90, 180, 90]]
+        elif isinstance(bbox[0], list):
+            self.bbox = cast(list[list[float | int]], bbox)
+        else:
+            self.bbox = [cast(list[float | int], bbox)]
+        self.extra_fields: dict[str, Any] = kwargs
 
     @classmethod
     def try_from(
@@ -206,18 +411,17 @@ class SpatialExtent:
             return data
         elif not data:
             return SpatialExtent()
-        elif isinstance(data["bbox"][0], list):
-            return SpatialExtent(cast(list[list[float | int]], data["bbox"]))
         else:
-            return SpatialExtent([cast(list[float | int], data["bbox"])])
+            return SpatialExtent(**data)
 
-    @classmethod
-    @deprecated("Use try_from instead")
-    def from_coordinates(cls, coordinates: Any) -> SpatialExtent:
-        return SpatialExtent.try_from({"bbox": coordinates})
+    @property
+    @deprecated("Use bbox instead")
+    def bboxes(self) -> list[list[float | int]]:
+        return self.bbox
 
     def to_dict(self) -> dict[str, Any]:
-        return {"bbox": self.bbox}
+        data = copy.deepcopy(self.extra_fields)
+        return {"bbox": self.bbox, **data}
 
 
 def to_interval(interval: list[dt.datetime | str | None]) -> list[str | None]:
