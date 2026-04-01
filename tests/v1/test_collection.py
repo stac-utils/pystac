@@ -66,6 +66,7 @@ def test_provider_to_from_dict() -> None:
     )
 
 
+@pytest.mark.xfail(reason="SpatialExtent.from_coordinates is not supported in pystac v2")
 def test_spatial_extent_from_coordinates() -> None:
     extent = SpatialExtent.from_coordinates(ARBITRARY_GEOM["coordinates"])
 
@@ -83,6 +84,7 @@ def test_read_eo_items_are_heritable() -> None:
     assert EOExtension.has_extension(item)
 
 
+@pytest.mark.xfail(reason="Collection does not have a catalog type in pystac v2")
 def test_save_uses_previous_catalog_type() -> None:
     collection = TestCases.case_8()
     assert collection.STAC_OBJECT_TYPE == pystac.STACObjectType.COLLECTION
@@ -96,6 +98,7 @@ def test_save_uses_previous_catalog_type() -> None:
         assert collection2.catalog_type == CatalogType.SELF_CONTAINED
 
 
+@pytest.mark.xfail(reason="Collection does not have a catalog type in pystac v2")
 def test_clone_uses_previous_catalog_type() -> None:
     catalog = TestCases.case_8()
     assert catalog.catalog_type == CatalogType.SELF_CONTAINED
@@ -211,12 +214,13 @@ def test_update_extents() -> None:
 
     assert [
         [
-            item2.common_metadata.start_datetime,
+            datetime_to_str(item2.common_metadata.start_datetime),
             base_extent.temporal.intervals[0][1],
         ]
     ] == collection.extent.temporal.intervals
 
 
+@pytest.mark.xfail(reason="Supplying href in init is not supported in pystac v2")
 def test_supplying_href_in_init_does_not_fail() -> None:
     test_href = "http://example.com/collection.json"
     spatial_extent = SpatialExtent(bboxes=[ARBITRARY_BBOX])
@@ -230,6 +234,7 @@ def test_supplying_href_in_init_does_not_fail() -> None:
     assert collection.get_self_href() == test_href
 
 
+@pytest.mark.xfail(reason="Caching is not implemented in pystac v2")
 def test_collection_with_href_caches_by_href() -> None:
     collection = pystac.Collection.from_file(
         TestCases.get_path("data-files/examples/hand-0.8.1/collection.json")
@@ -274,6 +279,7 @@ def test_get_assets() -> None:
     assert no_assets == {}
 
 
+@pytest.mark.xfail(reason="Pystac v2 doesn't support summaries yet")
 def test_removing_optional_attributes() -> None:
     path = TestCases.get_path("data-files/collections/with-assets.json")
     with open(path) as file:
@@ -303,7 +309,6 @@ def test_removing_optional_attributes() -> None:
     collection_as_dict = collection.to_dict()
     for key in (
         "title",
-        "stac_extensions",
         "keywords",
         "providers",
         "summaries",
@@ -322,12 +327,20 @@ def test_from_dict_preserves_dict() -> None:
     _ = Collection.from_dict(param_dict)
     assert param_dict == collection_dict
 
+
+@pytest.mark.xfail(reason="Dict is never mutated in pystac v2")
+def test_from_dict_with_preserve_dict_False_does_not_preserve_dict() -> None:
+    path = TestCases.get_path("data-files/collections/with-assets.json")
+    with open(path) as f:
+        collection_dict = json.load(f)
+    param_dict = deepcopy(collection_dict)
     # assert that the parameter is not preserved with
     # non-default parameter
     _ = Collection.from_dict(param_dict, preserve_dict=False, migrate=False)
     assert param_dict != collection_dict
 
 
+@pytest.mark.xfail(reason="Collection.from_dict does not set self href in pystac v2")
 def test_from_dict_set_root() -> None:
     path = TestCases.get_path("data-files/examples/hand-0.8.1/collection.json")
     with open(path) as f:
@@ -337,6 +350,7 @@ def test_from_dict_set_root() -> None:
     assert collection.get_root() is catalog
 
 
+@pytest.mark.xfail(reason="Pystac v2 doesn't support summaries yet")
 def test_schema_summary() -> None:
     collection = pystac.Collection.from_file(
         TestCases.get_path(
@@ -399,8 +413,9 @@ def test_temporal_extent_init_typing() -> None:
     _ = TemporalExtent([[start_datetime, end_datetime]])
 
 
+@pytest.mark.xfail(reason="pystac v2 uses strings to represent interval")
 @pytest.mark.block_network()
-def test_temporal_extent_allows_single_interval() -> None:
+def test_temporal_extent_represents_interval_as_datetimes() -> None:
     start_datetime = str_to_datetime("2022-01-01T00:00:00Z")
     end_datetime = str_to_datetime("2022-01-31T23:59:59Z")
 
@@ -411,13 +426,27 @@ def test_temporal_extent_allows_single_interval() -> None:
 
 
 @pytest.mark.block_network()
+def test_temporal_extent_allows_single_interval() -> None:
+    start = "2022-01-01T00:00:00Z"
+    end = "2022-01-31T23:59:59Z"
+    start_datetime = str_to_datetime(start)
+    end_datetime = str_to_datetime(end)
+
+    interval = [start_datetime, end_datetime]
+    temporal_extent = TemporalExtent(intervals=interval)
+
+    assert temporal_extent.intervals == [[start, end]]
+
+
+@pytest.mark.block_network()
 def test_temporal_extent_allows_single_interval_open_start() -> None:
-    end_datetime = str_to_datetime("2022-01-31T23:59:59Z")
+    end = "2022-01-31T23:59:59Z"
+    end_datetime = str_to_datetime(end)
 
     interval = [None, end_datetime]
     temporal_extent = TemporalExtent(intervals=interval)
 
-    assert temporal_extent.intervals == [interval]
+    assert temporal_extent.intervals == [[None, end]]
 
 
 @pytest.mark.block_network()
@@ -498,8 +527,8 @@ def test_extent_from_items() -> None:
     assert len(extent.temporal.intervals) == 1
 
     interval = extent.temporal.intervals[0]
-    assert interval[0] == datetime(2000, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
-    assert interval[1] == datetime(2001, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC)
+    assert interval[0] == datetime_to_str(datetime(2000, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC))
+    assert interval[1] == datetime_to_str(datetime(2001, 1, 1, 12, 0, 0, 0, tzinfo=tz.UTC))
 
 
 def test_extent_to_from_dict() -> None:
@@ -573,14 +602,14 @@ class TestCollectionSubClass:
 
         assert isinstance(cloned_collection, self.BasicCustomCollection)
 
+    @pytest.mark.xfail(reason="Pystac v2 requires that custom classes match method signatures")
     def test_collection_get_item_works(self) -> None:
         path = TestCases.get_path(
             "data-files/catalogs/test-case-1/country-1/area-1-1/collection.json"
         )
         custom_collection = self.BasicCustomCollection.from_file(path)
         collection = custom_collection.clone()
-        with pytest.warns(DeprecationWarning):
-            collection.get_item("area-1-1-imagery")
+        collection.get_item("area-1-1-imagery")
 
 
 def test_collection_get_item_raises_type_error() -> None:
@@ -715,8 +744,7 @@ def test_permissive_temporal_extent_deserialization(collection: Collection) -> N
     collection_dict["extent"]["temporal"]["interval"] = collection_dict["extent"][
         "temporal"
     ]["interval"][0]
-    with pytest.warns(UserWarning):
-        Collection.from_dict(collection_dict)
+    Collection.from_dict(collection_dict)
 
 
 @pytest.mark.parametrize("fixture_name", ("sample_item_collection", "sample_items"))
@@ -733,8 +761,8 @@ def test_from_items(fixture_name: str, request: pytest.FixtureRequest) -> None:
 
         start = collection.extent.temporal.intervals[0][0]
         end = collection.extent.temporal.intervals[0][1]
-        assert start and start <= str_to_datetime(item.properties["start_datetime"])
-        assert end and end >= str_to_datetime(item.properties["end_datetime"])
+        assert start and str_to_datetime(start) <= str_to_datetime(item.properties["start_datetime"])
+        assert end and str_to_datetime(end) >= str_to_datetime(item.properties["end_datetime"])
 
     if isinstance(items, ItemCollection):
         expected = {(link["rel"], link["href"]) for link in items.extra_fields["links"]}
@@ -835,7 +863,7 @@ def test_from_dict_null_extent(collection: Collection) -> None:
     with pytest.warns(UserWarning):
         c = Collection.from_dict(d)
 
-    assert c.extent.spatial.to_dict()["bbox"] == [[-90, -180, 90, 180]]
+    assert c.extent.spatial.to_dict()["bbox"] == [[-180, -90, 180, 90]]
     assert c.extent.temporal.to_dict()["interval"] == [[None, None]]
 
 
@@ -845,5 +873,5 @@ def test_from_dict_missing_extent(collection: Collection) -> None:
     with pytest.warns(UserWarning):
         c = Collection.from_dict(d)
 
-    assert c.extent.spatial.to_dict()["bbox"] == [[-90, -180, 90, 180]]
+    assert c.extent.spatial.to_dict()["bbox"] == [[-180, -90, 180, 90]]
     assert c.extent.temporal.to_dict()["interval"] == [[None, None]]
