@@ -9,7 +9,7 @@ from typing_extensions import deprecated
 from pystac.errors import STACError
 from pystac.media_type import MediaType
 from pystac.rel_type import RelType
-from pystac.utils import make_absolute_href
+from pystac.utils import make_absolute_href, make_posix_style
 
 from .reader import Reader
 
@@ -58,6 +58,10 @@ class Link:
         else:
             self._href = href or target
             self._target = None
+        # backwards compat allows 'target' parameter to be str,
+        # so we delay in posix conversion until here
+        if self._href is not None:
+            self._href = make_posix_style(self._href)
 
     def __fspath__(self) -> str:
         if self._target and (href := self._target.get_self_href()):
