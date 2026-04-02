@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import copy
 import datetime as dt
-from typing import Any, ClassVar, TypedDict, cast, override
+from collections.abc import Iterable
+from datetime import UTC
+from typing import Any, ClassVar, Self, TypedDict, cast, override
 
 from typing_extensions import deprecated
 
@@ -10,6 +12,7 @@ from .asset import Asset, Assets, ItemAsset
 from .band import Band
 from .constants import DEFAULT_LICENSE, DEFAULT_STAC_VERSION, STAC_OBJECT_TYPE
 from .container import Container
+from .item import Item
 from .link import Link
 from .provider import Provider
 from .utils import datetime_to_str
@@ -26,6 +29,42 @@ class SpatialExtentDict(TypedDict):
 
 class TemporalExtentDict(TypedDict):
     interval: TemporalExtentIntervalType
+
+
+class TemporalExtent:
+    def __init__(self, interval: list[list[str | None]] | None = None) -> None:
+        self.interval: list[list[str | None]] = interval or [
+            [datetime_to_str(dt.datetime.now()), None]
+        ]
+
+    @classmethod
+    def try_from(
+        cls,
+        data: TemporalExtent | TemporalExtentDict | None,
+    ) -> TemporalExtent:
+        if isinstance(data, TemporalExtent):
+            return data
+        elif not data:
+            return TemporalExtent()
+        elif isinstance(data["interval"][0], list):
+            return TemporalExtent(
+                [
+                    to_interval(cast(list[dt.datetime | str | None], interval))
+                    for interval in data["interval"]
+                ]
+            )
+        else:
+            return TemporalExtent(
+                [to_interval(cast(list[dt.datetime | str | None], data["interval"]))]
+            )
+
+    @classmethod
+    @deprecated("Use default initializer instead")
+    def from_now(cls) -> TemporalExtent:
+        return TemporalExtent()
+
+    def to_dict(self) -> dict[str, Any]:
+        return {"interval": self.interval}
 
 
 class Collection(Container, Assets):
@@ -138,6 +177,79 @@ class Extent:
         self.temporal: TemporalExtent = TemporalExtent.try_from(temporal)
 
     @classmethod
+    def from_items(cls: type[Self], items: Iterable[Item]) -> Extent:
+        """Create an Extent based on the datetimes and bboxes of a list of items.
+
+        Args:
+            items : A list of items to derive the extent from.
+
+        Returns:
+            Extent: An Extent that spatially and temporally covers all of the
+            given items.
+        """
+        bounds_values: list[list[float]] = [
+            [float("inf")],
+            [float("inf")],
+            [float("-inf")],
+            [float("-inf")],
+        ]
+        datetimes: list[dt.datetime] = []
+        starts: list[dt.datetime] = []
+        ends: list[dt.datetime] = []
+
+        for item in items:
+            if item.bbox is not None:
+                for i in range(0, 4):
+                    bounds_values[i].append(item.bbox[i])
+            if item.datetime is not None:
+                datetimes.append(item.datetime)
+            if item.properties.start_datetime is not None:
+                starts.append(item.properties.start_datetime)
+            if item.properties.end_datetime is not None:
+                ends.append(item.properties.end_datetime)
+
+        if not any(datetimes + starts):
+            start_timestamp = None
+        else:
+            start_timestamp = min(
+                [
+                    dt if dt.tzinfo else dt.replace(tzinfo=UTC)
+                    for dt in datetimes + starts
+                ]
+            )
+        if not any(datetimes + ends):
+            end_timestamp = None
+        else:
+            end_timestamp = max(
+                [dt if dt.tzinfo else dt.replace(tzinfo=UTC) for dt in datetimes + ends]
+            )
+
+        spatial = SpatialExtent(
+            [
+                [
+                    min(bounds_values[0]),
+                    min(bounds_values[1]),
+                    max(bounds_values[2]),
+                    max(bounds_values[3]),
+                ]
+            ]
+        )
+        temporal = TemporalExtent(
+            [
+                [
+                    datetime_to_str(start_timestamp)
+                    if isinstance(start_timestamp, dt.datetime)
+                    else None,
+                    datetime_to_str(end_timestamp)
+                    if isinstance(end_timestamp, dt.datetime)
+                    else None,
+                ]
+            ]
+        )
+
+        return Extent(spatial=spatial, temporal=temporal)
+
+    @classmethod
     def try_from(cls, extent: Extent | dict[str, Any] | None) -> Extent:
         if isinstance(extent, Extent):
             return extent
@@ -155,42 +267,6 @@ class Extent:
             "spatial": self.spatial.to_dict(),
             "temporal": self.temporal.to_dict(),
         }
-
-
-class TemporalExtent:
-    def __init__(self, interval: list[list[str | None]] | None = None) -> None:
-        self.interval: list[list[str | None]] = interval or [
-            [datetime_to_str(dt.datetime.now()), None]
-        ]
-
-    @classmethod
-    def try_from(
-        cls,
-        data: TemporalExtent | TemporalExtentDict | None,
-    ) -> TemporalExtent:
-        if isinstance(data, TemporalExtent):
-            return data
-        elif not data:
-            return TemporalExtent()
-        elif isinstance(data["interval"][0], list):
-            return TemporalExtent(
-                [
-                    to_interval(cast(list[dt.datetime | str | None], interval))
-                    for interval in data["interval"]
-                ]
-            )
-        else:
-            return TemporalExtent(
-                [to_interval(cast(list[dt.datetime | str | None], data["interval"]))]
-            )
-
-    @classmethod
-    @deprecated("Use default initializer instead")
-    def from_now(cls) -> TemporalExtent:
-        return TemporalExtent()
-
-    def to_dict(self) -> dict[str, Any]:
-        return {"interval": self.interval}
 
 
 class SpatialExtent:
