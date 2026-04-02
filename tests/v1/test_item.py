@@ -476,6 +476,12 @@ def test_geo_interface() -> None:
 
 def test_duplicate_self_links(tmp_path: Path, sample_item: pystac.Item) -> None:
     # https://github.com/stac-utils/pystac/issues/1102
+    sample_item.links.append(
+        Link(
+            rel=pystac.RelType.SELF,
+            href=sample_item.get_self_href(),
+        )
+    )
     assert len(sample_item.get_links(rel="self")) == 1
     path = tmp_path / "item.json"
     sample_item.save_object(include_self_link=True, dest_href=str(path))
@@ -513,7 +519,7 @@ def test_get_unresolvable_derived_from(test_case_1_catalog: Catalog) -> None:
     item = next(test_case_1_catalog.get_items(recursive=True))
     item.add_derived_from("foo")
     with pytest.raises(
-        pystac.STACError # , match="Link failed to resolve. Use get_links instead"
+        pystac.STACError  # , match="Link failed to resolve. Use get_links instead"
     ):
         item.get_derived_from()
 
@@ -525,7 +531,7 @@ def test_remove_unresolvable_derived_from(test_case_1_catalog: Catalog) -> None:
     item = next(test_case_1_catalog.get_items(recursive=True))
     item.add_derived_from("foo")
     with pytest.raises(
-        pystac.STACError # , match="Link failed to resolve. Use remove_links instead"
+        pystac.STACError  # , match="Link failed to resolve. Use remove_links instead"
     ):
         item.remove_derived_from("foo")
 

@@ -13,11 +13,14 @@ from ..utils import ARBITRARY_BBOX, ARBITRARY_EXTENT, ARBITRARY_GEOM
 pytestmark = pytest.mark.passing_v2
 
 
-def check_link(link: pystac.Link | None) -> None:
-    assert link is not None
-    href = link.get_href()
+def check_href(href: str | None) -> None:
     assert href is not None
     assert "\\" not in href
+
+
+def check_link(link: pystac.Link | None) -> None:
+    assert link is not None
+    check_href(link.get_href())
 
 
 def test_create_item_from_absolute_posix_href() -> None:
@@ -75,48 +78,48 @@ def test_posix_self_link_from_absolute_href(tmp_path: Path) -> None:
     absolute_windows_href = get_data_file("item/sample-item.json")
     assert "\\" in absolute_windows_href
     item = pystac.Item.from_file(absolute_windows_href)
-    check_link(item.get_single_link(rel="self"))
+    check_href(item.get_self_href())
     item2 = pystac.read_file(absolute_windows_href)
-    check_link(item2.get_single_link(rel="self"))
+    check_href(item2.get_self_href())
 
     absolute_windows_href = get_data_file("collections/multi-extent.json")
     assert "\\" in absolute_windows_href
     collection = pystac.Collection.from_file(absolute_windows_href)
-    check_link(collection.get_single_link(rel="self"))
+    check_href(collection.get_self_href())
     collection2 = pystac.read_file(absolute_windows_href)
-    check_link(collection2.get_single_link(rel="self"))
+    check_href(collection2.get_self_href())
 
     absolute_windows_href = get_data_file("catalogs/test-case-1/catalog.json")
     assert "\\" in absolute_windows_href
     catalog = pystac.Catalog.from_file(absolute_windows_href)
-    check_link(catalog.get_single_link(rel="self"))
+    check_href(catalog.get_self_href())
     catalog2 = pystac.read_file(absolute_windows_href)
-    check_link(catalog2.get_single_link(rel="self"))
+    check_href(catalog2.get_self_href())
 
     # check that we retain a posix style (/) absolute href in the self link
     absolute_windows_href = get_data_file("item/sample-item.json")
     assert "\\" in absolute_windows_href
     absolute_posix_href = absolute_windows_href.replace("\\", "/")
     item = pystac.Item.from_file(absolute_posix_href)
-    check_link(item.get_single_link(rel="self"))
+    check_href(item.get_self_href())
     item2 = pystac.read_file(absolute_posix_href)
-    check_link(item2.get_single_link(rel="self"))
+    check_href(item2.get_self_href())
 
     absolute_windows_href = get_data_file("collections/multi-extent.json")
     assert "\\" in absolute_windows_href
     absolute_posix_href = absolute_windows_href.replace("\\", "/")
     collection = pystac.Collection.from_file(absolute_posix_href)
-    check_link(collection.get_single_link(rel="self"))
+    check_href(collection.get_self_href())
     collection2 = pystac.read_file(absolute_posix_href)
-    check_link(collection2.get_single_link(rel="self"))
+    check_href(collection2.get_self_href())
 
     absolute_windows_href = get_data_file("collections/multi-extent.json")
     assert "\\" in absolute_windows_href
     absolute_posix_href = absolute_windows_href.replace("\\", "/")
     catalog = pystac.Collection.from_file(absolute_posix_href)
-    check_link(catalog.get_single_link(rel="self"))
+    check_href(catalog.get_self_href())
     catalog2 = pystac.read_file(absolute_posix_href)
-    check_link(catalog2.get_single_link(rel="self"))
+    check_href(catalog2.get_self_href())
 
 
 @pytest.mark.skipif(os.name != "nt", reason="windows only test")
@@ -135,9 +138,9 @@ def test_posix_self_link_from_relative_href(
 
     monkeypatch.chdir(tmp_path)
     item = pystac.Item.from_file("subdirectory\\test-item.json")
-    check_link(item.get_single_link(rel="self"))
+    check_href(item.get_self_href())
     item2 = pystac.read_file("subdirectory\\test-item.json")
-    check_link(item2.get_single_link(rel="self"))
+    check_href(item2.get_self_href())
 
 
 def test_all_generated_links_have_posix_hrefs(tmp_path: Path) -> None:
