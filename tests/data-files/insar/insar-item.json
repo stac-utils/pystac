@@ -1,0 +1,29 @@
+{
+  "type": "Feature",
+  "stac_version": "1.0.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/insar/v1.0.0/schema.json"
+  ],
+  "id": "insar-example",
+  "bbox": [0,0,1,1],
+  "geometry": {"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,1],[0,0]]]},
+  "properties": {
+    "datetime": "2020-01-01T00:00:00Z",
+    "insar:perpendicular_baseline": 123.4,
+    "insar:temporal_baseline": 12,
+    "insar:height_of_ambiguity": 45.6,
+    "insar:reference_datetime": "2020-01-01T00:00:00Z",
+    "insar:secondary_datetime": "2020-01-13T00:00:00Z",
+    "insar:processing_dem": "COPDEM",
+    "insar:geocoding_dem": "SRTM"
+  },
+  "links": [],
+  "assets": {
+    "coherence": {
+      "href": "s3://bucket/coh.tif",
+      "type": "image/tiff; application=geotiff",
+      "roles": ["data"],
+      "insar:processing_dem": "COPDEM"
+    }
+  }
+}

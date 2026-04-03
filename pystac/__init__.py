@@ -89,9 +89,11 @@ from pystac.utils import HREF
 import pystac.extensions.hooks
 import pystac.extensions.classification
 import pystac.extensions.datacube
+import pystac.extensions.earthquake
 import pystac.extensions.eo
 import pystac.extensions.file
 import pystac.extensions.grid
+import pystac.extensions.insar
 import pystac.extensions.item_assets
 
 with warnings.catch_warnings():
@@ -99,10 +101,16 @@ with warnings.catch_warnings():
     import pystac.extensions.label
 import pystac.extensions.mgrs
 import pystac.extensions.mlm
+import pystac.extensions.order
 import pystac.extensions.pointcloud
+import pystac.extensions.processing
+import pystac.extensions.product
 import pystac.extensions.projection
 import pystac.extensions.raster
 import pystac.extensions.sar
+import pystac.extensions.sentinel1
+import pystac.extensions.sentinel2
+import pystac.extensions.sentinel3
 import pystac.extensions.sat
 import pystac.extensions.scientific
 import pystac.extensions.storage
@@ -116,17 +124,25 @@ EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
     [
         pystac.extensions.classification.CLASSIFICATION_EXTENSION_HOOKS,
         pystac.extensions.datacube.DATACUBE_EXTENSION_HOOKS,
+        pystac.extensions.earthquake.EARTHQUAKE_EXTENSION_HOOKS,
         pystac.extensions.eo.EO_EXTENSION_HOOKS,
         pystac.extensions.file.FILE_EXTENSION_HOOKS,
         pystac.extensions.grid.GRID_EXTENSION_HOOKS,
+        pystac.extensions.insar.INSAR_EXTENSION_HOOKS,
         pystac.extensions.item_assets.ITEM_ASSETS_EXTENSION_HOOKS,
         pystac.extensions.label.LABEL_EXTENSION_HOOKS,
         pystac.extensions.mgrs.MGRS_EXTENSION_HOOKS,
         pystac.extensions.mlm.MLM_EXTENSION_HOOKS,
+        pystac.extensions.order.ORDER_EXTENSION_HOOKS,
         pystac.extensions.pointcloud.POINTCLOUD_EXTENSION_HOOKS,
+        pystac.extensions.processing.PROCESSING_EXTENSION_HOOKS,
+        pystac.extensions.product.PRODUCT_EXTENSION_HOOKS,
         pystac.extensions.projection.PROJECTION_EXTENSION_HOOKS,
         pystac.extensions.raster.RASTER_EXTENSION_HOOKS,
         pystac.extensions.sar.SAR_EXTENSION_HOOKS,
+        pystac.extensions.sentinel1.SENTINEL1_EXTENSION_HOOKS,
+        pystac.extensions.sentinel2.SENTINEL2_EXTENSION_HOOKS,
+        pystac.extensions.sentinel3.SENTINEL3_EXTENSION_HOOKS,
         pystac.extensions.sat.SAT_EXTENSION_HOOKS,
         pystac.extensions.scientific.SCIENTIFIC_EXTENSION_HOOKS,
         pystac.extensions.storage.STORAGE_EXTENSION_HOOKS,

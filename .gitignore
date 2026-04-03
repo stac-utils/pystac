@@ -161,3 +161,5 @@ cython_debug/
 
 # asv environments
 .asv
+
+.codex

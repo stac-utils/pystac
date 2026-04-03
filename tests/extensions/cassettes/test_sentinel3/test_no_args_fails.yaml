@@ -1,0 +1,101 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://stac-extensions.github.io/sentinel-3/v0.2.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/sentinel-3/v0.2.0/schema.json#\",\n  \"title\":
+        \"Sentinel-3 Extension\",\n  \"description\": \"STAC Sentinel-3 Extension
+        for STAC Items and STAC Collection Summaries.\",\n  \"type\": \"object\",\n
+        \ \"required\": [\n    \"stac_extensions\"\n  ],\n  \"properties\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"array\",\n      \"contains\": {\n        \"const\": \"https://stac-extensions.github.io/sentinel-3/v0.2.0/schema.json\"\n
+        \     }\n    }\n  },\n  \"oneOf\": [\n    {\n      \"$comment\": \"This is
+        the schema for STAC Items.\",\n      \"type\": \"object\",\n      \"required\":
+        [\n        \"type\",\n        \"properties\",\n        \"assets\"\n      ],\n
+        \     \"properties\": {\n        \"type\": {\n          \"const\": \"Feature\"\n
+        \       },\n        \"properties\": {\n          \"allOf\": [\n            {\n
+        \             \"$ref\": \"#/definitions/require_any\"\n            },\n            {\n
+        \             \"$ref\": \"#/definitions/fields\"\n            }\n          ]\n
+        \       },\n        \"assets\": {\n          \"$ref\": \"#/definitions/assets\"\n
+        \       }\n      }\n    },\n    {\n      \"$comment\": \"This is the schema
+        for STAC Collections, or more specifically only Collection Summaries in this
+        case. By default, only checks the existence of the properties, but not the
+        schema of the summaries.\",\n      \"type\": \"object\",\n      \"required\":
+        [\n        \"type\",\n        \"summaries\"\n      ],\n      \"properties\":
+        {\n        \"type\": {\n          \"const\": \"Collection\"\n        },\n
+        \       \"summaries\": {\n          \"$ref\": \"#/definitions/require_any\"\n
+        \       },\n        \"item_assets\": {\n          \"$ref\": \"#/definitions/assets\"\n
+        \       },\n        \"assets\": {\n          \"$ref\": \"#/definitions/assets\"\n
+        \       }\n      }\n    }\n  ],\n  \"definitions\": {\n    \"require_any\":
+        {\n      \"$comment\": \"Please list all fields here so that we can force
+        the existence of one of them in other parts of the schemas.\",\n      \"anyOf\":
+        [\n        {\"required\": [\"s3:bright\"]},\n        {\"required\": [\"s3:closed_sea\"]},\n
+        \       {\"required\": [\"s3:coastal\"]},\n        {\"required\": [\"s3:continental_ice\"]},\n
+        \       {\"required\": [\"s3:cosmetic\"]},\n        {\"required\": [\"s3:dubious_samples\"]},\n
+        \       {\"required\": [\"s3:duplicated\"]},\n        {\"required\": [\"s3:fresh_inland_water\"]},\n
+        \       {\"required\": [\"s3:invalid\"]},\n        {\"required\": [\"s3:land\"]},\n
+        \       {\"required\": [\"s3:open_ocean\"]},\n        {\"required\": [\"s3:out_of_range\"]},\n
+        \       {\"required\": [\"s3:saline_water\"]},\n        {\"required\": [\"s3:saturated\"]},\n
+        \       {\"required\": [\"s3:tidal_region\"]}\n      ]\n    },\n    \"fields\":
+        {\n      \"$comment\": \" Don't require fields here, do that above in the
+        corresponding schema.\",\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"s3:product_type\": {\n          \"type\": \"string\"\n        },\n
+        \       \"s3:product_name\": {\n          \"type\": \"string\"\n        },\n
+        \       \"s3:processing_timeliness\": {\n          \"type\": \"string\"\n
+        \       },\n        \"s3:gsd\": {\n          \"oneOf\": [\n            {\n
+        \             \"type\": \"integer\"\n            },\n            {\n              \"title\":
+        \"SRAL GSD Object\",\n              \"type\": \"object\",\n              \"required\":
+        [\"along-track\", \"across-track\"],\n              \"properties\": {\n                \"along-track\":
+        {\n                  \"type\": \"integer\"\n                },\n                \"across-track\":
+        {\n                  \"type\": \"integer\"\n                }\n              },\n
+        \             \"additionalProperties\": false\n            },\n            {\n
+        \             \"title\": \"Synergy GSD Object\",\n              \"type\":
+        \"object\",\n              \"required\": [\"OLCI\", \"SLSTR\"],\n              \"properties\":
+        {\n                \"OLCI\": {\n                  \"type\": \"integer\"\n
+        \               },\n                \"SLSTR\": {\n                  \"$ref\":
+        \"#/definitions/SLSTR\"\n                }\n              },\n              \"additionalProperties\":
+        false\n            }, \n            {\n              \"$ref\": \"#/definitions/SLSTR\"\n
+        \           }\n          ]\n        },\n        \"s3:lrm_mode\": {\n          \"type\":
+        \"number\"\n        },\n        \"s3:sar_mode\": {\n          \"type\": \"number\"\n
+        \       },\n        \"s3:bright\": {\n          \"type\": \"number\"\n        },\n
+        \       \"s3:closed_sea\": {\n          \"type\": \"number\"\n        },\n
+        \       \"s3:coastal\": {\n          \"type\": \"number\"\n        },\n        \"s3:continental_ice\":
+        {\n          \"type\": \"number\"\n        },\n        \"s3:cosmetic\": {\n
+        \         \"type\": \"number\"\n        },\n        \"s3:dubious_samples\":
+        {\n          \"type\": \"number\"\n        },\n        \"s3:duplicated\":
+        {\n          \"type\": \"number\"\n        },\n        \"s3:fresh_inland_water\":
+        {\n          \"type\": \"number\"\n        },\n        \"s3:invalid\": {\n
+        \         \"type\": \"number\"\n        },\n        \"s3:land\": {\n          \"type\":
+        \"number\"\n        },\n        \"s3:open_ocean\": {\n          \"type\":
+        \"number\"\n        },\n        \"s3:out_of_range\": {\n          \"type\":
+        \"number\"\n        },\n        \"s3:saline_water\": {\n          \"type\":
+        \"number\"\n        },\n        \"s3:saturated\": {\n          \"type\": \"number\"\n
+        \       },\n        \"s3:tidal_region\": {\n          \"type\": \"number\"\n
+        \       },\n        \"s3:snow_or_ice\": {\n          \"type\": \"number\"\n
+        \       }\n      },\n      \"patternProperties\": {\n        \"^(?!s3:)\":
+        {}\n      },\n      \"additionalProperties\": false\n    },\n    \"SLSTR\":
+        {\n      \"title\": \"SLSTR GSD Object\",\n      \"type\": \"object\",\n      \"required\":
+        [\"S1-S6\", \"S7-S9 and F1-F2\"],\n      \"properties\": {\n        \"S1-S6\":
+        {\n          \"type\": \"integer\"\n        },\n        \"S7-S9 and F1-F2\":
+        {\n          \"type\": \"integer\"\n        }\n      },\n      \"additionalProperties\":
+        false\n    },\n    \"assets\": {\n      \"additionalProperties\": {\n        \"type\":
+        \"object\",\n        \"properties\": {\n          \"s3:shape\": {\n            \"type\":
+        \"array\",\n            \"items\": {\n              \"type\": \"integer\"\n
+        \           }\n          },\n          \"s3:spatial_resolution\": {\n            \"type\":
+        \"array\",\n            \"items\": {\n              \"type\": \"integer\"\n
+        \           }\n          },\n          \"s3:altimetry_bands\": {\n            \"type\":
+        \"array\",\n            \"items\": {\n              \"type\": \"object\",\n
+        \             \"properties\": {\n                \"band_width\": {\n                  \"type\":
+        \"number\"\n                },\n                \"description\": {\n                  \"type\":
+        \"string\"\n                },\n                \"frequency_band\": {\n                  \"type\":
+        \"string\"\n                },\n                \"center_frequency\": {\n
+        \                 \"type\": \"number\"\n                }\n              }\n
+        \           }\n          }\n        }\n      }\n    }\n  }\n}\n"
+    headers: {}
+    status:
+      code: 200
+      message: OK
+version: 1

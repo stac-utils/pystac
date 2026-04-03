@@ -14,9 +14,11 @@ from pystac import (
 )
 from pystac.extensions.classification import ClassificationExtension
 from pystac.extensions.datacube import DatacubeExtension
+from pystac.extensions.earthquake import EarthquakeExtension
 from pystac.extensions.eo import EOExtension
 from pystac.extensions.file import FileExtension
 from pystac.extensions.grid import GridExtension
+from pystac.extensions.insar import InsarExtension
 from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.mgrs import MgrsExtension
 from pystac.extensions.mlm import (
@@ -24,7 +26,10 @@ from pystac.extensions.mlm import (
     AssetGeneralMLMExtension,
     MLMExtension,
 )
+from pystac.extensions.order import OrderExtension
 from pystac.extensions.pointcloud import PointcloudExtension
+from pystac.extensions.processing import ProcessingExtension
+from pystac.extensions.product import ProductExtension
 from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.raster import RasterExtension
 from pystac.extensions.render import Render, RenderExtension
@@ -48,6 +53,7 @@ U = TypeVar("U", Asset, ItemAssetDefinition)
 EXTENSION_NAMES = Literal[
     "classification",
     "cube",
+    "eq",
     "eo",
     "file",
     "grid",
@@ -67,11 +73,16 @@ EXTENSION_NAMES = Literal[
     "version",
     "view",
     "xarray",
+    "insar",
+    "order",
+    "product",
+    "processing",
 ]
 
 EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     ClassificationExtension.name: ClassificationExtension,
     DatacubeExtension.name: DatacubeExtension,
+    EarthquakeExtension.name: EarthquakeExtension,
     EOExtension.name: EOExtension,
     FileExtension.name: FileExtension,
     GridExtension.name: GridExtension,
@@ -91,6 +102,10 @@ EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     VersionExtension.name: VersionExtension,
     ViewExtension.name: ViewExtension,
     XarrayAssetsExtension.name: XarrayAssetsExtension,
+    InsarExtension.name: InsarExtension,
+    OrderExtension.name: OrderExtension,
+    ProductExtension.name: ProductExtension,
+    ProcessingExtension.name: ProcessingExtension,
 }
 
 
@@ -165,6 +180,14 @@ class CollectionExt(CatalogExt):
         return MLMExtension.ext(self.stac_object)
 
     @property
+    def order(self) -> OrderExtension[Collection]:
+        return OrderExtension.ext(self.stac_object)
+
+    @property
+    def product(self) -> ProductExtension[Collection]:
+        return ProductExtension.ext(self.stac_object)
+
+    @property
     def render(self) -> dict[str, Render]:
         return RenderExtension.ext(self.stac_object).renders
 
@@ -233,6 +256,10 @@ class ItemExt:
         return EOExtension.ext(self.stac_object)
 
     @property
+    def eq(self) -> EarthquakeExtension[Item]:
+        return EarthquakeExtension.ext(self.stac_object)
+
+    @property
     def grid(self) -> GridExtension:
         return GridExtension.ext(self.stac_object)
 
@@ -291,6 +318,22 @@ class ItemExt:
     @property
     def xarray(self) -> XarrayAssetsExtension[Item]:
         return XarrayAssetsExtension.ext(self.stac_object)
+
+    @property
+    def insar(self) -> InsarExtension[Item]:
+        return InsarExtension.ext(self.stac_object)
+
+    @property
+    def order(self) -> OrderExtension[Item]:
+        return OrderExtension.ext(self.stac_object)
+
+    @property
+    def product(self) -> ProductExtension[Item]:
+        return ProductExtension.ext(self.stac_object)
+
+    @property
+    def processing(self) -> ProcessingExtension[Item]:
+        return ProcessingExtension.ext(self.stac_object)
 
 
 class _AssetsExt(Generic[T]):
@@ -360,6 +403,10 @@ class _AssetExt(_AssetsExt[U]):
         return EOExtension.ext(self.stac_object)
 
     @property
+    def eq(self) -> EarthquakeExtension[U]:
+        return EarthquakeExtension.ext(self.stac_object)
+
+    @property
     def pc(self) -> PointcloudExtension[U]:
         return PointcloudExtension.ext(self.stac_object)
 
@@ -374,6 +421,22 @@ class _AssetExt(_AssetsExt[U]):
     @property
     def sar(self) -> SarExtension[U]:
         return SarExtension.ext(self.stac_object)
+
+    @property
+    def insar(self) -> InsarExtension[U]:
+        return InsarExtension.ext(self.stac_object)
+
+    @property
+    def order(self) -> OrderExtension[U]:
+        return OrderExtension.ext(self.stac_object)
+
+    @property
+    def processing(self) -> ProcessingExtension[U]:
+        return ProcessingExtension.ext(self.stac_object)
+
+    @property
+    def product(self) -> ProductExtension[U]:
+        return ProductExtension.ext(self.stac_object)
 
     @property
     def sat(self) -> SatExtension[U]:

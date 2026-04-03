@@ -15,15 +15,21 @@ pystac.extensions
 
     classification.ClassificationExtension
     datacube.DatacubeExtension
+    earthquake.EarthquakeExtension
     eo.EOExtension
     file.FileExtension
     grid.GridExtension
+    insar.InsarExtension
     item_assets.ItemAssetsExtension
     mgrs.MgrsExtension
     mlm.MLMExtension
     mlm.AssetGeneralMLMExtension
     mlm.AssetDetailedMLMExtension
+    order.OrderExtension
     pointcloud.PointcloudExtension
+    processing.ProcessingExtension
+    processing.ProviderProcessingExtension
+    product.ProductExtension
     projection.ProjectionExtension
     raster.RasterExtension
     render.RenderExtension
