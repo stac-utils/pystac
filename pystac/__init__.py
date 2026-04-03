@@ -109,6 +109,8 @@ import pystac.extensions.projection
 import pystac.extensions.raster
 import pystac.extensions.sar
 import pystac.extensions.sentinel1
+import pystac.extensions.sentinel2
+import pystac.extensions.sentinel3
 import pystac.extensions.sat
 import pystac.extensions.scientific
 import pystac.extensions.storage
@@ -139,6 +141,8 @@ EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
         pystac.extensions.raster.RASTER_EXTENSION_HOOKS,
         pystac.extensions.sar.SAR_EXTENSION_HOOKS,
         pystac.extensions.sentinel1.SENTINEL1_EXTENSION_HOOKS,
+        pystac.extensions.sentinel2.SENTINEL2_EXTENSION_HOOKS,
+        pystac.extensions.sentinel3.SENTINEL3_EXTENSION_HOOKS,
         pystac.extensions.sat.SAT_EXTENSION_HOOKS,
         pystac.extensions.scientific.SCIENTIFIC_EXTENSION_HOOKS,
         pystac.extensions.storage.STORAGE_EXTENSION_HOOKS,
