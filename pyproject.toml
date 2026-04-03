@@ -207,6 +207,9 @@ pytest-pystac = { workspace = true }
 [tool.uv.workspace]
 members = ["core", "extensions/*", "pytest-pystac"]
 
+[tool.uv]
+exclude-newer = "10 days"  # matches dependabot cool-down
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
