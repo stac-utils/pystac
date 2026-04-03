@@ -12,11 +12,6 @@ from typing import (
     cast,
 )
 
-from pystac.errors import DeprecatedWarning
-from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
-from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import StringEnum, map_opt
-
 from pystac import (
     Asset,
     Catalog,
@@ -29,6 +24,10 @@ from pystac import (
     STACObject,
     STACObjectType,
 )
+from pystac.errors import DeprecatedWarning
+from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
+from pystac.extensions.hooks import ExtensionHooks
+from pystac.utils import StringEnum, map_opt
 
 #: Generalized version of :class:`~pystac.Catalog`, :class:`~pystac.Collection`,
 #: :class:`~pystac.Item`, :class:`~pystac.Asset` or :class:`~pystac.ItemAssetDefinition`

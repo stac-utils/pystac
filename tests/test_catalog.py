@@ -12,6 +12,18 @@ from pathlib import Path
 from typing import Any, cast
 
 import pytest
+
+import pystac
+from pystac import (
+    HIERARCHICAL_LINKS,
+    Asset,
+    Catalog,
+    CatalogType,
+    Collection,
+    Item,
+    Link,
+    MediaType,
+)
 from pystac.errors import STACError
 from pystac.layout import (
     APILayoutStrategy,
@@ -24,18 +36,6 @@ from pystac.utils import (
     make_absolute_href,
     make_posix_style,
     make_relative_href,
-)
-
-import pystac
-from pystac import (
-    HIERARCHICAL_LINKS,
-    Asset,
-    Catalog,
-    CatalogType,
-    Collection,
-    Item,
-    Link,
-    MediaType,
 )
 from tests.utils import (
     ARBITRARY_BBOX,

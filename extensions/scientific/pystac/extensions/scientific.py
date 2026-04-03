@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import Any, Generic, Literal, TypeVar, cast
 
+import pystac
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -16,8 +17,6 @@ from pystac.extensions.base import (
 )
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, map_opt
-
-import pystac
 
 #: Generalized version of :class:`~pystac.Collection` or :class:`~pystac.Item`
 T = TypeVar("T", pystac.Collection, pystac.Item)

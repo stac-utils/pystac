@@ -15,6 +15,7 @@ from typing import (
     cast,
 )
 
+import pystac
 from pystac.errors import RequiredPropertyMissing
 from pystac.extensions.base import (
     ExtensionManagementMixin,
@@ -24,8 +25,6 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import StringEnum, get_required, map_opt
-
-import pystac
 
 #: Generalized version of :class:`~pystac.Catalog`, :class:`~pystac.Collection`,
 #: :class:`~pystac.Item`, :class:`~pystac.Asset`, :class:`~pystac.Link`,

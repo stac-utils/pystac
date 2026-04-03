@@ -4,9 +4,9 @@ import json
 from pathlib import Path
 
 import pytest
-from pystac.extensions.xarray_assets import XarrayAssetsExtension
 
 import pystac
+from pystac.extensions.xarray_assets import XarrayAssetsExtension
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 

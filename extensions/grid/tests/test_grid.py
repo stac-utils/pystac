@@ -8,11 +8,11 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from pystac.extensions.grid import GridExtension
 
 import pystac
 from pystac import ExtensionTypeError
 from pystac.extensions import grid
+from pystac.extensions.grid import GridExtension
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 

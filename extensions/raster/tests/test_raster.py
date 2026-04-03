@@ -2,6 +2,10 @@ import json
 from pathlib import Path
 
 import pytest
+from pytest_pystac.plugin import assert_to_from_dict
+
+import pystac
+from pystac import ExtensionTypeError, Item
 from pystac.extensions.raster import (
     DataType,
     Histogram,
@@ -12,10 +16,6 @@ from pystac.extensions.raster import (
     Statistics,
 )
 from pystac.utils import get_opt
-from pytest_pystac.plugin import assert_to_from_dict
-
-import pystac
-from pystac import ExtensionTypeError, Item
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 

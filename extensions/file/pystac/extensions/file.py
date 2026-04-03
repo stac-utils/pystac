@@ -5,15 +5,6 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any, Generic, Literal, TypeVar, cast
 
-from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
-from pystac.extensions.hooks import ExtensionHooks
-from pystac.serialization.identify import (
-    OldExtensionShortIDs,
-    STACJSONDescription,
-    STACVersionID,
-)
-from pystac.utils import StringEnum, get_required, map_opt
-
 from pystac import (
     Asset,
     Catalog,
@@ -23,6 +14,14 @@ from pystac import (
     Link,
     STACObjectType,
 )
+from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
+from pystac.extensions.hooks import ExtensionHooks
+from pystac.serialization.identify import (
+    OldExtensionShortIDs,
+    STACJSONDescription,
+    STACVersionID,
+)
+from pystac.utils import StringEnum, get_required, map_opt
 
 #: Generalized version of :class:`~pystac.Asset`, :class:`~pystac.Link`,
 T = TypeVar("T", Asset, Link)

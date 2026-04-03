@@ -4,11 +4,10 @@ from __future__ import annotations
 
 from typing import Any, Generic, Literal, TypeVar
 
+import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import get_required, map_opt
-
-import pystac
 
 #: Generalized version of :class:`~pystac.Collection` or :class:`~pystac.Item`
 T = TypeVar("T", pystac.Collection, pystac.Item)

@@ -11,6 +11,7 @@ from typing import (
     cast,
 )
 
+import pystac
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -18,8 +19,6 @@ from pystac.extensions.base import (
 )
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
-
-import pystac
 
 #: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Asset`,
 #: or :class:`~pystac.ItemAssetDefinition`

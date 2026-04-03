@@ -11,6 +11,8 @@ from typing import (
     cast,
 )
 
+import pystac
+from pystac.extensions import projection, view
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -20,9 +22,6 @@ from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.summaries import RangeSummary
 from pystac.utils import get_required, map_opt
-
-import pystac
-from pystac.extensions import projection, view
 
 #: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Asset`,
 #: pr :class:`~pystac.ItemAssetDefinition`

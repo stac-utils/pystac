@@ -4,7 +4,11 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
+
+import pystac
+from pystac import Collection, ExtensionTypeError, Item
 from pystac.errors import ExtensionNotImplemented
+from pystac.extensions import scientific
 from pystac.extensions.scientific import (
     Publication,
     ScientificExtension,
@@ -13,10 +17,6 @@ from pystac.extensions.scientific import (
 )
 from pystac.link import Link
 from pystac.summaries import Summaries
-
-import pystac
-from pystac import Collection, ExtensionTypeError, Item
-from pystac.extensions import scientific
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 

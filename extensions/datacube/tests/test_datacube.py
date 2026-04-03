@@ -4,12 +4,12 @@ import json
 from pathlib import Path
 from typing import Any
 
-import pystac.extensions.datacube as dc
 import pytest
-from pystac.errors import ExtensionTypeError
 
 import pystac
+import pystac.extensions.datacube as dc
 from pystac import Asset, Item
+from pystac.errors import ExtensionTypeError
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 

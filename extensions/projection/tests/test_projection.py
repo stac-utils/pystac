@@ -5,12 +5,12 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from pystac.errors import ExtensionNotImplemented
-from pystac.extensions.projection import ProjectionExtension
-from pystac.utils import get_opt
 
 import pystac
 from pystac import ExtensionTypeError, Item
+from pystac.errors import ExtensionNotImplemented
+from pystac.extensions.projection import ProjectionExtension
+from pystac.utils import get_opt
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 

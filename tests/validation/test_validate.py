@@ -7,13 +7,13 @@ from typing import Any, cast
 
 import jsonschema
 import pytest
-from pystac.cache import CollectionCache
-from pystac.serialization.common_properties import merge_common_properties
-from pystac.utils import get_opt
 from requests_mock import Mocker
 
 import pystac
 import pystac.validation
+from pystac.cache import CollectionCache
+from pystac.serialization.common_properties import merge_common_properties
+from pystac.utils import get_opt
 from pystac.validation import GetSchemaError, JsonSchemaSTACValidator
 from tests.utils import TestCases
 from tests.utils.test_cases import ExampleInfo

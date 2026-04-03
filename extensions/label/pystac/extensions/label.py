@@ -6,12 +6,11 @@ import warnings
 from collections.abc import Iterable, Sequence
 from typing import Any, Literal, cast
 
+import pystac
 from pystac.extensions.base import ExtensionManagementMixin, SummariesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import StringEnum, get_required, map_opt
-
-import pystac
 
 warnings.warn(
     "The PySTAC Label Extension is deprecated. The extension itself "

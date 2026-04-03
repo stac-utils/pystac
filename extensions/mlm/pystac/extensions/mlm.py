@@ -12,6 +12,7 @@ from abc import ABC
 from collections.abc import Iterable
 from typing import Any, Generic, Literal, TypeVar, cast
 
+import pystac
 from pystac.errors import STACError
 from pystac.extensions.base import (
     ExtensionManagementMixin,
@@ -22,8 +23,6 @@ from pystac.extensions.hooks import ExtensionHooks
 from pystac.extensions.raster import DataType
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import StringEnum, get_required
-
-import pystac
 
 #: Generalized version of :class:`pystac.Item`, :class:`pystac.ItemAssetDefinition`,
 #: :class:`pystac.Collection`, or :class:`pystac.Asset`

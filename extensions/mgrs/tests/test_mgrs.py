@@ -4,9 +4,9 @@ import json
 from pathlib import Path
 
 import pytest
-from pystac.extensions.mgrs import MgrsExtension
 
 import pystac
+from pystac.extensions.mgrs import MgrsExtension
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 

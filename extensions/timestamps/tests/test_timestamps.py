@@ -3,13 +3,13 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
-from pystac.extensions.timestamps import TimestampsExtension
-from pystac.summaries import RangeSummary
-from pystac.utils import datetime_to_str, get_opt, str_to_datetime
 from pytest_pystac.plugin import assert_to_from_dict
 
 import pystac
 from pystac import Collection, ExtensionTypeError, Item
+from pystac.extensions.timestamps import TimestampsExtension
+from pystac.summaries import RangeSummary
+from pystac.utils import datetime_to_str, get_opt, str_to_datetime
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 EXAMPLE_URI = str(DATA_FILES / "example-landsat8.json")

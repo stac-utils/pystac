@@ -4,14 +4,13 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
+import pystac
 from pystac.errors import DeprecatedWarning
 from pystac.extensions.base import ExtensionManagementMixin
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.item_assets import ItemAssetDefinition
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import get_required
-
-import pystac
 
 SCHEMA_URI = "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json"
 

@@ -1,11 +1,11 @@
 from pathlib import Path
 
 import pytest
+
+from pystac import Collection
 from pystac.errors import DeprecatedWarning
 from pystac.extensions.item_assets import AssetDefinition, ItemAssetsExtension
 from pystac.item_assets import ItemAssetDefinition
-
-from pystac import Collection
 from tests.utils import TestCases
 
 HERE = Path(__file__).resolve().parent

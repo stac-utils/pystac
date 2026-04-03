@@ -1,9 +1,8 @@
 from typing import Any
 
+import pystac
 from pystac.cache import ResolvedObjectCache, ResolvedObjectCollectionCache
 from pystac.utils import get_opt
-
-import pystac
 from tests.utils import TestCases
 
 

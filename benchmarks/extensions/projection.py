@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from pystac.extensions.projection import ProjectionExtension
-
 from pystac import Item
+from pystac.extensions.projection import ProjectionExtension
 
 from .._base import Bench
 

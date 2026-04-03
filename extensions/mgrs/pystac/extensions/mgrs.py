@@ -4,10 +4,9 @@ import re
 from re import Pattern
 from typing import Any, Literal
 
+import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
-
-import pystac
 
 SCHEMA_URI: str = "https://stac-extensions.github.io/mgrs/v1.0.0/schema.json"
 SCHEMA_STARTSWITH: str = "https://stac-extensions.github.io/mgrs/"

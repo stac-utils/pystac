@@ -5,6 +5,8 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 from dateutil import tz
+
+from pystac import utils
 from pystac.utils import (
     JoinType,
     StringEnum,
@@ -18,8 +20,6 @@ from pystac.utils import (
     safe_urlparse,
     str_to_datetime,
 )
-
-from pystac import utils
 from tests.utils import TestCases, path_includes_drive_letter
 
 

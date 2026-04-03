@@ -5,10 +5,9 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any, Generic, Literal, TypeVar
 
+import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
-
-import pystac
 
 #: Generalized version of :class:`~pystac.Collection`,
 #: :class:`~pystac.Item`, or :class:`~pystac.Asset`

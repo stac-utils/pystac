@@ -4,8 +4,10 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any, cast
 
-import pystac.errors
 import pytest
+
+import pystac.errors
+from pystac import Asset, Collection, Item, ItemAssetDefinition
 from pystac.errors import STACError
 from pystac.extensions.classification import Classification
 from pystac.extensions.mlm import (
@@ -30,8 +32,6 @@ from pystac.extensions.mlm import (
     ValueScalingType,
 )
 from pystac.extensions.raster import DataType
-
-from pystac import Asset, Collection, Item, ItemAssetDefinition
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger()

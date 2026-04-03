@@ -2,6 +2,8 @@ import logging
 from pathlib import Path
 
 import pytest
+
+from pystac import Asset, Catalog, Collection, Item, Link
 from pystac.errors import ExtensionNotImplemented
 from pystac.extensions.ext import (
     EXTENSION_NAME_MAPPING,
@@ -12,8 +14,6 @@ from pystac.extensions.ext import (
     ItemExt,
     LinkExt,
 )
-
-from pystac import Asset, Catalog, Collection, Item, Link
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger()
