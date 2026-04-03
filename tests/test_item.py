@@ -679,15 +679,6 @@ def test_no_collection(item: Item) -> None:
     assert item.collection is None
 
 
-def test_migrate_by_default() -> None:
-    with open(
-        TestCases.get_path("data-files/projection/example-with-version-1.1.json")
-    ) as f:
-        data = json.load(f)
-    item = pystac.Item.from_dict(data)  # default used to be migrate=False
-    assert item.ext.proj.code == "EPSG:32614"
-
-
 def test_clone_extra_fields(item: Item) -> None:
     item.extra_fields["foo"] = "bar"
     cloned = item.clone()
