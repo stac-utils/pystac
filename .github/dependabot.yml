@@ -12,7 +12,7 @@ updates:
       default-days: 10
     commit-message:
       prefix: build(deps)
-  - package-ecosystem: uv
+  - package-ecosystem: pip
     directory: /
     schedule:
       interval: weekly
