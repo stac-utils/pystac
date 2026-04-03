@@ -11,7 +11,7 @@ resolution-markers = [
 ]
 
 [options]
-exclude-newer = "2026-03-24T14:17:47.216696124Z"
+exclude-newer = "2026-03-24T18:51:32.875665553Z"
 exclude-newer-span = "P10D"
 
 [[package]]
@@ -4331,11 +4331,14 @@ wheels = [
 
 [[package]]
 name = "types-html5lib"
-version = "1.1.11.20250708"
+version = "1.1.11.20251117"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/d4/3b/1f5ba4358cfc1421cced5cdb9d2b08b4b99e4f9a41da88ce079f6d1a7bf1/types_html5lib-1.1.11.20250708.tar.gz", hash = "sha256:24321720fdbac71cee50d5a4bec9b7448495b7217974cffe3fcf1ede4eef7afe", size = 16799, upload-time = "2025-07-08T03:13:53.14Z" }
+dependencies = [
+    { name = "types-webencodings" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c8/f3/d9a1bbba7b42b5558a3f9fe017d967f5338cf8108d35991d9b15fdea3e0d/types_html5lib-1.1.11.20251117.tar.gz", hash = "sha256:1a6a3ac5394aa12bf547fae5d5eff91dceec46b6d07c4367d9b39a37f42f201a", size = 18100, upload-time = "2025-11-17T03:08:00.78Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a8/50/5fc23cf647eee23acdd337c8150861d39980cf11f33dd87f78e87d2a4bad/types_html5lib-1.1.11.20250708-py3-none-any.whl", hash = "sha256:bb898066b155de7081cb182179e2ded31b9e0e234605e2cb46536894e68a6954", size = 22913, upload-time = "2025-07-08T03:13:52.098Z" },
+    { url = "https://files.pythonhosted.org/packages/f0/ab/f5606db367c1f57f7400d3cb3bead6665ee2509621439af1b29c35ef6f9e/types_html5lib-1.1.11.20251117-py3-none-any.whl", hash = "sha256:2a3fc935de788a4d2659f4535002a421e05bea5e172b649d33232e99d4272d08", size = 24302, upload-time = "2025-11-17T03:07:59.996Z" },
 ]
 
 [[package]]
@@ -4375,6 +4378,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/73/de/b9d7a68ad39092368fb21dd6194b362b98a1daeea5dcfef5e1adb5031c7e/types-urllib3-1.26.25.14.tar.gz", hash = "sha256:229b7f577c951b8c1b92c1bc2b2fdb0b49847bd2af6d1cc2a2e3dd340f3bda8f", size = 11239, upload-time = "2023-07-20T15:19:31.307Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/11/7b/3fc711b2efea5e85a7a0bbfe269ea944aa767bbba5ec52f9ee45d362ccf3/types_urllib3-1.26.25.14-py3-none-any.whl", hash = "sha256:9683bbb7fb72e32bfe9d2be6e04875fbe1b3eeec3cbb4ea231435aa7fd6b4f0e", size = 15377, upload-time = "2023-07-20T15:19:30.379Z" },
+]
+
+[[package]]
+name = "types-webencodings"
+version = "0.5.0.20251108"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/66/d6/75e381959a2706644f02f7527d264de3216cf6ed333f98eff95954d78e07/types_webencodings-0.5.0.20251108.tar.gz", hash = "sha256:2378e2ceccced3d41bb5e21387586e7b5305e11519fc6b0659c629f23b2e5de4", size = 7470, upload-time = "2025-11-08T02:56:00.132Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/45/4e/8fcf33e193ce4af03c19d0e08483cf5f0838e883f800909c6bc61cb361be/types_webencodings-0.5.0.20251108-py3-none-any.whl", hash = "sha256:e21f81ff750795faffddaffd70a3d8bfff77d006f22c27e393eb7812586249d8", size = 8715, upload-time = "2025-11-08T02:55:59.456Z" },
 ]
 
 [[package]]
