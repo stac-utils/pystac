@@ -6,10 +6,11 @@ from abc import ABC
 from collections.abc import Iterable
 from typing import Any, Generic, Literal, TypeVar, cast
 
-import pystac
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, get_required, map_opt
+
+import pystac
 
 #: Generalized version of :class:`~pystac.Collection`, `:class:`~pystac.Item`,
 #: :class:`~pystac.Asset`, or :class:`~pystac.ItemAssetDefinition`

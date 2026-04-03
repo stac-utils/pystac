@@ -14,7 +14,6 @@ from typing import (
     cast,
 )
 
-import pystac
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -24,6 +23,8 @@ from pystac.extensions.hooks import ExtensionHooks
 from pystac.extensions.raster import RasterBand
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import get_required, map_opt
+
+import pystac
 
 #: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Asset`,
 #: :class:`~pystac.ItemAssetDefinition` or :class:`~pystac.extensions.raster.RasterBand`

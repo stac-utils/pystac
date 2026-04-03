@@ -3,11 +3,11 @@ from copy import deepcopy
 from os.path import relpath
 from typing import Any, cast
 
-import pystac
 import pytest
-from pystac import Item, StacIO
 from pystac.item_collection import ItemCollection
 
+import pystac
+from pystac import Item, StacIO
 from tests.utils import TestCases
 from tests.utils.stac_io_mock import MockDefaultStacIO
 

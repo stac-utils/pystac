@@ -1,5 +1,6 @@
-import pystac
 from pystac.validation.schema_uri_map import DefaultSchemaUriMap
+
+import pystac
 
 
 def test_gets_schema_uri_for_old_version() -> None:

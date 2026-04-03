@@ -6,7 +6,6 @@ from collections.abc import Iterable
 from datetime import datetime
 from typing import Any, Generic, Literal, TypeVar, cast
 
-import pystac
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -15,6 +14,8 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.summaries import RangeSummary
 from pystac.utils import datetime_to_str, map_opt, str_to_datetime
+
+import pystac
 
 #: Generalized version of :class:`~pystac.Collection`, :class:`~pystac.Item`,
 #: or :class:`~pystac.Asset`

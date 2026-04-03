@@ -3,10 +3,11 @@
 import json
 from pathlib import Path
 
-import pystac
 import pystac.errors
 import pytest
 from pystac.extensions.render import Render, RenderExtension
+
+import pystac
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 

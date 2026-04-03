@@ -4,9 +4,7 @@ from copy import deepcopy
 from pathlib import Path
 from string import ascii_letters
 
-import pystac
 import pytest
-from pystac import ExtensionTypeError, Item, ItemAssetDefinition
 from pystac.collection import Collection
 from pystac.errors import RequiredPropertyMissing
 from pystac.extensions.storage import (
@@ -15,6 +13,9 @@ from pystac.extensions.storage import (
     StorageSchemeType,
 )
 from pytest_pystac.plugin import assert_to_from_dict
+
+import pystac
+from pystac import ExtensionTypeError, Item, ItemAssetDefinition
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 

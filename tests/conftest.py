@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+
 from pystac import Asset, Catalog, Collection, Item, ItemCollection
 
 from .utils import TestCases

@@ -3,6 +3,9 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from pystac.extensions.file import ByteOrder, FileExtension, MappingObject
+from pytest_pystac.plugin import assert_to_from_dict
+
 from pystac import (
     Asset,
     Catalog,
@@ -11,8 +14,6 @@ from pystac import (
     ExtensionTypeError,
     Item,
 )
-from pystac.extensions.file import ByteOrder, FileExtension, MappingObject
-from pytest_pystac.plugin import assert_to_from_dict
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 

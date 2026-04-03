@@ -2,7 +2,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-import pystac
 import pytest
 from pystac.asset import Asset
 from pystac.errors import ExtensionTypeError, RequiredPropertyMissing, STACError
@@ -16,6 +15,8 @@ from pystac.extensions.pointcloud import (
 )
 from pystac.summaries import RangeSummary
 from pytest_pystac.plugin import assert_to_from_dict
+
+import pystac
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 

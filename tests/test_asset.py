@@ -1,8 +1,9 @@
 import os
 from pathlib import Path
 
-import pystac
 import pytest
+
+import pystac
 
 
 @pytest.mark.parametrize("action", ["copy", "move"])

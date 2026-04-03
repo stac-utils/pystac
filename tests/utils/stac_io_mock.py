@@ -3,8 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 from unittest.mock import Mock
 
-import pystac
 from pystac.stac_io import DefaultStacIO, StacIO
+
+import pystac
 
 if TYPE_CHECKING:
     from pystac.utils import HREF

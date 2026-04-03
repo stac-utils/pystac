@@ -1,9 +1,10 @@
 from pathlib import Path
 
-import pystac
 import pytest
-from pystac import ExtensionTypeError, Item
 from pystac.extensions.table import Column, TableExtension
+
+import pystac
+from pystac import ExtensionTypeError, Item
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 

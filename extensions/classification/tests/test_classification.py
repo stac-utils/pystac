@@ -5,10 +5,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, cast
 
-import pystac
 import pytest
 from dateutil.parser import parse
-from pystac import Collection, Item
 from pystac.extensions.classification import (
     CLASSES_PROP,
     DEFAULT_VERSION,
@@ -19,6 +17,9 @@ from pystac.extensions.classification import (
     ClassificationExtension,
 )
 from pystac.extensions.raster import RasterBand, RasterExtension
+
+import pystac
+from pystac import Collection, Item
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger()

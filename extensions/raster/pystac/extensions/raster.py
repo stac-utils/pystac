@@ -11,7 +11,6 @@ from typing import (
     cast,
 )
 
-import pystac
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -19,6 +18,8 @@ from pystac.extensions.base import (
 )
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, get_opt, get_required, map_opt
+
+import pystac
 
 #: Generalized version of :class:`~pystac.Asset` or
 #: :class:`~pystac.ItemAssetDefinition`

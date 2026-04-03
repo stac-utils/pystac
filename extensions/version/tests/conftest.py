@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+
 from pystac import Catalog
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"

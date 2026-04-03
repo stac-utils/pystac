@@ -11,18 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, cast
 
-import pystac
 import pytest
-from pystac import (
-    HIERARCHICAL_LINKS,
-    Asset,
-    Catalog,
-    CatalogType,
-    Collection,
-    Item,
-    Link,
-    MediaType,
-)
 from pystac.errors import STACError
 from pystac.layout import (
     APILayoutStrategy,
@@ -37,6 +26,17 @@ from pystac.utils import (
     make_relative_href,
 )
 
+import pystac
+from pystac import (
+    HIERARCHICAL_LINKS,
+    Asset,
+    Catalog,
+    CatalogType,
+    Collection,
+    Item,
+    Link,
+    MediaType,
+)
 from tests.utils import (
     ARBITRARY_BBOX,
     ARBITRARY_EXTENT,

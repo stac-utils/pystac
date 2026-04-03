@@ -2,7 +2,6 @@ import posixpath
 from collections.abc import Callable
 from datetime import datetime, timedelta
 
-import pystac
 import pytest
 from pystac.collection import Collection
 from pystac.layout import (
@@ -14,6 +13,7 @@ from pystac.layout import (
     TemplateLayoutStrategy,
 )
 
+import pystac
 from tests.utils import (
     ARBITRARY_BBOX,
     ARBITRARY_GEOM,

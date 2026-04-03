@@ -4,13 +4,14 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-import pystac
 import pytest
-from pystac import Collection, ExtensionTypeError, Item
-from pystac.extensions import sat
 from pystac.extensions.sat import OrbitState, SatExtension, SummariesSatExtension
 from pystac.summaries import RangeSummary
 from pystac.utils import datetime_to_str, str_to_datetime
+
+import pystac
+from pystac import Collection, ExtensionTypeError, Item
+from pystac.extensions import sat
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 

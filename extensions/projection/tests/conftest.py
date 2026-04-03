@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+
 from pystac import Item
 
 HERE = Path(__file__).resolve().parent

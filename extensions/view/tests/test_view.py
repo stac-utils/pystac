@@ -2,13 +2,14 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-import pystac
 import pytest
-from pystac import ExtensionTypeError, Item
 from pystac.collection import Collection
 from pystac.extensions.view import ViewExtension
 from pystac.summaries import RangeSummary
 from pytest_pystac.plugin import assert_to_from_dict
+
+import pystac
+from pystac import ExtensionTypeError, Item
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 

@@ -6,6 +6,7 @@ from urllib.request import Request
 
 import pytest
 from dateutil.parser import parse
+
 from pystac import (
     Asset,
     Catalog,

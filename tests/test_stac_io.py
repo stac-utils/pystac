@@ -4,11 +4,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import pystac
 import pystac.errors
 import pytest
 from pystac.stac_io import DefaultStacIO, DuplicateKeyReportingMixin, StacIO
 
+import pystac
 from tests.utils import TestCases
 
 

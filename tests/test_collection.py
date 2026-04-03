@@ -8,9 +8,12 @@ from copy import deepcopy
 from datetime import datetime
 from typing import Any
 
-import pystac
 import pytest
 from dateutil import tz
+from pystac.extensions.eo import EOExtension
+from pystac.utils import datetime_to_str, get_required, str_to_datetime
+
+import pystac
 from pystac import (
     Asset,
     Catalog,
@@ -23,10 +26,7 @@ from pystac import (
     SpatialExtent,
     TemporalExtent,
 )
-from pystac.extensions.eo import EOExtension
-from pystac.utils import datetime_to_str, get_required, str_to_datetime
 from pystac.validation import validate_dict
-
 from tests.utils import ARBITRARY_BBOX, ARBITRARY_GEOM, TestCases
 
 TEST_DATETIME = datetime(2020, 3, 14, 16, 32)

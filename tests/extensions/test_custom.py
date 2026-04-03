@@ -4,8 +4,13 @@ from collections.abc import Generator
 from datetime import datetime
 from typing import Any, Generic, TypeVar, cast
 
-import pystac
 import pytest
+from pystac.errors import ExtensionTypeError
+from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
+from pystac.extensions.hooks import ExtensionHooks
+from pystac.serialization.identify import STACJSONDescription, STACVersionID
+
+import pystac
 from pystac import (
     Asset,
     Catalog,
@@ -15,10 +20,6 @@ from pystac import (
     SpatialExtent,
     TemporalExtent,
 )
-from pystac.errors import ExtensionTypeError
-from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
-from pystac.extensions.hooks import ExtensionHooks
-from pystac.serialization.identify import STACJSONDescription, STACVersionID
 
 T = TypeVar("T", pystac.Catalog, pystac.Collection, pystac.Item, pystac.Asset)
 

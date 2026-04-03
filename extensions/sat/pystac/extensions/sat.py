@@ -12,7 +12,6 @@ from typing import (
     cast,
 )
 
-import pystac
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -21,6 +20,8 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.summaries import RangeSummary
 from pystac.utils import StringEnum, datetime_to_str, map_opt, str_to_datetime
+
+import pystac
 
 #: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Asset` or
 #: :class:`~pystac.ItemAssetDefinition`

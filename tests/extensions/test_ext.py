@@ -2,7 +2,6 @@ import logging
 from pathlib import Path
 
 import pytest
-from pystac import Asset, Catalog, Collection, Item, Link
 from pystac.errors import ExtensionNotImplemented
 from pystac.extensions.ext import (
     EXTENSION_NAME_MAPPING,
@@ -14,21 +13,17 @@ from pystac.extensions.ext import (
     LinkExt,
 )
 
+from pystac import Asset, Catalog, Collection, Item, Link
+
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger()
 
-EO_DATA_FILES = (
-    Path(__file__).resolve().parent.parent.parent
-    / "extensions"
-    / "eo"
-    / "tests"
-    / "data-files"
-)
+DATA_FILES = Path(__file__).resolve().parent / "data-files"
 
 
 @pytest.fixture
 def eo_ext_item() -> Item:
-    return Item.from_file(str(EO_DATA_FILES / "eo-landsat-example.json"))
+    return Item.from_file(str(DATA_FILES / "eo-landsat-example.json"))
 
 
 def test_ext_syntax_has(eo_ext_item: Item) -> None:

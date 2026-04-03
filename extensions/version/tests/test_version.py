@@ -5,6 +5,15 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
+from pystac.errors import DeprecatedWarning, ExtensionTypeError
+from pystac.extensions.version import (
+    DEPRECATED,
+    VERSION,
+    VersionExtension,
+    VersionRelType,
+    ignore_deprecated,
+)
+
 from pystac import (
     Asset,
     Catalog,
@@ -14,14 +23,6 @@ from pystac import (
     Item,
     SpatialExtent,
     TemporalExtent,
-)
-from pystac.errors import DeprecatedWarning, ExtensionTypeError
-from pystac.extensions.version import (
-    DEPRECATED,
-    VERSION,
-    VersionExtension,
-    VersionRelType,
-    ignore_deprecated,
 )
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
