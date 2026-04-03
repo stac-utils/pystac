@@ -167,6 +167,7 @@ ignore_missing_imports = true
 [tool.ruff]
 line-length = 88
 lint.select = ["E", "F", "I"]
+lint.isort.known-first-party = ["pystac"]
 
 [tool.pytest.ini_options]
 filterwarnings = ["error"]
