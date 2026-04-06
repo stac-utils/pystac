@@ -1,9 +1,10 @@
 import json
 import os
+import re
 from datetime import datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Any, cast
+from typing import Any
 
 import pytest
 
@@ -128,9 +129,14 @@ def test_target_getter_setter(item: pystac.Item) -> None:
     link.set_href("./dead/d011.json")
     assert link.target == item  # target remains unchanged
     assert link.get_href() == "./dead/d011.json"  # href is updated
-    assert (
-        link.target.get_self_href() == "file:///bad/beef.json"
-    )  # set_href doesn't update target
+
+    expected_pattern_ltsh = r"file://([A-Z]:)?/bad/beef.json"
+    actual_ltsh = link.target.get_self_href()
+    # windows compatible absolute url regular expression.
+    # set_href doesn't update target, but self_href is mutated to be absolute.
+    assert actual_ltsh and re.match(expected_pattern_ltsh, actual_ltsh), (
+        f"{actual_ltsh} does not match {expected_pattern_ltsh}"
+    )
 
 
 def test_get_target_str_no_href(item: Item) -> None:
