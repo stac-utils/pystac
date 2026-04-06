@@ -9,7 +9,7 @@ from typing import Any
 import pytest
 
 import pystac
-from pystac import Catalog, Collection, Extent, Item, Link, MediaType, RelType
+from pystac import Collection, Item, Link
 from pystac.errors import STACError
 from pystac.link import HIERARCHICAL_LINKS
 from pystac.utils import make_posix_style
@@ -24,14 +24,14 @@ TEST_DATETIME: datetime = datetime(2020, 3, 14, 16, 32)
 def test_path_like() -> None:
     rel = "some-rel"
     target = os.path.abspath("../elsewhere")
-    link = Link(rel, target)
+    link = pystac.Link(rel, target)
     assert os.fspath(link) == make_posix_style(target)
 
 
 def test_minimal(item: pystac.Item) -> None:
     rel = "my rel"
     target = "https://example.com/a/b"
-    link = Link(rel, target)
+    link = pystac.Link(rel, target)
     assert target == link.get_href()
     assert target == link.get_absolute_href()
 
@@ -59,7 +59,7 @@ def test_relative() -> None:
     rel = "my rel"
     target = "../elsewhere"
     mime_type = "example/stac_thing"
-    link = Link(
+    link = pystac.Link(
         rel, target, media_type=mime_type, title="a title", extra_fields={"a": "b"}
     )
     expected_dict = {
@@ -76,7 +76,7 @@ def test_relative() -> None:
 
 def test_link_does_not_fail_if_href_is_none(item: pystac.Item) -> None:
     """Test to ensure get_href does not fail when the href is None."""
-    catalog = Catalog(id="test", description="test desc")
+    catalog = pystac.Catalog(id="test", description="test desc")
     catalog.add_item(item)
     catalog.set_self_href("/some/href")
 
@@ -86,13 +86,13 @@ def test_link_does_not_fail_if_href_is_none(item: pystac.Item) -> None:
 
 
 def test_resolve_stac_object_no_root_and_target_is_item(item: pystac.Item) -> None:
-    link = Link("my rel", target=item)
+    link = pystac.Link("my rel", target=item)
     link.resolve_stac_object()
 
 
 @pytest.mark.skipif(os.name == "nt", reason="Non-windows test")
 def test_resolve_stac_object_throws_informative_error() -> None:
-    link = Link("root", target="/a/b/foo.json")
+    link = pystac.Link("root", target="/a/b/foo.json")
     with pytest.raises(
         STACError, match="HREF: '/a/b/foo.json' does not resolve to a STAC object"
     ):
@@ -100,19 +100,19 @@ def test_resolve_stac_object_throws_informative_error() -> None:
 
 
 def test_resolved_self_href() -> None:
-    catalog = Catalog(id="test", description="test desc")
+    catalog = pystac.Catalog(id="test", description="test desc")
     with TemporaryDirectory() as temporary_directory:
         catalog.normalize_and_save(temporary_directory)
         path = os.path.join(temporary_directory, "catalog.json")
-        catalog = Catalog.from_file(path)
-        link = catalog.get_single_link(RelType.SELF)
+        catalog = pystac.Catalog.from_file(path)
+        link = catalog.get_single_link(pystac.RelType.SELF)
         assert link
         link.resolve_stac_object()
         assert link.get_absolute_href() == make_posix_style(path)
 
 
 def test_target_getter_setter(item: pystac.Item) -> None:
-    link = Link("my rel", target="./foo/bar.json")
+    link = pystac.Link("my rel", target="./foo/bar.json")
     assert link.target == "./foo/bar.json"
     assert link.get_href() == "./foo/bar.json"
 
@@ -136,9 +136,9 @@ def test_target_getter_setter(item: pystac.Item) -> None:
     )
 
 
-def test_get_target_str_no_href(item: Item) -> None:
+def test_get_target_str_no_href(item: pystac.Item) -> None:
     item.remove_links("self")
-    link = Link("self", target=item)
+    link = pystac.Link("self", target=item)
     item.add_link(link)
     assert link.get_href() is None
 
@@ -161,33 +161,33 @@ def test_relative_self_href(item: pystac.Item) -> None:
 
 
 def test_auto_title_when_resolved(item: pystac.Item) -> None:
-    extent = Extent.from_items([item])
-    collection = Collection(
+    extent = pystac.Extent.from_items([item])
+    collection = pystac.Collection(
         id="my_collection",
         description="Test Collection",
         extent=extent,
         title="Collection Title",
     )
-    link = Link("my rel", target=collection)
+    link = pystac.Link("my rel", target=collection)
 
     assert collection.title == link.title
 
 
 def test_auto_title_not_found(item: pystac.Item) -> None:
-    extent = Extent.from_items([item])
-    collection = Collection(
+    extent = pystac.Extent.from_items([item])
+    collection = pystac.Collection(
         id="my_collection",
         description="Test Collection",
         extent=extent,
     )
-    link = Link("my rel", target=collection)
+    link = pystac.Link("my rel", target=collection)
 
     assert link.title is None
 
 
 def test_auto_title_is_serialized(item: pystac.Item) -> None:
-    extent = Extent.from_items([item])
-    collection = Collection(
+    extent = pystac.Extent.from_items([item])
+    collection = pystac.Collection(
         id="my_collection",
         description="Test Collection",
         extent=extent,
@@ -195,28 +195,28 @@ def test_auto_title_is_serialized(item: pystac.Item) -> None:
     )
     collection.set_self_href("file:///dev/null")
 
-    link = Link("my rel", target=collection)
+    link = pystac.Link("my rel", target=collection)
 
     assert link.to_dict().get("title") == collection.title
 
 
 def test_no_auto_title_if_not_resolved() -> None:
-    link = Link("my rel", target="https://www.some-domain.com/path/to/thing.txt")
+    link = pystac.Link("my rel", target="https://www.some-domain.com/path/to/thing.txt")
 
     assert link.title is None
 
 
 def test_title_as_init_argument(item: pystac.Item) -> None:
     link_title = "Link title"
-    extent = Extent.from_items([item])
-    collection = Collection(
+    extent = pystac.Extent.from_items([item])
+    collection = pystac.Collection(
         id="my_collection",
         description="Test Collection",
         extent=extent,
         title="Collection Title",
     )
     collection.set_self_href("file:///dev/null")
-    link = Link("my rel", title=link_title, target=collection)
+    link = pystac.Link("my rel", title=link_title, target=collection)
 
     assert link.title == link_title
     assert link.to_dict().get("title") == link_title
@@ -227,10 +227,10 @@ def test_serialize_link() -> None:
     title = "A Test Link"
     # Positional is lame
     # link = Link(RelType.SELF, None, href, MediaType.JSON, title)
-    link = Link(
-        rel=RelType.SELF,
+    link = pystac.Link(
+        rel=pystac.RelType.SELF,
         href=href,
-        media_type=MediaType.JSON,
+        media_type=pystac.MediaType.JSON,
         title=title,
     )
     link_dict = link.to_dict()
@@ -248,7 +248,7 @@ def test_static_from_dict_round_trip() -> None:
         {"rel": "r", "href": "t", "type": "a/b", "title": "t", "c": "d", "1": 2},
     ]
     for d in test_cases:
-        d2 = Link.from_dict(d).to_dict()
+        d2 = pystac.Link.from_dict(d).to_dict()
         assert d == d2
     d = {"rel": "self", "href": "t"}
     d2 = {"rel": "self", "href": "t"}
@@ -262,10 +262,8 @@ def test_static_from_dict_failures() -> None:
             Link.from_dict(d)
 
 
-def test_static_collection(
-    self_link_collection: pystac.Collection,
-) -> None:
-    link = Link.collection(self_link_collection)
+def test_static_collection(self_link_collection: Collection) -> None:
+    link = pystac.Link.collection(self_link_collection)
     expected = {
         "rel": "collection",
         "href": self_link_collection.get_self_href(),
@@ -274,8 +272,8 @@ def test_static_collection(
     assert expected == link.to_dict()
 
 
-def test_static_child(self_link_collection: pystac.Collection) -> None:
-    link = Link.child(self_link_collection)
+def test_static_child(self_link_collection: Collection) -> None:
+    link = pystac.Link.child(self_link_collection)
     expected = {
         "rel": "child",
         "href": self_link_collection.get_self_href(),
@@ -286,7 +284,7 @@ def test_static_child(self_link_collection: pystac.Collection) -> None:
 
 def test_static_canonical_item(item: pystac.Item) -> None:
     item.set_self_href("file:///bad/beef.json")
-    link = Link.canonical(item)
+    link = pystac.Link.canonical(item)
     expected = {
         "rel": "canonical",
         "href": item.get_self_href(),
@@ -295,8 +293,8 @@ def test_static_canonical_item(item: pystac.Item) -> None:
     assert expected == link.to_dict()
 
 
-def test_static_canonical_collection(self_link_collection: pystac.Collection) -> None:
-    link = Link.canonical(self_link_collection)
+def test_static_canonical_collection(self_link_collection: Collection) -> None:
+    link = pystac.Link.canonical(self_link_collection)
     expected = {
         "rel": "canonical",
         "href": self_link_collection.get_self_href(),
@@ -316,22 +314,22 @@ def test_inheritance_from_dict() -> None:
     assert isinstance(link, CustomLink)
 
 
-def test_inheritance_collection(collection: pystac.Collection) -> None:
+def test_inheritance_collection(collection: Collection) -> None:
     link = CustomLink.collection(collection)
     assert isinstance(link, CustomLink)
 
 
-def test_inheritance_child(collection: pystac.Collection) -> None:
+def test_inheritance_child(collection: Collection) -> None:
     link = CustomLink.child(collection)
     assert isinstance(link, CustomLink)
 
 
-def test_inheritance_canonical_item(item: pystac.Item) -> None:
+def test_inheritance_canonical_item(item: Item) -> None:
     link = CustomLink.canonical(item)
     assert isinstance(link, CustomLink)
 
 
-def test_inheritance_canonical_collection(collection: pystac.Collection) -> None:
+def test_inheritance_canonical_collection(collection: Collection) -> None:
     link = CustomLink.canonical(collection)
     assert isinstance(link, CustomLink)
 
