@@ -146,7 +146,6 @@ def test_get_target_str_no_href(item: Item) -> None:
     assert link.get_href() is None
 
 
-@pytest.mark.xfail(reason="self links are no longer populated by read_file")
 def test_relative_self_href(item: pystac.Item) -> None:
     with TemporaryDirectory() as temporary_directory:
         item.save_object(
