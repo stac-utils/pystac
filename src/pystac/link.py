@@ -6,10 +6,11 @@ from typing import TYPE_CHECKING, Any, Self, override
 
 from typing_extensions import deprecated
 
+import pystac
 from pystac.errors import STACError
 from pystac.media_type import MediaType
 from pystac.rel_type import RelType
-from pystac.utils import make_absolute_href, make_posix_style
+from pystac.utils import is_absolute_href, make_absolute_href, make_posix_style
 
 from .reader import Reader
 
@@ -202,6 +203,34 @@ class Link:
         if self.body is not None:
             data["body"] = self.body
         return data
+
+    def resolve_stac_object(self, start_href: str = "") -> Link:
+        """Resolves a STAC object from the HREF of this link, if the link is not
+        already resolved.
+
+        Args:
+            start_href : Optional string to put ahead of the href in this Link.
+
+        NOTE: This uses reader.DEFAULT_READER to read the HREF, if necessary.
+        """
+        if self._target:
+            return self
+        elif self._href:
+            # If it's a relative link, base it off the parent.
+            target_href = self._href
+            if not is_absolute_href(target_href):
+                target_href = make_absolute_href(self._href, start_href=start_href)
+            try:
+                obj = pystac.read_file(target_href)
+            except Exception as e:
+                raise STACError(
+                    f"HREF: '{target_href}' does not resolve to a STAC object"
+                ) from e
+            self._target = obj
+        else:
+            raise ValueError("Cannot resolve STAC object without a target")
+
+        return self
 
     @override
     def __repr__(self) -> str:

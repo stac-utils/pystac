@@ -85,13 +85,11 @@ def test_link_does_not_fail_if_href_is_none(item: pystac.Item) -> None:
     assert link.get_href() is None
 
 
-@pytest.mark.xfail(reason="STACObjects no longer have resolve_stac_object method")
 def test_resolve_stac_object_no_root_and_target_is_item(item: pystac.Item) -> None:
     link = Link("my rel", target=item)
     link.resolve_stac_object()
 
 
-@pytest.mark.xfail(reason="STACObjects no longer have resolve_stac_object method")
 @pytest.mark.skipif(os.name == "nt", reason="Non-windows test")
 def test_resolve_stac_object_throws_informative_error() -> None:
     link = Link("root", target="/a/b/foo.json")
@@ -101,7 +99,6 @@ def test_resolve_stac_object_throws_informative_error() -> None:
         link.resolve_stac_object()
 
 
-@pytest.mark.xfail(reason="STACObjects no longer have resolve_stac_object method")
 def test_resolved_self_href() -> None:
     catalog = Catalog(id="test", description="test desc")
     with TemporaryDirectory() as temporary_directory:
