@@ -12,6 +12,7 @@ from pystac import (
     Link,
     STACError,
 )
+from pystac.extensions.archive import ArchiveExtension
 from pystac.extensions.classification import ClassificationExtension
 from pystac.extensions.datacube import DatacubeExtension
 from pystac.extensions.eo import EOExtension

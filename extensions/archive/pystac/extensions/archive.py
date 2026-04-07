@@ -15,10 +15,6 @@ from pystac.extensions.hooks import ExtensionHooks
 
 T = TypeVar("T", pystac.Asset, item_assets.AssetDefinition)
 
-# For time being set the URL to repo location.
-# Later to be in standard location like
-# "https://stac-extensions.github.io/archive/v1.0.0/schema.json"
-
 SCHEMA_URI = (
     "https://stac-extensions.github.io/archive/v1.0.0/schema.json"
 )
