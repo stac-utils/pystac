@@ -6,7 +6,7 @@ from enum import StrEnum
 from typing import TYPE_CHECKING, Any, Protocol, override
 
 from .provider import Provider
-from .utils import datetime_to_str, str_to_datetime
+from .utils import from_datetime_str, to_datetime_str
 
 if TYPE_CHECKING:
     from .asset import Asset
@@ -71,38 +71,20 @@ class DateTime(Protocol):
     @property
     def datetime(self) -> dt.datetime | None:
         """See the Item Specification Fields for more information."""
-        value: str | None = self.extra_fields.get("datetime")
-        datetime: dt.datetime | None = None
-        if value is not None:
-            datetime = str_to_datetime(value)
-        return datetime
+        return self.extra_fields.get("datetime")
 
     @datetime.setter
     def datetime(self, value: str | dt.datetime | None) -> None:  # pyright: ignore[reportPropertyTypeMismatch]
-        datetime: str | None = None
-        if isinstance(value, str):
-            datetime = value
-        elif isinstance(value, dt.datetime):
-            datetime = datetime_to_str(value)
-        self.extra_fields["datetime"] = datetime
+        self.extra_fields["datetime"] = from_datetime_str(value)
 
     @property
     def created(self) -> dt.datetime | None:
         """Creation date and time of the corresponding STAC entity or Asset, in UTC."""
-        value: str | None = self.extra_fields.get("created")
-        datetime: dt.datetime | None = None
-        if value is not None:
-            datetime = str_to_datetime(value)
-        return datetime
+        return self.extra_fields.get("created")
 
     @created.setter
     def created(self, value: str | dt.datetime | None) -> None:  # pyright: ignore[reportPropertyTypeMismatch]
-        datetime: str | None = None
-        if isinstance(value, str):
-            datetime = value
-        elif isinstance(value, dt.datetime):
-            datetime = datetime_to_str(value)
-        self.extra_fields["created"] = datetime
+        self.extra_fields["created"] = from_datetime_str(value)
 
     @property
     def updated(self) -> dt.datetime | None:
@@ -110,56 +92,59 @@ class DateTime(Protocol):
         Date and time the corresponding STAC entity or Asset
         was updated last, in UTC.
         """
-        value: str | None = self.extra_fields.get("updated")
-        datetime: dt.datetime | None = None
-        if value is not None:
-            datetime = str_to_datetime(value)
-        return datetime
+        return self.extra_fields.get("updated")
 
     @updated.setter
     def updated(self, value: str | dt.datetime | None) -> None:  # pyright: ignore[reportPropertyTypeMismatch]
-        datetime: str | None = None
-        if isinstance(value, str):
-            datetime = value
-        elif isinstance(value, dt.datetime):
-            datetime = datetime_to_str(value)
-        self.extra_fields["updated"] = datetime
+        self.extra_fields["updated"] = from_datetime_str(value)
 
     @property
     def start_datetime(self) -> dt.datetime | None:
         """The first or start date and time for the resource, in UTC."""
-        value: str | None = self.extra_fields.get("start_datetime")
-        datetime: dt.datetime | None = None
-        if value is not None:
-            datetime = str_to_datetime(value)
-        return datetime
+        return self.extra_fields.get("start_datetime")
 
     @start_datetime.setter
     def start_datetime(self, value: str | dt.datetime | None) -> None:  # pyright: ignore[reportPropertyTypeMismatch]
-        datetime: str | None = None
-        if isinstance(value, str):
-            datetime = value
-        elif isinstance(value, dt.datetime):
-            datetime = datetime_to_str(value)
-        self.extra_fields["start_datetime"] = datetime
+        self.extra_fields["start_datetime"] = from_datetime_str(value)
 
     @property
     def end_datetime(self) -> dt.datetime | None:
         """The last or end date and time for the resource, in UTC."""
-        value: str | None = self.extra_fields.get("end_datetime")
-        datetime: dt.datetime | None = None
-        if value is not None:
-            datetime = str_to_datetime(value)
-        return datetime
+        return self.extra_fields.get("end_datetime")
 
     @end_datetime.setter
     def end_datetime(self, value: str | dt.datetime | None) -> None:  # pyright: ignore[reportPropertyTypeMismatch]
-        datetime: str | None = None
-        if isinstance(value, str):
-            datetime = value
-        elif isinstance(value, dt.datetime):
-            datetime = datetime_to_str(value)
-        self.extra_fields["end_datetime"] = datetime
+        self.extra_fields["end_datetime"] = from_datetime_str(value)
+
+    @staticmethod
+    def from_str(extra_fields: dict[str, Any]) -> dict[str, dt.datetime | None]:
+        """Create new dict with iso strings replaced by dt.datetimes"""
+        data: dict[str, dt.datetime | None] = {}
+        for field in (
+            "datetime",
+            "created",
+            "updated",
+            "start_datetime",
+            "end_datetime",
+        ):
+            if field in extra_fields:
+                data[field] = from_datetime_str(extra_fields[field])
+        return data
+
+    @staticmethod
+    def to_str(extra_fields: dict[str, Any]) -> dict[str, str | None]:
+        """Create new dict with dt.datetimes replaced by iso strings"""
+        data: dict[str, str | None] = {}
+        for field in (
+            "datetime",
+            "created",
+            "updated",
+            "start_datetime",
+            "end_datetime",
+        ):
+            if field in extra_fields:
+                data[field] = to_datetime_str(extra_fields[field])
+        return data
 
 
 class Licensing(Protocol):
@@ -387,6 +372,7 @@ class CommonMetadata(Basics, DateTime, Licensing, Providers, Instrument, DataVal
 
     def __init__(self, /, object: Asset | Item):
         self.object = object
+        self.extra_fields.update(DateTime.from_str(self.extra_fields))
 
     @property
     @override

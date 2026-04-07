@@ -22,7 +22,7 @@ from .constants import DEFAULT_LICENSE, DEFAULT_STAC_VERSION, STAC_OBJECT_TYPE
 from .container import Container
 from .link import Link
 from .provider import Provider
-from .utils import datetime_to_str
+from .utils import to_datetime_str
 
 if TYPE_CHECKING:
     from .item import Item
@@ -428,12 +428,3 @@ def to_interval(interval: list[dt.datetime | str | None]) -> list[str | None]:
     if len(interval) != 2:
         raise ValueError("Interval must have exactly two elements")
     return [to_datetime_str(interval[0]), to_datetime_str(interval[1])]
-
-
-def to_datetime_str(datetime: dt.datetime | str | None) -> str | None:
-    if datetime is None:
-        return None
-    elif isinstance(datetime, str):
-        return datetime
-    else:
-        return datetime_to_str(datetime)
