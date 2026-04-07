@@ -1,11 +1,11 @@
-# pystac-ext-file
+# pystac-ext-archive
 
-[PySTAC](https://pypi.org/project/pystac/) extension package for the [File Info Extension](https://github.com/stac-extensions/file).
-This extension provides fields for describing file details such as byte order, checksum, header size, and data type for assets.
+[PySTAC](https://pypi.org/project/pystac/) extension package for the [Archive Extension](https://github.com/stac-extensions/archive).
+This extension provides fields for describing archive details such as href, format, start and end for assets.
 
 ## Supported versions
 
-- [v2.1.0](https://stac-extensions.github.io/file/v2.1.0/schema.json)
+- [v2.1.0](https://stac-extensions.github.io/archive/v1.0.0/schema.json)
 
 ## Versioning
 

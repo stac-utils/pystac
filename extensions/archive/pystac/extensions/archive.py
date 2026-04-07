@@ -20,7 +20,7 @@ T = TypeVar("T", pystac.Asset, item_assets.AssetDefinition)
 # "https://stac-extensions.github.io/archive/v1.0.0/schema.json"
 
 SCHEMA_URI = (
-    "https://github.com/stac-extensions/archive/blob/main/json-schema/schema.json"
+    "https://stac-extensions.github.io/archive/v1.0.0/schema.json"
 )
 PREFIX: str = "archive:"
 

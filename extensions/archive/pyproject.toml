@@ -1,11 +1,11 @@
 [project]
-name = "pystac-ext-file"
-description = "File extension for PySTAC"
+name = "pystac-ext-archive"
+description = "Archive extension for PySTAC"
 readme = "README.md"
 version = "2.1.0"
 authors = []
 maintainers = []
-keywords = ["pystac", "imagery", "raster", "catalog", "STAC", "file"]
+keywords = ["pystac", "imagery", "raster", "catalog", "STAC", "archive"]
 license = { text = "Apache-2.0" }
 classifiers = [
     "Development Status :: 5 - Production/Stable",
