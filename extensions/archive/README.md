@@ -5,7 +5,7 @@ This extension provides fields for describing archive details such as href, form
 
 ## Supported versions
 
-- [v2.1.0](https://stac-extensions.github.io/archive/v1.0.0/schema.json)
+- [v1.0.0](https://stac-extensions.github.io/archive/v1.0.0/schema.json)
 
 ## Versioning
 
