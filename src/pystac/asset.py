@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Protocol, override
 from typing_extensions import deprecated
 
 from .band import Band
-from .common_metadata import DataValue, Instrument
+from .common_metadata import DataValue, DateTime, Instrument
 from .media_type import MediaType
 from .utils import (
     get_absolute_href,
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from .stac_object import STACObject
 
 
-class ItemAsset(DataValue, Instrument):
+class ItemAsset(DateTime, DataValue, Instrument):
     def __init__(
         self,
         *,
@@ -41,6 +41,7 @@ class ItemAsset(DataValue, Instrument):
         else:
             self.bands = None
         self.extra_fields: dict[str, Any] = kwargs
+        self.extra_fields.update(DateTime.from_str(kwargs))
 
     @override
     def __eq__(self, other: Any) -> bool:
@@ -71,6 +72,7 @@ class ItemAsset(DataValue, Instrument):
 
     def to_dict(self) -> dict[str, Any]:
         data: dict[str, Any] = copy.deepcopy(self.extra_fields)
+        data.update(DateTime.to_str(self.extra_fields))
         data["title"] = self.title
         data["description"] = self.description
         data["type"] = self.type
