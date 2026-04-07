@@ -9,6 +9,9 @@
     "core": {
       "component": "pystac-core"
     },
+    "extensions/archive": {
+      "component": "pystac-ext-archive"
+    },
     "extensions/classification": {
       "component": "pystac-ext-classification"
     },

@@ -22,6 +22,7 @@ exclude-newer-span = "P10D"
 members = [
     "pystac",
     "pystac-core",
+    "pystac-ext-archive",
     "pystac-ext-classification",
     "pystac-ext-datacube",
     "pystac-ext-eo",
@@ -3657,6 +3658,7 @@ version = "1.14.3"
 source = { editable = "." }
 dependencies = [
     { name = "pystac-core" },
+    { name = "pystac-ext-archive" },
     { name = "pystac-ext-classification" },
     { name = "pystac-ext-datacube" },
     { name = "pystac-ext-eo" },
@@ -3764,6 +3766,7 @@ requires-dist = [
     { name = "jsonschema", marker = "extra == 'validation'", specifier = "~=4.18" },
     { name = "orjson", marker = "extra == 'orjson'", specifier = ">=3.5" },
     { name = "pystac-core", editable = "core" },
+    { name = "pystac-ext-archive", editable = "extensions/archive" },
     { name = "pystac-ext-classification", editable = "extensions/classification" },
     { name = "pystac-ext-datacube", editable = "extensions/datacube" },
     { name = "pystac-ext-eo", editable = "extensions/eo" },
@@ -3867,6 +3870,17 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [{ name = "python-dateutil", specifier = ">=2.7.0" }]
+
+[[package]]
+name = "pystac-ext-archive"
+version = "1.0.0"
+source = { editable = "extensions/archive" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
 
 [[package]]
 name = "pystac-ext-classification"
