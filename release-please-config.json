@@ -4,76 +4,100 @@
   "packages": {
     ".": {
       "changelog-path": "CHANGELOG.md",
-      "component": "pystac"
+      "component": "pystac",
+      "prerelease-type": "rc"
     },
     "core": {
-      "component": "pystac-core"
+      "component": "pystac-core",
+      "prerelease-type": "rc"
     },
     "extensions/classification": {
-      "component": "pystac-ext-classification"
+      "component": "pystac-ext-classification",
+      "prerelease-type": "rc"
     },
     "extensions/datacube": {
-      "component": "pystac-ext-datacube"
+      "component": "pystac-ext-datacube",
+      "prerelease-type": "rc"
     },
     "extensions/eo": {
-      "component": "pystac-ext-eo"
+      "component": "pystac-ext-eo",
+      "prerelease-type": "rc"
     },
     "extensions/file": {
-      "component": "pystac-ext-file"
+      "component": "pystac-ext-file",
+      "prerelease-type": "rc"
     },
     "extensions/grid": {
-      "component": "pystac-ext-grid"
+      "component": "pystac-ext-grid",
+      "prerelease-type": "rc"
     },
     "extensions/item_assets": {
-      "component": "pystac-ext-item-assets"
+      "component": "pystac-ext-item-assets",
+      "prerelease-type": "rc"
     },
     "extensions/label": {
-      "component": "pystac-ext-label"
+      "component": "pystac-ext-label",
+      "prerelease-type": "rc"
     },
     "extensions/mgrs": {
-      "component": "pystac-ext-mgrs"
+      "component": "pystac-ext-mgrs",
+      "prerelease-type": "rc"
     },
     "extensions/mlm": {
-      "component": "pystac-ext-mlm"
+      "component": "pystac-ext-mlm",
+      "prerelease-type": "rc"
     },
     "extensions/pointcloud": {
-      "component": "pystac-ext-pointcloud"
+      "component": "pystac-ext-pointcloud",
+      "prerelease-type": "rc"
     },
     "extensions/projection": {
-      "component": "pystac-ext-projection"
+      "component": "pystac-ext-projection",
+      "prerelease-type": "rc"
     },
     "extensions/raster": {
-      "component": "pystac-ext-raster"
+      "component": "pystac-ext-raster",
+      "prerelease-type": "rc"
     },
     "extensions/render": {
-      "component": "pystac-ext-render"
+      "component": "pystac-ext-render",
+      "prerelease-type": "rc"
     },
     "extensions/sar": {
-      "component": "pystac-ext-sar"
+      "component": "pystac-ext-sar",
+      "prerelease-type": "rc"
     },
     "extensions/sat": {
-      "component": "pystac-ext-sat"
+      "component": "pystac-ext-sat",
+      "prerelease-type": "rc"
     },
     "extensions/scientific": {
-      "component": "pystac-ext-scientific"
+      "component": "pystac-ext-scientific",
+      "prerelease-type": "rc"
     },
     "extensions/storage": {
-      "component": "pystac-ext-storage"
+      "component": "pystac-ext-storage",
+      "prerelease-type": "rc"
     },
     "extensions/table": {
-      "component": "pystac-ext-table"
+      "component": "pystac-ext-table",
+      "prerelease-type": "rc"
     },
     "extensions/timestamps": {
-      "component": "pystac-ext-timestamps"
+      "component": "pystac-ext-timestamps",
+      "prerelease-type": "rc"
     },
     "extensions/version": {
-      "component": "pystac-ext-version"
+      "component": "pystac-ext-version",
+      "prerelease-type": "rc"
     },
     "extensions/view": {
-      "component": "pystac-ext-view"
+      "component": "pystac-ext-view",
+      "prerelease-type": "rc"
     },
     "extensions/xarray_assets": {
-      "component": "pystac-ext-xarray-assets"
+      "component": "pystac-ext-xarray-assets",
+      "prerelease-type": "rc"
     }
   },
   "plugins": [
