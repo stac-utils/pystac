@@ -1,28 +1,34 @@
+"""Tests for pystac.tests.extensions.archive."""
+
 import json
 import random
+from pathlib import Path
+from typing import Any
 
 import pytest
 
 import pystac
-from pystac import Asset, Collection, ExtensionTypeError, Item
 from pystac.extensions.archive import ArchiveExtension
+from pystac import Asset, Collection, Item
+from pystac.errors import ExtensionTypeError
 from pystac.extensions.eo import Band
-from tests.utils import TestCases, assert_to_from_dict
+from tests.utils import assert_to_from_dict
 
+DATA_FILES = Path(__file__).resolve().parent / "data-files"
 
 @pytest.fixture
 def example_item_uri() -> str:
-    return TestCases.get_path("data-files/archive/example-Item.json")
+    return str(DATA_FILES / "example-Item.json")
 
 
 @pytest.fixture
 def example_empty_item_uri() -> str:
-    return TestCases.get_path("data-files/archive/example-empty-Item.json")
+    return str(DATA_FILES / "example-empty-Item.json")
 
 
 @pytest.fixture
 def example_collection_uri() -> str:
-    return TestCases.get_path("data-files/archive/example-Collection.json")
+    return str(DATA_FILES / "example-Collection.json")
 
 
 @pytest.fixture
@@ -40,9 +46,7 @@ def archive_item(example_item_uri: str) -> Item:
 
 @pytest.fixture
 def archive_collection() -> Collection:
-    test_collection_uri = TestCases.get_path(
-        "data-files/archive/example-Collection.json"
-    )
+    test_collection_uri = str(DATA_FILES / "example-Collection.json")
     test_collection = pystac.Collection.from_file(test_collection_uri)
     return test_collection
 
@@ -243,9 +247,7 @@ def test_summaries_bands(archive_collection: Collection) -> None:
 
 
 def test_item_apply() -> None:
-    example_empty_item_uri = TestCases.get_path(
-        "data-files/archive/example-empty-Item.json"
-    )
+    example_empty_item_uri = str(DATA_FILES / "example-empty-Item.json")
     example_empty_item = pystac.Item.from_file(example_empty_item_uri)
     asset = example_empty_item.assets["example"]
 
