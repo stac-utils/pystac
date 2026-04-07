@@ -12,6 +12,7 @@ from .utils import (
     get_absolute_href,
     is_absolute_href,
     make_absolute_href,
+    make_posix_style,
     make_relative_href,
 )
 from .writer import Writer
@@ -108,12 +109,14 @@ class Asset(ItemAsset):
     def update_hrefs(
         assets: dict[str, Asset], start_href: str | None, end_href: str | None
     ) -> None:
-        if start_href and end_href:
-            for asset in assets.values():
-                if not is_absolute_href(asset.href):
+        for asset in assets.values():
+            if not is_absolute_href(asset.href):
+                if start_href and end_href:
                     asset.href = make_relative_href(
                         make_absolute_href(asset.href, start_href), end_href
                     )
+                else:
+                    asset.href = make_posix_style(asset.href)
 
     def set_owner(self, owner: STACObject | None) -> None:
         self.owner = owner

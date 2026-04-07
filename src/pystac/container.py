@@ -40,6 +40,9 @@ class Container(STACObject, ABC):
                 if isinstance(stac_object, Container):
                     yield from stac_object.get_items(*ids, recursive=True)
 
+    def get_item(self, id: str, recursive: bool = False) -> Item | None:
+        return next(self.get_items(id, recursive=recursive), None)
+
     def get_item_links(self) -> list[Link]:
         return [link for link in self.links if link.is_item()]
 
