@@ -357,7 +357,7 @@ class _AssetExt(_AssetsExt[U]):
     @property
     def archive(self) -> ArchiveExtension[U]:
         return ArchiveExtension.ext(self.stac_object)
-    
+
     @property
     def classification(self) -> ClassificationExtension[U]:
         return ClassificationExtension.ext(self.stac_object)

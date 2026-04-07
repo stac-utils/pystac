@@ -3,18 +3,18 @@
 import json
 import random
 from pathlib import Path
-from typing import Any
 
 import pytest
 
 import pystac
-from pystac.extensions.archive import ArchiveExtension
 from pystac import Asset, Collection, Item
 from pystac.errors import ExtensionTypeError
+from pystac.extensions.archive import ArchiveExtension
 from pystac.extensions.eo import Band
 from tests.utils import assert_to_from_dict
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
+
 
 @pytest.fixture
 def example_item_uri() -> str:

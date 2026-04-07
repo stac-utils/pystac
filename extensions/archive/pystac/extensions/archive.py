@@ -15,9 +15,7 @@ from pystac.extensions.hooks import ExtensionHooks
 
 T = TypeVar("T", pystac.Asset, item_assets.AssetDefinition)
 
-SCHEMA_URI = (
-    "https://stac-extensions.github.io/archive/v1.0.0/schema.json"
-)
+SCHEMA_URI = "https://stac-extensions.github.io/archive/v1.0.0/schema.json"
 PREFIX: str = "archive:"
 
 # Field names
