@@ -2,7 +2,6 @@ from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-from urllib.request import Request
 
 import pytest
 from dateutil.parser import parse
@@ -67,29 +66,6 @@ def assert_to_from_dict(
     _parse_times(d1)
     _parse_times(d2)
     assert d1 == d2
-
-
-@pytest.fixture(scope="module")
-def vcr_config() -> dict[str, Any]:
-    def scrub_response_headers(response: dict[str, Any]) -> dict[str, Any]:
-        retain = ["location"]
-        response["headers"] = {
-            key: value
-            for (key, value) in response["headers"].items()
-            if key.lower() in retain
-        }
-        return response
-
-    def scrub_request_headers(request: Request) -> Request:
-        drop = ["User-Agent"]
-        for header in drop:
-            request.headers.pop(header, None)
-        return request
-
-    return {
-        "before_record_response": scrub_response_headers,
-        "before_record_request": scrub_request_headers,
-    }
 
 
 @pytest.fixture
