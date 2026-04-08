@@ -1,5 +1,6 @@
 {
   "release-type": "python",
+  "versioning": "prerelease",
   "prerelease": true,
   "packages": {
     ".": {
