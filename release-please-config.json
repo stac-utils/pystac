@@ -12,6 +12,9 @@
       "component": "pystac-core",
       "prerelease-type": "rc"
     },
+    "extensions/archive": {
+      "component": "pystac-ext-archive"
+    },
     "extensions/classification": {
       "component": "pystac-ext-classification",
       "prerelease-type": "rc"

@@ -1,0 +1,109 @@
+interactions:
+- request:
+    body: null
+    headers:
+      User-Agent:
+      - pystac/1.14.2
+    method: GET
+    uri: https://stac-extensions.github.io/archive/v1.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/archive/v1.0.0/schema.json#\",\n  \"title\":
+        \"Archive Extension\",\n  \"description\": \"STAC Archive Extension for STAC
+        Items and STAC Collections.\",\n  \"type\": \"object\",\n  \"required\": [\n
+        \   \"stac_extensions\"\n  ],\n  \"properties\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"array\",\n      \"contains\": {\n        \"const\": \"https://stac-extensions.github.io/archive/v1.0.0/schema.json\"\n
+        \     }\n    }\n  },\n  \"oneOf\": [\n    {\n      \"type\": \"object\",\n
+        \     \"required\": [\n        \"type\",\n        \"assets\"\n      ],\n      \"properties\":
+        {\n        \"type\": {\n          \"const\": \"Feature\"\n        },\n        \"assets\":
+        {\n          \"type\": \"object\",\n          \"additionalProperties\": {\n
+        \           \"$ref\": \"#/definitions/archive\"\n          }\n        },\n
+        \       \"links\": {\n          \"type\": \"array\",\n          \"items\":
+        {\n            \"$ref\": \"#/definitions/archive\"\n          }\n        }\n
+        \     }\n    },\n    {\n      \"type\": \"object\",\n      \"required\": [\n
+        \       \"type\"\n      ],\n      \"properties\": {\n        \"type\": {\n
+        \         \"const\": \"Collection\"\n        },\n        \"assets\": {\n          \"type\":
+        \"object\",\n          \"additionalProperties\": {\n            \"$ref\":
+        \"#/definitions/archive\"\n          }\n        },\n        \"item_assets\":
+        {\n          \"type\": \"object\",\n          \"additionalProperties\": {\n
+        \           \"$ref\": \"#/definitions/archive-item-assets\"\n          }\n
+        \       },\n        \"links\": {\n          \"type\": \"array\",\n          \"items\":
+        {\n            \"$ref\": \"#/definitions/archive\"\n          }\n        }\n
+        \     }\n    },\n    {\n      \"type\": \"object\",\n      \"required\": [\n
+        \       \"type\",\n        \"links\"\n      ],\n      \"properties\": {\n
+        \       \"type\": {\n          \"const\": \"Catalog\"\n        },\n        \"links\":
+        {\n          \"type\": \"array\",\n          \"items\": {\n            \"$ref\":
+        \"#/definitions/archive\"\n          }\n        }\n      }\n    }\n  ],\n
+        \ \"definitions\": {\n    \"archive\": {\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"archive\": {\n          \"type\": \"array\",\n          \"minItems\":
+        1,\n          \"items\": {\n            \"type\": \"object\",\n            \"required\":
+        [\n              \"href\"\n            ],\n            \"allOf\": [\n              {\n
+        \               \"$ref\": \"#/definitions/archive-entry\"\n              },\n
+        \             {\n                \"$ref\": \"#/definitions/archive\"\n              }\n
+        \           ]\n          }\n        }\n      }\n    },\n    \"archive-item-assets\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"archive\":
+        {\n          \"type\": \"array\",\n          \"items\": {\n            \"type\":
+        \"object\",\n            \"required\": [\n              \"href\"\n            ],\n
+        \           \"allOf\": [\n              {\n                \"$ref\": \"#/definitions/archive-entry\"\n
+        \             },\n              {\n                \"$ref\": \"#/definitions/archive-item-assets\"\n
+        \             }\n            ]\n          }\n        }\n      }\n    },\n
+        \   \"archive-entry\": {\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"href\": {\n          \"type\": \"string\",\n          \"format\":
+        \"iri-reference\",\n          \"minLength\": 1\n        },\n        \"type\":
+        {\n          \"type\": \"string\"\n        },\n        \"roles\": {\n          \"type\":
+        \"array\",\n          \"items\": {\n            \"type\": \"string\"\n          }\n
+        \       },\n        \"range\": {\n          \"type\": \"array\",\n          \"items\":
+        {\n            \"type\": \"integer\",\n            \"minimum\": 0\n          },\n
+        \         \"minItems\": 2,\n          \"maxItems\": 2\n        },\n        \"title\":
+        {\n          \"type\": \"string\"\n        },\n        \"description\": {\n
+        \         \"type\": \"string\"\n        }\n      }\n    }\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '420'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '3619'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 06 Jan 2026 12:46:42 GMT
+      ETag:
+      - '"69453529-e23"'
+      Last-Modified:
+      - Fri, 19 Dec 2025 11:21:13 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - HIT
+      X-Cache-Hits:
+      - '1'
+      X-Fastly-Request-ID:
+      - 9e68d8fcd6dabdfb2307a999f001adc1e05b503b
+      X-GitHub-Request-Id:
+      - FEC5:1DBE02:B9D44E:BCD7A1:695C9C9B
+      X-Served-By:
+      - cache-fra-etou8220047-FRA
+      X-Timer:
+      - S1767703603.729869,VS0,VE2
+      expires:
+      - Tue, 06 Jan 2026 05:34:43 GMT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+version: 1
