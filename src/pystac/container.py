@@ -169,11 +169,12 @@ class Container(STACObject, ABC):
     def get_child(
         self, id: str, recursive: bool = False, sort_links_by_id: bool = True
     ) -> Container | None:
-        for child in self.get_children(
-            id, recursive=recursive, sort_links_by_id=sort_links_by_id
-        ):
-            if child.id == id:
-                return child
+        return next(
+            self.get_children(
+                id, recursive=recursive, sort_links_by_id=sort_links_by_id
+            ),
+            None,
+        )
 
     def get_children(
         self, *ids: str, recursive: bool = False, sort_links_by_id: bool = True
