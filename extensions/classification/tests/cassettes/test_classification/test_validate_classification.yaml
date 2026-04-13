@@ -547,4 +547,310 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: null
+    headers:
+      User-Agent:
+      - pystac/1.14.3
+    method: GET
+    uri: https://stac-extensions.github.io/raster/v1.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/raster/v1.0.0/schema.json#\",\n  \"title\":
+        \"raster Extension\",\n  \"description\": \"STAC Raster Extension for STAC
+        Items.\",\n  \"oneOf\": [\n    {\n      \"$comment\": \"This is the schema
+        for STAC extension raster in Items.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"assets\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Feature\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/assetfields\"\n              }\n            }\n          }\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    },\n    {\n      \"$comment\": \"This is the schema
+        for STAC Collections.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\"\n          ],\n
+        \         \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/assetfields\"\n              }\n            }\n          }\n
+        \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
+        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/raster/v1.0.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"assetfields\": {\n      \"type\":
+        \"object\",\n      \"properties\": {\n        \"raster:bands\": {\n          \"$ref\":
+        \"#/definitions/bands\"\n        }\n      },\n      \"patternProperties\":
+        {\n        \"^(?!raster:)\": {\n          \"$comment\": \"Above, change `template`
+        to the prefix of this extension\"\n        }\n      },\n      \"additionalProperties\":
+        false\n    },\n    \"bands\": {\n      \"title\": \"Bands\",\n      \"type\":
+        \"array\",\n      \"minItems\": 1,\n      \"items\": {\n        \"title\":
+        \"Band\",\n        \"type\": \"object\",\n        \"minProperties\": 1,\n
+        \       \"additionalProperties\": true,\n        \"properties\": {\n          \"data_type\":
+        {\n            \"title\": \"Data type of the band\",\n            \"type\":
+        \"string\",\n            \"enum\": [\n              \"int8\",\n              \"int16\",\n
+        \             \"int32\",\n              \"int64\",\n              \"uint8\",\n
+        \             \"uint16\",\n              \"uint32\",\n              \"uint64\",\n
+        \             \"float16\",\n              \"float32\",\n              \"float64\",\n
+        \             \"cint16\",\n              \"cint32\",\n              \"cfloat32\",\n
+        \             \"cfloat64\",\n              \"other\"\n            ]\n          },\n
+        \         \"unit\": {\n            \"title\": \"Unit denomination of the pixel
+        value\",\n            \"type\": \"string\"\n          },\n          \"bits_per_sample\":
+        {\n            \"title\": \"The actual number of bits used for this band\",\n
+        \           \"type\": \"integer\"\n          },\n          \"sampling\": {\n
+        \           \"title\": \"Pixel sampling in the band\",\n            \"type\":
+        \"string\",\n            \"enum\": [\n              \"area\",\n              \"point\"\n
+        \           ]\n          },\n          \"nodata\": {\n            \"title\":
+        \"No data pixel value\",\n            \"type\": \"number\"\n          },\n
+        \         \"scale\": {\n            \"title\": \"multiplicator factor of the
+        pixel value to transform into the value\",\n            \"type\": \"number\"\n
+        \         },\n          \"offset\": {\n            \"title\": \"number to
+        be added to the pixel value to transform into the value\",\n            \"type\":
+        \"number\"\n          },\n          \"spatial_resolution\": {\n            \"title\":
+        \"Average spatial resolution (in meters) of the pixels in the band\",\n            \"type\":
+        \"number\"\n          },\n          \"statistics\": {\n            \"title\":
+        \"Statistics\",\n            \"type\": \"object\",\n            \"minProperties\":
+        1,\n            \"additionalProperties\": false,\n            \"properties\":
+        {\n              \"mean\": {\n                \"title\": \"Mean value of all
+        the pixels in the band\",\n                \"type\": \"number\"\n              },\n
+        \             \"minimum\": {\n                \"title\": \"Minimum value of
+        all the pixels in the band\",\n                \"type\": \"number\"\n              },\n
+        \             \"maximum\": {\n                \"title\": \"Maximum value of
+        all the pixels in the band\",\n                \"type\": \"number\"\n              },\n
+        \             \"stddev\": {\n                \"title\": \"Standard deviation
+        value of all the pixels in the band\",\n                \"type\": \"number\"\n
+        \             },\n              \"valid_percent\": {\n                \"title\":
+        \"Percentage of valid (not nodata) pixel\",\n                \"type\": \"number\"\n
+        \             }\n            }\n          },\n          \"histogram\": {\n
+        \           \"title\": \"Histogram\",\n            \"type\": \"object\",\n
+        \           \"additionalItems\": false,\n            \"required\": [\n              \"count\",\n
+        \             \"min\",\n              \"max\",\n              \"buckets\"\n
+        \           ],\n            \"additionalProperties\": false,\n            \"properties\":
+        {\n              \"count\": {\n                \"title\": \"number of buckets\",\n
+        \               \"type\": \"number\"\n              },\n              \"min\":
+        {\n                \"title\": \"Minimum value of the buckets\",\n                \"type\":
+        \"number\"\n              },\n              \"max\": {\n                \"title\":
+        \"Maximum value of the buckets\",\n                \"type\": \"number\"\n
+        \             },\n              \"buckets\": {\n                \"title\":
+        \"distribution buckets\",\n                \"type\": \"array\",\n                \"minItems\":
+        3,\n                \"items\": {\n                  \"title\": \"number of
+        pixels in the bucket\",\n                  \"type\": \"integer\"\n                }\n
+        \             }\n            }\n          }\n        }\n      }\n    }\n  }\n}"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '5874'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Mon, 13 Apr 2026 16:05:04 GMT
+      ETag:
+      - '"69247cdb-16f2"'
+      Last-Modified:
+      - Mon, 24 Nov 2025 15:42:19 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Fastly-Request-ID:
+      - d0614e208a32e89e75775f36e59a246ba68ee86d
+      X-GitHub-Request-Id:
+      - 5158:168058:1084055:1106388:69DD142F
+      X-Served-By:
+      - cache-lcy-egml8630075-LCY
+      X-Timer:
+      - S1776096304.278196,VS0,VE99
+      expires:
+      - Mon, 13 Apr 2026 16:15:04 GMT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      User-Agent:
+      - pystac/1.14.3
+    method: GET
+    uri: https://stac-extensions.github.io/eo/v2.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/eo/v2.0.0/schema.json#\",\n  \"title\":
+        \"EO Extension\",\n  \"description\": \"STAC EO Extension for STAC Items and
+        STAC Collections.\",\n  \"type\": \"object\",\n  \"required\": [\"stac_extensions\",
+        \"type\"],\n  \"properties\": {\n    \"stac_extensions\": {\n      \"type\":
+        \"array\",\n      \"contains\": {\n        \"const\": \"https://stac-extensions.github.io/eo/v2.0.0/schema.json\"\n
+        \     }\n    }\n  },\n  \"allOf\": [\n    {\n      \"$comment\": \"Items\",\n
+        \     \"if\": {\n        \"properties\": {\n          \"type\": {\n            \"const\":
+        \"Feature\"\n          }\n        }\n      },\n      \"then\": {\n        \"allOf\":
+        [\n          {\n            \"properties\": {\n              \"properties\":
+        {\n                \"$ref\": \"#/definitions/validate_properties\"\n              }\n
+        \           }\n          },\n          {\n            \"$ref\": \"#/definitions/validate_assets\"\n
+        \         }\n        ],\n        \"anyOf\": [\n          {\n            \"required\":
+        [\"properties\"],\n            \"properties\": {\n              \"properties\":
+        {\n                \"$ref\": \"#/definitions/require_properties\"\n              }\n
+        \           }\n          },\n          {\n            \"$ref\": \"#/definitions/require_assets\"\n
+        \         }\n        ]\n      }\n    },\n    {\n      \"$comment\": \"Collections\",\n
+        \     \"if\": {\n        \"properties\": {\n          \"type\": {\n            \"const\":
+        \"Collection\"\n          }\n        }\n      },\n      \"then\": {\n        \"allOf\":
+        [\n          {\n            \"$ref\": \"#/definitions/validate_bands\"\n          },\n
+        \         {\n            \"$ref\": \"#/definitions/validate_assets\"\n          },\n
+        \         {\n            \"properties\": {\n              \"item_assets\":
+        {\n                \"additionalProperties\": {\n                  \"$ref\":
+        \"#/definitions/validate_properties\"\n                }\n              }\n
+        \           }\n          },\n          {\n            \"properties\": {\n
+        \             \"summaries\": {\n                \"type\": \"object\",\n                \"$comment\":
+        \"We can't properly validate summary objects types (min/max or schemas) yet.\",\n
+        \               \"allOf\": [\n                  {\n                    \"$ref\":
+        \"#/definitions/validate_bands\"\n                  },\n                  {\n
+        \                   \"properties\": {\n                      \"eo:cloud_cover\":
+        {\n                        \"type\": [\"array\", \"object\"],\n                        \"items\":
+        {\n                          \"$ref\": \"#/definitions/eo:cloud_cover\"\n
+        \                       }\n                      }\n                    }\n
+        \                 },\n                  {\n                    \"properties\":
+        {\n                      \"eo:snow_cover\": {\n                        \"type\":
+        [\"array\", \"object\"],\n                        \"items\": {\n                          \"$ref\":
+        \"#/definitions/eo:snow_cover\"\n                        }\n                      }\n
+        \                   }\n                  },\n                  {\n                    \"properties\":
+        {\n                      \"eo:common_name\": {\n                        \"type\":
+        [\"array\", \"object\"],\n                        \"items\": {\n                          \"$ref\":
+        \"#/definitions/eo:common_name\"\n                        }\n                      }\n
+        \                   }\n                  },\n                  {\n                    \"properties\":
+        {\n                      \"eo:center_wavelength\": {\n                        \"type\":
+        [\"array\", \"object\"],\n                        \"items\": {\n                          \"$ref\":
+        \"#/definitions/eo:center_wavelength\"\n                        }\n                      }\n
+        \                   }\n                  },\n                  {\n                    \"properties\":
+        {\n                      \"eo:full_width_half_max\": {\n                        \"type\":
+        [\"array\", \"object\"],\n                        \"items\": {\n                          \"$ref\":
+        \"#/definitions/eo:full_width_half_max\"\n                        }\n                      }\n
+        \                   }\n                  },\n                  {\n                    \"properties\":
+        {\n                      \"eo:solar_illumination\": {\n                        \"type\":
+        [\"array\", \"object\"],\n                        \"items\": {\n                          \"$ref\":
+        \"#/definitions/eo:solar_illumination\"\n                        }\n                      }\n
+        \                   }\n                  }\n                ]\n              }\n
+        \           }\n          }\n        ],\n        \"anyOf\": [\n          {\n
+        \           \"$ref\": \"#/definitions/require_in_bands\"\n          },\n          {\n
+        \           \"$ref\": \"#/definitions/require_assets\"\n          },\n          {\n
+        \           \"required\": [\"item_assets\"],\n            \"properties\":
+        {\n              \"item_assets\": {\n                \"$ref\": \"#/definitions/asset_contains\"\n
+        \             }\n            }\n          },\n          {\n            \"required\":
+        [\"summaries\"],\n            \"properties\": {\n              \"summaries\":
+        {\n                \"$ref\": \"#/definitions/require_properties\"\n              }\n
+        \           }\n          }\n        ]\n      }\n    }\n  ],\n  \"definitions\":
+        {\n    \"require_properties\": {\n      \"anyOf\": [\n        {\n          \"$ref\":
+        \"#/definitions/require_fields\"\n        },\n        {\n          \"$ref\":
+        \"#/definitions/require_in_bands\"\n        }\n      ]\n    },\n    \"validate_bands\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"bands\":
+        {\n          \"type\": \"array\",\n          \"items\": {\n            \"$ref\":
+        \"#/definitions/fields\"\n          }\n        }\n      }\n    },\n    \"validate_properties\":
+        {\n      \"allOf\": [\n        {\n          \"$ref\": \"#/definitions/fields\"\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/validate_bands\"\n
+        \       }\n      ]\n    },\n    \"require_assets\": {\n      \"required\":
+        [\"assets\"],\n      \"properties\": {\n        \"assets\": {\n          \"$ref\":
+        \"#/definitions/asset_contains\"\n        }\n      }\n    },\n    \"validate_assets\":
+        {\n      \"properties\": {\n        \"assets\": {\n          \"additionalProperties\":
+        {\n            \"$ref\": \"#/definitions/validate_properties\"\n          }\n
+        \       }\n      }\n    },\n    \"asset_contains\": {\n      \"type\": \"object\",\n
+        \     \"not\": {\n        \"additionalProperties\": {\n          \"not\":
+        {\n            \"$ref\": \"#/definitions/require_properties\"\n          }\n
+        \       }\n      }\n    },\n    \"require_in_bands\": {\n      \"required\":
+        [\"bands\"],\n      \"properties\": {\n        \"bands\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"$ref\": \"#/definitions/require_fields\"\n
+        \         }\n        }\n      }\n    },\n    \"require_fields\": {\n      \"anyOf\":
+        [\n        { \"required\": [\"eo:cloud_cover\"] },\n        { \"required\":
+        [\"eo:snow_cover\"] },\n        { \"required\": [\"eo:common_name\"] },\n
+        \       { \"required\": [\"eo:center_wavelength\"] },\n        { \"required\":
+        [\"eo:full_width_half_max\"] },\n        { \"required\": [\"eo:solar_illumination\"]
+        }\n      ]\n    },\n    \"fields\": {\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"eo:cloud_cover\": {\n          \"$ref\": \"#/definitions/eo:cloud_cover\"\n
+        \       },\n        \"eo:snow_cover\": {\n          \"$ref\": \"#/definitions/eo:snow_cover\"\n
+        \       },\n        \"eo:common_name\": {\n          \"$ref\": \"#/definitions/eo:common_name\"\n
+        \       },\n        \"eo:center_wavelength\": {\n          \"$ref\": \"#/definitions/eo:center_wavelength\"\n
+        \       },\n        \"eo:full_width_half_max\": {\n          \"$ref\": \"#/definitions/eo:full_width_half_max\"\n
+        \       },\n        \"eo:solar_illumination\": {\n          \"$ref\": \"#/definitions/eo:solar_illumination\"\n
+        \       }\n      },\n      \"patternProperties\": {\n        \"^(?!eo:)\":
+        {}\n      },\n      \"additionalProperties\": false\n    },\n    \"eo:cloud_cover\":
+        {\n      \"title\": \"Cloud Cover\",\n      \"type\": \"number\",\n      \"minimum\":
+        0,\n      \"maximum\": 100\n    },\n    \"eo:snow_cover\": {\n      \"title\":
+        \"Snow and Ice Cover\",\n      \"type\": \"number\",\n      \"minimum\": 0,\n
+        \     \"maximum\": 100\n    },\n    \"eo:common_name\": {\n      \"title\":
+        \"Common Name of the band\",\n      \"type\": \"string\",\n      \"enum\":
+        [\n        \"pan\",\n        \"coastal\",\n        \"blue\",\n        \"green\",\n
+        \       \"green05\",\n        \"yellow\",\n        \"red\",\n        \"rededge\",\n
+        \       \"rededge071\",\n        \"rededge075\",\n        \"rededge078\",\n
+        \       \"nir\",\n        \"nir08\",\n        \"nir09\",\n        \"cirrus\",\n
+        \       \"swir16\",\n        \"swir22\",\n        \"lwir\",\n        \"lwir11\",\n
+        \       \"lwir12\"\n      ]\n    },\n    \"eo:center_wavelength\": {\n      \"title\":
+        \"Center Wavelength\",\n      \"type\": \"number\",\n      \"minimumExclusive\":
+        0\n    },\n    \"eo:full_width_half_max\": {\n      \"title\": \"Full Width
+        Half Max (FWHM)\",\n      \"type\": \"number\",\n      \"minimumExclusive\":
+        0\n    },\n    \"eo:solar_illumination\": {\n      \"title\": \"Solar Illumination\",\n
+        \     \"type\": \"number\",\n      \"minimum\": 0\n    }\n  }\n}\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Age:
+      - '0'
+      Cache-Control:
+      - max-age=600
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '8621'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Mon, 13 Apr 2026 16:05:04 GMT
+      ETag:
+      - '"69247b92-21ad"'
+      Last-Modified:
+      - Mon, 24 Nov 2025 15:36:50 GMT
+      Server:
+      - GitHub.com
+      Strict-Transport-Security:
+      - max-age=31556952
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Fastly-Request-ID:
+      - 10be55f457b85bc304c74700dc42d060b2d2713b
+      X-GitHub-Request-Id:
+      - 44DE:16CC75:107C46C:10FE796:69DD142F
+      X-Served-By:
+      - cache-lcy-egml8630095-LCY
+      X-Timer:
+      - S1776096304.433239,VS0,VE96
+      expires:
+      - Mon, 13 Apr 2026 16:15:04 GMT
+      x-proxy-cache:
+      - MISS
+    status:
+      code: 200
+      message: OK
 version: 1

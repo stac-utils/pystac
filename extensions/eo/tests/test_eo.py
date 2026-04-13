@@ -5,9 +5,9 @@ import pytest
 from pytest_pystac.plugin import assert_to_from_dict
 
 import pystac
-from pystac import ExtensionTypeError, Item
+from pystac import Band, ExtensionTypeError, Item
 from pystac.errors import ExtensionNotImplemented, RequiredPropertyMissing
-from pystac.extensions.eo import PREFIX, SNOW_COVER_PROP, Band, EOExtension
+from pystac.extensions.eo import PREFIX, SNOW_COVER_PROP, EOExtension
 from pystac.extensions.projection import ProjectionExtension
 from pystac.summaries import RangeSummary
 from pystac.utils import get_opt

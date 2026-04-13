@@ -1,149 +1,165 @@
 {
+  "id": "eo-collection",
   "type": "Collection",
-  "id": "landsat-8-l1",
-  "stac_version": "1.1.0",
-  "description": "Landat 8 imagery radiometrically calibrated and orthorectified using gound points and Digital Elevation Model (DEM) data to correct relief displacement.",
-  "links": [
-    {
-      "rel": "child",
-      "href": "https://landsat-stac.s3.amazonaws.com/landsat-8-l1/paths/catalog.json"
-    }
-  ],
   "stac_extensions": [
-    "https://stac-extensions.github.io/eo/v1.1.0/schema.json"
+    "https://stac-extensions.github.io/eo/v2.0.0/schema.json"
   ],
-  "title": "Landsat 8 L1",
-  "keywords": [
-    "landsat"
-  ],
-  "providers": [
-    {
-      "name": "USGS",
-      "roles": [
-        "producer",
-        "licensor"
-      ],
-      "url": "https://landsat.usgs.gov/"
-    },
-    {
-      "name": "Planet Labs",
-      "roles": [
-        "processor"
-      ],
-      "url": "https://github.com/landsat-pds/landsat_ingestor"
-    },
-    {
-      "name": "AWS",
-      "roles": [
-        "host"
-      ],
-      "url": "https://landsatonaws.com/"
-    },
-    {
-      "name": "Development Seed",
-      "roles": [
-        "processor"
-      ],
-      "url": "https://developmentseed.org/"
-    }
-  ],
-  "summaries": {
-    "eo:bands": [
-      {
-        "name": "B1",
-        "common_name": "coastal",
-        "center_wavelength": 0.44,
-        "full_width_half_max": 0.02
-      },
-      {
-        "name": "B2",
-        "common_name": "blue",
-        "center_wavelength": 0.48,
-        "full_width_half_max": 0.06
-      },
-      {
-        "name": "B3",
-        "common_name": "green",
-        "center_wavelength": 0.56,
-        "full_width_half_max": 0.06
-      },
-      {
-        "name": "B4",
-        "common_name": "red",
-        "center_wavelength": 0.65,
-        "full_width_half_max": 0.04
-      },
-      {
-        "name": "B5",
-        "common_name": "nir",
-        "center_wavelength": 0.86,
-        "full_width_half_max": 0.03
-      },
-      {
-        "name": "B6",
-        "common_name": "swir16",
-        "center_wavelength": 1.6,
-        "full_width_half_max": 0.08
-      },
-      {
-        "name": "B7",
-        "common_name": "swir22",
-        "center_wavelength": 2.2,
-        "full_width_half_max": 0.2
-      },
-      {
-        "name": "B8",
-        "common_name": "pan",
-        "center_wavelength": 0.59,
-        "full_width_half_max": 0.18
-      },
-      {
-        "name": "B9",
-        "common_name": "cirrus",
-        "center_wavelength": 1.37,
-        "full_width_half_max": 0.02
-      },
-      {
-        "name": "B10",
-        "common_name": "lwir11",
-        "center_wavelength": 10.9,
-        "full_width_half_max": 0.8
-      },
-      {
-        "name": "B11",
-        "common_name": "lwir12",
-        "center_wavelength": 12,
-        "full_width_half_max": 1
-      }
-    ],
-    "eo:cloud_cover": {
-      "minimum": 0.0,
-      "maximum": 80.0
-    },
-    "eo:snow_cover": {
-      "minimum": 0.0,
-      "maximum": 80.0
-    }
-  },
+  "stac_version": "1.1.0",
+  "description": "A simple Collection demonstrating EO extension fields in a Collection.",
+  "title": "Simple EO Collection",
   "extent": {
     "spatial": {
       "bbox": [
         [
-          -180,
-          -90,
-          180,
-          90
+          172.91173669923782,
+          1.3438851951615003,
+          172.95469614953714,
+          1.3690476620161975
         ]
       ]
     },
     "temporal": {
       "interval": [
         [
-          "2013-06-01T00:00:00Z",
-          null
+          "2020-12-11T22:38:32.125Z",
+          "2020-12-14T18:02:31.437Z"
         ]
       ]
     }
   },
-  "license": "PDDL-1.0"
+  "license": "CC-BY-4.0",
+  "summaries": {
+    "platform": [
+      "cool_sat1",
+      "cool_sat2"
+    ],
+    "constellation": [
+      "ion"
+    ],
+    "instruments": [
+      "cool_sensor_v1",
+      "cool_sensor_v2"
+    ],
+    "eo:cloud_cover": {
+      "minimum": 0,
+      "maximum": 50
+    },
+    "bands": [
+      {
+        "name": "band1",
+        "eo:common_name": "blue",
+        "eo:center_wavelength": 0.47,
+        "eo:full_width_half_max": 0.07,
+        "eo:solar_illumination": 1959.66
+      },
+      {
+        "name": "band2",
+        "eo:common_name": "green",
+        "eo:center_wavelength": 0.56,
+        "eo:full_width_half_max": 0.08,
+        "eo:solar_illumination": 1823.24
+      },
+      {
+        "name": "band3",
+        "eo:common_name": "red",
+        "eo:center_wavelength": 0.645,
+        "eo:full_width_half_max": 0.09,
+        "eo:solar_illumination": 1512.06
+      },
+      {
+        "name": "band4",
+        "eo:common_name": "nir",
+        "eo:center_wavelength": 0.8,
+        "eo:full_width_half_max": 0.152,
+        "eo:solar_illumination": 1041.63
+      }
+    ]
+  },
+  "item_assets": {
+    "analytic": {
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "4-Band Analytic",
+      "roles": [
+        "data"
+      ],
+      "bands": [
+        {
+          "name": "band1",
+          "eo:common_name": "blue",
+          "eo:center_wavelength": 0.47,
+          "eo:full_width_half_max": 0.7,
+          "eo:solar_illumination": 1959.66
+        },
+        {
+          "name": "band2",
+          "eo:common_name": "green",
+          "eo:center_wavelength": 0.56,
+          "eo:full_width_half_max": 0.08,
+          "eo:solar_illumination": 1823.24
+        },
+        {
+          "name": "band3",
+          "common_name": "red",
+          "eo:center_wavelength": 0.645,
+          "eo:full_width_half_max": 0.9,
+          "eo:solar_illumination": 1512.06
+        },
+        {
+          "name": "band4",
+          "eo:common_name": "nir",
+          "eo:center_wavelength": 0.8,
+          "eo:full_width_half_max": 0.152,
+          "eo:solar_illumination": 1041.63
+        }
+      ]
+    },
+    "thumbnail": {
+      "title": "Thumbnail",
+      "type": "image/png",
+      "roles": [
+        "thumbnail"
+      ]
+    },
+    "visual": {
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "3-Band Visual",
+      "roles": [
+        "visual"
+      ],
+      "bands": [
+        {
+          "name": "band3",
+          "eo:common_name": "red",
+          "eo:center_wavelength": 0.645,
+          "eo:full_width_half_max": 0.09
+        },
+        {
+          "name": "band2",
+          "eo:common_name": "green",
+          "eo:center_wavelength": 0.56,
+          "eo:full_width_half_max": 0.08
+        },
+        {
+          "name": "band1",
+          "eo:common_name": "blue",
+          "eo:center_wavelength": 0.47,
+          "eo:full_width_half_max": 0.07
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "rel": "root",
+      "href": "./collection.json",
+      "type": "application/json",
+      "title": "Simple Example Collection"
+    },
+    {
+      "rel": "item",
+      "href": "./item.json",
+      "type": "application/geo+json",
+      "title": "20201211_223832_CS2"
+    }
+  ]
 }

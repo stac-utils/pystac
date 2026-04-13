@@ -7,7 +7,7 @@ from typing import Any, cast
 import pytest
 
 import pystac.errors
-from pystac import Asset, Collection, Item, ItemAssetDefinition
+from pystac import Asset, Collection, DataType, Item, ItemAssetDefinition
 from pystac.errors import STACError
 from pystac.extensions.classification import Classification
 from pystac.extensions.mlm import (
@@ -31,7 +31,6 @@ from pystac.extensions.mlm import (
     ValueScaling,
     ValueScalingType,
 )
-from pystac.extensions.raster import DataType
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger()

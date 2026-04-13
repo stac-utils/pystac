@@ -5,15 +5,12 @@ import pytest
 from pytest_pystac.plugin import assert_to_from_dict
 
 import pystac
-from pystac import ExtensionTypeError, Item
+from pystac import DataType, ExtensionTypeError, Item, NoDataStrings, Statistics
 from pystac.extensions.raster import (
-    DataType,
     Histogram,
-    NoDataStrings,
     RasterBand,
     RasterExtension,
     Sampling,
-    Statistics,
 )
 from pystac.utils import get_opt
 

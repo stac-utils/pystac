@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import Counter
 from collections.abc import Iterable
 from typing import (
     Any,
@@ -21,23 +22,28 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.summaries import RangeSummary
-from pystac.utils import get_required, map_opt
+from pystac.utils import StringEnum, get_required
 
 #: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Asset`,
 #: pr :class:`~pystac.ItemAssetDefinition`
-T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition)
+T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition, pystac.Band)
 
-SCHEMA_URI: str = "https://stac-extensions.github.io/eo/v1.1.0/schema.json"
+SCHEMA_URI: str = "https://stac-extensions.github.io/eo/v2.0.0/schema.json"
 SCHEMA_URIS: list[str] = [
+    "https://stac-extensions.github.io/eo/v1.1.0/schema.json",
     "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
     SCHEMA_URI,
 ]
 PREFIX: str = "eo:"
 
 # Field names
-BANDS_PROP: str = PREFIX + "bands"
+EOBANDS_PROP: str = PREFIX + "EObands"
 CLOUD_COVER_PROP: str = PREFIX + "cloud_cover"
 SNOW_COVER_PROP: str = PREFIX + "snow_cover"
+COMMON_NAME_PROP: str = PREFIX + "common_name"
+CENTER_WAVELENGTH_PROP: str = PREFIX + "center_wavelength"
+FULL_WIDTH_HALF_MAX_PROP: str = PREFIX + "full_width_half_max"
+SOLAR_ILLUMINATION_PROP: str = PREFIX + "solar_illumination"
 
 
 def validated_percentage(v: float | None) -> float | None:
@@ -48,242 +54,77 @@ def validated_percentage(v: float | None) -> float | None:
     return v
 
 
-class Band:
-    """Represents Band information attached to an Item that implements the eo extension.
+class EOCommonName(StringEnum):
+    PAN = "pan"
+    COASTAL = "coastal"
+    BLUE = "blue"
+    GREEN = "green"
+    GREEN05 = "green05"
+    YELLOW = "yellow"
+    RED = "red"
+    REDEDGE = "rededge"
+    REDEDGE071 = "rededge071"
+    REDEDGE075 = "rededge075"
+    REDEDGE078 = "rededge078"
+    NIR = "nir"
+    NIR08 = "nir08"
+    NIR09 = "nir09"
+    CIRRUS = "cirrus"
+    SWIR16 = "swir16"
+    SWIR22 = "swir22"
+    LWIR = "lwir"
+    LWIR11 = "lwir11"
+    LWIR12 = "lwir12"
 
-    Use :meth:`Band.create` to create a new Band.
+
+def band_range(common_name: EOCommonName) -> tuple[float, float] | None:
+    """Gets the band range for a common band name.
+    Args:
+        common_name : The common band name. Must be one of the :stac-ext:`list of
+            accepted common names <eo#common-band-names>`.
+    Returns:
+        Tuple[float, float] or None: The band range for this name as (min, max), or
+        None if this is not a recognized common name.
     """
+    name_to_range = {
+        "pan": (0.40, 1.00),
+        "coastal": (0.40, 0.45),
+        "blue": (0.45, 0.53),
+        "green": (0.51, 0.60),
+        "green05": (0.51, 0.55),
+        "yellow": (0.58, 0.62),
+        "red": (0.62, 0.69),
+        "rededge": (0.69, 0.79),
+        "rededge071": (0.69, 0.73),
+        "rededge075": (0.73, 0.76),
+        "rededge078": (0.76, 0.79),
+        "nir": (0.76, 1.00),
+        "nir08": (0.80, 0.90),
+        "nir09": (0.90, 1.00),
+        "cirrus": (1.35, 1.40),
+        "swir16": (1.55, 1.75),
+        "swir22": (2.08, 2.35),
+        "lwir": (10.4, 12.5),
+        "lwir11": (10.5, 11.5),
+        "lwir12": (11.5, 12.5),
+    }
 
-    properties: dict[str, Any]
+    return name_to_range.get(common_name)
 
-    def __init__(self, properties: dict[str, Any]) -> None:
-        self.properties = properties
 
-    def apply(
-        self,
-        name: str,
-        common_name: str | None = None,
-        description: str | None = None,
-        center_wavelength: float | None = None,
-        full_width_half_max: float | None = None,
-        solar_illumination: float | None = None,
-    ) -> None:
-        """
-        Sets the properties for this Band.
-
-        Args:
-            name : The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
-            common_name : The name commonly used to refer to the band to make it
-                easier to search for bands across instruments. See the :stac-ext:`list
-                of accepted common names <eo#common-band-names>`.
-            description : Description to fully explain the band.
-            center_wavelength : The center wavelength of the band, in micrometers (μm).
-            full_width_half_max : Full width at half maximum (FWHM). The width of the
-                band, as measured at half the maximum transmission, in micrometers (μm).
-            solar_illumination: The solar illumination of the band,
-                as measured at half the maximum transmission, in W/m2/micrometers.
-        """
-        self.name = name
-        self.common_name = common_name
-        self.description = description
-        self.center_wavelength = center_wavelength
-        self.full_width_half_max = full_width_half_max
-        self.solar_illumination = solar_illumination
-
-    @classmethod
-    def create(
-        cls,
-        name: str,
-        common_name: str | None = None,
-        description: str | None = None,
-        center_wavelength: float | None = None,
-        full_width_half_max: float | None = None,
-        solar_illumination: float | None = None,
-    ) -> Band:
-        """
-        Creates a new band.
-
-        Args:
-            name : The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
-            common_name : The name commonly used to refer to the band to make it easier
-                to search for bands across instruments. See the :stac-ext:`list of
-                accepted common names <eo#common-band-names>`.
-            description : Description to fully explain the band.
-            center_wavelength : The center wavelength of the band, in micrometers (μm).
-            full_width_half_max : Full width at half maximum (FWHM). The width of the
-                band, as measured at half the maximum transmission, in micrometers (μm).
-            solar_illumination: The solar illumination of the band,
-                as measured at half the maximum transmission, in W/m2/micrometers.
-        """
-        b = cls({})
-        b.apply(
-            name=name,
-            common_name=common_name,
-            description=description,
-            center_wavelength=center_wavelength,
-            full_width_half_max=full_width_half_max,
-            solar_illumination=solar_illumination,
-        )
-        return b
-
-    @property
-    def name(self) -> str:
-        """Get or sets the name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
-
-        Returns:
-            str
-        """
-        return cast(str, get_required(self.properties.get("name"), self, "name"))
-
-    @name.setter
-    def name(self, v: str) -> None:
-        self.properties["name"] = v
-
-    @property
-    def common_name(self) -> str | None:
-        """Get or sets the name commonly used to refer to the band to make it easier
-            to search for bands across instruments. See the :stac-ext:`list of accepted
-            common names <eo#common-band-names>`.
-
-        Returns:
-            Optional[str]
-        """
-        return self.properties.get("common_name")
-
-    @common_name.setter
-    def common_name(self, v: str | None) -> None:
-        if v is not None:
-            self.properties["common_name"] = v
-        else:
-            self.properties.pop("common_name", None)
-
-    @property
-    def description(self) -> str | None:
-        """Get or sets the description to fully explain the band. CommonMark 0.29
-        syntax MAY be used for rich text representation.
-
-        Returns:
-            str
-        """
-        return self.properties.get("description")
-
-    @description.setter
-    def description(self, v: str | None) -> None:
-        if v is not None:
-            self.properties["description"] = v
-        else:
-            self.properties.pop("description", None)
-
-    @property
-    def center_wavelength(self) -> float | None:
-        """Get or sets the center wavelength of the band, in micrometers (μm).
-
-        Returns:
-            float
-        """
-        return self.properties.get("center_wavelength")
-
-    @center_wavelength.setter
-    def center_wavelength(self, v: float | None) -> None:
-        if v is not None:
-            self.properties["center_wavelength"] = v
-        else:
-            self.properties.pop("center_wavelength", None)
-
-    @property
-    def full_width_half_max(self) -> float | None:
-        """Get or sets the full width at half maximum (FWHM). The width of the band,
-            as measured at half the maximum transmission, in micrometers (μm).
-
-        Returns:
-            [float]
-        """
-        return self.properties.get("full_width_half_max")
-
-    @full_width_half_max.setter
-    def full_width_half_max(self, v: float | None) -> None:
-        if v is not None:
-            self.properties["full_width_half_max"] = v
-        else:
-            self.properties.pop("full_width_half_max", None)
-
-    @property
-    def solar_illumination(self) -> float | None:
-        """Get or sets the solar illumination of the band,
-            as measured at half the maximum transmission, in W/m2/micrometers.
-
-        Returns:
-            [float]
-        """
-        return self.properties.get("solar_illumination")
-
-    @solar_illumination.setter
-    def solar_illumination(self, v: float | None) -> None:
-        if v is not None:
-            self.properties["solar_illumination"] = v
-        else:
-            self.properties.pop("solar_illumination", None)
-
-    def __repr__(self) -> str:
-        return f"<Band name={self.properties.get('name')}>"
-
-    def to_dict(self) -> dict[str, Any]:
-        """Returns this band as a dictionary.
-
-        Returns:
-            dict: The serialization of this Band.
-        """
-        return self.properties
-
-    @staticmethod
-    def band_range(common_name: str) -> tuple[float, float] | None:
-        """Gets the band range for a common band name.
-
-        Args:
-            common_name : The common band name. Must be one of the :stac-ext:`list of
-                accepted common names <eo#common-band-names>`.
-
-        Returns:
-            Tuple[float, float] or None: The band range for this name as (min, max), or
-            None if this is not a recognized common name.
-        """
-        name_to_range = {
-            "coastal": (0.40, 0.45),
-            "blue": (0.45, 0.50),
-            "green": (0.50, 0.60),
-            "red": (0.60, 0.70),
-            "yellow": (0.58, 0.62),
-            "pan": (0.50, 0.70),
-            "rededge": (0.70, 0.75),
-            "nir": (0.75, 1.00),
-            "nir08": (0.75, 0.90),
-            "nir09": (0.85, 1.05),
-            "cirrus": (1.35, 1.40),
-            "swir16": (1.55, 1.75),
-            "swir22": (2.10, 2.30),
-            "lwir": (10.5, 12.5),
-            "lwir11": (10.5, 11.5),
-            "lwir12": (11.5, 12.5),
-        }
-
-        return name_to_range.get(common_name)
-
-    @staticmethod
-    def band_description(common_name: str) -> str | None:
-        """Returns a description of the band for one with a common name.
-
-        Args:
-            common_name : The common band name. Must be one of the :stac-ext:`list of
-                accepted common names <eo#common-band-names>`.
-
-        Returns:
-            str or None: If a recognized common name, returns a description including
-            the band range. Otherwise, returns None.
-        """
-        r = Band.band_range(common_name)
-        if r is not None:
-            return f"Common name: {common_name}, Range: {r[0]} to {r[1]}"
-        return None
+def band_description(common_name: EOCommonName) -> str | None:
+    """Returns a description of the band for one with a common name.
+    Args:
+        common_name : The common band name. Must be one of the :stac-ext:`list of
+            accepted common names <eo#common-band-names>`.
+    Returns:
+        str or None: If a recognized common name, returns a description including
+        the band range. Otherwise, returns None.
+    """
+    r = band_range(common_name)
+    if r is not None:
+        return f"Common name: {common_name}, Range: {r[0]} to {r[1]}"
+    return None
 
 
 class EOExtension(
@@ -310,46 +151,39 @@ class EOExtension(
 
     def apply(
         self,
-        bands: list[Band] | None = None,
         cloud_cover: float | None = None,
         snow_cover: float | None = None,
+        # These are meant to be applied on a `pystac.Band` instance
+        common_name: EOCommonName | None = None,
+        center_wavelength: float | None = None,
+        full_width_half_max: float | None = None,
+        solar_illumination: float | None = None,
     ) -> None:
         """Applies Electro-Optical Extension properties to the extended
         :class:`~pystac.Item` or :class:`~pystac.Asset`.
 
         Args:
-            bands : A list of available bands where each item is a :class:`~Band`
-                object. If given, requires at least one band.
             cloud_cover : The estimate of cloud cover as a percentage
                 (0-100) of the entire scene. If not available the field should not
                 be provided.
             snow_cover : The estimate of snow cover as a percentage
                 (0-100) of the entire scene. If not available the field should not
                 be provided.
+            common_name : The name commonly used to refer to the band to make it
+                easier to search for bands across instruments. Must be an accepted
+                common name from `EOCommonName`
+            center_wavelength : The center wavelength of the band, in micrometers (μm).
+            full_width_half_max : Full width at half maximum (FWHM). The width of the
+                band, as measured at half the maximum transmission, in micrometers (μm).
+            solar_illumination : The solar illumination of the band, as measured at
+                half the maximum transmission, in W/m2/micrometers.
         """
-        self.bands = bands
         self.cloud_cover = validated_percentage(cloud_cover)
         self.snow_cover = validated_percentage(snow_cover)
-
-    @property
-    def bands(self) -> list[Band] | None:
-        """Gets or sets a list of available bands where each item is a :class:`~Band`
-        object (or ``None`` if no bands have been set). If not available the field
-        should not be provided.
-        """
-        return self._get_bands()
-
-    @bands.setter
-    def bands(self, v: list[Band] | None) -> None:
-        self._set_property(
-            BANDS_PROP, map_opt(lambda bands: [b.to_dict() for b in bands], v)
-        )
-
-    def _get_bands(self) -> list[Band] | None:
-        return map_opt(
-            lambda bands: [Band(b) for b in bands],
-            self._get_property(BANDS_PROP, list[dict[str, Any]]),
-        )
+        self.common_name = common_name
+        self.center_wavelength = center_wavelength
+        self.full_width_half_max = full_width_half_max
+        self.solar_illumination = solar_illumination
 
     @property
     def cloud_cover(self) -> float | None:
@@ -378,6 +212,75 @@ class EOExtension(
     @snow_cover.setter
     def snow_cover(self, v: float | None) -> None:
         self._set_property(SNOW_COVER_PROP, validated_percentage(v), pop_if_none=True)
+
+    # common_name
+    @property
+    def common_name(self) -> EOCommonName | None:
+        """The name commonly used to refer to the band to make it
+        easier to search for bands across instruments. Must be an accepted
+        common name from `EOCommonName`:
+
+        - pan
+        - coastal
+        - blue
+        - green
+        - green05
+        - yellow
+        - red
+        - rededge
+        - rededge071
+        - rededge075
+        - rededge078
+        - nir
+        - nir08
+        - nir09
+        - cirrus
+        - swir16
+        - swir22
+        - lwir
+        - lwir11
+        - lwir12
+
+        Raises:
+            pystac.ExtensionTypeError: _description_
+
+        Returns:
+            EOCommonName or None
+        """
+        return get_required(
+            self._get_property(COMMON_NAME_PROP, EOCommonName), self, COMMON_NAME_PROP
+        )
+
+    @common_name.setter
+    def common_name(self, v: EOCommonName | None) -> None:
+        self._set_property(COMMON_NAME_PROP, v, pop_if_none=True)
+
+    # center_wavelength
+    @property
+    def center_wavelength(self) -> float | None:
+        return self._get_property(CENTER_WAVELENGTH_PROP, float)
+
+    @center_wavelength.setter
+    def center_wavelength(self, v: float | None) -> None:
+        self._set_property(CENTER_WAVELENGTH_PROP, v, pop_if_none=True)
+
+    # full_width_half_max
+    @property
+    def full_width_half_max(self) -> float | None:
+        return self._get_property(FULL_WIDTH_HALF_MAX_PROP, float)
+
+    @full_width_half_max.setter
+    def full_width_half_max(self, v: float | None) -> None:
+        self._set_property(FULL_WIDTH_HALF_MAX_PROP, v, pop_if_none=True)
+
+    # solar_illumination
+    @property
+    def solar_illumination(self) -> float | None:
+        return self._get_property(SOLAR_ILLUMINATION_PROP, float)
+
+    @solar_illumination.setter
+    def solar_illumination(self, v: float | None) -> None:
+        self._set_property(SOLAR_ILLUMINATION_PROP, v, pop_if_none=True)
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -414,6 +317,9 @@ class EOExtension(
         elif isinstance(obj, pystac.ItemAssetDefinition):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(EOExtension[T], ItemAssetsEOExtension(obj))
+        elif isinstance(obj, pystac.Band):
+            # Band doesn't need owners, for now
+            return cast(EOExtension[T], BandEOExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
@@ -445,52 +351,42 @@ class ItemEOExtension(EOExtension[pystac.Item]):
         self.item = item
         self.properties = item.properties
 
-    def _get_bands(self) -> list[Band] | None:
+    def _get_bands(self) -> list[pystac.Band] | None:
         """Get or sets a list of :class:`~pystac.Band` objects that represent
         the available bands.
         """
-        bands = self._get_property(BANDS_PROP, list[dict[str, Any]])
-
-        # get assets with eo:bands even if not in item
-        if bands is None:
-            asset_bands: list[dict[str, Any]] = []
-            for _, value in self.item.get_assets().items():
-                if BANDS_PROP in value.extra_fields:
-                    asset_bands.extend(
-                        cast(list[dict[str, Any]], value.extra_fields.get(BANDS_PROP))
-                    )
-            if any(asset_bands):
-                bands = asset_bands
-
-        if bands is not None:
-            return [Band(b) for b in bands]
-        return None
+        return self.item.common_metadata.bands
 
     def get_assets(
         self,
         name: str | None = None,
         common_name: str | None = None,
     ) -> dict[str, pystac.Asset]:
-        """Get the item's assets where eo:bands are defined.
+        """Get the item's assets where eo:EObands are defined.
 
         Args:
             name: If set, filter the assets such that only those with a
-                matching ``eo:band.name`` are returned.
+                matching ``eo:EOband.name`` are returned.
             common_name: If set, filter the assets such that only those with a matching
-                ``eo:band.common_name`` are returned.
+                ``eo:EOband.common_name`` are returned.
 
         Returns:
             Dict[str, Asset]: A dictionary of assets that match ``name``
                 and/or ``common_name`` if set or else all of this item's assets were
-                eo:bands are defined.
+                bands are defined.
         """
+
         kwargs = {"name": name, "common_name": common_name}
         return {
             key: asset
             for key, asset in self.item.get_assets().items()
-            if BANDS_PROP in asset.extra_fields
+            if asset.common_metadata.bands
             and all(
-                v is None or any(v == b.get(k) for b in asset.extra_fields[BANDS_PROP])
+                v is None
+                or (
+                    asset.common_metadata.bands is not None  # If not undeclared
+                    and any(v == getattr(b, k) for b in asset.common_metadata.bands)
+                )
                 for k, v in kwargs.items()
             )
         }
@@ -518,19 +414,23 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
 
-    def _get_bands(self) -> list[Band] | None:
-        if BANDS_PROP not in self.properties:
+    def _get_bands(self) -> list[pystac.Band] | None:
+        if "bands" not in self.properties:
             return None
         return list(
             map(
-                lambda band: Band(band),
-                cast(list[dict[str, Any]], self.properties.get(BANDS_PROP)),
+                lambda band: pystac.Band.from_dict(band),
+                cast(list[dict[str, Any]], self.properties.get("bands")),
             )
         )
 
     def __init__(self, asset: pystac.Asset):
         self.asset_href = asset.href
         self.properties = asset.extra_fields
+        if asset.common_metadata.bands is not None:
+            self.properties["bands"] = [
+                b.to_dict() for b in asset.common_metadata.bands
+            ]
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
 
@@ -538,17 +438,96 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
         return f"<AssetEOExtension Asset href={self.asset_href}>"
 
 
+class BandEOExtension(EOExtension[pystac.Band]):
+    def __init__(self, band: pystac.Band) -> None:
+        self.band_name = band.name
+        self.description = band.description
+        self.properties = band.extra_fields
+
+    def __repr__(self) -> str:
+        return f"<BandEOExtension Band name={self.band_name}>"
+
+    # common_name
+    @property
+    def common_name(self) -> EOCommonName | None:
+        """The name commonly used to refer to the band to make it
+        easier to search for bands across instruments. Must be an accepted
+        common name from `EOCommonName`:
+
+        - pan
+        - coastal
+        - blue
+        - green
+        - green05
+        - yellow
+        - red
+        - rededge
+        - rededge071
+        - rededge075
+        - rededge078
+        - nir
+        - nir08
+        - nir09
+        - cirrus
+        - swir16
+        - swir22
+        - lwir
+        - lwir11
+        - lwir12
+
+        Raises:
+            pystac.ExtensionTypeError: _description_
+
+        Returns:
+            EOCommonName or None
+        """
+        return get_required(
+            self._get_property(COMMON_NAME_PROP, EOCommonName), self, COMMON_NAME_PROP
+        )
+
+    @common_name.setter
+    def common_name(self, v: EOCommonName | None) -> None:
+        self._set_property(COMMON_NAME_PROP, v, pop_if_none=True)
+
+    # center_wavelength
+    @property
+    def center_wavelength(self) -> float | None:
+        return self._get_property(CENTER_WAVELENGTH_PROP, float)
+
+    @center_wavelength.setter
+    def center_wavelength(self, v: float | None) -> None:
+        self._set_property(CENTER_WAVELENGTH_PROP, v, pop_if_none=True)
+
+    # full_width_half_max
+    @property
+    def full_width_half_max(self) -> float | None:
+        return self._get_property(FULL_WIDTH_HALF_MAX_PROP, float)
+
+    @full_width_half_max.setter
+    def full_width_half_max(self, v: float | None) -> None:
+        self._set_property(FULL_WIDTH_HALF_MAX_PROP, v, pop_if_none=True)
+
+    # solar_illumination
+    @property
+    def solar_illumination(self) -> float | None:
+        return self._get_property(SOLAR_ILLUMINATION_PROP, float)
+
+    @solar_illumination.setter
+    def solar_illumination(self, v: float | None) -> None:
+        self._set_property(SOLAR_ILLUMINATION_PROP, v, pop_if_none=True)
+
+
 class ItemAssetsEOExtension(EOExtension[pystac.ItemAssetDefinition]):
     properties: dict[str, Any]
     asset_defn: pystac.ItemAssetDefinition
 
-    def _get_bands(self) -> list[Band] | None:
-        if BANDS_PROP not in self.properties:
+    def _get_bands(self) -> list[pystac.Band] | None:
+        if "bands" not in self.properties:
             return None
         return list(
             map(
-                lambda band: Band(band),
-                cast(list[dict[str, Any]], self.properties.get(BANDS_PROP)),
+                lambda band: pystac.Band.from_dict(band),
+                cast(list[dict[str, Any]], self.properties.get("bands")),
             )
         )
 
@@ -562,21 +541,6 @@ class SummariesEOExtension(SummariesExtension):
     that extends the ``summaries`` field of a :class:`~pystac.Collection` to include
     properties defined in the :stac-ext:`Electro-Optical Extension <eo>`.
     """
-
-    @property
-    def bands(self) -> list[Band] | None:
-        """Get or sets the summary of :attr:`EOExtension.bands` values
-        for this Collection.
-        """
-
-        return map_opt(
-            lambda bands: [Band(b) for b in bands],
-            self.summaries.get_list(BANDS_PROP),
-        )
-
-    @bands.setter
-    def bands(self, v: list[Band] | None) -> None:
-        self._set_summary(BANDS_PROP, map_opt(lambda x: [b.to_dict() for b in x], v))
 
     @property
     def cloud_cover(self) -> RangeSummary[float] | None:
@@ -691,17 +655,99 @@ class EOExtensionHooks(ExtensionHooks):
                 obj["properties"]["gsd"] = obj["properties"]["eo:gsd"]
                 del obj["properties"]["eo:gsd"]
 
-            # The way bands were declared in assets changed.
+            # The way EObands were declared in assets changed.
             # In 1.0.0-beta.1 they are inlined into assets as
             # opposed to having indices back into a property-level array.
             if "eo:bands" in obj["properties"]:
-                bands = obj["properties"]["eo:bands"]
+                eo_bands = obj["properties"]["eo:bands"]
                 for asset in obj["assets"].values():
                     if "eo:bands" in asset:
-                        new_bands: list[dict[str, Any]] = []
+                        new_eo_bands: list[dict[str, Any]] = []
                         for band_index in asset["eo:bands"]:
-                            new_bands.append(bands[band_index])
-                        asset["eo:bands"] = new_bands
+                            new_eo_bands.append(eo_bands[band_index])
+                        asset["eo:bands"] = new_eo_bands
+
+        # Bands moved to common metadata
+        if version < "2.0.0":
+            if "eo:bands" in obj["properties"]:
+                old_bands = obj["properties"]["eo:bands"]
+                to_be_renamed = [
+                    "common_name",
+                    "center_wavelength",
+                    "full_width_half_max",
+                    "solar_illumination",
+                ]
+                if "bands" not in obj["properties"]:
+                    obj["properties"]["bands"] = [
+                        {
+                            PREFIX + k if k in to_be_renamed else k: v
+                            for k, v in band.items()
+                        }
+                        for band in old_bands
+                    ]
+
+                # Bands from Raster already exist and have been processed
+                elif "bands" in obj["properties"] and len(
+                    obj["properties"]["bands"]
+                ) == len(old_bands):
+                    for band, old_band in zip(obj["properties"]["bands"], old_bands):
+                        band.update(
+                            {
+                                PREFIX + k if k in to_be_renamed else k: v
+                                for k, v in old_band.items()
+                            }
+                        )
+
+                # If "band" has been instantiated before but needs an update
+                else:
+                    old_band_names = {band["name"] for band in old_bands}
+                    saw_band_names = set()
+
+                    for idx_band, band in enumerate(obj["properties"]["bands"]):
+                        band_name = band["name"]
+                        if band_name in old_band_names:
+                            saw_band_names.add(band_name)
+                            old_band = old_bands[old_band_names.index(band_name)]
+                            for k, v in old_band.items():
+                                new_k = PREFIX + k if k in to_be_renamed else k
+                                obj["properties"]["bands"][idx_band][new_k] = v
+
+                    # Add the bands that weren't seen
+                    obj["properties"]["bands"].extend(
+                        [
+                            {
+                                PREFIX + k if k in to_be_renamed else k: v
+                                for k, v in band.items()
+                            }
+                            for band in obj["properties"]["eo:bands"]
+                            if band["name"] not in saw_band_names
+                        ]
+                    )
+
+                del obj["properties"]["eo:bands"]
+                # Once "bands" is created, identify and remove duplicates
+                # Dominant element must be set on the property
+                # Minor elements can stay in the bands
+                n_elements = len(obj["properties"]["bands"])
+                counters = {PREFIX + eo_field: Counter() for eo_field in to_be_renamed}
+
+                for band in obj["properties"]["bands"]:
+                    for k in counters.keys():
+                        counters[k] += Counter([band[k]])
+
+                for k, v in counters.items():
+                    # Element is unique
+                    if len(counters[k]) == 1:
+                        obj["properties"][k] = list(v)[0]
+                        for band in obj["properties"]["bands"]:
+                            del band[k]
+                    # A dominant element is present
+                    elif 0 < len(counters[k]) < n_elements:
+                        dom_el = counters[k].most_common()[0][0]
+                        obj["properties"][k] = dom_el
+                        for band in obj["properties"]["bands"]:
+                            if band[k] != dom_el:
+                                del band[k]
 
         super().migrate(obj, version, info)
 

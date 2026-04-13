@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import Counter
 from collections.abc import Iterable
 from typing import (
     Any,
@@ -18,19 +19,34 @@ from pystac.extensions.base import (
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import StringEnum, get_opt, get_required, map_opt
+from pystac.serialization.identify import STACJSONDescription, STACVersionID
+from pystac.utils import StringEnum, get_opt, get_required
 
 #: Generalized version of :class:`~pystac.Asset` or
 #: :class:`~pystac.ItemAssetDefinition`
-T = TypeVar("T", pystac.Asset, pystac.ItemAssetDefinition)
+T = TypeVar("T", pystac.Asset, pystac.ItemAssetDefinition, pystac.Band)
 
-SCHEMA_URI = "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
+SCHEMA_URI = "https://stac-extensions.github.io/raster/v2.0.0/schema.json"
 SCHEMA_URIS = [
+    "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
     "https://stac-extensions.github.io/raster/v1.0.0/schema.json",
     SCHEMA_URI,
 ]
 SCHEMA_STARTWITH = "https://stac-extensions.github.io/raster/"
-BANDS_PROP = "raster:bands"
+
+# TO be removed - moved to pystac.Band
+RASTER_BANDS_PROP = "raster:bands"
+
+PREFIX: str = "raster:"
+
+# Field names
+# Can be used in Assets and Item properties
+SAMPLING_PROP = PREFIX + "sampling"
+BITS_PER_SAMPLE_PROP = PREFIX + "bits_per_sample"
+SPATIAL_RESOLUTION_PROP = PREFIX + "spatial_resolution"
+SCALE_PROP = PREFIX + "scale"
+OFFSET_PROP = PREFIX + "offset"
+HISTOGRAM_PROP = PREFIX + "histogram"
 
 
 class Sampling(StringEnum):
@@ -38,193 +54,7 @@ class Sampling(StringEnum):
     POINT = "point"
 
 
-class DataType(StringEnum):
-    INT8 = "int8"
-    INT16 = "int16"
-    INT32 = "int32"
-    INT64 = "int64"
-    UINT8 = "uint8"
-    UINT16 = "uint16"
-    UINT32 = "uint32"
-    UINT64 = "uint64"
-    FLOAT16 = "float16"
-    FLOAT32 = "float32"
-    FLOAT64 = "float64"
-    CINT16 = "cint16"
-    CINT32 = "cint32"
-    CFLOAT32 = "cfloat32"
-    CFLOAT64 = "cfloat64"
-    OTHER = "other"
-
-
-class NoDataStrings(StringEnum):
-    INF = "inf"
-    NINF = "-inf"
-    NAN = "nan"
-
-
-class Statistics:
-    """Represents statistics information attached to a band in the raster extension.
-
-    Use Statistics.create to create a new Statistics instance.
-    """
-
-    properties: dict[str, Any]
-
-    def __init__(self, properties: dict[str, float | None]) -> None:
-        self.properties = properties
-
-    def apply(
-        self,
-        minimum: float | None = None,
-        maximum: float | None = None,
-        mean: float | None = None,
-        stddev: float | None = None,
-        valid_percent: float | None = None,
-    ) -> None:
-        """
-        Sets the properties for this raster Band.
-
-        Args:
-            minimum : Minimum value of all the pixels in the band.
-            maximum : Maximum value of all the pixels in the band.
-            mean : Mean value of all the pixels in the band.
-            stddev : Standard Deviation value of all the pixels in the band.
-            valid_percent : Percentage of valid (not nodata) pixel.
-        """
-        self.minimum = minimum
-        self.maximum = maximum
-        self.mean = mean
-        self.stddev = stddev
-        self.valid_percent = valid_percent
-
-    @classmethod
-    def create(
-        cls,
-        minimum: float | None = None,
-        maximum: float | None = None,
-        mean: float | None = None,
-        stddev: float | None = None,
-        valid_percent: float | None = None,
-    ) -> Statistics:
-        """
-        Creates a new band.
-
-        Args:
-            minimum : Minimum value of all the pixels in the band.
-            maximum : Maximum value of all the pixels in the band.
-            mean : Mean value of all the pixels in the band.
-            stddev : Standard Deviation value of all the pixels in the band.
-            valid_percent : Percentage of valid (not nodata) pixel.
-        """
-        b = cls({})
-        b.apply(
-            minimum=minimum,
-            maximum=maximum,
-            mean=mean,
-            stddev=stddev,
-            valid_percent=valid_percent,
-        )
-        return b
-
-    @property
-    def minimum(self) -> float | None:
-        """Get or sets the minimum pixel value
-
-        Returns:
-            Optional[float]
-        """
-        return self.properties.get("minimum")
-
-    @minimum.setter
-    def minimum(self, v: float | None) -> None:
-        if v is not None:
-            self.properties["minimum"] = v
-        else:
-            self.properties.pop("minimum", None)
-
-    @property
-    def maximum(self) -> float | None:
-        """Get or sets the maximum pixel value
-
-        Returns:
-            Optional[float]
-        """
-        return self.properties.get("maximum")
-
-    @maximum.setter
-    def maximum(self, v: float | None) -> None:
-        if v is not None:
-            self.properties["maximum"] = v
-        else:
-            self.properties.pop("maximum", None)
-
-    @property
-    def mean(self) -> float | None:
-        """Get or sets the mean pixel value
-
-        Returns:
-            Optional[float]
-        """
-        return self.properties.get("mean")
-
-    @mean.setter
-    def mean(self, v: float | None) -> None:
-        if v is not None:
-            self.properties["mean"] = v
-        else:
-            self.properties.pop("mean", None)
-
-    @property
-    def stddev(self) -> float | None:
-        """Get or sets the standard deviation pixel value
-
-        Returns:
-            Optional[float]
-        """
-        return self.properties.get("stddev")
-
-    @stddev.setter
-    def stddev(self, v: float | None) -> None:
-        if v is not None:
-            self.properties["stddev"] = v
-        else:
-            self.properties.pop("stddev", None)
-
-    @property
-    def valid_percent(self) -> float | None:
-        """Get or sets the Percentage of valid (not nodata) pixel
-
-        Returns:
-            Optional[float]
-        """
-        return self.properties.get("valid_percent")
-
-    @valid_percent.setter
-    def valid_percent(self, v: float | None) -> None:
-        if v is not None:
-            self.properties["valid_percent"] = v
-        else:
-            self.properties.pop("valid_percent", None)
-
-    def to_dict(self) -> dict[str, Any]:
-        """Returns these statistics as a dictionary.
-
-        Returns:
-            dict: The serialization of the Statistics.
-        """
-        return self.properties
-
-    @staticmethod
-    def from_dict(d: dict[str, Any]) -> Statistics:
-        """Constructs a Statistics from a dict.
-
-        Returns:
-            Statistics: The Statistics deserialized from the JSON dict.
-        """
-        return Statistics(properties=d)
-
-
+# Renamed to raster:histogram
 class Histogram:
     """Represents pixel distribution information attached to a band in the raster
     extension.
@@ -361,6 +191,7 @@ class Histogram:
         return Histogram(properties=d)
 
 
+# Replace it with BandRasterExtension
 class RasterBand:
     """Represents a Raster Band information attached to an Item
     that implements the raster extension.
@@ -375,12 +206,12 @@ class RasterBand:
 
     def apply(
         self,
-        nodata: float | NoDataStrings | None = None,
+        nodata: float | pystac.NoDataStrings | None = None,
         sampling: Sampling | None = None,
-        data_type: DataType | None = None,
+        data_type: pystac.DataType | None = None,
         bits_per_sample: float | None = None,
         spatial_resolution: float | None = None,
-        statistics: Statistics | None = None,
+        statistics: pystac.Statistics | None = None,
         unit: str | None = None,
         scale: float | None = None,
         offset: float | None = None,
@@ -425,12 +256,12 @@ class RasterBand:
     @classmethod
     def create(
         cls,
-        nodata: float | NoDataStrings | None = None,
+        nodata: float | pystac.NoDataStrings | None = None,
         sampling: Sampling | None = None,
-        data_type: DataType | None = None,
+        data_type: pystac.DataType | None = None,
         bits_per_sample: float | None = None,
         spatial_resolution: float | None = None,
-        statistics: Statistics | None = None,
+        statistics: pystac.Statistics | None = None,
         unit: str | None = None,
         scale: float | None = None,
         offset: float | None = None,
@@ -477,7 +308,7 @@ class RasterBand:
         return b
 
     @property
-    def nodata(self) -> float | NoDataStrings | None:
+    def nodata(self) -> float | pystac.NoDataStrings | None:
         """Get or sets the nodata pixel value
 
         Returns:
@@ -486,7 +317,7 @@ class RasterBand:
         return self.properties.get("nodata")
 
     @nodata.setter
-    def nodata(self, v: float | NoDataStrings | None) -> None:
+    def nodata(self, v: float | pystac.NoDataStrings | None) -> None:
         if v is not None:
             self.properties["nodata"] = v
         else:
@@ -511,7 +342,7 @@ class RasterBand:
             self.properties.pop("sampling", None)
 
     @property
-    def data_type(self) -> DataType | None:
+    def data_type(self) -> pystac.DataType | None:
         """Get or sets the data type of the band.
 
         Returns:
@@ -520,7 +351,7 @@ class RasterBand:
         return self.properties.get("data_type")
 
     @data_type.setter
-    def data_type(self, v: DataType | None) -> None:
+    def data_type(self, v: pystac.DataType | None) -> None:
         if v is not None:
             self.properties["data_type"] = v
         else:
@@ -560,17 +391,17 @@ class RasterBand:
             self.properties.pop("spatial_resolution", None)
 
     @property
-    def statistics(self) -> Statistics | None:
+    def statistics(self) -> pystac.Statistics | None:
         """Get or sets the average spatial resolution (in meters) of the pixels in the
         band.
 
         Returns:
             [Statistics]
         """
-        return Statistics.from_dict(get_opt(self.properties.get("statistics")))
+        return pystac.Statistics.from_dict(get_opt(self.properties.get("statistics")))
 
     @statistics.setter
-    def statistics(self, v: Statistics | None) -> None:
+    def statistics(self, v: pystac.Statistics | None) -> None:
         if v is not None:
             self.properties["statistics"] = v.to_dict()
         else:
@@ -679,35 +510,102 @@ class RasterExtension(
     properties: dict[str, Any]
     """The :class:`~pystac.Asset` fields, including extension properties."""
 
-    def apply(self, bands: list[RasterBand]) -> None:
+    def apply(
+        self,
+        sampling: Sampling | None = None,
+        bits_per_sample: float | None = None,
+        spatial_resolution: float | None = None,
+        scale: float | None = None,
+        offset: float | None = None,
+        histogram: Histogram | None = None,
+    ) -> None:
         """Applies raster extension properties to the extended :class:`pystac.Item` or
         :class:`pystac.Asset`.
 
         Args:
-            bands : a list of :class:`RasterBand` objects that represent
-                the available raster bands.
+            sampling: One of area or point. Indicates whether a pixel value
+                should be assumed to represent a sampling over the region of the
+                pixel or a point sample at the center of the pixel.
+            bits_per_sample: The actual number of bits used for this band. Normally
+                only present when the number of bits is non-standard for the
+                datatype, such as when a 1 bit TIFF is represented as byte.
+            spatial_resolution: Average spatial resolution (in meters) of the
+                pixels in the band.
+            scale: Multiplicator factor of the pixel value to transform into the
+                value (i.e. translate digital number to reflectance).
+            offset: Number to be added to the pixel value (after scaling) to
+                transform into the value (i.e. translate digital number to reflectance).
+            histogram: Histogram distribution information of the pixels values in the
+                band.
         """
-        self.bands = bands
+        self.sampling = sampling
+        self.bits_per_sample = bits_per_sample
+        self.spatial_resolution = spatial_resolution
+        self.scale = scale
+        self.offset = offset
+        self.histogram = histogram
+
+    # sampling
+    @property
+    def sampling(self) -> Sampling | None:
+        return self._get_property(SAMPLING_PROP, Sampling)
+
+    @sampling.setter
+    def sampling(self, v: Sampling | None) -> None:
+        self._set_property(SAMPLING_PROP, v, pop_if_none=True)
+
+    # bits_per_sample
+    @property
+    def bits_per_sample(self) -> float | None:
+        return self._get_property(BITS_PER_SAMPLE_PROP, float)
+
+    @bits_per_sample.setter
+    def bits_per_sample(self, v: float | None) -> None:
+        self._set_property(BITS_PER_SAMPLE_PROP, v, pop_if_none=True)
+
+    # spatial_resolution
+    @property
+    def spatial_resolution(self) -> float | None:
+        return self._get_property(SPATIAL_RESOLUTION_PROP, float)
+
+    @spatial_resolution.setter
+    def spatial_resolution(self, v: float | None) -> None:
+        self._set_property(SPATIAL_RESOLUTION_PROP, v, pop_if_none=True)
+
+    # scale
+    @property
+    def scale(self) -> float | None:
+        return self._get_property(SCALE_PROP, float)
+
+    @scale.setter
+    def scale(self, v: float | None) -> None:
+        self._set_property(SCALE_PROP, v, pop_if_none=True)
+
+    # offset
+    @property
+    def offset(self) -> float | None:
+        return self._get_property(OFFSET_PROP, float)
+
+    @offset.setter
+    def offset(self, v: float | None) -> None:
+        self._set_property(OFFSET_PROP, v, pop_if_none=True)
 
     @property
-    def bands(self) -> list[RasterBand] | None:
-        """Gets or sets a list of available bands where each item is a
-        :class:`~RasterBand` object (or ``None`` if no bands have been set). If not
-        available the field should not be provided.
+    def histogram(self) -> Histogram | None:
+        """Get or sets the histogram distribution information of the pixels values in
+        the STAC object.
+
+        Returns:
+            [Histogram]
         """
-        return self._get_bands()
+        return Histogram.from_dict(get_opt(self.properties.get("histogram")))
 
-    @bands.setter
-    def bands(self, v: list[RasterBand] | None) -> None:
-        self._set_property(
-            BANDS_PROP, map_opt(lambda bands: [b.to_dict() for b in bands], v)
-        )
-
-    def _get_bands(self) -> list[RasterBand] | None:
-        return map_opt(
-            lambda bands: [RasterBand(b) for b in bands],
-            self._get_property(BANDS_PROP, list[dict[str, Any]]),
-        )
+    @histogram.setter
+    def histogram(self, v: Histogram | None) -> None:
+        if v is not None:
+            self.properties["histogram"] = v.to_dict()
+        else:
+            self.properties.pop("histogram", None)
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -740,6 +638,9 @@ class RasterExtension(
         elif isinstance(obj, pystac.ItemAssetDefinition):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(RasterExtension[T], ItemAssetsRasterExtension(obj))
+        elif isinstance(obj, pystac.Band):
+            # No need to check for owner for now
+            return cast(RasterExtension[T], BandRasterExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
@@ -791,31 +692,119 @@ class ItemAssetsRasterExtension(RasterExtension[pystac.ItemAssetDefinition]):
         )
 
 
+class BandRasterExtension(RasterExtension[pystac.Band]):
+    def __init__(self, band: pystac.Band) -> None:
+        self.band_name = band.name
+        self.description = band.description
+        self.properties = band.extra_fields
+
+    def __repr__(self) -> str:
+        return f"<BandRasterExtension Band name={self.band_name}>"
+
+
 class SummariesRasterExtension(SummariesExtension):
     """A concrete implementation of :class:`~pystac.extensions.base.SummariesExtension`
     that extends the ``summaries`` field of a :class:`~pystac.Collection` to include
     properties defined in the :stac-ext:`Raster Extension <raster>`.
     """
 
-    @property
-    def bands(self) -> list[RasterBand] | None:
-        """Get or sets a list of :class:`RasterBand` objects that represent
-        the available bands.
-        """
-        return map_opt(
-            lambda bands: [RasterBand(b) for b in bands],
-            self.summaries.get_list(BANDS_PROP),
-        )
-
-    @bands.setter
-    def bands(self, v: list[RasterBand] | None) -> None:
-        self._set_summary(BANDS_PROP, map_opt(lambda x: [b.to_dict() for b in x], v))
+    pass
 
 
 class RasterExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: set[str] = {*[uri for uri in SCHEMA_URIS if uri != SCHEMA_URI]}
     stac_object_types = {pystac.STACObjectType.ITEM, pystac.STACObjectType.COLLECTION}
+
+    def migrate(
+        self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    ) -> None:
+
+        # Bands moved to common metadata
+        #
+        # Content proper to bands has been renamed as raster:<field>
+        # Fields affected: sampling, bits_per_sample, spatial_resolution, scale
+        # offset and histogram
+        #
+        # nodata, data_type, statistics and unit were not renamed, but have been moved
+        # to STAC common metadata
+        if version < "2.0.0":
+            # TODO: need to take care of the merge conflict
+            common_band_fields = ["name", "description"]
+            common_metadata_fields = ["nodata", "data_type", "statistics", "unit"]
+            to_be_renamed = [
+                "sampling",
+                "bits_per_sample",
+                "spatial_resolution",
+                "scale",
+                "offset",
+                "histogram",
+            ]
+
+            if (
+                info.object_type == pystac.STACObjectType.ITEM
+                and "raster:bands" in obj["properties"]
+            ):
+                old_bands = obj["properties"]["raster:bands"]
+                # Create the bands ; they won't have any names however
+                if "bands" not in obj["properties"]:
+                    obj["properties"]["bands"] = [
+                        {
+                            PREFIX + k if k in to_be_renamed else k: v
+                            for k, v in band.items()
+                            if k in to_be_renamed
+                            or k in common_band_fields
+                            or k in common_metadata_fields
+                        }
+                        for band in old_bands
+                    ]
+
+                # Bands from EO already exist and have a name
+                elif "bands" in obj["properties"] and len(
+                    obj["properties"]["bands"]
+                ) == len(old_bands):
+                    for band, old_band in zip(obj["properties"]["bands"], old_bands):
+                        band.update(
+                            {
+                                PREFIX + k if k in to_be_renamed else k: v
+                                for k, v in old_band.items()
+                                if k in to_be_renamed
+                                or k in common_band_fields
+                                or k in common_metadata_fields
+                            }
+                        )
+
+                del obj["properties"]["raster:bands"]
+                # Once "bands" is created, identify and remove duplicates
+                # Dominant element must be set on the property
+                # Minor elements can stay in the bands
+                n_elements = len(obj["properties"]["bands"])
+                counters = {
+                    PREFIX + raster_field: Counter() for raster_field in to_be_renamed
+                }
+                counters.update(
+                    {cm_field: Counter() for cm_field in common_metadata_fields}
+                )
+
+                for band in obj["properties"]["bands"]:
+                    for k in counters.keys():
+                        counters[k] += Counter([band[k]])
+
+                for k, v in counters.items():
+                    # Element is unique
+                    if len(counters[k]) == 1:
+                        obj["properties"][k] = list(v)[0]
+                        for band in obj["properties"]["bands"]:
+                            del band[k]
+                    # A dominant element is present
+                    elif 0 < len(counters[k]) < n_elements:
+                        dom_el = counters[k].most_common()[0][0]
+                        obj["properties"][k] = dom_el
+                        for band in obj["properties"]["bands"]:
+                            if band[k] != dom_el:
+                                del band[k]
+
+        return super().migrate(obj, version, info)
 
 
 RASTER_EXTENSION_HOOKS: ExtensionHooks = RasterExtensionHooks()
