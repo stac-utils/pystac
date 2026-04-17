@@ -24,6 +24,7 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = [
     "pystac-core==1.14.3",
+    "pystac-ext-cf",
     "pystac-ext-classification",
     "pystac-ext-datacube",
     "pystac-ext-eo",
@@ -135,6 +136,7 @@ strict = true
 exclude = ["conftest\\.py$"]
 mypy_path = [
     "core",
+    "extensions/cf",
     "extensions/classification",
     "extensions/datacube",
     "extensions/eo",
@@ -181,6 +183,7 @@ only-include = ["README.md"]
 
 [tool.uv.sources]
 pystac-core = { workspace = true }
+pystac-ext-cf = { workspace = true }
 pystac-ext-classification = { workspace = true }
 pystac-ext-datacube = { workspace = true }
 pystac-ext-eo = { workspace = true }
