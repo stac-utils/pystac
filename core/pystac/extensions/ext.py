@@ -501,3 +501,7 @@ class BandExt:
     @property
     def raster(self) -> RasterExtension[Band]:
         return RasterExtension.ext(self.stac_object)
+
+    @property
+    def classification(self) -> ClassificationExtension[Band]:
+        return ClassificationExtension.ext(self.stac_object)

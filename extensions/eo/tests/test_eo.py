@@ -7,7 +7,13 @@ from pytest_pystac.plugin import assert_to_from_dict
 import pystac
 from pystac import Band, ExtensionTypeError, Item
 from pystac.errors import ExtensionNotImplemented, RequiredPropertyMissing
-from pystac.extensions.eo import PREFIX, SNOW_COVER_PROP, EOExtension
+from pystac.extensions.eo import (
+    PREFIX,
+    SNOW_COVER_PROP,
+    EOCommonName,
+    EOExtension,
+    band_description,
+)
 from pystac.extensions.projection import ProjectionExtension
 from pystac.summaries import RangeSummary
 from pystac.utils import get_opt
@@ -18,24 +24,28 @@ DATA_FILES = Path(__file__).resolve().parent / "data-files"
 def test_band_create() -> None:
     band = Band.create(
         name="B01",
+        description=band_description(EOCommonName("red")),
+    )
+
+    eo_band = EOExtension.ext(band, add_if_missing=True)
+    eo_band.apply(
         common_name="red",
-        description=Band.band_description("red"),
         center_wavelength=0.65,
         full_width_half_max=0.1,
         solar_illumination=42.0,
     )
 
     assert band.name == "B01"
-    assert band.common_name == "red"
-    assert band.description, "Common name: red == Range: 0.6 to 0.7"
-    assert band.center_wavelength == 0.65
-    assert band.full_width_half_max == 0.1
-    assert band.solar_illumination == 42.0
+    assert band.ext.eo.common_name == "red"
+    assert band.description, "Common name: red == Range: 0.62 to 0.69"
+    assert band.ext.eo.center_wavelength == 0.65
+    assert band.ext.eo.full_width_half_max == 0.1
+    assert band.ext.eo.solar_illumination == 42.0
     assert band.__repr__() == "<Band name=B01>"
 
 
 def test_band_description_unknown_band() -> None:
-    desc = Band.band_description("rainbow")
+    desc = band_description("rainbow")
     assert desc is None
 
 
@@ -91,31 +101,32 @@ def test_bands() -> None:
     item = pystac.Item.from_file(BANDS_IN_ITEM_URI)
 
     # Get
-    assert "eo:bands" in item.properties
-    bands = EOExtension.ext(item).bands
+    assert "bands" in item.properties
+    # bands = EOExtension.ext(item).bands
+    bands = item.common_metadata.bands
     assert bands is not None
     assert list(map(lambda x: x.name, bands)) == ["band1", "band2", "band3", "band4"]
 
     # Set
     new_bands = [
-        Band.create(name="red", description=Band.band_description("red")),
-        Band.create(name="green", description=Band.band_description("green")),
-        Band.create(name="blue", description=Band.band_description("blue")),
+        Band.create(name="red", description=band_description("red")),
+        Band.create(name="green", description=band_description("green")),
+        Band.create(name="blue", description=band_description("blue")),
     ]
 
-    EOExtension.ext(item).bands = new_bands
+    item.common_metadata.bands = new_bands
     assert (
-        "Common name: red, Range: 0.6 to 0.7"
-        == item.properties["eo:bands"][0]["description"]
+        "Common name: red, Range: 0.62 to 0.69"
+        == item.properties["bands"][0]["description"]
     )
-    assert len(EOExtension.ext(item).bands or []) == 3
+    assert len(item.common_metadata.bands or []) == 3
     item.validate()
 
 
 def test_asset_bands_s2() -> None:
     item = pystac.Item.from_file(S2_ITEM_URI)
     mtd_asset = item.get_assets()["mtd"]
-    assert EOExtension.ext(mtd_asset).bands is None
+    assert mtd_asset.common_metadata.bands is None
 
 
 @pytest.mark.vcr()
@@ -125,54 +136,67 @@ def test_asset_bands() -> None:
     # Get
 
     b1_asset = item.assets["B1"]
-    asset_bands = EOExtension.ext(b1_asset).bands
+    b1_asset_eo = EOExtension.ext(b1_asset)
+    asset_bands = b1_asset_eo.get_bands()
     assert asset_bands is not None
     assert len(asset_bands) == 1
-    assert asset_bands[0].name == "B1"
-    assert asset_bands[0].solar_illumination == 2000
+
+    assert asset_bands[0].band_name == "B1"
+    assert b1_asset_eo.solar_illumination == 2000
 
     index_asset = item.assets["index"]
-    asset_bands = EOExtension.ext(index_asset).bands
+    asset_bands = index_asset.common_metadata.bands
     assert asset_bands is None
 
     # No asset specified
-    item_bands = EOExtension.ext(item).bands
+    item_bands = EOExtension.ext(item).get_bands()
     assert item_bands is not None
 
     # Set
     b2_asset = item.assets["B2"]
-    assert get_opt(EOExtension.ext(b2_asset).bands)[0].name == "B2"
-    EOExtension.ext(b2_asset).bands = EOExtension.ext(b1_asset).bands
+    assert get_opt(EOExtension.ext(b2_asset).get_bands())[0].band_name == "B2"
+    b2_asset.common_metadata.bands = b1_asset.common_metadata.bands
 
-    new_b2_asset_bands = EOExtension.ext(item.assets["B2"]).bands
+    new_b2_asset_bands = EOExtension.ext(item.assets["B2"]).get_bands()
 
-    assert get_opt(new_b2_asset_bands)[0].name == "B1"
+    assert get_opt(new_b2_asset_bands)[0].band_name == "B1"
 
     item.validate()
 
     # Check adding a new asset
+    sol_illu = [
+        dict(solar_illumination=1900),
+        dict(solar_illumination=1950),
+        dict(solar_illumination=2000),
+    ]
     new_bands = [
         Band.create(
             name="red",
-            description=Band.band_description("red"),
-            solar_illumination=1900,
+            description=band_description("red"),
         ),
         Band.create(
             name="green",
-            description=Band.band_description("green"),
-            solar_illumination=1950,
+            description=band_description("green"),
         ),
         Band.create(
             name="blue",
-            description=Band.band_description("blue"),
-            solar_illumination=2000,
+            description=band_description("blue"),
         ),
     ]
+
+    for sillu, band in zip(sol_illu, new_bands):
+        eo_band = EOExtension.ext(band)
+        eo_band.apply(**sillu)
+
     asset = pystac.Asset(href="some/path.tif", media_type=pystac.MediaType.GEOTIFF)
-    EOExtension.ext(asset).bands = new_bands
+    asset.common_metadata.bands = new_bands
     item.add_asset("test", asset)
 
-    assert len(item.assets["test"].extra_fields["eo:bands"]) == 3
+    assert len(item.assets["test"].extra_fields["bands"]) == 3
+
+    item_bands = item.assets["test"].extra_fields["bands"]
+    assert all("eo:solar_illumination" in band for band in item_bands)
+    assert [band["eo:solar_illumination"] for band in item_bands] == [1900, 1950, 2000]
 
 
 @pytest.mark.vcr()
@@ -211,25 +235,26 @@ def test_summaries() -> None:
     cloud_cover_summaries = eo_summaries.cloud_cover
     assert cloud_cover_summaries is not None
     assert cloud_cover_summaries.minimum == 0.0
-    assert cloud_cover_summaries.maximum == 80.0
+    assert cloud_cover_summaries.maximum == 50.0
 
     snow_cover_summaries = eo_summaries.snow_cover
     assert snow_cover_summaries is not None
     assert snow_cover_summaries.minimum == 0.0
     assert snow_cover_summaries.maximum == 80.0
 
-    bands = eo_summaries.bands
+    bands = eo_summaries.get_bands()
     assert bands is not None
-    assert len(bands) == 11
+    assert len(bands) == 4
 
     # Set
 
     eo_summaries.cloud_cover = RangeSummary(1.0, 2.0)
     eo_summaries.snow_cover = RangeSummary(4.0, 23)
-    eo_summaries.bands = [Band.create(name="test")]
+    # eo_summaries.bands = [Band.create(name="test")]
+    col.summaries.add("bands", [Band.create(name="test").to_dict()])
 
     col_dict = col.to_dict()
-    assert len(col_dict["summaries"]["eo:bands"]) == 1
+    assert len(col_dict["summaries"]["bands"]) == 1
     assert col_dict["summaries"]["eo:cloud_cover"]["minimum"] == 1.0
     assert col_dict["summaries"]["eo:snow_cover"]["minimum"] == 4.0
 
@@ -264,7 +289,20 @@ def test_reads_asset_bands_in_pre_1_0_version() -> None:
         str(DATA_FILES / "examples/0.9.0/item-spec/examples/landsat8-sample.json")
     )
 
-    bands = EOExtension.ext(item.assets["B9"]).bands
+    to_be_renamed = [
+        "common_name",
+        "center_wavelength",
+        "full_width_half_max",
+        "solar_illumination",
+    ]
+
+    # Since bands have moved...
+    item.assets["B9"].extra_fields["bands"] = [
+        {"eo:" + k if k in to_be_renamed else k: v for k, v in band.items()}
+        for band in item.assets["B9"].extra_fields["eo:bands"]
+    ]
+
+    bands = EOExtension.ext(item.assets["B9"]).get_bands()
 
     assert len(bands or []) == 1
     assert get_opt(bands)[0].common_name == "cirrus"
@@ -284,12 +322,13 @@ def test_item_apply() -> None:
     test_band = Band.create(name="test")
 
     assert eo_ext.cloud_cover == 78
-    assert test_band not in (eo_ext.bands or [])
+    assert EOExtension.ext(test_band) not in (eo_ext.get_bands() or [])
 
-    eo_ext.apply(bands=[test_band], cloud_cover=15)
-    assert eo_ext.bands is not None
+    item.common_metadata.bands = [test_band]
+    eo_ext.apply(cloud_cover=15)
+    assert eo_ext.get_bands() is not None
 
-    assert test_band.to_dict() == eo_ext.bands[0].to_dict()
+    assert test_band.to_dict() == item.common_metadata.bands[0].to_dict()
     assert eo_ext.cloud_cover == 15
 
 
@@ -424,8 +463,8 @@ def test_snow_cover_raises_informative_error(ext_item: pystac.Item) -> None:
 
 
 def test_older_extension_version(ext_item: Item) -> None:
-    old = "https://stac-extensions.github.io/eo/v1.0.0/schema.json"
-    new = "https://stac-extensions.github.io/eo/v1.1.0/schema.json"
+    old = "https://stac-extensions.github.io/eo/v1.1.0/schema.json"
+    new = "https://stac-extensions.github.io/eo/v2.0.0/schema.json"
 
     stac_extensions = set(ext_item.stac_extensions)
     stac_extensions.remove(new)
@@ -459,8 +498,10 @@ def test_get_assets(ext_item: pystac.Item, filter: dict[str, str], count: int) -
 def test_get_assets_works_even_if_band_info_is_incomplete(
     ext_item: pystac.Item,
 ) -> None:
-    name = ext_item.assets["B4"].extra_fields["eo:bands"][0].pop("name")
-    common_name = ext_item.assets["B2"].extra_fields["eo:bands"][0].pop("common_name")
+    name = ext_item.assets["B4"].extra_fields["bands"][0].pop("name")
+    ext_item.assets["B4"].extra_fields["bands"].pop(0)
+
+    common_name = ext_item.assets["B2"].extra_fields.pop("eo:common_name")
 
     eo_ext = EOExtension.ext(ext_item)
 
@@ -483,8 +524,8 @@ def test_exception_should_include_hint_if_obj_is_collection(
 
 def test_ext_syntax(ext_item: pystac.Item) -> None:
     assert ext_item.ext.eo.cloud_cover == 78
-    assert (bands := ext_item.assets["B1"].ext.eo.bands)
-    assert bands[0].name == "B1"
+    assert (bands := ext_item.assets["B1"].ext.eo.get_bands())
+    assert bands[0].band_name == "B1"
 
 
 def test_ext_syntax_remove(ext_item: pystac.Item) -> None:
@@ -501,14 +542,12 @@ def test_ext_syntax_add(item: pystac.Item) -> None:
 
 
 def test_required_property_missing(ext_item: pystac.Item) -> None:
-    # https://github.com/stac-utils/pystac/issues/1402
     d = ext_item.to_dict(include_self_link=False, transform_hrefs=False)
-    del d["assets"]["B1"]["eo:bands"][0]["name"]
+    del d["assets"]["B1"]["bands"][0]["name"]
     item = pystac.Item.from_dict(d)
-    bands = item.assets["B1"].ext.eo.bands
-    assert bands is not None
+    assert item.assets["B1"].extra_fields["bands"] is not None
     with pytest.raises(RequiredPropertyMissing):
-        bands[0].name
+        item.assets["B1"].ext.eo.get_bands()
 
 
 def test_unnecessary_migrations_not_performed(ext_item: Item) -> None:

@@ -24,20 +24,13 @@
     "spatial": {
       "bbox": [
         [
-          -122.43409303549794,
-          37.76425505192271,
-          -122.37337588954041,
+          -122.43409303549794, 37.76425505192271, -122.37337588954041,
           37.812440528660765
         ]
       ]
     },
     "temporal": {
-      "interval": [
-        [
-          "2016-10-08 19:25:32Z",
-          "2016-10-08 19:25:32Z"
-        ]
-      ]
+      "interval": [["2016-10-08 19:25:32Z", "2016-10-08 19:25:32Z"]]
     }
   },
   "item_assets": {
@@ -45,18 +38,11 @@
       "type": "image/tiff; application=geotiff; profile=cloud-optimized",
       "title": "Cloud/Cloud Shadow Coverage Raster",
       "description": "thematic raster, 0 -> no data, 1 -> clear, 2 -> cloud, 3 -> cloud shadow",
-      "proj:shape": [
-        2176,
-        2176
-      ],
-      "eo:bands": [
+      "proj:shape": [2176, 2176],
+      "bands": [
         {
           "name": "BAND_CM",
-          "description": "Clouds/Cloud Shadows Mask"
-        }
-      ],
-      "raster:bands": [
-        {
+          "description": "Clouds/Cloud Shadows Mask",
           "classification:classes": [
             {
               "value": 0,
@@ -87,24 +73,21 @@
     "visual": {
       "type": "image/tiff; application=geotiff; profile=cloud-optimized",
       "title": "Visual (RGB) Image",
-      "proj:shape": [
-        17408,
-        17408
-      ],
-      "eo:bands": [
+      "proj:shape": [17408, 17408],
+      "bands": [
         {
           "name": "BAND_R",
-          "common_name": "red",
+          "eo:common_name": "red",
           "description": "Red"
         },
         {
           "name": "BAND_G",
-          "common_name": "green",
+          "eo:common_name": "green",
           "description": "Green"
         },
         {
           "name": "BAND_B",
-          "common_name": "blue",
+          "eo:common_name": "blue",
           "description": "Blue"
         }
       ]
@@ -112,9 +95,9 @@
   },
   "license": "other",
   "stac_extensions": [
-    "https://stac-extensions.github.io/projection/v1.1.0/schema.json",
-    "https://stac-extensions.github.io/eo/v1.1.0/schema.json",
-    "https://stac-extensions.github.io/raster/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/projection/v2.0.0/schema.json",
+    "https://stac-extensions.github.io/eo/v2.0.0/schema.json",
+    "https://stac-extensions.github.io/raster/v2.0.0/schema.json",
     "https://stac-extensions.github.io/classification/v2.0.0/schema.json"
   ]
 }

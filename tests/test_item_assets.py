@@ -148,20 +148,41 @@ def test_extra_fields(collection: Collection) -> None:
         description=None,
         media_type=None,
         roles=None,
-        extra_fields={"raster:bands": [{"nodata": 42}]},
+        extra_fields={
+            "bands": [
+                {
+                    "description": "Test Extra Fields with raster bands",
+                    "raster:offset": 0.0,
+                    "raster:spatial_resolution": 3,
+                }
+            ],
+            "raster:sampling": "area",
+        },
     )
 
     collection.item_assets = {"data": asset_definition}
     assert collection.item_assets["data"].owner == collection
 
     collection_as_dict = collection.to_dict()
-    assert collection_as_dict["item_assets"]["data"]["raster:bands"] == [{"nodata": 42}]
+    assert collection_as_dict["item_assets"]["data"]["bands"] == [
+        {
+            "description": "Test Extra Fields with raster bands",
+            "raster:offset": 0.0,
+            "raster:spatial_resolution": 3,
+        }
+    ]
     asset = asset_definition.create_asset("asset.tif")
-    assert asset.extra_fields["raster:bands"] == [{"nodata": 42}]
+    assert asset.extra_fields["bands"] == [
+        {
+            "description": "Test Extra Fields with raster bands",
+            "raster:offset": 0.0,
+            "raster:spatial_resolution": 3,
+        }
+    ]
 
     collection.item_assets["data"].ext.add("raster")
-    assert (bands := collection.item_assets["data"].ext.raster.bands)
-    assert bands[0].nodata == 42
+    assert (raster_sampling := collection.item_assets["data"].ext.raster.sampling)
+    assert raster_sampling == "area"
 
     assert collection.item_assets["data"].ext.has("raster")
     assert collection.ext.has("raster")
@@ -212,20 +233,23 @@ def test_item_assets_extension_asset_definition_is_deprecated() -> None:
         asset_definition = AssetDefinition(
             {
                 "type": "image/tiff; application=geotiff",
-                "eo:bands": [
+                "bands": [
                     {
                         "name": "B1",
-                        "common_name": "coastal",
-                        "center_wavelength": 0.44,
-                        "full_width_half_max": 0.02,
+                        "eo:common_name": "coastal",
+                        "eo:center_wavelength": 0.44,
+                        "eo:full_width_half_max": 0.02,
                     }
                 ],
+                "eo:center_wavelength": 0.44,
+                "eo:full_width_half_max": 0.02,
                 "title": "Coastal Band (B1)",
                 "description": "Coastal Band Top Of the Atmosphere",
             }
         )
 
     assert asset_definition.title == "Coastal Band (B1)"
-    assert asset_definition.ext.eo.bands
-    assert asset_definition.ext.eo.bands[0].name == "B1"
+    assert asset_definition.ext.eo.center_wavelength
+    assert asset_definition.ext.eo.center_wavelength == 0.44
+    assert asset_definition.properties["bands"][0]["name"] == "B1"
     assert asset_definition.owner is None

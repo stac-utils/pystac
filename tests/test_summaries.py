@@ -11,7 +11,7 @@ def test_summary() -> None:
     coll = TestCases.case_5()
     summaries = Summarizer().summarize(coll.get_items(recursive=True))
     summaries_dict = summaries.to_dict()
-    assert len(summaries_dict["eo:bands"]) == 4
+    assert len(summaries_dict["bands"]) == 4
     assert len(summaries_dict["proj:code"]) == 1
 
 

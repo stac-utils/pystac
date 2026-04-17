@@ -481,7 +481,11 @@ class CommonMetadata:
         `nodata` can be a string or a number
         """
         return utils.map_opt(
-            lambda v: NoDataStrings(v) if v in NoDataStrings else float(v),
+            lambda v: (
+                NoDataStrings(v)
+                if v in [v for v in NoDataStrings.__members__.values()]
+                else float(v)
+            ),
             self._get_field("nodata", str),
         )
 
@@ -503,11 +507,13 @@ class CommonMetadata:
     @property
     def statistics(self) -> Statistics | None:
         """Get or set the statistics of all the values"""
-        return self._get_field("statistics", Statistics)
+        return utils.map_opt(
+            Statistics.from_dict, self._get_field("statistics", dict[str, Any])
+        )
 
     @statistics.setter
-    def statistics(self, v: Statistics) -> None:
-        self._set_field("statistics", v)
+    def statistics(self, v: Statistics | None) -> None:
+        self._set_field("statistics", utils.map_opt(lambda s: s.to_dict(), v))
 
     # unit
     @property

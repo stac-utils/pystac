@@ -8,7 +8,6 @@ import pystac
 from pystac import DataType, ExtensionTypeError, Item, NoDataStrings, Statistics
 from pystac.extensions.raster import (
     Histogram,
-    RasterBand,
     RasterExtension,
     Sampling,
 )
@@ -49,18 +48,26 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
 
     # Get
     data_asset = ext_item.assets["data"]
-    asset_bands = RasterExtension.ext(data_asset).bands
+    assert data_asset.common_metadata.bands is not None
+    asset_bands = RasterExtension.ext(data_asset).get_bands()
     assert asset_bands is not None
     assert len(asset_bands) == 4
-    assert asset_bands[0].nodata == 0
-    assert asset_bands[0].sampling == Sampling.AREA
-    assert asset_bands[0].unit == "W⋅sr−1⋅m−2⋅nm−1"
-    assert asset_bands[0].data_type == DataType.UINT16
-    assert asset_bands[0].scale == 0.01
-    assert asset_bands[0].offset == 0
-    assert asset_bands[0].spatial_resolution == 3
 
-    band0_stats = asset_bands[0].statistics
+    # nodata, data_type, statistics and unit have been moved to
+    # STAC common metadata since v2.0.0
+
+    asset_bands = data_asset.common_metadata.bands
+    assert [b.name for b in asset_bands] == ["band-1", "band-2", "band-3", "band-4"]
+
+    assert data_asset.common_metadata.nodata == 0
+    assert data_asset.ext.raster.sampling == Sampling.AREA
+    assert data_asset.common_metadata.unit == "W⋅sr−1⋅m−2"
+    assert data_asset.common_metadata.data_type == DataType.UINT16
+    assert asset_bands[0].ext.raster.scale == 0.01
+    assert asset_bands[0].ext.raster.offset == 0
+    assert data_asset.ext.raster.spatial_resolution == 3
+
+    band0_stats = asset_bands[0].ext.raster.get_statistics()
     assert band0_stats is not None
     assert band0_stats.minimum == 1962
     assert band0_stats.maximum == 32925
@@ -68,7 +75,7 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
     assert band0_stats.stddev == 5056.1292002722
     assert band0_stats.valid_percent == 61.09
 
-    band0_hist = asset_bands[0].histogram
+    band0_hist = asset_bands[0].ext.raster.histogram
     assert band0_hist is not None
     assert band0_hist.count == 256
     assert band0_hist.min == 1901.288235294118
@@ -76,28 +83,24 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
     assert len(band0_hist.buckets) == band0_hist.count
 
     index_asset = ext_item.assets["metadata"]
-    asset_bands = RasterExtension.ext(index_asset).bands
-    assert None is asset_bands
+    asset_bands = RasterExtension.ext(index_asset).get_bands()
+    assert asset_bands is None
 
     b09_asset = item2.assets["B09"]
-    b09_bands = RasterExtension.ext(b09_asset).bands
-    assert b09_bands is not None
-    assert b09_bands[0].nodata == "nan"
+    b09_bands = RasterExtension.ext(b09_asset).get_bands()
+    assert b09_bands is None
+    assert b09_asset.ext.raster.spatial_resolution == 60
+    assert b09_asset.common_metadata.nodata == "nan"
 
     # Set
     b2_asset = item2.assets["B02"]
-    assert (
-        get_opt(get_opt(RasterExtension.ext(b2_asset).bands)[0].statistics).maximum
-        == 19264
-    )
+    assert get_opt(b2_asset.common_metadata.statistics).maximum == 19264
     b1_asset = item2.assets["B01"]
-    RasterExtension.ext(b2_asset).bands = RasterExtension.ext(b1_asset).bands
+    b2_asset.common_metadata.statistics = b1_asset.common_metadata.statistics
+    b2_asset.common_metadata.nodata = b1_asset.common_metadata.nodata
 
-    new_b2_asset_bands = RasterExtension.ext(item2.assets["B02"]).bands
-
-    assert get_opt(get_opt(new_b2_asset_bands)[0].statistics).maximum == 20567
-    new_b2_asset_band0 = get_opt(new_b2_asset_bands)[0]
-    new_b2_asset_band0.nodata = NoDataStrings.INF
+    assert get_opt(b2_asset.common_metadata.statistics).maximum == 20567
+    b2_asset.common_metadata.nodata = NoDataStrings.INF
 
     item2.validate()
 
@@ -121,19 +124,22 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
             )
         )
     new_bands = [
-        RasterBand.create(
+        pystac.Band.create(name=f"raster-band-{band_n}") for band_n in range(1, 4)
+    ]
+    new_bands_raster_data = [
+        dict(
             nodata=1,
             unit="test1",
             statistics=new_stats[0],
             histogram=new_histograms[0],
         ),
-        RasterBand.create(
+        dict(
             nodata=2,
             unit="test2",
             statistics=new_stats[1],
             histogram=new_histograms[1],
         ),
-        RasterBand.create(
+        dict(
             nodata=NoDataStrings.NINF,
             unit="test3",
             statistics=new_stats[2],
@@ -141,19 +147,24 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
         ),
     ]
     asset = pystac.Asset(href="some/path.tif", media_type=pystac.MediaType.GEOTIFF)
-    RasterExtension.ext(asset).bands = new_bands
+    asset.common_metadata.bands = new_bands
+
+    for band, raster_data in zip(asset.common_metadata.bands, new_bands_raster_data):
+        band.extra_fields = {k: v for k, v in raster_data.items() if k != "histogram"}
+        raster_band = RasterExtension.ext(band)
+        raster_band.apply(histogram=raster_data["histogram"])
+
     ext_item.add_asset("test", asset)
 
-    assert len(ext_item.assets["test"].extra_fields["raster:bands"]) == 3
+    assert len(ext_item.assets["test"].extra_fields["bands"]) == 3
     assert (
-        ext_item.assets["test"].extra_fields["raster:bands"][1]["statistics"]["minimum"]
-        == -1
+        ext_item.assets["test"].extra_fields["bands"][1]["statistics"]["minimum"] == -1
     )
     assert (
-        ext_item.assets["test"].extra_fields["raster:bands"][1]["histogram"]["min"]
+        ext_item.assets["test"].extra_fields["bands"][1]["raster:histogram"]["min"]
         == 3848.354901960784
     )
-    assert ext_item.assets["test"].extra_fields["raster:bands"][2]["nodata"] == "-inf"
+    assert ext_item.assets["test"].extra_fields["bands"][2]["nodata"] == "-inf"
 
     for s in new_stats:
         s.minimum = None
@@ -164,45 +175,42 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
         assert len(s.properties) == 0
 
     for b in new_bands:
-        b.bits_per_sample = None
-        b.data_type = None
-        b.histogram = None
-        b.nodata = None
-        b.sampling = None
-        b.scale = None
-        b.spatial_resolution = None
-        b.statistics = None
-        b.unit = None
-        b.offset = None
-        assert len(b.properties) == 0
+        b.extra_fields["raster:bits_per_sample"] = None
+        b.extra_fields["data_type"] = None
+        b.extra_fields["raster:histogram"] = None
+        b.extra_fields["nodata"] = None
+        b.extra_fields["raster:sampling"] = None
+        b.extra_fields["raster:scale"] = None
+        b.extra_fields["raster:spatial_resolution"] = None
+        b.extra_fields["statistics"] = None
+        b.extra_fields["unit"] = None
+        b.extra_fields["raster:offset"] = None
+        assert len(b.extra_fields) == 0
 
     new_stats[2].apply(minimum=0, maximum=10000, mean=5000, stddev=10, valid_percent=88)
     new_stats[1].apply(minimum=-1, maximum=1, mean=0, stddev=1, valid_percent=100)
     new_stats[0].apply(minimum=1, maximum=255, mean=200, stddev=3, valid_percent=100)
-    new_bands[2].apply(
-        nodata=1,
-        unit="test1",
-        statistics=new_stats[2],
-        histogram=new_histograms[0],
-    )
-    new_bands[1].apply(
-        nodata=2,
-        unit="test2",
-        statistics=new_stats[1],
-        histogram=new_histograms[1],
-    )
-    new_bands[0].apply(
-        nodata=NoDataStrings.NAN,
-        unit="test3",
-        statistics=new_stats[0],
-        histogram=new_histograms[2],
-    )
-    RasterExtension.ext(ext_item.assets["test"]).apply(new_bands)
+
+    new_bands[2].extra_fields["nodata"] = 1
+    new_bands[2].extra_fields["unit"] = "test1"
+    new_bands[2].extra_fields["statistics"] = new_stats[2]
+    new_bands[2].ext.raster.histogram = new_histograms[0]
+
+    new_bands[1].extra_fields["nodata"] = 2
+    new_bands[1].extra_fields["unit"] = "test2"
+    new_bands[1].extra_fields["statistics"] = new_stats[1]
+    new_bands[1].ext.raster.histogram = new_histograms[1]
+
+    new_bands[0].extra_fields["nodata"] = NoDataStrings.NAN
+    new_bands[0].extra_fields["unit"] = "test3"
+    new_bands[0].extra_fields["statistics"] = new_stats[0]
+    new_bands[0].ext.raster.histogram = new_histograms[2]
+
+    ext_item.assets["test"].common_metadata.bands = new_bands
     assert (
-        ext_item.assets["test"].extra_fields["raster:bands"][0]["statistics"]["minimum"]
-        == 1
+        ext_item.assets["test"].extra_fields["bands"][0]["statistics"]["minimum"] == 1
     )
-    assert ext_item.assets["test"].extra_fields["raster:bands"][0]["nodata"] == "nan"
+    assert ext_item.assets["test"].extra_fields["bands"][0]["nodata"] == "nan"
 
 
 def test_extension_not_implemented(ext_item: pystac.Item) -> None:
@@ -262,13 +270,13 @@ def test_collection_item_asset() -> None:
     qa = coll.item_assets["qa"]
     ang = coll.item_assets["ang"]
 
-    assert qa.ext.raster.bands is not None
-    assert ang.ext.raster.bands is None
+    assert qa.ext.raster.scale is not None
+    assert ang.ext.raster.scale is None
 
 
 def test_older_extension_version(ext_item: pystac.Item) -> None:
-    old = "https://stac-extensions.github.io/raster/v1.0.0/schema.json"
-    new = "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
+    old = "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
+    new = "https://stac-extensions.github.io/raster/v2.0.0/schema.json"
 
     stac_extensions = set(ext_item.stac_extensions)
     stac_extensions.remove(new)

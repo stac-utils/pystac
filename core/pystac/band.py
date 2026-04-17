@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from pystac.errors import RequiredPropertyMissing
+
 if TYPE_CHECKING:
     from pystac.extensions.ext import BandExt
 
@@ -34,7 +36,7 @@ class Band:
             defined on the Provider object.
     """
 
-    name: str
+    name: str | None
     """The name of the band (e.g., "B01", "B8", "band2", "red"), which should be unique 
     across all bands defined in the list of bands. This is typically the name the data 
     provider uses for the band."""
@@ -51,7 +53,7 @@ class Band:
 
     def __init__(
         self,
-        name: str,
+        name: str | None,
         description: str | None = None,
         extra_fields: dict[str, Any] | None = None,
     ):
@@ -82,7 +84,9 @@ class Band:
         Returns:
             dict: A serialization of the Band.
         """
-        d: dict[str, Any] = {"name": self.name}
+        d: dict[str, Any] = {}
+        if self.name is not None:
+            d["name"] = self.name
         if self.description is not None:
             d["description"] = self.description
 
@@ -93,17 +97,82 @@ class Band:
     @staticmethod
     def from_dict(d: dict[str, Any]) -> Band:
         """Constructs a Band from a dict.
+        Band needs at least one property to be instantiated
+        properly
+
+        Raises:
+            RequiredPropertyMissing: Raises when the dict is
+                empty, meaning Band can't be constructed.
 
         Returns:
             Band: The Band deserialized from the JSON dict.
         """
+        if not d:
+            raise RequiredPropertyMissing(
+                Band,
+                "name|description|extra_fields",
+                msg=(
+                    "Must contain at least one of the following properties: "
+                    "`name`, `description` or `extra_fields`"
+                ),
+            )
         return Band(
-            name=d["name"],
+            name=d.get("name"),
             description=d.get("description"),
             extra_fields={
                 k: v for k, v in d.items() if k not in {"name", "description"}
             },
         )
+
+    @property
+    def properties(self) -> dict[str, Any] | None:
+        """Alternative spelling for `extra_fields`
+
+        Returns:
+            dict[str, Any] | None: A dict with extra properties
+        """
+        return self.extra_fields
+
+    @classmethod
+    def create(
+        cls,
+        name: str | None,
+        description: str | None = None,
+        extra_fields: dict[str, Any] | None = None,
+    ) -> Band:
+        """Creates a new band
+
+        Args:
+            name : The name of the band (e.g., "B01", "B8", "band2", "red"), which
+                should be unique across all bands defined in the list of bands.
+                This is typically the name the data provider uses for the band.
+                Defaults to None
+            description (str | None, optional): Description to fully explain
+                the band. CommonMark 0.29 syntax MAY be used for rich text
+                representation. Defaults to None.
+            extra_fields (dict[str, Any] | None, optional): Dictionary
+                containing additional top-level fields defined on the Band object.
+                Optional, additional fields for this asset. This is used by extensions,
+                like `raster` or `eo`, as a way to serialize and deserialize
+                properties on asset object JSON. Defaults to None.
+
+        Raises:
+            RequiredPropertyMissing: Raises when Band is instantiated without properties
+
+        Returns:
+            Band
+        """
+
+        if name is None and description is None and extra_fields is None:
+            raise RequiredPropertyMissing(
+                cls,
+                "name|description|extra_fields",
+                msg=(
+                    "Must contain at least one of the following properties: "
+                    "`name`, `description` or `extra_fields`"
+                ),
+            )
+        return cls(name=name, description=description, extra_fields=extra_fields)
 
     @property
     def ext(self) -> BandExt:

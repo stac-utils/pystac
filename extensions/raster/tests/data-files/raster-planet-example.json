@@ -22,6 +22,7 @@
       ],
       "data_type": "uint16",
       "nodata": 0,
+      "unit": "W⋅sr−1⋅m−2",
       "raster:sampling": "area",
       "raster:spatial_resolution": 3,
       "bands": [

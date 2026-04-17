@@ -8,22 +8,22 @@
     "instruments": [
       "MUX"
     ],
-    "eo:bands": [
+    "bands": [
       {
         "name": "B5",
-        "common_name": "blue"
+        "eo:common_name": "blue"
       },
       {
         "name": "B6",
-        "common_name": "green"
+        "eo:common_name": "green"
       },
       {
         "name": "B7",
-        "common_name": "red"
+        "eo:common_name": "red"
       },
       {
         "name": "B8",
-        "common_name": "nir"
+        "eo:common_name": "nir"
       }
     ],
     "datetime": "2019-05-10T04:29:23Z",
@@ -93,40 +93,40 @@
     "B5": {
       "href": "s3://cbers-pds/CBERS4/MUX/027/069/CBERS_4_MUX_20190510_027_069_L2/CBERS_4_MUX_20190510_027_069_L2_BAND5.tif",
       "type": "image/vnd.stac.geotiff; cloud-optimized=true",
-      "eo:bands": [
+      "bands": [
         {
           "name": "B5",
-          "common_name": "blue"
+          "eo:common_name": "blue"
         }
       ]
     },
     "B6": {
       "href": "s3://cbers-pds/CBERS4/MUX/027/069/CBERS_4_MUX_20190510_027_069_L2/CBERS_4_MUX_20190510_027_069_L2_BAND6.tif",
       "type": "image/vnd.stac.geotiff; cloud-optimized=true",
-      "eo:bands": [
+      "bands": [
         {
           "name": "B6",
-          "common_name": "green"
+          "eo:common_name": "green"
         }
       ]
     },
     "B7": {
       "href": "s3://cbers-pds/CBERS4/MUX/027/069/CBERS_4_MUX_20190510_027_069_L2/CBERS_4_MUX_20190510_027_069_L2_BAND7.tif",
       "type": "image/vnd.stac.geotiff; cloud-optimized=true",
-      "eo:bands": [
+      "bands": [
         {
           "name": "B7",
-          "common_name": "red"
+          "eo:common_name": "red"
         }
       ]
     },
     "B8": {
       "href": "s3://cbers-pds/CBERS4/MUX/027/069/CBERS_4_MUX_20190510_027_069_L2/CBERS_4_MUX_20190510_027_069_L2_BAND8.tif",
       "type": "image/vnd.stac.geotiff; cloud-optimized=true",
-      "eo:bands": [
+      "bands": [
         {
           "name": "B8",
-          "common_name": "nir"
+          "eo:common_name": "nir"
         }
       ]
     }
@@ -138,7 +138,7 @@
     28.3637
   ],
   "stac_extensions": [
-    "https://stac-extensions.github.io/eo/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/eo/v2.0.0/schema.json",
     "https://stac-extensions.github.io/projection/v2.0.0/schema.json",
     "https://stac-extensions.github.io/view/v1.0.0/schema.json"
   ],

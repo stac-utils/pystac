@@ -20,7 +20,7 @@ from pystac.extensions.base import (
 )
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
-from pystac.utils import StringEnum, get_opt, get_required
+from pystac.utils import StringEnum, get_opt, get_required, map_opt
 
 #: Generalized version of :class:`~pystac.Asset` or
 #: :class:`~pystac.ItemAssetDefinition`
@@ -598,14 +598,14 @@ class RasterExtension(
         Returns:
             [Histogram]
         """
-        return Histogram.from_dict(get_opt(self.properties.get("histogram")))
+        return map_opt(
+            Histogram.from_dict,
+            self._get_property(HISTOGRAM_PROP, dict[str, Any]),
+        )
 
     @histogram.setter
     def histogram(self, v: Histogram | None) -> None:
-        if v is not None:
-            self.properties["histogram"] = v.to_dict()
-        else:
-            self.properties.pop("histogram", None)
+        self._set_property(HISTOGRAM_PROP, map_opt(lambda h: h.to_dict(), v))
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -651,6 +651,11 @@ class RasterExtension(
         cls.ensure_has_extension(obj, add_if_missing)
         return SummariesRasterExtension(obj)
 
+    # Utils for bands
+    def get_bands(self) -> list[RasterExtension[pystac.Band]] | None:
+        """Returns bands with the Raster Extension loaded"""
+        pass
+
 
 class AssetRasterExtension(RasterExtension[pystac.Asset]):
     asset_href: str
@@ -671,6 +676,16 @@ class AssetRasterExtension(RasterExtension[pystac.Asset]):
 
     def __repr__(self) -> str:
         return f"<AssetRasterExtension Asset href={self.asset_href}>"
+
+    def get_bands(self) -> list[RasterExtension[pystac.Band]] | None:
+        if "bands" not in self.properties:
+            return None
+        return list(
+            map(
+                lambda band: RasterExtension.ext(pystac.Band.from_dict(band)),
+                cast(list[dict[str, Any]], self.properties.get("bands")),
+            )
+        )
 
 
 class ItemAssetsRasterExtension(RasterExtension[pystac.ItemAssetDefinition]):
@@ -701,6 +716,14 @@ class BandRasterExtension(RasterExtension[pystac.Band]):
     def __repr__(self) -> str:
         return f"<BandRasterExtension Band name={self.band_name}>"
 
+    def get_statistics(self) -> pystac.Statistics | None:
+        statistics = self.properties.get("statistics")
+
+        if statistics is not None:
+            return pystac.Statistics.from_dict(statistics)
+
+        return None
+
 
 class SummariesRasterExtension(SummariesExtension):
     """A concrete implementation of :class:`~pystac.extensions.base.SummariesExtension`
@@ -708,12 +731,21 @@ class SummariesRasterExtension(SummariesExtension):
     properties defined in the :stac-ext:`Raster Extension <raster>`.
     """
 
-    pass
+    def get_bands(self) -> list[RasterExtension[pystac.Band]] | None:
+        bands = self.summaries.get_list("bands")
+
+        if bands is not None:
+            return [RasterExtension.ext(pystac.Band.from_dict(b)) for b in bands]
+
+        return None
 
 
 class RasterExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    prev_extension_ids: set[str] = {*[uri for uri in SCHEMA_URIS if uri != SCHEMA_URI]}
+    prev_extension_ids: set[str] = {
+        "raster",
+        *[uri for uri in SCHEMA_URIS if uri != SCHEMA_URI],
+    }
     stac_object_types = {pystac.STACObjectType.ITEM, pystac.STACObjectType.COLLECTION}
 
     def migrate(
@@ -743,7 +775,7 @@ class RasterExtensionHooks(ExtensionHooks):
 
             if (
                 info.object_type == pystac.STACObjectType.ITEM
-                and "raster:bands" in obj["properties"]
+                and "raster:bands" in obj.get("properties", {})
             ):
                 old_bands = obj["properties"]["raster:bands"]
                 # Create the bands ; they won't have any names however
@@ -779,32 +811,48 @@ class RasterExtensionHooks(ExtensionHooks):
                 # Dominant element must be set on the property
                 # Minor elements can stay in the bands
                 n_elements = len(obj["properties"]["bands"])
-                counters = {
-                    PREFIX + raster_field: Counter() for raster_field in to_be_renamed
-                }
-                counters.update(
-                    {cm_field: Counter() for cm_field in common_metadata_fields}
-                )
+                # One band, most metadata goes back up into the asset/item
+                if n_elements == 1:
+                    for k, v in obj["properties"]["bands"][0].items():
+                        if k not in ["name", "description"]:
+                            obj["properties"][k] = v
 
-                for band in obj["properties"]["bands"]:
-                    for k in counters.keys():
-                        counters[k] += Counter([band[k]])
+                    obj["properties"]["bands"][0] = {
+                        k: v
+                        for k, v in obj["properties"]["bands"][0].items()
+                        if k not in ["name", "description"]
+                    }
+                else:
+                    counters: dict[str, Counter] = {
+                        PREFIX + raster_field: Counter()
+                        for raster_field in to_be_renamed
+                    }
+                    counters.update(
+                        {cm_field: Counter() for cm_field in common_metadata_fields}
+                    )
 
-                for k, v in counters.items():
-                    # Element is unique
-                    if len(counters[k]) == 1:
-                        obj["properties"][k] = list(v)[0]
-                        for band in obj["properties"]["bands"]:
-                            del band[k]
-                    # A dominant element is present
-                    elif 0 < len(counters[k]) < n_elements:
-                        dom_el = counters[k].most_common()[0][0]
-                        obj["properties"][k] = dom_el
-                        for band in obj["properties"]["bands"]:
-                            if band[k] != dom_el:
+                    for band in obj["properties"]["bands"]:
+                        for k in counters.keys():
+                            counters[k] += Counter([band[k]])
+
+                    for k, v in counters.items():
+                        # Element is unique
+                        if len(counters[k]) == 1 and counters[k].total() == n_elements:
+                            obj["properties"][k] = list(v)[0]
+                            for band in obj["properties"]["bands"]:
                                 del band[k]
+                        # A dominant element is present
+                        elif (
+                            0 < len(counters[k]) < n_elements
+                            and counters[k].total() == n_elements
+                        ):
+                            dom_el = counters[k].most_common()[0][0]
+                            obj["properties"][k] = dom_el
+                            for band in obj["properties"]["bands"]:
+                                if band[k] != dom_el:
+                                    del band[k]
 
-        return super().migrate(obj, version, info)
+        super().migrate(obj, version, info)
 
 
 RASTER_EXTENSION_HOOKS: ExtensionHooks = RasterExtensionHooks()
