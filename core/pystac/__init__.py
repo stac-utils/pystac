@@ -91,6 +91,7 @@ from pystac.provider import ProviderRole, Provider
 from pystac.utils import HREF
 
 import pystac.extensions.hooks
+import pystac.extensions.cf
 import pystac.extensions.classification
 import pystac.extensions.datacube
 import pystac.extensions.eo
@@ -118,6 +119,7 @@ import pystac.extensions.xarray_assets
 
 EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
     [
+        pystac.extensions.cf.CF_EXTENSION_HOOKS,
         pystac.extensions.classification.CLASSIFICATION_EXTENSION_HOOKS,
         pystac.extensions.datacube.DATACUBE_EXTENSION_HOOKS,
         pystac.extensions.eo.EO_EXTENSION_HOOKS,
