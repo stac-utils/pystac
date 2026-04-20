@@ -675,7 +675,7 @@ class InputStructure:
         self,
         shape: list[int],
         dim_order: list[str],
-        data_type: pystac.pystac.DataType,
+        data_type: pystac.DataType,
     ) -> None:
         """
         Set the properties for a new InputStructure.

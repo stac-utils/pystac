@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import cast
 
 import pytest
 from pytest_pystac.plugin import assert_to_from_dict
@@ -10,6 +11,7 @@ from pystac.errors import ExtensionNotImplemented, RequiredPropertyMissing
 from pystac.extensions.eo import (
     PREFIX,
     SNOW_COVER_PROP,
+    BandEOExtension,
     EOCommonName,
     EOExtension,
     band_description,
@@ -29,7 +31,7 @@ def test_band_create() -> None:
 
     eo_band = EOExtension.ext(band, add_if_missing=True)
     eo_band.apply(
-        common_name="red",
+        common_name=EOCommonName("red"),
         center_wavelength=0.65,
         full_width_half_max=0.1,
         solar_illumination=42.0,
@@ -45,7 +47,7 @@ def test_band_create() -> None:
 
 
 def test_band_description_unknown_band() -> None:
-    desc = band_description("rainbow")
+    desc = band_description("rainbow")  # type: ignore[arg-type]
     assert desc is None
 
 
@@ -109,9 +111,9 @@ def test_bands() -> None:
 
     # Set
     new_bands = [
-        Band.create(name="red", description=band_description("red")),
-        Band.create(name="green", description=band_description("green")),
-        Band.create(name="blue", description=band_description("blue")),
+        Band.create(name="red", description=band_description(EOCommonName("red"))),
+        Band.create(name="green", description=band_description(EOCommonName("green"))),
+        Band.create(name="blue", description=band_description(EOCommonName("blue"))),
     ]
 
     item.common_metadata.bands = new_bands
@@ -141,12 +143,12 @@ def test_asset_bands() -> None:
     assert asset_bands is not None
     assert len(asset_bands) == 1
 
-    assert asset_bands[0].band_name == "B1"
+    assert cast(BandEOExtension, asset_bands[0]).band_name == "B1"
     assert b1_asset_eo.solar_illumination == 2000
 
     index_asset = item.assets["index"]
-    asset_bands = index_asset.common_metadata.bands
-    assert asset_bands is None
+    asset_bands_common = index_asset.common_metadata.bands
+    assert asset_bands_common is None
 
     # No asset specified
     item_bands = EOExtension.ext(item).get_bands()
@@ -154,12 +156,13 @@ def test_asset_bands() -> None:
 
     # Set
     b2_asset = item.assets["B2"]
-    assert get_opt(EOExtension.ext(b2_asset).get_bands())[0].band_name == "B2"
+    eo_bands = EOExtension.ext(b2_asset).get_bands()
+    assert cast(BandEOExtension, get_opt(eo_bands)[0]).band_name == "B2"
     b2_asset.common_metadata.bands = b1_asset.common_metadata.bands
 
     new_b2_asset_bands = EOExtension.ext(item.assets["B2"]).get_bands()
 
-    assert get_opt(new_b2_asset_bands)[0].band_name == "B1"
+    assert cast(BandEOExtension, get_opt(new_b2_asset_bands)[0]).band_name == "B1"
 
     item.validate()
 
@@ -172,21 +175,21 @@ def test_asset_bands() -> None:
     new_bands = [
         Band.create(
             name="red",
-            description=band_description("red"),
+            description=band_description(EOCommonName("red")),
         ),
         Band.create(
             name="green",
-            description=band_description("green"),
+            description=band_description(EOCommonName("green")),
         ),
         Band.create(
             name="blue",
-            description=band_description("blue"),
+            description=band_description(EOCommonName("blue")),
         ),
     ]
 
     for sillu, band in zip(sol_illu, new_bands):
         eo_band = EOExtension.ext(band)
-        eo_band.apply(**sillu)
+        eo_band.apply(solar_illumination=sillu["solar_illumination"])
 
     asset = pystac.Asset(href="some/path.tif", media_type=pystac.MediaType.GEOTIFF)
     asset.common_metadata.bands = new_bands
@@ -525,7 +528,7 @@ def test_exception_should_include_hint_if_obj_is_collection(
 def test_ext_syntax(ext_item: pystac.Item) -> None:
     assert ext_item.ext.eo.cloud_cover == 78
     assert (bands := ext_item.assets["B1"].ext.eo.get_bands())
-    assert bands[0].band_name == "B1"
+    assert cast(BandEOExtension, bands[0]).band_name == "B1"
 
 
 def test_ext_syntax_remove(ext_item: pystac.Item) -> None:
