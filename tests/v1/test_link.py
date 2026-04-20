@@ -194,9 +194,8 @@ def test_auto_title_is_serialized(item: pystac.Item) -> None:
         title="Collection Title",
     )
     collection.set_self_href("file:///dev/null")
-
+    ## link.to_dict needs to extract href from `target` or have it passed in
     link = pystac.Link("my rel", target=collection)
-
     assert link.to_dict().get("title") == collection.title
 
 
@@ -215,8 +214,14 @@ def test_title_as_init_argument(item: pystac.Item) -> None:
         extent=extent,
         title="Collection Title",
     )
-    collection.set_self_href("file:///dev/null")
-    link = pystac.Link("my rel", title=link_title, target=collection)
+
+    ## link.to_dict needs to extract href from `target` or have it passed in
+    link = pystac.Link(
+        "my rel",
+        title=link_title,
+        target=collection,
+        href="file:///dev/null",
+    )
 
     assert link.title == link_title
     assert link.to_dict().get("title") == link_title
