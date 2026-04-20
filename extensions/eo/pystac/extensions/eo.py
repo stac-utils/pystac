@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from collections import Counter
 from collections.abc import Iterable
 from typing import (
@@ -23,6 +24,24 @@ from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.summaries import RangeSummary
 from pystac.utils import StringEnum
+
+
+def __getattr__(name: str) -> object:
+    if name == "Band":
+        warnings.warn(
+            "eo.Band is deprecated and will be removed in v2.0. "
+            "Use pystac.Band with band.ext.eo for spectral fields instead:\n"
+            "  band = pystac.Band.create('B01')\n"
+            "  band.ext.eo.common_name = 'red'\n"
+            "  band.ext.eo.center_wavelength = 0.65",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        from pystac import Band
+
+        return Band
+    raise AttributeError(f"module 'pystac.extensions.eo' has no attribute {name!r}")
+
 
 #: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Asset`,
 #: pr :class:`~pystac.ItemAssetDefinition`

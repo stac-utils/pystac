@@ -566,3 +566,19 @@ def test_unnecessary_migrations_not_performed(ext_item: Item) -> None:
     assert len(item.assets) == len(migrated_item.assets)
     for key, value in item.assets.items():
         assert value.to_dict() == migrated_item.assets[key].to_dict()
+
+
+def test_band_import_is_deprecated() -> None:
+    from pystac.extensions import eo
+
+    with pytest.warns(DeprecationWarning, match="eo.Band is deprecated"):
+        _ = eo.Band  # use _ to signal intentionally unused
+
+
+def test_band_is_now_pystac_band() -> None:
+    import pystac
+    from pystac.extensions import eo
+
+    with pytest.warns(DeprecationWarning):
+        Band = eo.Band
+    assert Band is pystac.Band  # used in assertion, no ruff complaint

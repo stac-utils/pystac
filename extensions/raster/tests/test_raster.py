@@ -297,3 +297,19 @@ def test_older_extension_version(ext_item: pystac.Item) -> None:
     migrated_item = pystac.Item.from_dict(item_as_dict, migrate=True)
     assert RasterExtension.has_extension(migrated_item)
     assert new in migrated_item.stac_extensions
+
+
+def test_raster_band_import_is_deprecated() -> None:
+    from pystac.extensions import raster
+
+    with pytest.warns(DeprecationWarning, match="RasterBand is deprecated"):
+        _ = raster.RasterBand  # use _ to signal intentionally unused
+
+
+def test_raster_band_is_now_pystac_band() -> None:
+    import pystac
+    from pystac.extensions import raster
+
+    with pytest.warns(DeprecationWarning):
+        RasterBand = raster.RasterBand
+    assert RasterBand is pystac.Band  # used in assertion, no ruff complaint

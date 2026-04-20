@@ -20,7 +20,28 @@ from pystac.extensions.base import (
 )
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
-from pystac.utils import StringEnum, get_opt, get_required, map_opt
+from pystac.utils import StringEnum, get_required, map_opt
+
+
+def __getattr__(name: str) -> object:
+    if name == "RasterBand":
+        import warnings
+
+        warnings.warn(
+            "RasterBand is deprecated and will be removed in v2.0. "
+            "Use pystac.Band with band.ext.raster for raster fields instead:\n"
+            "  band = pystac.Band.create('B01')\n"
+            "  band.ext.raster.nodata = 0\n"
+            "  band.ext.raster.data_type = DataType.FLOAT32\n"
+            "  band.ext.raster.spatial_resolution = 10.0",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        from pystac import Band
+
+        return Band
+    raise AttributeError(f"module 'pystac.extensions.raster' has no attribute {name!r}")
+
 
 #: Generalized version of :class:`~pystac.Asset` or
 #: :class:`~pystac.ItemAssetDefinition`
@@ -187,301 +208,6 @@ class Histogram:
             Histogram: The Histogram deserialized from the JSON dict.
         """
         return Histogram(properties=d)
-
-
-# Replace it with BandRasterExtension
-class RasterBand:
-    """Represents a Raster Band information attached to an Item
-    that implements the raster extension.
-
-    Use Band.create to create a new Band.
-    """
-
-    properties: dict[str, Any]
-
-    def __init__(self, properties: dict[str, Any]) -> None:
-        self.properties = properties
-
-    def apply(
-        self,
-        nodata: float | pystac.NoDataStrings | None = None,
-        sampling: Sampling | None = None,
-        data_type: pystac.DataType | None = None,
-        bits_per_sample: float | None = None,
-        spatial_resolution: float | None = None,
-        statistics: pystac.Statistics | None = None,
-        unit: str | None = None,
-        scale: float | None = None,
-        offset: float | None = None,
-        histogram: Histogram | None = None,
-    ) -> None:
-        """
-        Sets the properties for this raster Band.
-
-        Args:
-            nodata : Pixel values used to identify pixels that are nodata in the assets.
-            sampling : One of area or point. Indicates whether a pixel value should be
-                assumed to represent a sampling over the region of the pixel or a point
-                sample at the center of the pixel.
-            data_type : The data type of the band.
-                One of the data types as described in the
-                :stac-ext:`Raster Data Types <raster/#data-types> docs`.
-            bits_per_sample : The actual number of bits used for this band.
-                Normally only present when the number of bits is non-standard for the
-                datatype, such as when a 1 bit TIFF is represented as byte
-            spatial_resolution : Average spatial resolution (in meters) of the pixels in
-                the band.
-            statistics: Statistics of all the pixels in the band
-            unit: unit denomination of the pixel value
-            scale: multiplicator factor of the pixel value to transform into the value
-                (i.e. translate digital number to reflectance).
-            offset: number to be added to the pixel value (after scaling) to transform
-                into the value (i.e. translate digital number to reflectance).
-            histogram: Histogram distribution information of the pixels values in the
-                band
-        """
-        self.nodata = nodata
-        self.sampling = sampling
-        self.data_type = data_type
-        self.bits_per_sample = bits_per_sample
-        self.spatial_resolution = spatial_resolution
-        self.statistics = statistics
-        self.unit = unit
-        self.scale = scale
-        self.offset = offset
-        self.histogram = histogram
-
-    @classmethod
-    def create(
-        cls,
-        nodata: float | pystac.NoDataStrings | None = None,
-        sampling: Sampling | None = None,
-        data_type: pystac.DataType | None = None,
-        bits_per_sample: float | None = None,
-        spatial_resolution: float | None = None,
-        statistics: pystac.Statistics | None = None,
-        unit: str | None = None,
-        scale: float | None = None,
-        offset: float | None = None,
-        histogram: Histogram | None = None,
-    ) -> RasterBand:
-        """
-        Creates a new band.
-
-        Args:
-            nodata : Pixel values used to identify pixels that are nodata in the assets.
-            sampling : One of area or point. Indicates whether a pixel value should be
-                assumed to represent a sampling over the region of the pixel or a point
-                sample at the center of the pixel.
-            data_type :The data type of the band.
-                One of the data types as described in the
-                :stac-ext:`Raster Data Types <raster/#data-types> docs`.
-            bits_per_sample : The actual number of bits used for this band.
-                Normally only present when the number of bits is non-standard for the
-                datatype, such as when a 1 bit TIFF is represented as byte
-            spatial_resolution : Average spatial resolution (in meters) of the pixels in
-                the band.
-            statistics: Statistics of all the pixels in the band
-            unit: unit denomination of the pixel value
-            scale: multiplicator factor of the pixel value to transform into the value
-                (i.e. translate digital number to reflectance).
-            offset: number to be added to the pixel value (after scaling) to transform
-                into the value (i.e. translate digital number to reflectance).
-            histogram: Histogram distribution information of the pixels values in the
-                band
-        """
-        b = cls({})
-        b.apply(
-            nodata=nodata,
-            sampling=sampling,
-            data_type=data_type,
-            bits_per_sample=bits_per_sample,
-            spatial_resolution=spatial_resolution,
-            statistics=statistics,
-            unit=unit,
-            scale=scale,
-            offset=offset,
-            histogram=histogram,
-        )
-        return b
-
-    @property
-    def nodata(self) -> float | pystac.NoDataStrings | None:
-        """Get or sets the nodata pixel value
-
-        Returns:
-            Optional[float]
-        """
-        return self.properties.get("nodata")
-
-    @nodata.setter
-    def nodata(self, v: float | pystac.NoDataStrings | None) -> None:
-        if v is not None:
-            self.properties["nodata"] = v
-        else:
-            self.properties.pop("nodata", None)
-
-    @property
-    def sampling(self) -> Sampling | None:
-        """Get or sets the property indicating whether a pixel value should be assumed
-        to represent a sampling over the region of the pixel or a point sample
-        at the center of the pixel.
-
-        Returns:
-            Optional[Sampling]
-        """
-        return self.properties.get("sampling")
-
-    @sampling.setter
-    def sampling(self, v: Sampling | None) -> None:
-        if v is not None:
-            self.properties["sampling"] = v
-        else:
-            self.properties.pop("sampling", None)
-
-    @property
-    def data_type(self) -> pystac.DataType | None:
-        """Get or sets the data type of the band.
-
-        Returns:
-            Optional[DataType]
-        """
-        return self.properties.get("data_type")
-
-    @data_type.setter
-    def data_type(self, v: pystac.DataType | None) -> None:
-        if v is not None:
-            self.properties["data_type"] = v
-        else:
-            self.properties.pop("data_type", None)
-
-    @property
-    def bits_per_sample(self) -> float | None:
-        """Get or sets the actual number of bits used for this band.
-
-        Returns:
-            float
-        """
-        return self.properties.get("bits_per_sample")
-
-    @bits_per_sample.setter
-    def bits_per_sample(self, v: float | None) -> None:
-        if v is not None:
-            self.properties["bits_per_sample"] = v
-        else:
-            self.properties.pop("bits_per_sample", None)
-
-    @property
-    def spatial_resolution(self) -> float | None:
-        """Get or sets the average spatial resolution (in meters) of the pixels in the
-        band.
-
-        Returns:
-            [float]
-        """
-        return self.properties.get("spatial_resolution")
-
-    @spatial_resolution.setter
-    def spatial_resolution(self, v: float | None) -> None:
-        if v is not None:
-            self.properties["spatial_resolution"] = v
-        else:
-            self.properties.pop("spatial_resolution", None)
-
-    @property
-    def statistics(self) -> pystac.Statistics | None:
-        """Get or sets the average spatial resolution (in meters) of the pixels in the
-        band.
-
-        Returns:
-            [Statistics]
-        """
-        return pystac.Statistics.from_dict(get_opt(self.properties.get("statistics")))
-
-    @statistics.setter
-    def statistics(self, v: pystac.Statistics | None) -> None:
-        if v is not None:
-            self.properties["statistics"] = v.to_dict()
-        else:
-            self.properties.pop("statistics", None)
-
-    @property
-    def unit(self) -> str | None:
-        """Get or sets the unit denomination of the pixel value
-
-        Returns:
-            [str]
-        """
-        return self.properties.get("unit")
-
-    @unit.setter
-    def unit(self, v: str | None) -> None:
-        if v is not None:
-            self.properties["unit"] = v
-        else:
-            self.properties.pop("unit", None)
-
-    @property
-    def scale(self) -> float | None:
-        """Get or sets the multiplicator factor of the pixel value to transform
-        into the value (i.e. translate digital number to reflectance).
-
-        Returns:
-            [float]
-        """
-        return self.properties.get("scale")
-
-    @scale.setter
-    def scale(self, v: float | None) -> None:
-        if v is not None:
-            self.properties["scale"] = v
-        else:
-            self.properties.pop("scale", None)
-
-    @property
-    def offset(self) -> float | None:
-        """Get or sets the number to be added to the pixel value (after scaling)
-        to transform into the value (i.e. translate digital number to reflectance).
-
-        Returns:
-            [float]
-        """
-        return self.properties.get("offset")
-
-    @offset.setter
-    def offset(self, v: float | None) -> None:
-        if v is not None:
-            self.properties["offset"] = v
-        else:
-            self.properties.pop("offset", None)
-
-    @property
-    def histogram(self) -> Histogram | None:
-        """Get or sets the histogram distribution information of the pixels values in
-        the band.
-
-        Returns:
-            [Histogram]
-        """
-        return Histogram.from_dict(get_opt(self.properties.get("histogram")))
-
-    @histogram.setter
-    def histogram(self, v: Histogram | None) -> None:
-        if v is not None:
-            self.properties["histogram"] = v.to_dict()
-        else:
-            self.properties.pop("histogram", None)
-
-    def __repr__(self) -> str:
-        return "<Raster Band>"
-
-    def to_dict(self) -> dict[str, Any]:
-        """Returns this band as a dictionary.
-
-        Returns:
-            dict: The serialization of the Band.
-        """
-        return self.properties
 
 
 class RasterExtension(
