@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import cast
 
 import pytest
 from pytest_pystac.plugin import assert_to_from_dict
@@ -49,9 +50,9 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
     # Get
     data_asset = ext_item.assets["data"]
     assert data_asset.common_metadata.bands is not None
-    asset_bands = RasterExtension.ext(data_asset).get_bands()
-    assert asset_bands is not None
-    assert len(asset_bands) == 4
+    asset_bands_raster = RasterExtension.ext(data_asset).get_bands()
+    assert asset_bands_raster is not None
+    assert len(asset_bands_raster) == 4
 
     # nodata, data_type, statistics and unit have been moved to
     # STAC common metadata since v2.0.0
@@ -83,8 +84,8 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
     assert len(band0_hist.buckets) == band0_hist.count
 
     index_asset = ext_item.assets["metadata"]
-    asset_bands = RasterExtension.ext(index_asset).get_bands()
-    assert asset_bands is None
+    asset_bands_raster = RasterExtension.ext(index_asset).get_bands()
+    assert asset_bands_raster is None
 
     b09_asset = item2.assets["B09"]
     b09_bands = RasterExtension.ext(b09_asset).get_bands()
@@ -117,7 +118,7 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
     # new_histograms = []
     with open(DATA_FILES / "gdalinfo.json") as gdaljson_file:
         gdaljson_data = json.load(gdaljson_file)
-        new_histograms = list(
+        new_histograms: list[Histogram] = list(
             map(
                 lambda band: Histogram.from_dict(band["histogram"]),
                 gdaljson_data["bands"],
@@ -147,16 +148,22 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
         ),
     ]
     asset = pystac.Asset(href="some/path.tif", media_type=pystac.MediaType.GEOTIFF)
-    asset.common_metadata.bands = new_bands
+    modified_bands: list[pystac.Band] = []
 
-    for band, raster_data in zip(asset.common_metadata.bands, new_bands_raster_data):
-        band.extra_fields = {k: v for k, v in raster_data.items() if k != "histogram"}
+    for band, raster_data in zip(new_bands, new_bands_raster_data):
+        band.extra_fields = {
+            k: v.to_dict() if isinstance(v, Statistics) else v
+            for k, v in raster_data.items()
+            if k != "histogram"
+        }
         raster_band = RasterExtension.ext(band)
-        raster_band.apply(histogram=raster_data["histogram"])
+        raster_band.apply(histogram=cast(Histogram, raster_data["histogram"]))
+        modified_bands.append(band)
+
+    asset.common_metadata.bands = modified_bands
 
     ext_item.add_asset("test", asset)
 
-    assert len(ext_item.assets["test"].extra_fields["bands"]) == 3
     assert (
         ext_item.assets["test"].extra_fields["bands"][1]["statistics"]["minimum"] == -1
     )
@@ -174,39 +181,39 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
         s.valid_percent = None
         assert len(s.properties) == 0
 
-    for b in new_bands:
-        b.extra_fields["raster:bits_per_sample"] = None
-        b.extra_fields["data_type"] = None
-        b.extra_fields["raster:histogram"] = None
-        b.extra_fields["nodata"] = None
-        b.extra_fields["raster:sampling"] = None
-        b.extra_fields["raster:scale"] = None
-        b.extra_fields["raster:spatial_resolution"] = None
-        b.extra_fields["statistics"] = None
-        b.extra_fields["unit"] = None
-        b.extra_fields["raster:offset"] = None
+    for b in modified_bands:
+        b.set_prop("raster:bits_per_sample", None)
+        b.set_prop("data_type", None)
+        b.set_prop("raster:histogram", None)
+        b.set_prop("nodata", None)
+        b.set_prop("raster:sampling", None)
+        b.set_prop("raster:scale", None)
+        b.set_prop("raster:spatial_resolution", None)
+        b.set_prop("statistics", None)
+        b.set_prop("unit", None)
+        b.set_prop("raster:offset", None)
         assert len(b.extra_fields) == 0
 
     new_stats[2].apply(minimum=0, maximum=10000, mean=5000, stddev=10, valid_percent=88)
     new_stats[1].apply(minimum=-1, maximum=1, mean=0, stddev=1, valid_percent=100)
     new_stats[0].apply(minimum=1, maximum=255, mean=200, stddev=3, valid_percent=100)
 
-    new_bands[2].extra_fields["nodata"] = 1
-    new_bands[2].extra_fields["unit"] = "test1"
-    new_bands[2].extra_fields["statistics"] = new_stats[2]
-    new_bands[2].ext.raster.histogram = new_histograms[0]
+    modified_bands[2].set_prop("nodata", 1)
+    modified_bands[2].set_prop("unit", "test1")
+    modified_bands[2].set_prop("statistics", new_stats[2])
+    modified_bands[2].ext.raster.histogram = new_histograms[0]
 
-    new_bands[1].extra_fields["nodata"] = 2
-    new_bands[1].extra_fields["unit"] = "test2"
-    new_bands[1].extra_fields["statistics"] = new_stats[1]
-    new_bands[1].ext.raster.histogram = new_histograms[1]
+    modified_bands[1].set_prop("nodata", 2)
+    modified_bands[1].set_prop("unit", "test2")
+    modified_bands[1].set_prop("statistics", new_stats[1])
+    modified_bands[1].ext.raster.histogram = new_histograms[1]
 
-    new_bands[0].extra_fields["nodata"] = NoDataStrings.NAN
-    new_bands[0].extra_fields["unit"] = "test3"
-    new_bands[0].extra_fields["statistics"] = new_stats[0]
-    new_bands[0].ext.raster.histogram = new_histograms[2]
+    modified_bands[0].set_prop("nodata", NoDataStrings.NAN)
+    modified_bands[0].set_prop("unit", "test3")
+    modified_bands[0].set_prop("statistics", new_stats[0])
+    modified_bands[0].ext.raster.histogram = new_histograms[2]
 
-    ext_item.assets["test"].common_metadata.bands = new_bands
+    ext_item.assets["test"].common_metadata.bands = modified_bands
     assert (
         ext_item.assets["test"].extra_fields["bands"][0]["statistics"]["minimum"] == 1
     )

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional, cast
 
 from pystac.errors import RequiredPropertyMissing
 
@@ -45,7 +45,7 @@ class Band:
     """Description to fully explain the band. CommonMark 0.29 syntax MAY be used 
     for rich text representation."""
 
-    extra_fields: dict[str, Any]
+    _extra_fields: dict[str, Any]
     """Dictionary containing additional top-level fields defined on the Band
     object. Optional, additional fields for this asset. This is used by extensions, 
     like `raster` or `eo`, as a way to serialize and deserialize properties on asset 
@@ -59,7 +59,7 @@ class Band:
     ):
         self.name = name
         self.description = description
-        self.extra_fields = extra_fields or {}
+        self._extra_fields = extra_fields or {}
 
     def __eq__(self, o: object) -> bool:
         if not isinstance(o, Band):
@@ -90,7 +90,7 @@ class Band:
         if self.description is not None:
             d["description"] = self.description
 
-        d.update(self.extra_fields)
+        d.update(self._extra_fields)
 
         return d
 
@@ -124,6 +124,44 @@ class Band:
             },
         )
 
+    def get_prop(self, prop_name: str) -> object | None:
+        """Returns an extra property or None if the field isn't available"""
+        return cast(Optional[object], self._extra_fields.get(prop_name))
+
+    def set_prop(self, prop_name: str, _v: Any | None) -> None:
+        """Sets an extra property or unsets it if None is passed
+
+        Note
+            For extensions, it is recommended to use the appropriate
+            extension to do some modifications
+        """
+        if _v is None:
+            self._extra_fields.pop(prop_name, None)
+        else:
+            self._extra_fields[prop_name] = (
+                _v.to_dict()
+                if hasattr(_v, "to_dict") and callable(getattr(_v, "to_dict"))
+                else _v
+            )
+
+    @property
+    def extra_fields(self) -> dict[str, Any]:
+        """Gets or sets any field that isn't `name` or `description`"""
+        return self._extra_fields
+
+    @extra_fields.setter
+    def extra_fields(self, _v: dict[str, Any] | None) -> None:
+        if _v is None:
+            self._extra_fields = {}
+        else:
+            self._extra_fields = {
+                k: v.to_dict()
+                if hasattr(v, "to_dict") and callable(getattr(v, "to_dict"))
+                else v
+                for k, v in _v.items()
+                if v is not None
+            }
+
     @property
     def properties(self) -> dict[str, Any] | None:
         """Alternative spelling for `extra_fields`
@@ -131,7 +169,11 @@ class Band:
         Returns:
             dict[str, Any] | None: A dict with extra properties
         """
-        return self.extra_fields
+        return self._extra_fields
+
+    @properties.setter
+    def properties(self, _v: dict[str, Any] | None) -> None:
+        self.extra_fields = _v
 
     @classmethod
     def create(

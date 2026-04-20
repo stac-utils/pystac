@@ -549,9 +549,7 @@ interactions:
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://stac-extensions.github.io/raster/v1.0.0/schema.json
   response:
@@ -636,59 +634,13 @@ interactions:
         3,\n                \"items\": {\n                  \"title\": \"number of
         pixels in the bucket\",\n                  \"type\": \"integer\"\n                }\n
         \             }\n            }\n          }\n        }\n      }\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '0'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '5874'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Mon, 13 Apr 2026 16:05:04 GMT
-      ETag:
-      - '"69247cdb-16f2"'
-      Last-Modified:
-      - Mon, 24 Nov 2025 15:42:19 GMT
-      Server:
-      - GitHub.com
-      Strict-Transport-Security:
-      - max-age=31556952
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - d0614e208a32e89e75775f36e59a246ba68ee86d
-      X-GitHub-Request-Id:
-      - 5158:168058:1084055:1106388:69DD142F
-      X-Served-By:
-      - cache-lcy-egml8630075-LCY
-      X-Timer:
-      - S1776096304.278196,VS0,VE99
-      expires:
-      - Mon, 13 Apr 2026 16:15:04 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      User-Agent:
-      - pystac/1.14.3
+    headers: {}
     method: GET
     uri: https://stac-extensions.github.io/eo/v2.0.0/schema.json
   response:
@@ -805,51 +757,395 @@ interactions:
         Half Max (FWHM)\",\n      \"type\": \"number\",\n      \"minimumExclusive\":
         0\n    },\n    \"eo:solar_illumination\": {\n      \"title\": \"Solar Illumination\",\n
         \     \"type\": \"number\",\n      \"minimum\": 0\n    }\n  }\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '0'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '8621'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Mon, 13 Apr 2026 16:05:04 GMT
-      ETag:
-      - '"69247b92-21ad"'
-      Last-Modified:
-      - Mon, 24 Nov 2025 15:36:50 GMT
-      Server:
-      - GitHub.com
-      Strict-Transport-Security:
-      - max-age=31556952
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Fastly-Request-ID:
-      - 10be55f457b85bc304c74700dc42d060b2d2713b
-      X-GitHub-Request-Id:
-      - 44DE:16CC75:107C46C:10FE796:69DD142F
-      X-Served-By:
-      - cache-lcy-egml8630095-LCY
-      X-Timer:
-      - S1776096304.433239,VS0,VE96
-      expires:
-      - Mon, 13 Apr 2026 16:15:04 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://stac-extensions.github.io/raster/v2.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/raster/v2.0.0/schema.json#\",\n  \"title\":
+        \"Raster Extension\",\n  \"description\": \"STAC Raster Extension for STAC
+        Items and STAC Collections.\",\n  \"type\": \"object\",\n  \"required\": [\"stac_extensions\",
+        \"type\"],\n  \"properties\": {\n    \"stac_extensions\": {\n      \"type\":
+        \"array\",\n      \"contains\": {\n        \"const\": \"https://stac-extensions.github.io/raster/v2.0.0/schema.json\"\n
+        \     }\n    }\n  },\n  \"allOf\": [\n    {\n      \"$comment\": \"Items\",\n
+        \     \"if\": {\n        \"properties\": {\n          \"type\": {\n            \"const\":
+        \"Feature\"\n          }\n        }\n      },\n      \"then\": {\n        \"allOf\":
+        [\n          {\n            \"properties\": {\n              \"properties\":
+        {\n                \"$ref\": \"#/definitions/validate_properties\"\n              }\n
+        \           }\n          },\n          {\n            \"$ref\": \"#/definitions/validate_assets\"\n
+        \         }\n        ],\n        \"anyOf\": [\n          {\n            \"required\":
+        [\"properties\"],\n            \"properties\": {\n              \"properties\":
+        {\n                \"$ref\": \"#/definitions/require_properties\"\n              }\n
+        \           }\n          },\n          {\n            \"$ref\": \"#/definitions/require_assets\"\n
+        \         }\n        ]\n      }\n    },\n    {\n      \"$comment\": \"Collections\",\n
+        \     \"if\": {\n        \"properties\": {\n          \"type\": {\n            \"const\":
+        \"Collection\"\n          }\n        }\n      },\n      \"then\": {\n        \"allOf\":
+        [\n          {\n            \"$ref\": \"#/definitions/validate_bands\"\n          },\n
+        \         {\n            \"$ref\": \"#/definitions/validate_assets\"\n          },\n
+        \         {\n            \"properties\": {\n              \"item_assets\":
+        {\n                \"additionalProperties\": {\n                  \"$ref\":
+        \"#/definitions/validate_properties\"\n                }\n              }\n
+        \           }\n          },\n          {\n            \"properties\": {\n
+        \             \"summaries\": {\n                \"type\": \"object\",\n                \"$comment\":
+        \"We can't properly validate summary objects types (min/max or schemas) yet.\",\n
+        \               \"allOf\": [\n                  {\n                    \"$ref\":
+        \"#/definitions/validate_bands\"\n                  },\n                  {\n
+        \                   \"properties\": {\n                      \"raster:bits_per_sample\":
+        {\n                        \"type\": [\"array\", \"object\"],\n                        \"items\":
+        {\n                          \"$ref\": \"#/definitions/raster:bits_per_sample\"\n
+        \                       }\n                      }\n                    }\n
+        \                 },\n                  {\n                    \"properties\":
+        {\n                      \"raster:sampling\": {\n                        \"type\":
+        [\"array\", \"object\"],\n                        \"items\": {\n                          \"$ref\":
+        \"#/definitions/raster:sampling\"\n                        }\n                      }\n
+        \                   }\n                  },\n                  {\n                    \"properties\":
+        {\n                      \"raster:scale\": {\n                        \"type\":
+        [\"array\", \"object\"],\n                        \"items\": {\n                          \"$ref\":
+        \"#/definitions/raster:scale\"\n                        }\n                      }\n
+        \                   }\n                  },\n                  {\n                    \"properties\":
+        {\n                      \"raster:offset\": {\n                        \"type\":
+        [\"array\", \"object\"],\n                        \"items\": {\n                          \"$ref\":
+        \"#/definitions/raster:offset\"\n                        }\n                      }\n
+        \                   }\n                  },\n                  {\n                    \"properties\":
+        {\n                      \"raster:spatial_resolution\": {\n                        \"type\":
+        [\"array\", \"object\"],\n                        \"items\": {\n                          \"$ref\":
+        \"#/definitions/raster:spatial_resolution\"\n                        }\n                      }\n
+        \                   }\n                  },\n                  {\n                    \"properties\":
+        {\n                      \"raster:histogram\": {\n                        \"type\":
+        [\"array\", \"object\"],\n                        \"items\": {\n                          \"$ref\":
+        \"#/definitions/raster:histogram\"\n                        }\n                      }\n
+        \                   }\n                  }\n                ]\n              }\n
+        \           }\n          }\n        ],\n        \"anyOf\": [\n          {\n
+        \           \"$ref\": \"#/definitions/require_in_bands\"\n          },\n          {\n
+        \           \"$ref\": \"#/definitions/require_assets\"\n          },\n          {\n
+        \           \"required\": [\"item_assets\"],\n            \"properties\":
+        {\n              \"item_assets\": {\n                \"$ref\": \"#/definitions/asset_contains\"\n
+        \             }\n            }\n          },\n          {\n            \"required\":
+        [\"summaries\"],\n            \"properties\": {\n              \"summaries\":
+        {\n                \"$ref\": \"#/definitions/require_properties\"\n              }\n
+        \           }\n          }\n        ]\n      }\n    }\n  ],\n  \"definitions\":
+        {\n    \"require_properties\": {\n      \"anyOf\": [\n        {\n          \"$ref\":
+        \"#/definitions/require_fields\"\n        },\n        {\n          \"$ref\":
+        \"#/definitions/require_in_bands\"\n        }\n      ]\n    },\n    \"validate_bands\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"bands\":
+        {\n          \"type\": \"array\",\n          \"items\": {\n            \"$ref\":
+        \"#/definitions/fields\"\n          }\n        }\n      }\n    },\n    \"validate_properties\":
+        {\n      \"allOf\": [\n        {\n          \"$ref\": \"#/definitions/fields\"\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/validate_bands\"\n
+        \       }\n      ]\n    },\n    \"require_assets\": {\n      \"required\":
+        [\"assets\"],\n      \"properties\": {\n        \"assets\": {\n          \"$ref\":
+        \"#/definitions/asset_contains\"\n        }\n      }\n    },\n    \"validate_assets\":
+        {\n      \"properties\": {\n        \"assets\": {\n          \"additionalProperties\":
+        {\n            \"$ref\": \"#/definitions/validate_properties\"\n          }\n
+        \       }\n      }\n    },\n    \"asset_contains\": {\n      \"type\": \"object\",\n
+        \     \"not\": {\n        \"additionalProperties\": {\n          \"not\":
+        {\n            \"$ref\": \"#/definitions/require_properties\"\n          }\n
+        \       }\n      }\n    },\n    \"require_in_bands\": {\n      \"required\":
+        [\"bands\"],\n      \"properties\": {\n        \"bands\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"$ref\": \"#/definitions/require_fields\"\n
+        \         }\n        }\n      }\n    },\n    \"require_fields\": {\n      \"anyOf\":
+        [\n        {\"required\": [\"raster:bits_per_sample\"]},\n        {\"required\":
+        [\"raster:sampling\"]},\n        {\"required\": [\"raster:scale\"]},\n        {\"required\":
+        [\"raster:offset\"]},\n        {\"required\": [\"raster:spatial_resolution\"]},\n
+        \       {\"required\": [\"raster:histogram\"]}\n      ]\n    },\n    \"fields\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"raster:bits_per_sample\":
+        {\n          \"$ref\": \"#/definitions/raster:bits_per_sample\"\n        },\n
+        \       \"raster:sampling\": {\n          \"$ref\": \"#/definitions/raster:sampling\"\n
+        \       },\n        \"raster:scale\": {\n          \"$ref\": \"#/definitions/raster:scale\"\n
+        \       },\n        \"raster:offset\": {\n          \"$ref\": \"#/definitions/raster:offset\"\n
+        \       },\n        \"raster:spatial_resolution\": {\n          \"$ref\":
+        \"#/definitions/raster:spatial_resolution\"\n        },\n        \"raster:histogram\":
+        {\n          \"$ref\": \"#/definitions/raster:histogram\"\n        }\n      },\n
+        \     \"patternProperties\": {\n        \"^(?!raster:)\": {}\n      },\n      \"additionalProperties\":
+        false\n    },\n    \"raster:bits_per_sample\": {\n      \"title\": \"The actual
+        number of bits used for this band\",\n      \"type\": \"integer\"\n    },\n
+        \   \"raster:sampling\": {\n      \"title\": \"Pixel sampling in the band\",\n
+        \     \"type\": \"string\",\n      \"enum\": [\n        \"area\",\n        \"point\"\n
+        \     ]\n    },\n    \"raster:scale\": {\n      \"title\": \"multiplicator
+        factor of the pixel value to transform into the value\",\n      \"type\":
+        \"number\"\n    },\n    \"raster:offset\": {\n      \"title\": \"number to
+        be added to the pixel value to transform into the value\",\n      \"type\":
+        \"number\"\n    },\n    \"raster:spatial_resolution\": {\n      \"title\":
+        \"Average spatial resolution (in meters) of the pixels in the band\",\n      \"type\":
+        \"number\"\n    },\n    \"raster:histogram\": {\n      \"title\": \"Histogram\",\n
+        \     \"type\": \"object\",\n      \"additionalItems\": false,\n      \"required\":
+        [\n        \"count\",\n        \"min\",\n        \"max\",\n        \"buckets\"\n
+        \     ],\n      \"additionalProperties\": false,\n      \"properties\": {\n
+        \       \"count\": {\n          \"title\": \"number of buckets\",\n          \"type\":
+        \"number\"\n        },\n        \"min\": {\n          \"title\": \"Minimum
+        value of the buckets\",\n          \"type\": \"number\"\n        },\n        \"max\":
+        {\n          \"title\": \"Maximum value of the buckets\",\n          \"type\":
+        \"number\"\n        },\n        \"buckets\": {\n          \"title\": \"distribution
+        buckets\",\n          \"type\": \"array\",\n          \"minItems\": 3,\n          \"items\":
+        {\n            \"title\": \"number of pixels in the bucket\",\n            \"type\":
+        \"integer\"\n          }\n        }\n      }\n    }\n  }\n}\n"
+    headers: {}
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://stac-extensions.github.io/eo/v1.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/eo/v1.0.0/schema.json#\",\n  \"title\":
+        \"EO Extension\",\n  \"description\": \"STAC EO Extension for STAC Items.\",\n
+        \ \"oneOf\": [\n    {\n      \"$comment\": \"This is the schema for STAC Items.\",\n
+        \     \"allOf\": [\n        {\n          \"type\": \"object\",\n          \"required\":
+        [\n            \"type\",\n            \"properties\",\n            \"assets\"\n
+        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Feature\"\n            },\n            \"properties\": {\n              \"$ref\":
+        \"#/definitions/fields\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/fields\"\n              }\n            }\n          },\n          \"$comment\":
+        \"The if-then-else below checks whether the eo:bands is given in assets or
+        not. If yes, allows eo:bands in properties (else), otherwise, disallows eo:bands
+        in properties (then).\",\n          \"if\": {\n            \"required\": [\n
+        \             \"assets\"\n            ],\n            \"properties\": {\n
+        \             \"assets\": {\n                \"type\": \"object\",\n                \"additionalProperties\":
+        {\n                  \"properties\": {\n                    \"eo:bands\":
+        false\n                  }\n                }\n              }\n            }\n
+        \         },\n          \"then\": {\n            \"properties\": {\n              \"properties\":
+        {\n                \"properties\": {\n                  \"eo:bands\": false\n
+        \               }\n              }\n            }\n          },\n          \"else\":
+        {\n            \"properties\": {\n              \"properties\": {\n                \"properties\":
+        {\n                  \"eo:bands\": {\n                    \"$ref\": \"#/definitions/bands\"\n
+        \                 }\n                }\n              }\n            }\n          }\n
+        \       },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    },\n    {\n      \"$comment\": \"This is the schema
+        for STAC Collections.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\"\n          ],\n
+        \         \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/fields\"\n              }\n            },\n            \"item_assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
+        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/eo/v1.0.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"type\":
+        \"object\",\n      \"properties\": {\n        \"eo:cloud_cover\": {\n          \"title\":
+        \"Cloud Cover\",\n          \"type\": \"number\",\n          \"minimum\":
+        0,\n          \"maximum\": 100\n        },\n        \"eo:bands\": {\n          \"$ref\":
+        \"#/definitions/bands\"\n        }\n      },\n      \"patternProperties\":
+        {\n        \"^(?!eo:)\": {}\n      },\n      \"additionalProperties\": false\n
+        \   },\n    \"bands\": {\n      \"title\": \"Bands\",\n      \"type\": \"array\",\n
+        \     \"minItems\": 1,\n      \"items\": {\n        \"title\": \"Band\",\n
+        \       \"type\": \"object\",\n        \"minProperties\": 1,\n        \"properties\":
+        {\n          \"name\": {\n            \"title\": \"Name of the band\",\n            \"type\":
+        \"string\"\n          },\n          \"common_name\": {\n            \"title\":
+        \"Common Name of the band\",\n            \"type\": \"string\",\n            \"enum\":
+        [\n              \"coastal\",\n              \"blue\",\n              \"green\",\n
+        \             \"red\",\n              \"rededge\",\n              \"yellow\",\n
+        \             \"pan\",\n              \"nir\",\n              \"nir08\",\n
+        \             \"nir09\",\n              \"cirrus\",\n              \"swir16\",\n
+        \             \"swir22\",\n              \"lwir\",\n              \"lwir11\",\n
+        \             \"lwir12\"\n            ]\n          },\n          \"center_wavelength\":
+        {\n            \"title\": \"Center Wavelength\",\n            \"type\": \"number\"\n
+        \         },\n          \"full_width_half_max\": {\n            \"title\":
+        \"Full Width Half Max (FWHM)\",\n            \"type\": \"number\"\n          }\n
+        \       }\n      }\n    }\n  }\n}"
+    headers: {}
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://stac-extensions.github.io/projection/v1.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/projection/v1.0.0/schema.json\",\n  \"title\":
+        \"Projection Extension\",\n  \"description\": \"STAC Projection Extension
+        for STAC Items.\",\n  \"oneOf\": [\n    {\n      \"$comment\": \"This is the
+        schema for STAC Items.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\",\n            \"properties\",\n
+        \           \"assets\"\n          ],\n          \"properties\": {\n            \"type\":
+        {\n              \"const\": \"Feature\"\n            },\n            \"properties\":
+        {\n              \"allOf\": [\n                {\n                  \"$comment\":
+        \"Require fields here for item properties.\",\n                  \"required\":
+        [\n                    \"proj:epsg\"\n                  ]\n                },\n
+        \               {\n                  \"$ref\": \"#/definitions/fields\"\n
+        \               }\n              ]\n            },\n            \"assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    },\n    {\n      \"$comment\": \"This is the schema
+        for STAC Collections.\",\n      \"allOf\": [\n        {\n          \"type\":
+        \"object\",\n          \"required\": [\n            \"type\"\n          ],\n
+        \         \"properties\": {\n            \"type\": {\n              \"const\":
+        \"Collection\"\n            },\n            \"assets\": {\n              \"type\":
+        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
+        \"#/definitions/fields\"\n              }\n            },\n            \"item_assets\":
+        {\n              \"type\": \"object\",\n              \"additionalProperties\":
+        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
+        \         }\n        },\n        {\n          \"$ref\": \"#/definitions/stac_extensions\"\n
+        \       }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
+        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/projection/v1.0.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"$comment\":
+        \"Add your new fields here. Don't require them here, do that above in the
+        item schema.\",\n      \"type\": \"object\",\n      \"properties\": {\n        \"proj:epsg\":{\n
+        \         \"title\":\"EPSG code\",\n          \"type\":[\n            \"integer\",\n
+        \           \"null\"\n          ]\n        },\n        \"proj:wkt2\":{\n          \"title\":\"Coordinate
+        Reference System in WKT2 format\",\n          \"type\":[\n            \"string\",\n
+        \           \"null\"\n          ]\n        },\n        \"proj:projjson\":
+        {\n          \"title\":\"Coordinate Reference System in PROJJSON format\",\n
+        \         \"oneOf\": [\n            {\n              \"$ref\": \"https://proj.org/schemas/v0.2/projjson.schema.json\"\n
+        \           },\n            {\n              \"type\": \"null\"\n            }\n
+        \         ]\n        },\n        \"proj:geometry\":{\n          \"$ref\":
+        \"https://geojson.org/schema/Geometry.json\"\n        },\n        \"proj:bbox\":{\n
+        \         \"title\":\"Extent\",\n          \"type\":\"array\",\n          \"oneOf\":
+        [\n            {\n              \"minItems\":4,\n              \"maxItems\":4\n
+        \           },\n            {\n              \"minItems\":6,\n              \"maxItems\":6\n
+        \           }\n          ],\n          \"items\":{\n            \"type\":\"number\"\n
+        \         }\n        },\n        \"proj:centroid\":{\n          \"title\":\"Centroid\",\n
+        \         \"type\":\"object\",\n          \"required\": [\n            \"lat\",\n
+        \           \"lon\"\n          ],\n          \"properties\": {\n            \"lat\":
+        {\n              \"type\": \"number\",\n              \"minimum\": -90,\n
+        \             \"maximum\": 90\n            },\n            \"lon\": {\n              \"type\":
+        \"number\",\n              \"minimum\": -180,\n              \"maximum\":
+        180\n            }\n          }\n        },\n        \"proj:shape\":{\n          \"title\":\"Shape\",\n
+        \         \"type\":\"array\",\n          \"minItems\":2,\n          \"maxItems\":2,\n
+        \         \"items\":{\n            \"type\":\"integer\"\n          }\n        },\n
+        \       \"proj:transform\":{\n          \"title\":\"Transform\",\n          \"type\":\"array\",\n
+        \         \"oneOf\": [\n            {\n              \"minItems\":6,\n              \"maxItems\":6\n
+        \           },\n            {\n              \"minItems\":9,\n              \"maxItems\":9\n
+        \           }\n          ],\n          \"items\":{\n            \"type\":\"number\"\n
+        \         }\n        }\n      },\n      \"patternProperties\": {\n        \"^(?!proj:)\":
+        {}\n      },\n      \"additionalProperties\": false\n    }\n  }\n}"
+    headers: {}
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://stac-extensions.github.io/classification/v1.1.0/schema.json
+  response:
+    body:
+      string: "{\n    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n
+        \   \"$id\": \"https://stac-extensions.github.io/classification/v1.1.0/schema.json#\",\n
+        \   \"title\": \"Classification Extension\",\n    \"description\": \"STAC
+        Classification Extension for STAC Items and STAC Collections.\",\n    \"oneOf\":
+        [\n        {\n            \"$comment\": \"This is the schema for STAC Items.\",\n
+        \           \"allOf\": [\n                {\n                    \"$ref\":
+        \"#/definitions/stac_extensions\"\n                },\n                {\n
+        \                   \"type\": \"object\",\n                    \"required\":
+        [\n                        \"type\",\n                        \"properties\",\n
+        \                       \"assets\"\n                    ],\n                    \"properties\":
+        {\n                        \"type\": {\n                            \"const\":
+        \"Feature\"\n                        },\n                        \"properties\":
+        {\n                            \"$comment\": \"This validates the fields in
+        Item Properties, but does not require them.\",\n                            \"$ref\":
+        \"#/definitions/fields\"\n                        },\n                        \"assets\":
+        {\n                            \"$comment\": \"This validates the fields in
+        Item Assets (including in Raster Band Objects), but does not require them.\",\n
+        \                           \"type\": \"object\",\n                            \"additionalProperties\":
+        {\n                                \"allOf\": [\n                                    {\n
+        \                                       \"$ref\": \"#/definitions/fields\"\n
+        \                                   },\n                                    {\n
+        \                                       \"$ref\": \"#/definitions/raster_bands\"\n
+        \                                   }\n                                ]\n
+        \                           }\n                        }\n                    }\n
+        \               }\n            ]\n        },\n        {\n            \"$comment\":
+        \"This is the schema for STAC Collections.\",\n            \"allOf\": [\n
+        \               {\n                    \"$ref\": \"#/definitions/stac_extensions\"\n
+        \               },\n                {\n                    \"type\": \"object\",\n
+        \                   \"required\": [\n                        \"type\"\n                    ],\n
+        \                   \"properties\": {\n                        \"type\": {\n
+        \                           \"const\": \"Collection\"\n                        },\n
+        \                       \"assets\": {\n                            \"$comment\":
+        \"This validates the fields in Collection Assets, but does not require them.\",\n
+        \                           \"type\": \"object\",\n                            \"additionalProperties\":
+        {\n                                \"allOf\": [\n                                    {\n
+        \                                       \"$ref\": \"#/definitions/fields\"\n
+        \                                   },\n                                    {\n
+        \                                       \"$ref\": \"#/definitions/raster_bands\"\n
+        \                                   }\n                                ]\n
+        \                           }\n                        },\n                        \"item_assets\":
+        {\n                            \"$comment\": \"This validates the fields in
+        Item Asset Definitions, but does not require them.\",\n                            \"type\":
+        \"object\",\n                            \"additionalProperties\": {\n                                \"allOf\":
+        [\n                                    {\n                                        \"$ref\":
+        \"#/definitions/fields\"\n                                    },\n                                    {\n
+        \                                       \"$ref\": \"#/definitions/raster_bands\"\n
+        \                                   }\n                                ]\n
+        \                           }\n                        },\n                        \"summaries\":
+        {\n                            \"$comment\": \"This validates the fields in
+        Summaries, but does not require them.\",\n                            \"$ref\":
+        \"#/definitions/fields\"\n                        }\n                    }\n
+        \               }\n            ]\n        }\n    ],\n    \"definitions\":
+        {\n        \"stac_extensions\": {\n            \"type\": \"object\",\n            \"required\":
+        [\n                \"stac_extensions\"\n            ],\n            \"properties\":
+        {\n                \"stac_extensions\": {\n                    \"type\": \"array\",\n
+        \                   \"contains\": {\n                        \"const\": \"https://stac-extensions.github.io/classification/v1.1.0/schema.json\"\n
+        \                   }\n                }\n            }\n        },\n        \"require_any_field\":
+        {\n            \"$comment\": \"Please list all fields here so that we can
+        force the existance of one of them in other parts of the schemas.\",\n            \"anyOf\":
+        [\n                {\n                    \"required\": [\n                        \"classification:bitfields\"\n
+        \                   ]\n                },\n                {\n                    \"required\":
+        [\n                        \"classification:classes\"\n                    ]\n
+        \               }\n            ]\n        },\n        \"fields\": {\n            \"$comment\":
+        \"Add your new fields here. Don't require them here, do that above in the
+        corresponding schema.\",\n            \"type\": \"object\",\n            \"properties\":
+        {\n                \"classification:bitfields\": {\n                    \"type\":
+        \"array\",\n                    \"uniqueItems\": true,\n                    \"minItems\":
+        1,\n                    \"items\": {\n                        \"$ref\": \"#/definitions/bit_field_object\"\n
+        \                   }\n                },\n                \"classification:classes\":
+        {\n                    \"type\": \"array\",\n                    \"uniqueItems\":
+        true,\n                    \"minItems\": 1,\n                    \"items\":
+        {\n                        \"$ref\": \"#/definitions/class_object\"\n                    }\n
+        \               }\n            },\n            \"patternProperties\": {\n
+        \               \"^(?!classification:)\": {}\n            },\n            \"additionalProperties\":
+        false\n        },\n        \"class_object\": {\n            \"$comment\":
+        \"Object for storing classes\",\n            \"type\": \"object\",\n            \"required\":
+        [\n                \"value\",\n                \"description\"\n            ],\n
+        \           \"properties\": {\n                \"value\": {\n                    \"type\":
+        \"integer\"\n                },\n                \"description\": {\n                    \"type\":
+        \"string\"\n                },\n                \"name\": {\n                    \"type\":
+        \"string\"\n                },\n                \"color_hint\": {\n                    \"type\":
+        \"string\",\n                    \"pattern\": \"^([0-9A-Fa-f]{6})$\"\n                }\n
+        \           }\n        },\n        \"bit_field_object\": {\n            \"$comment\":
+        \"Object for storing bit fields\",\n            \"type\": \"object\",\n            \"required\":
+        [\n                \"offset\",\n                \"length\",\n                \"classes\"\n
+        \           ],\n            \"properties\": {\n                \"offset\":
+        {\n                    \"type\": \"integer\",\n                    \"minimum\":
+        0\n                },\n                \"length\": {\n                    \"type\":
+        \"integer\",\n                    \"minimum\": 1\n                },\n                \"classes\":
+        {\n                    \"type\": \"array\",\n                    \"uniqueItems\":
+        true,\n                    \"minItems\": 1,\n                    \"items\":
+        {\n                        \"$ref\": \"#/definitions/class_object\"\n                    }\n
+        \               },\n                \"roles\": {\n                    \"type\":
+        \"array\",\n                    \"uniqueItems\": true,\n                    \"minItems\":
+        1,\n                    \"items\": {\n                        \"type\": \"string\"\n
+        \                   }\n                },\n                \"description\":
+        {\n                    \"type\": \"string\"\n                },\n                \"name\":
+        {\n                    \"type\": \"string\"\n                }\n            }\n
+        \       },\n        \"raster_bands\": {\n            \"$comment\": \"Classification
+        fields on the Raster Extension raster:bands object\",\n            \"type\":
+        \"object\",\n            \"properties\": {\n                \"raster:bands\":
+        {\n                    \"type\": \"array\",\n                    \"items\":
+        {\n                        \"$ref\": \"#/definitions/fields\"\n                    }\n
+        \               }\n            }\n        }\n    }\n}"
+    headers: {}
     status:
       code: 200
       message: OK

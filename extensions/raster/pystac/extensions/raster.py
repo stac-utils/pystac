@@ -28,17 +28,15 @@ T = TypeVar("T", pystac.Asset, pystac.ItemAssetDefinition, pystac.Band)
 
 SCHEMA_URI = "https://stac-extensions.github.io/raster/v2.0.0/schema.json"
 SCHEMA_URIS = [
-    "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
+    "https://stac-extensions.github.io/raster/v1.1.0/schema.json",
     "https://stac-extensions.github.io/raster/v1.0.0/schema.json",
     SCHEMA_URI,
 ]
 SCHEMA_STARTWITH = "https://stac-extensions.github.io/raster/"
 
-# TO be removed - moved to pystac.Band
-RASTER_BANDS_PROP = "raster:bands"
-
 PREFIX: str = "raster:"
 
+BANDS_PROP: str = PREFIX + "bands"  # Deprecated
 # Field names
 # Can be used in Assets and Item properties
 SAMPLING_PROP = PREFIX + "sampling"
@@ -656,6 +654,9 @@ class RasterExtension(
         """Returns bands with the Raster Extension loaded"""
         pass
 
+    def get_statistics(self) -> pystac.Statistics | None:
+        pass
+
 
 class AssetRasterExtension(RasterExtension[pystac.Asset]):
     asset_href: str
@@ -761,7 +762,6 @@ class RasterExtensionHooks(ExtensionHooks):
         # nodata, data_type, statistics and unit were not renamed, but have been moved
         # to STAC common metadata
         if version < "2.0.0":
-            # TODO: need to take care of the merge conflict
             common_band_fields = ["name", "description"]
             common_metadata_fields = ["nodata", "data_type", "statistics", "unit"]
             to_be_renamed = [
@@ -823,7 +823,7 @@ class RasterExtensionHooks(ExtensionHooks):
                         if k not in ["name", "description"]
                     }
                 else:
-                    counters: dict[str, Counter] = {
+                    counters: dict[str, Counter[Any]] = {
                         PREFIX + raster_field: Counter()
                         for raster_field in to_be_renamed
                     }

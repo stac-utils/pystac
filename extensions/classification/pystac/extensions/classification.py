@@ -38,6 +38,8 @@ SUPPORTED_VERSIONS: list[str] = ["2.0.0", "1.1.0", "1.0.0"]
 PREFIX: str = "classification:"
 BITFIELDS_PROP: str = PREFIX + "bitfields"
 CLASSES_PROP: str = PREFIX + "classes"
+
+# Moved to "bands" common metadata property since v2.0.0
 RASTER_BANDS_PROP: str = "raster:bands"
 
 COLOR_HINT_PATTERN: Pattern[str] = re.compile("^([0-9A-Fa-f]{6})$")

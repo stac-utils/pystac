@@ -297,8 +297,9 @@ def test_add_to(plain_item: Item) -> None:
 
 
 @pytest.mark.vcr()
-def test_validate_classification(landsat_item: Item) -> None:
-    landsat_item.validate()
+def test_validate_classification(item_dict: dict[str, Any]) -> None:
+    stable_landsat_item = Item.from_dict(item_dict, migrate=False)
+    stable_landsat_item.validate()
 
 
 def test_add_item_classes(plain_item: Item) -> None:

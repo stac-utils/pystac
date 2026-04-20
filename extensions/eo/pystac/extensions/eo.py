@@ -37,7 +37,7 @@ SCHEMA_URIS: list[str] = [
 PREFIX: str = "eo:"
 
 # Field names
-EOBANDS_PROP: str = PREFIX + "EObands"
+BANDS_PROP: str = PREFIX + "bands"  # Deprecated
 CLOUD_COVER_PROP: str = PREFIX + "cloud_cover"
 SNOW_COVER_PROP: str = PREFIX + "snow_cover"
 COMMON_NAME_PROP: str = PREFIX + "common_name"
@@ -779,7 +779,9 @@ class EOExtensionHooks(ExtensionHooks):
                         band_name = band["name"]
                         if band_name in old_band_names:
                             saw_band_names.add(band_name)
-                            old_band = old_bands[old_band_names.index(band_name)]
+                            old_band = next(
+                                b for b in old_bands if b["name"] == band_name
+                            )
                             for k, v in old_band.items():
                                 new_k = PREFIX + k if k in to_be_renamed else k
                                 obj["properties"]["bands"][idx_band][new_k] = v
@@ -813,7 +815,7 @@ class EOExtensionHooks(ExtensionHooks):
                         if k not in ["name", "description"]
                     }
                 else:
-                    counters: dict[str, Counter] = {
+                    counters: dict[str, Counter[Any]] = {
                         PREFIX + eo_field: Counter() for eo_field in to_be_renamed
                     }
 
