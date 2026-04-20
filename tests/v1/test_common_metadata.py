@@ -33,8 +33,8 @@ def test_datetimes(date_time_range_item: Item) -> None:
     # save dict of original item to check that `common_metadata`
     # method doesn't mutate self.item_1
     before = date_time_range_item.clone().to_dict()
-    start_datetime_str = date_time_range_item.properties["start_datetime"]
-    assert isinstance(start_datetime_str, str)
+    start_datetime = date_time_range_item.properties["start_datetime"]
+    assert isinstance(start_datetime, datetime)
 
     cm = date_time_range_item.common_metadata
     assert isinstance(cm, CommonMetadata)
@@ -43,6 +43,7 @@ def test_datetimes(date_time_range_item: Item) -> None:
     assert cm.providers is None
 
 
+@pytest.mark.xfail(reason="pystac v2 purposefully converts datetimes to datetime objects")
 def test_common_metadata_start_datetime(date_time_range_item: Item) -> None:
     x = date_time_range_item.clone()
     start_datetime_str = "2018-01-01T13:21:30Z"
@@ -59,6 +60,7 @@ def test_common_metadata_start_datetime(date_time_range_item: Item) -> None:
     assert x.properties["start_datetime"] == example_datetime_str
 
 
+@pytest.mark.xfail(reason="pystac v2 purposefully converts datetimes to datetime objects")
 def test_common_metadata_end_datetime(date_time_range_item: Item) -> None:
     x = date_time_range_item.clone()
     end_datetime_str = "2018-01-01T13:31:30Z"
@@ -75,6 +77,7 @@ def test_common_metadata_end_datetime(date_time_range_item: Item) -> None:
     assert x.properties["end_datetime"] == example_datetime_str
 
 
+@pytest.mark.xfail(reason="pystac v2 purposefully converts datetimes to datetime objects")
 def test_common_metadata_created(sample_full_item: Item) -> None:
     x = sample_full_item.clone()
     created_str = "2016-05-04T00:00:01Z"
@@ -91,6 +94,7 @@ def test_common_metadata_created(sample_full_item: Item) -> None:
     assert x.properties["created"] == example_datetime_str
 
 
+@pytest.mark.xfail(reason="pystac v2 purposefully converts datetimes to datetime objects")
 def test_common_metadata_updated(sample_full_item: Item) -> None:
     x = sample_full_item.clone()
     updated_str = "2017-01-01T00:30:55Z"

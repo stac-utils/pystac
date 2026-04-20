@@ -24,7 +24,7 @@ from .container import Container
 from .geo_interface import GeoInterface
 from .link import Link
 from .stac_object import STACObject
-from .utils import datetime_to_str, make_posix_style, str_to_datetime
+from .utils import make_posix_style
 
 if TYPE_CHECKING:
     from .collection import Collection
@@ -120,15 +120,15 @@ class Item(STACObject, Assets):
 
     @deprecated("Get the datetime from the asset directly")
     def get_datetime(self, asset: Asset | None = None) -> dt.datetime | None:
-        if asset and (datetime := asset.extra_fields.get("datetime")):
-            return str_to_datetime(datetime)
+        if asset and (datetime := asset.datetime):
+            return datetime
         else:
             return self.properties.datetime
 
     @deprecated("Set the datetime on the asset directly")
     def set_datetime(self, datetime: dt.datetime, asset: Asset | None = None) -> None:
         if asset:
-            asset.extra_fields["datetime"] = datetime_to_str(datetime)
+            asset.datetime = datetime
         else:
             self.properties.datetime = datetime
 
@@ -239,16 +239,15 @@ class Properties(Basics, DateTime, Licensing, Providers, Instrument):
     def __init__(
         self,
         *,
-        datetime: dt.datetime | str | None = None,
-        start_datetime: dt.datetime | str | None = None,
-        end_datetime: dt.datetime | str | None = None,
         bands: list[Band] | list[dict[str, Any]] | None = None,
         **kwargs: Any,
     ):
         self.extra_fields: dict[str, Any] = kwargs
-        self.datetime = datetime or dt.datetime.now(tz=dt.UTC)
-        self.start_datetime = start_datetime
-        self.end_datetime = end_datetime
+        self.extra_fields.update(DateTime.from_str(kwargs))
+
+        if not any([self.datetime, self.start_datetime, self.end_datetime]):
+            self.datetime = dt.datetime.now(tz=dt.UTC)
+
         if bands is not None:
             self.bands: list[Band] | None = [Band.try_from(band) for band in bands]
         else:
@@ -269,6 +268,12 @@ class Properties(Basics, DateTime, Licensing, Providers, Instrument):
             **copy.deepcopy(self.extra_fields, memo),
         )
 
+    def get(self, key: str, default: Any = None) -> Any:
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
     @classmethod
     def try_from(
         cls,
@@ -287,6 +292,8 @@ class Properties(Basics, DateTime, Licensing, Providers, Instrument):
 
     def to_dict(self) -> dict[str, Any]:
         data = copy.deepcopy(self.extra_fields)
+        data.update(DateTime.to_str(self.extra_fields))
+
         if self.bands is not None:
             data["bands"] = [band.to_dict() for band in self.bands]
-        return {k: v for k, v in data.items() if v is not None}
+        return {k: v for k, v in data.items() if v is not None or k == "datetime"}

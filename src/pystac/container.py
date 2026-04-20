@@ -4,7 +4,7 @@ import copy
 import os.path
 import warnings
 from abc import ABC
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterable, Iterator
 from typing import TYPE_CHECKING, Any
 
 from typing_extensions import deprecated
@@ -20,6 +20,7 @@ from .stac_object import STACObject
 
 if TYPE_CHECKING:
     from .catalog import CatalogType  # pyright: ignore[reportDeprecated]
+    from .collection import Collection
     from .href_generator import HrefGenerator
     from .item import Item
     from .stac_io import StacIO
@@ -27,6 +28,9 @@ if TYPE_CHECKING:
 
 
 class Container(STACObject, ABC):
+    def get_item(self, id: str, recursive: bool = False) -> Item | None:
+        return next(self.get_items(id, recursive=recursive), None)
+
     def get_items(self, *ids: str, recursive: bool = False) -> Iterator[Item]:
         for link in self.links:
             if link.is_item():
@@ -61,7 +65,7 @@ class Container(STACObject, ABC):
 
         return item_link
 
-    def add_items(self, items: list[Item]) -> list[Link]:
+    def add_items(self, items: Iterable[Item]) -> list[Link]:
         links: list[Link] = []
         for item in items:
             links.append(self.add_item(item))
@@ -145,19 +149,54 @@ class Container(STACObject, ABC):
     def clear_items(self) -> None:
         self.links: list[Link] = [link for link in self.links if not link.is_item()]
 
-    def get_child(self, id: str, recursive: bool = False) -> Container | None:
-        for child in self.get_children(recursive=recursive):
-            if child.id == id:
-                return child
+    def get_collections(
+        self, *ids: str, recursive: bool = False, sort_links_by_id: bool = True
+    ) -> Iterator[Collection]:
+        from .collection import Collection
 
-    def get_children(self, recursive: bool = False) -> Iterator[Container]:
-        for link in self.links:
-            if link.is_child():
-                stac_object = link.get_target(start_href=self._href, reader=self.reader)
-                if isinstance(stac_object, Container):
+        for child in self.get_children(
+            *ids, recursive=recursive, sort_links_by_id=sort_links_by_id
+        ):
+            if isinstance(child, Collection) and (not ids or child.id in ids):
+                yield child
+
+    @deprecated(
+        "Get all collections is deprecated, use `get_collections(recursive=True)`"
+    )
+    def get_all_collections(self) -> Iterator[Collection]:
+        yield from self.get_collections(recursive=True)
+
+    def get_child(
+        self, id: str, recursive: bool = False, sort_links_by_id: bool = True
+    ) -> Container | None:
+        return next(
+            self.get_children(
+                id, recursive=recursive, sort_links_by_id=sort_links_by_id
+            ),
+            None,
+        )
+
+    def get_children(
+        self, *ids: str, recursive: bool = False, sort_links_by_id: bool = True
+    ) -> Iterator[Container]:
+        links = self.get_child_links()
+        if ids and sort_links_by_id:
+            links = sorted(
+                links,
+                key=lambda x: (href := x.get_href()) is None
+                or all(id not in href for id in ids),
+            )
+
+        for link in links:
+            stac_object = link.get_target(start_href=self._href, reader=self.reader)
+
+            if isinstance(stac_object, Container):
+                if not ids or stac_object.id in ids:
                     yield stac_object
-                    if recursive:
-                        yield from stac_object.get_children(recursive=recursive)
+                if recursive:
+                    yield from stac_object.get_children(
+                        *ids, recursive=recursive, sort_links_by_id=sort_links_by_id
+                    )
 
     def get_child_links(self) -> list[Link]:
         return [link for link in self.links if link.is_child()]

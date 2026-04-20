@@ -464,6 +464,24 @@ def str_to_datetime(s: str) -> datetime:
     return dateutil.parser.isoparse(s)
 
 
+def to_datetime_str(value: datetime | str | None) -> str | None:
+    if value is None:
+        return None
+    elif isinstance(value, str):
+        return value
+    else:
+        return datetime_to_str(value)
+
+
+def from_datetime_str(value: datetime | str | None) -> datetime | None:
+    if value is None:
+        return None
+    elif isinstance(value, datetime):
+        return value
+    else:
+        return str_to_datetime(value)
+
+
 def now_in_utc() -> datetime:
     """Returns a datetime value of now with the UTC timezone applied"""
     return datetime.now(UTC)
