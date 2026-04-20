@@ -12,6 +12,9 @@ from pystac.item_collection import ItemCollection
 from .utils import TestCases
 from .utils.stac_io_mock import MockDefaultStacIO
 
+
+pytestmark = pytest.mark.passing_v2
+
 SIMPLE_ITEM = TestCases.get_path("data-files/examples/1.0.0-RC1/simple-item.json")
 CORE_ITEM = TestCases.get_path("data-files/examples/1.0.0-RC1/core-item.json")
 EXTENDED_ITEM = TestCases.get_path("data-files/examples/1.0.0-RC1/extended-item.json")
