@@ -7,7 +7,12 @@ from pytest_pystac.plugin import assert_to_from_dict
 import pystac
 from pystac import Collection, ExtensionTypeError, Item
 from pystac.errors import ExtensionNotImplemented
-from pystac.extensions.cf import CF_EXTENSION_HOOKS, PARAMETER_PROP, CFExtension, Parameter
+from pystac.extensions.cf import (
+    CF_EXTENSION_HOOKS,
+    PARAMETER_PROP,
+    CFExtension,
+    Parameter,
+)
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 
@@ -154,7 +159,9 @@ def test_parameters_set(cf_item: Item) -> None:
     new_params = [Parameter(name="wind_speed", unit="m s-1")]
     cf_ext.parameters = new_params
     assert cf_ext.parameters == new_params
-    assert cf_item.properties[PARAMETER_PROP] == [{"name": "wind_speed", "unit": "m s-1"}]
+    assert cf_item.properties[PARAMETER_PROP] == [
+        {"name": "wind_speed", "unit": "m s-1"}
+    ]
 
 
 def test_parameters_set_none(cf_item: Item) -> None:
