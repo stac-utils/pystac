@@ -10,7 +10,6 @@ import pystac
 from pystac import Asset, Collection, Item
 from pystac.errors import ExtensionTypeError
 from pystac.extensions.archive import ArchiveExtension
-from pystac.extensions.eo import Band
 from tests.utils import assert_to_from_dict
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
@@ -133,119 +132,6 @@ def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
         ArchiveExtension.ext(object())  # type: ignore
 
 
-# Tests for summaries
-def test_summaries_href(archive_collection: Collection) -> None:
-    col_dict = archive_collection.to_dict()
-    archive_summaries = ArchiveExtension.summaries(archive_collection)
-
-    # Get
-    assert archive_summaries.href == col_dict["summaries"]["archive:href"]
-    # Set
-    new_href_summary = ["new-example.tar.gz", "new-example-2.tar.gz"]
-    assert archive_summaries.href != new_href_summary
-    archive_summaries.href = new_href_summary
-    assert archive_summaries.href == new_href_summary
-
-    col_dict = archive_collection.to_dict()
-    assert col_dict["summaries"]["archive:href"] == new_href_summary
-
-
-def test_summaries_type(archive_collection: Collection) -> None:
-    col_dict = archive_collection.to_dict()
-    archive_summaries = ArchiveExtension.summaries(archive_collection)
-
-    # Get
-    assert archive_summaries.type == col_dict["summaries"]["archive:type"]
-    # Set
-    new_type_summary = ["new-example-type", "new-example-type-2"]
-    assert archive_summaries.type != new_type_summary
-    archive_summaries.type = new_type_summary
-    assert archive_summaries.type == new_type_summary
-
-    col_dict = archive_collection.to_dict()
-    assert col_dict["summaries"]["archive:type"] == new_type_summary
-
-
-def test_summaries_roles(archive_collection: Collection) -> None:
-    col_dict = archive_collection.to_dict()
-    archive_summaries = ArchiveExtension.summaries(archive_collection)
-
-    # Get
-    assert archive_summaries.roles == col_dict["summaries"]["archive:roles"]
-    # Set
-    new_roles_summary = [["new-example-roles"], ["new-example-roles-2"]]
-    assert archive_summaries.roles != new_roles_summary
-    archive_summaries.roles = new_roles_summary
-    assert archive_summaries.roles == new_roles_summary
-
-    col_dict = archive_collection.to_dict()
-    assert col_dict["summaries"]["archive:roles"] == new_roles_summary
-
-
-def test_summaries_range(archive_collection: Collection) -> None:
-    col_dict = archive_collection.to_dict()
-    archive_summaries = ArchiveExtension.summaries(archive_collection)
-
-    # Get
-    assert archive_summaries.range == col_dict["summaries"]["archive:range"]
-    # Set
-    new_range_summary = [[100, 200], [400, 500]]
-    assert archive_summaries.range != new_range_summary
-    archive_summaries.range = new_range_summary
-    assert archive_summaries.range == new_range_summary
-
-    col_dict = archive_collection.to_dict()
-    assert col_dict["summaries"]["archive:range"] == new_range_summary
-
-
-def test_summaries_title(archive_collection: Collection) -> None:
-    col_dict = archive_collection.to_dict()
-    archive_summaries = ArchiveExtension.summaries(archive_collection)
-
-    # Get
-    assert archive_summaries.title == col_dict["summaries"]["archive:title"]
-    # Set
-    new_title_summary = ["new-example-title", "new-example-title-2"]
-    assert archive_summaries.title != new_title_summary
-    archive_summaries.title = new_title_summary
-    assert archive_summaries.title == new_title_summary
-
-    col_dict = archive_collection.to_dict()
-    assert col_dict["summaries"]["archive:title"] == new_title_summary
-
-
-def test_summaries_description(archive_collection: Collection) -> None:
-    col_dict = archive_collection.to_dict()
-    archive_summaries = ArchiveExtension.summaries(archive_collection)
-
-    # Get
-    assert archive_summaries.description == col_dict["summaries"]["archive:description"]
-    # Set
-    new_description_summary = ["new-example-description", "new-example-description-2"]
-    assert archive_summaries.description != new_description_summary
-    archive_summaries.description = new_description_summary
-    assert archive_summaries.description == new_description_summary
-
-    col_dict = archive_collection.to_dict()
-    assert col_dict["summaries"]["archive:description"] == new_description_summary
-
-
-def test_summaries_bands(archive_collection: Collection) -> None:
-    col_dict = archive_collection.to_dict()
-    archive_summaries = ArchiveExtension.summaries(archive_collection)
-
-    # Get
-    assert archive_summaries.bands == col_dict["summaries"]["archive:bands"]
-    # Set
-    new_bands_summary = [[Band({"name": "B1"})], [Band({"name": "B2"})]]  # type: list[list[Band]] | None
-    assert archive_summaries.bands != new_bands_summary
-    archive_summaries.bands = new_bands_summary
-    assert archive_summaries.bands == new_bands_summary
-
-    col_dict = archive_collection.to_dict()
-    assert col_dict["summaries"]["archive:bands"] == new_bands_summary
-
-
 def test_item_apply() -> None:
     example_empty_item_uri = str(DATA_FILES / "example-empty-Item.json")
     example_empty_item = pystac.Item.from_file(example_empty_item_uri)
@@ -260,8 +146,6 @@ def test_item_apply() -> None:
         range=[],
         title="An Archive",
         description="This is an example archive.",
-        bands=[],
-        archive=[],
     )
 
     assert archive_ext.href == "some/href/path"
@@ -270,9 +154,7 @@ def test_item_apply() -> None:
     assert archive_ext.range == []
     assert archive_ext.title == "An Archive"
     assert archive_ext.description == "This is an example archive."
-    assert archive_ext.bands == []
-    assert archive_ext.archive == []
-    # example_empty_item.validate()
+    example_empty_item.validate()
 
 
 @pytest.mark.vcr()
@@ -454,65 +336,5 @@ def test_asset_description(archive_item: Item) -> None:
     # Set to None
     archive_ext.description = None
     assert "archive:description" not in asset.extra_fields
-
-    archive_item.validate()
-
-
-@pytest.mark.vcr()
-def test_asset_bands(archive_item: Item) -> None:
-    # Grab a random asset with the platform property
-    asset = random.choice(
-        [
-            _asset
-            for _asset in archive_item.assets.values()
-            if "archive:bands" in _asset.to_dict()
-        ]
-    )
-
-    archive_ext = ArchiveExtension.ext(asset)
-
-    # Get
-    assert archive_ext.bands == asset.extra_fields.get("archive:bands")
-
-    # Set
-    new_bands = None
-    archive_ext.bands = new_bands
-    assert archive_ext.bands == new_bands
-
-    archive_item.validate()
-
-    # Set to None
-    archive_ext.bands = None
-    assert "archive:bands" not in asset.extra_fields
-
-    archive_item.validate()
-
-
-@pytest.mark.vcr()
-def test_asset_archive(archive_item: Item) -> None:
-    # Grab a random asset with the platform property
-    asset = random.choice(
-        [
-            _asset
-            for _asset in archive_item.assets.values()
-            if "archive:archive" in _asset.to_dict()
-        ]
-    )
-
-    archive_ext = ArchiveExtension.ext(asset)
-
-    # Get
-    assert archive_ext.archive == asset.extra_fields.get("archive:archive")
-
-    # Set
-    new_archive = None
-    archive_ext.archive = new_archive
-    assert archive_ext.archive == new_archive
-
-    archive_item.validate()
-
-    # Set to None
-    archive_ext.archive = None
-    assert "archive:archive" not in asset.extra_fields
 
     archive_item.validate()

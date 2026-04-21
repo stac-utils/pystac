@@ -306,7 +306,7 @@ class DefaultStacIO(StacIO):
                             "User-Agent": f"pystac/{pystac.__version__}",
                             **self.headers,
                         },
-                        preload_content=False,  # type: ignore
+                        preload_content=False,  # MKM
                     ) as f:
                         href_contents = f.read().decode("utf-8")
                 else:
@@ -412,8 +412,6 @@ class DuplicateKeyReportingMixin(StacIO):
 
 
 if HAS_URLLIB3:
-    from typing import cast
-
     from urllib3 import PoolManager
     from urllib3.util import Retry
 
@@ -463,9 +461,10 @@ if HAS_URLLIB3:
                             "User-Agent": f"pystac/{pystac.__version__}",
                             **self.headers,
                         },
-                        retries=self.retry,  # type: ignore
+                        retries=self.retry,  # MKM
                     )
-                    return cast(str, response.data.decode("utf-8"))
+                    # return cast(str, response.data.decode("utf-8")) #MKM
+                    return response.data.decode("utf-8")
                 except HTTPError as e:
                     raise Exception(f"Could not read uri {href}") from e
             else:
