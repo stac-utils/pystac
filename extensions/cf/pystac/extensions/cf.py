@@ -5,7 +5,6 @@ https://github.com/stac-extensions/cf
 
 from __future__ import annotations
 
-import copy
 from collections.abc import Iterable
 from typing import (
     Any,
@@ -52,7 +51,7 @@ class Parameter:
         return f"<Parameter name={self.name} unit={self.unit}>"
 
     def to_dict(self) -> dict[str, str | None]:
-        return copy.deepcopy({"name": self.name, "unit": self.unit})
+        return {"name": self.name, "unit": self.unit}
 
     @staticmethod
     def from_dict(d: dict[str, Any]) -> Parameter:
