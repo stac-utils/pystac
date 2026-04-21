@@ -12,6 +12,7 @@ from pystac import (
     Link,
     STACError,
 )
+from pystac.extensions.archive import ArchiveExtension
 from pystac.extensions.classification import ClassificationExtension
 from pystac.extensions.datacube import DatacubeExtension
 from pystac.extensions.eo import EOExtension
@@ -46,6 +47,7 @@ T = TypeVar("T", Asset, ItemAssetDefinition, Link)
 U = TypeVar("U", Asset, ItemAssetDefinition)
 
 EXTENSION_NAMES = Literal[
+    "archive",
     "classification",
     "cube",
     "eo",
@@ -70,6 +72,7 @@ EXTENSION_NAMES = Literal[
 ]
 
 EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
+    ArchiveExtension.name: ArchiveExtension,
     ClassificationExtension.name: ClassificationExtension,
     DatacubeExtension.name: DatacubeExtension,
     EOExtension.name: EOExtension,
@@ -153,6 +156,10 @@ class CollectionExt(CatalogExt):
     stac_object: Collection
 
     @property
+    def archive(self) -> ArchiveExtension[Collection]:
+        return ArchiveExtension.ext(self.stac_object)
+
+    @property
     def cube(self) -> DatacubeExtension[Collection]:
         return DatacubeExtension.ext(self.stac_object)
 
@@ -219,6 +226,10 @@ class ItemExt:
             name : Extension identifier (eg: 'eo')
         """
         _get_class_by_name(name).remove_from(self.stac_object)
+
+    @property
+    def archive(self) -> ArchiveExtension[Item]:
+        return ArchiveExtension.ext(self.stac_object)
 
     @property
     def classification(self) -> ClassificationExtension[Item]:
@@ -346,6 +357,10 @@ class _AssetsExt(Generic[T]):
 
 class _AssetExt(_AssetsExt[U]):
     stac_object: U
+
+    @property
+    def archive(self) -> ArchiveExtension[U]:
+        return ArchiveExtension.ext(self.stac_object)
 
     @property
     def classification(self) -> ClassificationExtension[U]:
