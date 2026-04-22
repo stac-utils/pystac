@@ -48,7 +48,14 @@ class Link:
         self.method: str | None = method
         self.headers: dict[str, str | list[str]] | None = headers
         self.body: Any | None = body
+        extra_fields = kwargs.pop("extra_fields", None)
         self.extra_fields: dict[str, Any] = kwargs
+        if extra_fields:
+            warnings.warn(
+                "Pass extra_fields entries as kwargs "
+                "instead of extra_fields as keyword argument."
+            )
+            self.extra_fields.update(extra_fields)
 
         if isinstance(target, STACObject):
             self._href: str | None = href or target.get_self_href()

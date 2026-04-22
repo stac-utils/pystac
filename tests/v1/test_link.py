@@ -67,9 +67,7 @@ def test_relative() -> None:
         "href": target,
         "type": "example/stac_thing",
         "title": "a title",
-        "extra_fields": {
-            "a": "b",
-        },
+        "a": "b",
     }
     assert expected_dict == link.to_dict()
 
