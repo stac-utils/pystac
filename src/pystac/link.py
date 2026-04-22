@@ -257,6 +257,16 @@ class Link:
 
     ##### Convenience methods for Link creation #####
     @classmethod
+    def root(cls: type[Self], c: Catalog) -> Self:
+        """Creates a link to a root Catalog or Collection."""
+        return cls(RelType.ROOT, c, media_type=MediaType.JSON)
+
+    @classmethod
+    def parent(cls: type[Self], c: Catalog, title: str | None = None) -> Self:
+        """Creates a link to a parent Catalog or Collection."""
+        return cls(RelType.PARENT, c, title=title, media_type=MediaType.JSON)
+
+    @classmethod
     def collection(cls: type[Self], c: Collection) -> Self:
         """Creates a link to a Collection."""
         return cls(RelType.COLLECTION, c, media_type=MediaType.JSON)
