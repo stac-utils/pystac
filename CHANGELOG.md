@@ -1,6 +1,35 @@
 # Changelog
 
-## [Unreleased]
+## [1.14.3](https://github.com/stac-utils/pystac/compare/v1.14.2...v1.14.3) (2026-01-08)
+
+
+### Bug Fixes
+
+* /vsi* paths are always absolute ([#1625](https://github.com/stac-utils/pystac/issues/1625)) ([60eef08](https://github.com/stac-utils/pystac/commit/60eef08f5b2aee33b63ce37f4e31162ed8b39fb5))
+* doc string fixes ([#1613](https://github.com/stac-utils/pystac/issues/1613)) ([61c3e14](https://github.com/stac-utils/pystac/commit/61c3e142f7e5b2f17b8c51ad67e48a91d6007cf7))
+* typo nework --&gt; network in test_summaries.py ([#1624](https://github.com/stac-utils/pystac/issues/1624)) ([7a5e734](https://github.com/stac-utils/pystac/commit/7a5e734800c8dc62cb5c1382730ea39a804cffab))
+* use broader iterable type ([#1614](https://github.com/stac-utils/pystac/issues/1614)) ([b9422d8](https://github.com/stac-utils/pystac/commit/b9422d8f4d440016e57a825aca1f239b2356b455))
+* use supertype parameter name ([#1616](https://github.com/stac-utils/pystac/issues/1616)) ([0d2ec09](https://github.com/stac-utils/pystac/commit/0d2ec091cee4e7b0d4141ef3571db01a15971730))
+
+## [1.14.2](https://github.com/stac-utils/pystac/compare/v1.14.1...v1.14.2) (2025-12-17)
+
+
+### Bug Fixes
+
+* Remove unused pystac.validation import ([#1583](https://github.com/stac-utils/pystac/pull/1583))
+* clone extra_fields for Item ([#1601](https://github.com/stac-utils/pystac/issues/1601)) ([6ba7da1](https://github.com/stac-utils/pystac/commit/6ba7da1796488c8de30eedf972dce07fbbec248f))
+* make release-please two separate jobs ([#1607](https://github.com/stac-utils/pystac/issues/1607)) ([bb6d289](https://github.com/stac-utils/pystac/commit/bb6d2892675bbc49249e8c06a4634610bd826f53))
+* Make `extent` not required for `VerticalSpatialDimension` ([#1596](https://github.com/stac-utils/pystac/pull/1596))
+* `Asset.get_absolute_href()` now properly resolves root relative hrefs ([#1599](https://github.com/stac-utils/pystac/pull/1599))
+* Clone extra fields on `Item` ([#1601](https://github.com/stac-utils/pystac/pull/1601))
+
+## [v1.14.1] - 2025-09-18
+
+### Fixed
+
+- Support older versions of urllib3 ([#1580](https://github.com/stac-utils/pystac/pull/1580))
+
+## [v1.14.0] - 2025-09-11
 
 ### Added
 
@@ -10,12 +39,15 @@
 
 ### Changed
 
-- Update drive used by windows runners during tests
+- Pass "User-Agent": "pystac/3.13.0" in request headers to work around urllib's default "User-Agent" being blocked by readthedocs ([#1576](https://github.com/stac-utils/pystac/pull/1576))
+- Include a plain text repr in notebooks so untrusted notebooks look better ([#1577](https://github.com/stac-utils/pystac/pull/1577))
 
 ### Fixed
 
 - More permissive collection extent deserialization ([#1559](https://github.com/stac-utils/pystac/pull/1559))
 - Type of `proj:code` setter ([#1560](https://github.com/stac-utils/pystac/pull/1560))
+- Use `urllib3` to fix parsing non-ascii in urls ([#1566](https://github.com/stac-utils/pystac/pull/1566))
+- Some return types and other **mypy** nits ([#1569](https://github.com/stac-utils/pystac/pull/1569))
 
 ## [v1.13.0] - 2025-04-15
 
@@ -938,7 +970,9 @@ use `Band.create`
 
 Initial release.
 
-[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.13.0..main>
+[Unreleased]: <https://github.com/stac-utils/pystac/compare/v1.14.1..main>
+[v1.14.1]: <https://github.com/stac-utils/pystac/compare/v1.14.0..v1.14.1>
+[v1.14.0]: <https://github.com/stac-utils/pystac/compare/v1.13.0..v1.14.0>
 [v1.13.0]: <https://github.com/stac-utils/pystac/compare/v1.12.2..v1.13.0>
 [v1.12.2]: <https://github.com/stac-utils/pystac/compare/v1.12.1..v1.12.2>
 [v1.12.1]: <https://github.com/stac-utils/pystac/compare/v1.12.0..v1.12.1>

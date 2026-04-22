@@ -55,7 +55,7 @@ def test_summary_wrong_custom_fields_file() -> None:
     assert "No such file or directory" in str(context.value)
 
 
-def test_can_open_fields_file_even_with_no_nework() -> None:
+def test_can_open_fields_file_even_with_no_network() -> None:
     old_socket = socket.socket
     try:
 

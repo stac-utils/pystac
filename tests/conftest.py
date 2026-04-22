@@ -3,27 +3,16 @@
 import json
 import shutil
 import uuid
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import pytest
 
-from pystac import Asset, Catalog, Collection, Item, ItemCollection, Link
+from pystac import Asset, Catalog, Collection, Item, ItemCollection
 
-from .utils import ARBITRARY_BBOX, ARBITRARY_EXTENT, ARBITRARY_GEOM, TestCases
+from .utils import TestCases
 
 HERE = Path(__file__).resolve().parent
-
-
-@pytest.fixture
-def catalog() -> Catalog:
-    return Catalog("test-catalog", "A test catalog")
-
-
-@pytest.fixture
-def collection() -> Catalog:
-    return Collection("test-collection", "A test collection", ARBITRARY_EXTENT)
 
 
 @pytest.fixture
@@ -32,23 +21,6 @@ def multi_extent_collection() -> Collection:
     return Collection.from_file(
         TestCases.get_path("data-files/collections/multi-extent.json")
     )
-
-
-@pytest.fixture
-def item() -> Item:
-    return Item("test-item", ARBITRARY_GEOM, ARBITRARY_BBOX, datetime.now(), {})
-
-
-@pytest.fixture
-def asset(item: Item) -> Asset:
-    item.add_asset("foo", Asset("https://example.tif"))
-    return item.assets["foo"]
-
-
-@pytest.fixture
-def link(item: Item) -> Link:
-    item.add_link(Link(rel="child", target="https://example.tif"))
-    return item.links[0]
 
 
 @pytest.fixture
@@ -106,10 +78,3 @@ def tmp_asset(tmp_path: Path) -> Asset:
     catalog = Catalog.from_file(f"{dst}/catalog.json")
     item = next(catalog.get_items(recursive=True))
     return next(v for v in item.assets.values())
-
-
-@pytest.fixture(autouse=True)
-def clear_validator() -> None:
-    from pystac.validation import RegisteredValidator
-
-    RegisteredValidator._validator = None

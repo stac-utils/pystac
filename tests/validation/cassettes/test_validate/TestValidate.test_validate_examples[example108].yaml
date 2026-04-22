@@ -1,13 +1,7 @@
 interactions:
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - schemas.stacspec.org
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/item.json
   response:
@@ -83,61 +77,13 @@ interactions:
         \       },\n        \"roles\": {\n          \"title\": \"Asset roles\",\n
         \         \"type\": \"array\",\n          \"items\": {\n            \"type\":
         \"string\"\n          }\n        }\n      }\n    }\n  }\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '32'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - close
-      Content-Length:
-      - '5244'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 23 Jan 2025 15:04:53 GMT
-      ETag:
-      - '"66e1651c-147c"'
-      Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Fastly-Request-ID:
-      - 398e5269f065f26cb03cc5290f65460e6d3b6199
-      X-GitHub-Request-Id:
-      - 7F28:34A10D:FF6968:11D3377:67925A75
-      X-Served-By:
-      - cache-den-kden1300062-DEN
-      X-Timer:
-      - S1737644693.144757,VS0,VE1
-      expires:
-      - Thu, 23 Jan 2025 15:14:21 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - schemas.stacspec.org
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/basics.json
   response:
@@ -150,63 +96,13 @@ interactions:
         \   },\n    \"description\": {\n      \"title\": \"Item Description\",\n      \"description\":
         \"Detailed multi-line description to fully explain the Item.\",\n      \"type\":
         \"string\"\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '32'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - close
-      Content-Length:
-      - '540'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 23 Jan 2025 15:04:53 GMT
-      ETag:
-      - '"66e1651c-21c"'
-      Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Fastly-Request-ID:
-      - 4fc9786a1e65481f68e8b472e2eb0ffc804e1840
-      X-GitHub-Request-Id:
-      - 5ED4:12DF28:F44C6C:1121586:67925A75
-      X-Served-By:
-      - cache-den-kden1300056-DEN
-      X-Timer:
-      - S1737644693.166193,VS0,VE1
-      expires:
-      - Thu, 23 Jan 2025 15:14:21 GMT
-      x-origin-cache:
-      - HIT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - schemas.stacspec.org
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/datetime.json
   response:
@@ -249,61 +145,13 @@ interactions:
         \"date-time\"\n    },\n    \"updated\": {\n      \"title\": \"Last Update
         Time\",\n      \"type\": \"string\",\n      \"format\": \"date-time\"\n    }\n
         \ }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '32'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - close
-      Content-Length:
-      - '2690'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 23 Jan 2025 15:04:53 GMT
-      ETag:
-      - '"66e1651c-a82"'
-      Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Fastly-Request-ID:
-      - c9528977ad4c7d4357e74ffc142c53b978a0b669
-      X-GitHub-Request-Id:
-      - 5488:230B9F:B893E:CFA99:67925A75
-      X-Served-By:
-      - cache-den-kden1300065-DEN
-      X-Timer:
-      - S1737644693.185609,VS0,VE1
-      expires:
-      - Thu, 23 Jan 2025 15:14:21 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - schemas.stacspec.org
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/instrument.json
   response:
@@ -318,63 +166,13 @@ interactions:
         \"string\"\n    },\n    \"mission\": {\n      \"title\": \"Mission\",\n      \"type\":
         \"string\"\n    },\n    \"gsd\": {\n      \"title\": \"Ground Sample Distance\",\n
         \     \"type\": \"number\"\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '32'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - close
-      Content-Length:
-      - '674'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 23 Jan 2025 15:04:53 GMT
-      ETag:
-      - '"66e1651c-2a2"'
-      Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Fastly-Request-ID:
-      - d72098e21a26112c4dae950ebc71834e8d0a0e2b
-      X-GitHub-Request-Id:
-      - 802D:338B06:10BB8A9:1298392:67925A75
-      X-Served-By:
-      - cache-den-kden1300034-DEN
-      X-Timer:
-      - S1737644693.204468,VS0,VE1
-      expires:
-      - Thu, 23 Jan 2025 15:14:21 GMT
-      x-origin-cache:
-      - HIT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - schemas.stacspec.org
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/licensing.json
   response:
@@ -384,63 +182,13 @@ interactions:
         \ \"title\": \"Licensing Fields\",\n  \"type\": \"object\",\n  \"properties\":
         {\n    \"license\": {\n      \"type\": \"string\",\n      \"pattern\": \"^[\\\\w\\\\-\\\\.\\\\+]+$\"\n
         \   }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '32'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - close
-      Content-Length:
-      - '309'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 23 Jan 2025 15:04:53 GMT
-      ETag:
-      - '"66e1651c-135"'
-      Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '2'
-      X-Fastly-Request-ID:
-      - e5f104d95c43e4dcec377e67ffc0ead527d83ea8
-      X-GitHub-Request-Id:
-      - D377:3405BB:10C72BA:12A3CD2:67925A75
-      X-Served-By:
-      - cache-den-kden1300030-DEN
-      X-Timer:
-      - S1737644693.223553,VS0,VE0
-      expires:
-      - Thu, 23 Jan 2025 15:14:21 GMT
-      x-origin-cache:
-      - HIT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - schemas.stacspec.org
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/item-spec/json-schema/provider.json
   response:
@@ -460,63 +208,13 @@ interactions:
         {\n            \"title\": \"Organization homepage\",\n            \"type\":
         \"string\",\n            \"format\": \"url\"\n          }\n        }\n      }\n
         \   }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '32'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - close
-      Content-Length:
-      - '1038'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 23 Jan 2025 15:04:53 GMT
-      ETag:
-      - '"66e1651c-40e"'
-      Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '2'
-      X-Fastly-Request-ID:
-      - 04c04b090fb29abd9a2489d7121d5cc49afa719f
-      X-GitHub-Request-Id:
-      - 538F:1011A9:1037FFE:1214BBF:67925A75
-      X-Served-By:
-      - cache-den-kden1300044-DEN
-      X-Timer:
-      - S1737644693.242028,VS0,VE1
-      expires:
-      - Thu, 23 Jan 2025 15:14:21 GMT
-      x-origin-cache:
-      - HIT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - schemas.stacspec.org
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/eo/json-schema/schema.json
   response:
@@ -548,61 +246,13 @@ interactions:
         \           \"type\": \"number\"\n          },\n          \"full_width_half_max\":
         {\n            \"title\": \"Full Width Half Max (FWHM)\",\n            \"type\":
         \"number\"\n          }\n        }\n      }\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '6'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - close
-      Content-Length:
-      - '2053'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 23 Jan 2025 15:04:53 GMT
-      ETag:
-      - '"66e1651c-805"'
-      Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Fastly-Request-ID:
-      - 0d89722881b494f3caa3d6f3a4ebe6059bd955c3
-      X-GitHub-Request-Id:
-      - 6795:2AAC5:1159FF2:13E5D5D:67925A8E
-      X-Served-By:
-      - cache-den-kden1300063-DEN
-      X-Timer:
-      - S1737644693.259503,VS0,VE1
-      expires:
-      - Thu, 23 Jan 2025 15:14:47 GMT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - schemas.stacspec.org
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://schemas.stacspec.org/v1.0.0-beta.2/extensions/view/json-schema/schema.json
   response:
@@ -635,51 +285,7 @@ interactions:
         \"Sun Elevation\",\n              \"type\": \"number\",\n              \"minimum\":
         0,\n              \"maximum\": 90\n            }\n          }\n        }\n
         \     }\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Age:
-      - '6'
-      Cache-Control:
-      - max-age=600
-      Connection:
-      - close
-      Content-Length:
-      - '2089'
-      Content-Type:
-      - application/json; charset=utf-8
-      Date:
-      - Thu, 23 Jan 2025 15:04:53 GMT
-      ETag:
-      - '"66e1651c-829"'
-      Last-Modified:
-      - Wed, 11 Sep 2024 09:38:36 GMT
-      Server:
-      - GitHub.com
-      Vary:
-      - Accept-Encoding
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Fastly-Request-ID:
-      - d41326646a407c788331986cb632f892601a10a6
-      X-GitHub-Request-Id:
-      - 88B6:16FB:E297CA:1041873:67925A8E
-      X-Served-By:
-      - cache-den-kden1300060-DEN
-      X-Timer:
-      - S1737644693.278856,VS0,VE1
-      expires:
-      - Thu, 23 Jan 2025 15:14:47 GMT
-      x-origin-cache:
-      - HIT
-      x-proxy-cache:
-      - MISS
+    headers: {}
     status:
       code: 200
       message: OK

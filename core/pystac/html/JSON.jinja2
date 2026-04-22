@@ -1,0 +1,57 @@
+{% import 'Macros.jinja2' as macros %}
+
+<style>
+.pystac-summary {
+    cursor: pointer;
+    display: list-item;
+    list-style: revert;
+    margin-bottom: 0 !important;
+
+    .pystac-l {
+        padding-left: 0.5em;
+        color: rgb(64, 128, 128);
+        font-style: italic;
+    }
+}
+.pystac-row {
+    overflow-wrap: break-word;
+    padding-left: .825em;
+
+    .pystac-k {
+        display: inline-block;
+        margin: 0px 0.5em 0px 0px;
+    }
+    .pystac-v {
+        color: rgb(186, 33, 33);
+    }
+}
+.pystac-k {
+    color: rgb(0, 128, 0);
+    font-weight: 700;
+}
+.pystac-wrap {
+  display: block !important;
+}
+.pystac-text-repr-fallback {
+  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */
+  display: none;
+}
+</style>
+<div>
+<div class="pystac-text-repr-fallback">
+    {{ plain }}
+</div>
+<div class="jp-RenderedJSON jp-mod-trusted jp-OutputArea-output pystac-wrap" style='display:none'>
+    <div class="container" style="line-height: normal;">
+        <ul style="padding: 0px; margin: 0px; list-style: none; display: block;">
+            {% for key, value in dict.items() %}
+                {% if value is iterable and (value is not string and value is not mapping) %}
+                    {{ macros.list(key, value) }}
+                {% else %}
+                    {{ macros.scalar(key, value) }}
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+</div>

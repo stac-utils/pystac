@@ -127,7 +127,7 @@ def test_version_range_set_to_single() -> None:
 
 def test_version_range_set_min_and_max_directly() -> None:
     version_range = STACVersionRange()
-    version_range.min_version = "1.0.0-beta.1"  # type:ignore
-    version_range.max_version = "1.1.0"  # type:ignore
+    version_range.min_version = "1.0.0-beta.1"
+    version_range.max_version = "1.1.0"
 
     assert version_range.contains("1.0.0")

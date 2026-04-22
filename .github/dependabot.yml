@@ -3,11 +3,26 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
+    groups:
+      actions-deps:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 10
     commit-message:
       prefix: build(deps)
   - package-ecosystem: pip
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
+    cooldown:
+      default-days: 10
+    groups:
+      package-deps:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
     versioning-strategy: increase-if-necessary

@@ -1,13 +1,7 @@
 interactions:
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/item.json
   response:
@@ -82,67 +76,13 @@ interactions:
         \"string\"\n        },\n        \"roles\": {\n          \"title\": \"Asset
         roles\",\n          \"type\": \"array\",\n          \"items\": {\n            \"type\":
         \"string\"\n          }\n        }\n      }\n    }\n  }\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - close
-      Content-Length:
-      - '5137'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 23 Jan 2025 15:04:43 GMT
-      ETag:
-      - '"eb4ef35f5071c45c7b53e7fe6ef92a682455a0de207fcbe27507488c4bfcc9ca"'
-      Expires:
-      - Thu, 23 Jan 2025 15:09:43 GMT
-      Source-Age:
-      - '7'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 69aaa51837c3db6a9bfb58f6bd226447e764362d
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 6954:21D799:22EC4E:263CD0:67925A84
-      X-Served-By:
-      - cache-den-kden1300051-DEN
-      X-Timer:
-      - S1737644684.561378,VS0,VE1
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/basics.json
   response:
@@ -154,67 +94,13 @@ interactions:
         \     \"type\": \"string\"\n    },\n    \"description\": {\n      \"title\":
         \"Item Description\",\n      \"description\": \"Detailed multi-line description
         to fully explain the Item.\",\n      \"type\": \"string\"\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - close
-      Content-Length:
-      - '475'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 23 Jan 2025 15:04:43 GMT
-      ETag:
-      - '"2436fa8ce8356cb57ec6581098dc3ea04f5395558aaca6e4008e09eb43f0a9db"'
-      Expires:
-      - Thu, 23 Jan 2025 15:09:43 GMT
-      Source-Age:
-      - '6'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 1e154414ee5767871cddd29a7ec697c03b880cf5
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - C41E:21D799:22EC9D:263D1C:67925A84
-      X-Served-By:
-      - cache-den-kden1300065-DEN
-      X-Timer:
-      - S1737644684.584126,VS0,VE1
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/datetimerange.json
   response:
@@ -231,67 +117,13 @@ interactions:
         {\n    \"start_datetime\": {\n      \"required\": [\n        \"end_datetime\"\n
         \     ]\n    },\n    \"end_datetime\": {\n      \"required\": [\n        \"start_datetime\"\n
         \     ]\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - close
-      Content-Length:
-      - '814'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 23 Jan 2025 15:04:43 GMT
-      ETag:
-      - '"e1248a7fa9f6feeddb9c683a0fcfcab1b8ea66ae5db2d9a36f0602d44879a0f8"'
-      Expires:
-      - Thu, 23 Jan 2025 15:09:43 GMT
-      Source-Age:
-      - '6'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 991c50b3079e7a76bff338d9cba879a7a181e45c
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - EF01:3500BA:23CB27:271B33:67925A80
-      X-Served-By:
-      - cache-den-kden1300025-DEN
-      X-Timer:
-      - S1737644684.603780,VS0,VE1
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/instrument.json
   response:
@@ -304,67 +136,13 @@ interactions:
         \"string\"\n      }\n    },\n    \"constellation\": {\n      \"title\": \"Constellation\",\n
         \     \"type\": \"string\"\n    },\n    \"mission\": {\n      \"title\": \"Mission\",\n
         \     \"type\": \"string\"\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - close
-      Content-Length:
-      - '525'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 23 Jan 2025 15:04:43 GMT
-      ETag:
-      - '"84c39a084fe100d85a10cdeef11399cb06ceed2c623ee37cfbdb03f85d39477c"'
-      Expires:
-      - Thu, 23 Jan 2025 15:09:43 GMT
-      Source-Age:
-      - '6'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 25c751277cae0b422f092a2b969bac0c57ae2429
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 9217:188A15:2385C8:26D5D9:67925A80
-      X-Served-By:
-      - cache-den-kden1300038-DEN
-      X-Timer:
-      - S1737644684.622751,VS0,VE1
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/licensing.json
   response:
@@ -373,67 +151,13 @@ interactions:
         \"licensing.json#\",\n  \"title\": \"Licensing Fields\",\n  \"type\": \"object\",\n
         \ \"properties\": {\n    \"license\": {\n      \"type\": \"string\",\n      \"pattern\":
         \"^[\\\\w\\\\-\\\\.\\\\+]+$\"\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - close
-      Content-Length:
-      - '244'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 23 Jan 2025 15:04:43 GMT
-      ETag:
-      - '"d2cd4998f5154410f2dc79b42af5baaf118454186cee8d12066a5f42d3e821fc"'
-      Expires:
-      - Thu, 23 Jan 2025 15:09:43 GMT
-      Source-Age:
-      - '6'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '2'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - ef45632f0e3ca8d2a7318e6e84a000c2aad406ca
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 7E87:2AEF76:21084B:24569B:67925A85
-      X-Served-By:
-      - cache-den-kden1300065-DEN
-      X-Timer:
-      - S1737644684.642309,VS0,VE0
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/metadata.json
   response:
@@ -444,67 +168,13 @@ interactions:
         \     \"type\": \"string\",\n      \"format\": \"date-time\"\n    },\n    \"updated\":
         {\n      \"title\": \"Metadata Last Update\",\n      \"type\": \"string\",\n
         \     \"format\": \"date-time\"\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - close
-      Content-Length:
-      - '384'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 23 Jan 2025 15:04:43 GMT
-      ETag:
-      - '"a99228769e5d0400f7b006fa153262053fb7a6ffdb3b8bbf51c4df37a82098f6"'
-      Expires:
-      - Thu, 23 Jan 2025 15:09:43 GMT
-      Source-Age:
-      - '6'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - a9b415576461f2c59668380989a492704a08aa9f
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 32E3:1E98A2:24AB9A:27FB97:67925A85
-      X-Served-By:
-      - cache-den-kden1300064-DEN
-      X-Timer:
-      - S1737644684.664489,VS0,VE1
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/item-spec/json-schema/provider.json
   response:
@@ -523,67 +193,13 @@ interactions:
         \           }\n          },\n          \"url\": {\n            \"title\":
         \"Organization homepage\",\n            \"type\": \"string\",\n            \"format\":
         \"url\"\n          }\n        }\n      }\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - close
-      Content-Length:
-      - '973'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 23 Jan 2025 15:04:43 GMT
-      ETag:
-      - '"a92eac8e15643dce5b9165724ce350d2ee5edad5f8baca7140c79ce8ce0da8c6"'
-      Expires:
-      - Thu, 23 Jan 2025 15:09:43 GMT
-      Source-Age:
-      - '5'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - e0aa06ff92d45c83983e912943757a2a7ee4da7e
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - C5C8:173C35:23ADDC:27167E:67925A85
-      X-Served-By:
-      - cache-den-kden1300059-DEN
-      X-Timer:
-      - S1737644684.685942,VS0,VE1
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/checksum/json-schema/schema.json
   response:
@@ -603,67 +219,13 @@ interactions:
         \     \"properties\": {\n        \"checksum:multihash\": {\n          \"type\":
         \"string\",\n          \"pattern\": \"^[a-f0-9]+$\",\n          \"title\":
         \"Multihash\"\n        }\n      }\n    }\n  }\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - close
-      Content-Length:
-      - '1044'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 23 Jan 2025 15:04:43 GMT
-      ETag:
-      - '"9bde8b6875408a186b283e6e3dd3edb01bc2b938e55a0491b0b7f4e06f0faccb"'
-      Expires:
-      - Thu, 23 Jan 2025 15:09:43 GMT
-      Source-Age:
-      - '4'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 6a22b987e3d093091149c127a3b61b037b2e42eb
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 45D8:173A05:25C075:2910A1:67925A86
-      X-Served-By:
-      - cache-den-kden1300053-DEN
-      X-Timer:
-      - S1737644684.705744,VS0,VE1
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/sar/json-schema/schema.json
   response:
@@ -720,67 +282,13 @@ interactions:
         \                   \"VV\",\n                    \"HV\",\n                    \"VH\"\n
         \                 ]\n                }\n              }\n            }\n          }\n
         \       }\n      }\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - close
-      Content-Length:
-      - '3946'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 23 Jan 2025 15:04:43 GMT
-      ETag:
-      - '"8546ced8239a833de59c3c153dab1ad77f34c598818da6695196e7449d680592"'
-      Expires:
-      - Thu, 23 Jan 2025 15:09:43 GMT
-      Source-Age:
-      - '0'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 7aad1aa26c3be20db098a2cedc3698a4f2ce6073
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 2AB4:1E98A2:24AE33:27FE8F:67925A89
-      X-Served-By:
-      - cache-den-kden1300069-DEN
-      X-Timer:
-      - S1737644684.726267,VS0,VE1
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
-      User-Agent:
-      - Python-urllib/3.12
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/radiantearth/stac-spec/v0.9.0/extensions/sat/json-schema/schema.json
   response:
@@ -798,55 +306,7 @@ interactions:
         \             \"type\": \"string\",\n              \"enum\": [\n                \"ascending\",\n
         \               \"descending\",\n                \"geostationary\"\n              ]\n
         \           }\n          }\n        }\n      }\n    }\n  }\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - close
-      Content-Length:
-      - '1008'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Thu, 23 Jan 2025 15:04:43 GMT
-      ETag:
-      - '"90408dbc0c6ce835205fcdbeeab881774f06517052d7c3dbcf6ba7c3ccced7eb"'
-      Expires:
-      - Thu, 23 Jan 2025 15:09:43 GMT
-      Source-Age:
-      - '3'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - HIT
-      X-Cache-Hits:
-      - '1'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - ba5df511fd106cdce641bc3c71428cbf09a33031
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 9DC6:2110D7:20C1F4:2410C8:67925A84
-      X-Served-By:
-      - cache-den-kden1300052-DEN
-      X-Timer:
-      - S1737644684.746993,VS0,VE1
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
