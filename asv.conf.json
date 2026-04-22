@@ -17,14 +17,14 @@
   "results_dir": ".asv/results",
   "html_dir": ".asv/html",
   "build_command": [
-    "python -mpip install uv",
-    "python -muv build --all-packages --wheel --out-dir {build_cache_dir} {build_dir}"
+    "python -m pip install uv",
+    "python -m uv build --all-packages --wheel --out-dir {build_cache_dir} {build_dir}"
   ],
   "install_command": [
-    "python -mpip install uv",
-    "python -muv pip install --reinstall --find-links={build_cache_dir} pystac"
+    "python -m pip install uv",
+    "python -m uv pip install --reinstall --find-links={build_cache_dir} pystac"
   ],
   "uninstall_command": [
-    "return-code=any python -muv pip uninstall pystac"
+    "return-code=any python -m uv pip uninstall pystac"
   ]
 }
