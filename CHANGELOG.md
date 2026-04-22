@@ -23,6 +23,7 @@
 * `Asset.get_absolute_href()` now properly resolves root relative hrefs ([#1599](https://github.com/stac-utils/pystac/pull/1599))
 * Clone extra fields on `Item` ([#1601](https://github.com/stac-utils/pystac/pull/1601))
 
+
 ## [v1.14.1] - 2025-09-18
 
 ### Fixed

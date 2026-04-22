@@ -1,0 +1,43 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/cf/v0.2.0/schema.json"
+  ],
+  "id": "cf-sample-item",
+  "properties": {
+    "datetime": "2021-01-01T00:00:00Z",
+    "cf:parameter": [
+      {
+        "name": "air_temperature",
+        "unit": "K"
+      }
+    ]
+  },
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [-180.0, -90.0],
+        [180.0, -90.0],
+        [180.0, 90.0],
+        [-180.0, 90.0],
+        [-180.0, -90.0]
+      ]
+    ]
+  },
+  "bbox": [-180.0, -90.0, 180.0, 90.0],
+  "links": [],
+  "assets": {
+    "data": {
+      "href": "https://example.com/data.nc",
+      "type": "application/x-netcdf",
+      "cf:parameter": [
+        {
+          "name": "air_temperature",
+          "unit": "K"
+        }
+      ]
+    }
+  }
+}
