@@ -159,6 +159,20 @@ class Link:
             if href := value.get_self_href():
                 self.set_href(href)
 
+    @deprecated("use .get_href()")
+    def get_target_str(self) -> str | None:
+        """Returns this link's target as a string.
+
+        If a string href was provided, returns that. If not, tries to resolve
+        the self link of the target object.
+        """
+        return self.get_href()
+
+    @deprecated("use bool(link.get_href())")
+    def has_target_href(self) -> bool:
+        """Returns true if this link has a string href in its target information."""
+        return bool(self.get_href())
+
     def get_target(self, start_href: str | None, reader: Reader) -> STACObject:
         from .stac_object import STACObject
 
