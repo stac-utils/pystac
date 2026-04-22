@@ -91,3 +91,6 @@ jupyter notebook --ip 0.0.0.0 --port 8888 --notebook-dir=docs
 You can then navigate to the notebooks and execute them.
 
 Requires [Jupyter](https://jupyter.org/) be installed.
+
+
+<!-- Fix #1706 -->
