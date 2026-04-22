@@ -57,6 +57,11 @@ EO_COLLECTION_URI = str(DATA_FILES / "eo-collection.json")
 S2_ITEM_URI = str(DATA_FILES / "eo-sentinel2-item.json")
 PLAIN_ITEM = str(DATA_FILES / "item/sample-item.json")
 
+SAMPLE_ASSET = str(DATA_FILES / "eo-asset-example.json")
+SAMPLE_ASSET_OLD = str(
+    DATA_FILES / "examples" / "1.1" / "asset-spec" / "examples" / "sample-asset.json"
+)
+
 
 def test_to_from_dict() -> None:
     with open(LANDSAT_EXAMPLE_URI) as f:
@@ -292,23 +297,12 @@ def test_reads_asset_bands_in_pre_1_0_version() -> None:
         str(DATA_FILES / "examples/0.9.0/item-spec/examples/landsat8-sample.json")
     )
 
-    to_be_renamed = [
-        "common_name",
-        "center_wavelength",
-        "full_width_half_max",
-        "solar_illumination",
-    ]
-
-    # Since bands have moved...
-    item.assets["B9"].extra_fields["bands"] = [
-        {"eo:" + k if k in to_be_renamed else k: v for k, v in band.items()}
-        for band in item.assets["B9"].extra_fields["eo:bands"]
-    ]
-
     bands = EOExtension.ext(item.assets["B9"]).get_bands()
 
     assert len(bands or []) == 1
-    assert get_opt(bands)[0].common_name == "cirrus"
+    # Data moved at the asset's level
+    assert get_opt(bands)[0].common_name is None
+    assert item.assets["B9"].ext.eo.common_name == "cirrus"
 
 
 def test_reads_gsd_in_pre_1_0_version() -> None:
@@ -582,3 +576,86 @@ def test_band_is_now_pystac_band() -> None:
     with pytest.warns(DeprecationWarning):
         Band = eo.Band
     assert Band is pystac.Band  # used in assertion, no ruff complaint
+
+
+def test_eo_bands_getter_is_deprecated() -> None:
+    item = pystac.Item.from_file(LANDSAT_EXAMPLE_URI)
+
+    b1_asset = item.assets["B1"]
+    with pytest.warns(DeprecationWarning, match="ext.eo.bands is deprecated"):
+        _ = b1_asset.ext.eo.bands
+
+
+def test_eo_bands_setter_is_deprecated() -> None:
+    item = pystac.Item.from_file(LANDSAT_EXAMPLE_URI)
+
+    b1_asset = item.assets["B1"]
+    with pytest.warns(DeprecationWarning, match="ext.eo.bands is deprecated"):
+        b1_asset.ext.eo.bands = []
+
+
+def test_eo_bands_redirects_to_common_metadata() -> None:
+    item = pystac.Item.from_file(LANDSAT_EXAMPLE_URI)
+    b1_asset = item.assets["B1"]
+
+    with pytest.warns(DeprecationWarning):
+        bands = b1_asset.ext.eo.bands
+    assert bands == b1_asset.common_metadata.bands
+
+
+def test_asset_migration_with_raster() -> None:
+    with open(SAMPLE_ASSET) as f:
+        new_asset_d = json.load(f)
+    with open(SAMPLE_ASSET_OLD) as f:
+        old_asset_d = json.load(f)
+
+    old_asset = pystac.Asset.from_dict(old_asset_d["assets"]["example"])
+    new_asset = pystac.Asset.from_dict(new_asset_d["assets"]["example"])
+
+    item = Item.from_file(PLAIN_ITEM)
+    item.stac_extensions.extend(
+        [
+            "https://stac-extensions.github.io/eo/v1.1.0/schema.json",
+            "https://stac-extensions.github.io/raster/v1.1.0/schema.json",
+        ]
+    )
+    item.add_asset("example", old_asset)
+    item_as_dict = item.to_dict(include_self_link=False, transform_hrefs=False)
+
+    migrated_item = pystac.Item.from_dict(item_as_dict, migrate=True)
+    assert EOExtension.has_extension(migrated_item)
+    assert (
+        "https://stac-extensions.github.io/eo/v2.0.0/schema.json"
+        in migrated_item.stac_extensions
+    )
+
+    migrated_asset = migrated_item.assets["example"]
+    assert "eo:bands" not in migrated_asset.extra_fields
+    assert "eo:bands" not in migrated_asset.to_dict().keys()
+    assert "raster:spatial_resolution" in migrated_asset.to_dict().keys()
+    assert migrated_asset.to_dict()["raster:spatial_resolution"] == 10
+
+    assert "raster:sampling" in migrated_asset.to_dict().keys()
+    assert migrated_asset.to_dict()["raster:sampling"] == "area"
+
+    migrated_bands = migrated_asset.common_metadata.bands
+    assert migrated_bands is not None  # narrows type to list[Band]
+
+    red_band = migrated_bands[0]
+    assert red_band.name == "r"
+    assert EOExtension.ext(red_band).common_name == EOCommonName.RED
+
+    nir_band = migrated_bands[3]
+    assert nir_band.name == "nir"
+    assert "raster:spatial_resolution" in nir_band.to_dict().keys()
+    assert nir_band.to_dict()["raster:spatial_resolution"] == 30
+    assert nir_band.ext.raster.spatial_resolution == 30
+
+    new_bands = new_asset.common_metadata.bands
+    assert new_bands is not None  # narrows type to list[Band]
+
+    assert len(migrated_bands) == len(new_bands)
+    assert [b.name for b in migrated_bands] == [b.name for b in new_bands]
+    assert json.dumps(migrated_asset.to_dict(), sort_keys=True) == json.dumps(
+        new_asset.to_dict(), sort_keys=True
+    )

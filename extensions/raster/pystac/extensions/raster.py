@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from collections import Counter
 from collections.abc import Iterable
 from typing import (
@@ -475,6 +476,89 @@ class RasterExtensionHooks(ExtensionHooks):
     }
     stac_object_types = {pystac.STACObjectType.ITEM, pystac.STACObjectType.COLLECTION}
 
+    def _migrate_obj_with_bands(self, obj: dict[str, Any]) -> None:
+        """Migrates objects from raster:band to band and moves common metadata
+        to item, collection summary or asset
+
+        - If object is a STAC Item, pass obj["properties"]
+        - If object is an item asset, pass the asset
+        """
+        if "raster:bands" not in obj:
+            return None
+
+        # Fields present in the new band asset
+        common_band_fields = frozenset(["name", "description"])
+        # Fields promoted to item/asset metadata
+        common_metadata_fields = frozenset(
+            ["nodata", "data_type", "statistics", "unit"]
+        )
+        # Fields remaining in the band or the asset, but prefixed to
+        # raster instead
+        to_be_renamed = frozenset(
+            [
+                "sampling",
+                "bits_per_sample",
+                "spatial_resolution",
+                "scale",
+                "offset",
+                "histogram",
+            ]
+        )
+
+        raster_fields = common_band_fields | common_metadata_fields | to_be_renamed
+
+        old_bands = obj.pop("raster:bands")
+
+        if old_bands and isinstance(old_bands[0], int):
+            return None
+
+        def transform_band(band_obj: dict[str, Any]) -> dict[str, Any]:
+            return {
+                (PREFIX + k if k in to_be_renamed else k): v
+                for k, v in band_obj.items()
+                if k in raster_fields
+            }
+
+        # Create the bands ; they won't have any names however
+        if "bands" not in obj:
+            obj["bands"] = [transform_band(band) for band in old_bands]
+
+        # Bands from EO already exist and have a name
+        elif "bands" in obj and len(obj["bands"]) == len(old_bands):
+            for band, old_band in zip(obj["bands"], old_bands):
+                band.update(transform_band(old_band))
+
+        # Once "bands" is created, identify and remove duplicates
+        # Dominant element must be set on the property
+        # Minor elements can stay in the bands
+        bands = obj["bands"]
+        n_elements = len(bands)
+        # One band, most metadata goes back up into the asset/item
+
+        promotable = (
+            frozenset([PREFIX + k for k in to_be_renamed]) | common_metadata_fields
+        )
+
+        counters: dict[str, Counter[str]] = {
+            key: Counter(
+                json.dumps(band[key], sort_keys=True) for band in bands if key in band
+            )
+            for key in promotable
+        }
+
+        for k, counter in counters.items():
+            if counter.total() != n_elements:  # field missing from at least one band
+                continue
+            dom_element, dom_count = counter.most_common(1)[0]
+
+            if dom_count == 1 and len(bands) > 1:
+                continue
+
+            obj[k] = json.loads(dom_element)
+            for band in bands:
+                if json.dumps(band.get(k), sort_keys=True) == dom_element:
+                    del band[k]
+
     def migrate(
         self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
@@ -487,96 +571,14 @@ class RasterExtensionHooks(ExtensionHooks):
         #
         # nodata, data_type, statistics and unit were not renamed, but have been moved
         # to STAC common metadata
+
         if version < "2.0.0":
-            common_band_fields = ["name", "description"]
-            common_metadata_fields = ["nodata", "data_type", "statistics", "unit"]
-            to_be_renamed = [
-                "sampling",
-                "bits_per_sample",
-                "spatial_resolution",
-                "scale",
-                "offset",
-                "histogram",
-            ]
-
-            if (
-                info.object_type == pystac.STACObjectType.ITEM
-                and "raster:bands" in obj.get("properties", {})
-            ):
-                old_bands = obj["properties"]["raster:bands"]
-                # Create the bands ; they won't have any names however
-                if "bands" not in obj["properties"]:
-                    obj["properties"]["bands"] = [
-                        {
-                            PREFIX + k if k in to_be_renamed else k: v
-                            for k, v in band.items()
-                            if k in to_be_renamed
-                            or k in common_band_fields
-                            or k in common_metadata_fields
-                        }
-                        for band in old_bands
-                    ]
-
-                # Bands from EO already exist and have a name
-                elif "bands" in obj["properties"] and len(
-                    obj["properties"]["bands"]
-                ) == len(old_bands):
-                    for band, old_band in zip(obj["properties"]["bands"], old_bands):
-                        band.update(
-                            {
-                                PREFIX + k if k in to_be_renamed else k: v
-                                for k, v in old_band.items()
-                                if k in to_be_renamed
-                                or k in common_band_fields
-                                or k in common_metadata_fields
-                            }
-                        )
-
-                del obj["properties"]["raster:bands"]
-                # Once "bands" is created, identify and remove duplicates
-                # Dominant element must be set on the property
-                # Minor elements can stay in the bands
-                n_elements = len(obj["properties"]["bands"])
-                # One band, most metadata goes back up into the asset/item
-                if n_elements == 1:
-                    for k, v in obj["properties"]["bands"][0].items():
-                        if k not in ["name", "description"]:
-                            obj["properties"][k] = v
-
-                    obj["properties"]["bands"][0] = {
-                        k: v
-                        for k, v in obj["properties"]["bands"][0].items()
-                        if k not in ["name", "description"]
-                    }
-                else:
-                    counters: dict[str, Counter[Any]] = {
-                        PREFIX + raster_field: Counter()
-                        for raster_field in to_be_renamed
-                    }
-                    counters.update(
-                        {cm_field: Counter() for cm_field in common_metadata_fields}
-                    )
-
-                    for band in obj["properties"]["bands"]:
-                        for k in counters.keys():
-                            counters[k] += Counter([band[k]])
-
-                    for k, v in counters.items():
-                        # Element is unique
-                        if len(counters[k]) == 1 and counters[k].total() == n_elements:
-                            obj["properties"][k] = list(v)[0]
-                            for band in obj["properties"]["bands"]:
-                                del band[k]
-                        # A dominant element is present
-                        elif (
-                            0 < len(counters[k]) < n_elements
-                            and counters[k].total() == n_elements
-                        ):
-                            dom_el = counters[k].most_common()[0][0]
-                            obj["properties"][k] = dom_el
-                            for band in obj["properties"]["bands"]:
-                                if band[k] != dom_el:
-                                    del band[k]
+            # if "eo:bands" in obj.get("properties", {}):
+            if "properties" in obj:
+                self._migrate_obj_with_bands(obj["properties"])
+                if "assets" in obj.keys():
+                    for asset in obj["assets"].values():
+                        self._migrate_obj_with_bands(asset)
 
         super().migrate(obj, version, info)
 

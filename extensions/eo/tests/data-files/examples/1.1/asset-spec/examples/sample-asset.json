@@ -1,0 +1,47 @@
+{
+  "assets": {
+    "example": {
+      "href": "example.tif",
+      "eo:bands": [
+        {
+          "name": "r",
+          "common_name": "red"
+        },
+        {
+          "name": "g",
+          "common_name": "green"
+        },
+        {
+          "name": "b",
+          "common_name": "blue"
+        },
+        {
+          "name": "nir",
+          "common_name": "nir"
+        }
+      ],
+      "raster:bands": [
+        {
+          "data_type": "uint16",
+          "spatial_resolution": 10,
+          "sampling": "area"
+        },
+        {
+          "data_type": "uint16",
+          "spatial_resolution": 10,
+          "sampling": "area"
+        },
+        {
+          "data_type": "uint16",
+          "spatial_resolution": 10,
+          "sampling": "area"
+        },
+        {
+          "data_type": "uint16",
+          "spatial_resolution": 30,
+          "sampling": "area"
+        }
+      ]
+    }
+  }
+}

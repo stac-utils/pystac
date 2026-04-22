@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import warnings
 from collections import Counter
 from collections.abc import Iterable
@@ -23,7 +24,7 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.summaries import RangeSummary
-from pystac.utils import StringEnum
+from pystac.utils import StringEnum, map_opt
 
 
 def __getattr__(name: str) -> object:
@@ -357,6 +358,26 @@ class EOExtension(
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
+    @property
+    def bands(self) -> list[pystac.Band] | None:
+        warnings.warn(
+            "ext.eo.bands is deprecated and will be removed in v2.0. "
+            "Use asset.common_metadata.bands instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return None
+
+    @bands.setter
+    def bands(self, v: list[pystac.Band] | None) -> None:
+        warnings.warn(
+            "ext.eo.bands is deprecated and will be removed in v2.0. "
+            "Use asset.common_metadata.bands instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return None
+
     # Utils for bands
     def get_bands(self) -> list[EOExtension[pystac.Band]] | None:
         """Returns bands with the EO Extension loaded"""
@@ -442,6 +463,41 @@ class ItemEOExtension(EOExtension[pystac.Item]):
             )
         }
 
+    @property
+    def bands(self) -> list[pystac.Band] | None:
+        warnings.warn(
+            "ext.eo.bands is deprecated and will be removed in v2.0. "
+            "Use asset.common_metadata.bands instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        bands = self.item.common_metadata.bands
+
+        # Look into the assets
+        if bands is None:
+            asset_bands: list[pystac.Bands] = []
+            for _, asset in self.item.get_assets().items():
+                current_asset_bands = asset.common_metadata.bands
+                if current_asset_bands is not None:
+                    asset_bands.extend(current_asset_bands)
+            if any(asset_bands):
+                bands = asset_bands
+
+        if bands is not None:
+            return bands
+
+        return None
+
+    @bands.setter
+    def bands(self, v: list[pystac.Band] | None) -> None:
+        warnings.warn(
+            "ext.eo.bands is deprecated and will be removed in v2.0. "
+            "Use asset.common_metadata.bands instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.item.common_metadata.bands = v
+
     def get_bands(self) -> list[EOExtension[pystac.Band]] | None:
         bands = self.item.common_metadata.bands
 
@@ -481,6 +537,33 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
     additional_read_properties: Iterable[dict[str, Any]] | None = None
     """If present, this will be a list containing 1 dictionary representing the
     properties of the owning :class:`~pystac.Item`."""
+
+    @property
+    def bands(self) -> list[pystac.Band] | None:
+        warnings.warn(
+            "ext.eo.bands is deprecated and will be removed in v2.0. "
+            "Use asset.common_metadata.bands instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        if "bands" not in self.properties:
+            return None
+        return list(
+            map(
+                lambda band: pystac.Band.from_dict(band),
+                cast(list[dict[str, Any]], self.properties.get("bands")),
+            )
+        )
+
+    @bands.setter
+    def bands(self, v: list[pystac.Band] | None) -> None:
+        warnings.warn(
+            "ext.eo.bands is deprecated and will be removed in v2.0. "
+            "Use asset.common_metadata.bands instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self.properties["bands"] = [b.to_dict() for b in v] if v is not None else v
 
     def get_bands(self) -> list[EOExtension[pystac.Band]] | None:
         if "bands" not in self.properties:
@@ -625,6 +708,31 @@ class SummariesEOExtension(SummariesExtension):
     properties defined in the :stac-ext:`Electro-Optical Extension <eo>`.
     """
 
+    @property
+    def bands(self) -> list[pystac.Band] | None:
+        warnings.warn(
+            "ext.eo.bands is deprecated and will be removed in v2.0. "
+            "Use asset.common_metadata.bands instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        bands = self.summaries.get_list("bands")
+
+        if bands is not None:
+            return [pystac.Band.from_dict(b) for b in bands]
+
+        return None
+
+    @bands.setter
+    def bands(self, v: list[pystac.Band] | None) -> None:
+        warnings.warn(
+            "ext.eo.bands is deprecated and will be removed in v2.0. "
+            "Use asset.common_metadata.bands instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._set_summary("bands", map_opt(lambda x: [b.to_dict() for b in x], v))
+
     def get_bands(self) -> list[EOExtension[pystac.Band]] | None:
         bands = self.summaries.get_list("bands")
 
@@ -663,6 +771,82 @@ class EOExtensionHooks(ExtensionHooks):
         *[uri for uri in SCHEMA_URIS if uri != SCHEMA_URI],
     }
     stac_object_types = {pystac.STACObjectType.ITEM}
+
+    def _migrate_obj_with_bands(self, obj: dict[str, Any]) -> None:
+        """Handles the migration of bands inside the metadata.
+
+        - If object is a STAC Item, pass obj["properties"]
+        - If object is an item asset, pass the asset
+        """
+        if "eo:bands" not in obj:
+            return None
+
+        old_bands = obj.pop("eo:bands")
+
+        if old_bands and isinstance(old_bands[0], int):
+            return None
+
+        to_be_renamed = frozenset(
+            [
+                "common_name",
+                "center_wavelength",
+                "full_width_half_max",
+                "solar_illumination",
+            ]
+        )
+
+        def transform_band(band_obj: dict[str, Any]) -> dict[str, Any]:
+            return {
+                PREFIX + k if k in to_be_renamed else k: v for k, v in band_obj.items()
+            }
+
+        if "bands" not in obj:
+            obj["bands"] = [transform_band(band) for band in old_bands]
+
+        elif len(obj["bands"]) == len(old_bands):
+            for band, old_band in zip(obj["bands"], old_bands):
+                band.update(transform_band(old_band))
+
+        else:
+            old_bands_by_name = {band["name"]: band for band in old_bands}
+            seen = set()
+            for idx, band in enumerate(obj["bands"]):
+                name = band["name"]
+                if name in old_bands_by_name:
+                    seen.add(name)
+                    obj["bands"][idx].update(transform_band(old_bands_by_name[name]))
+            obj["bands"].extend(
+                transform_band(band) for band in old_bands if band["name"] not in seen
+            )
+
+        bands = obj["bands"]
+        n_elements = len(bands)
+
+        # If no bands, skip
+        if not n_elements:
+            return None
+
+        promotable = frozenset(PREFIX + k for k in to_be_renamed)
+
+        counters: dict[str, Counter[str]] = {
+            key: Counter(
+                json.dumps(band[key], sort_keys=True) for band in bands if key in band
+            )
+            for key in promotable
+        }
+
+        for k, counter in counters.items():
+            if counter.total() != n_elements:
+                continue
+            dom_element, dom_count = counter.most_common(1)[0]
+
+            if dom_count == 1 and len(bands) > 1:
+                continue
+
+            obj[k] = json.loads(dom_element)
+            for band in bands:
+                if json.dumps(band.get(k), sort_keys=True) == dom_element:
+                    del band[k]
 
     def migrate(
         self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
@@ -759,108 +943,14 @@ class EOExtensionHooks(ExtensionHooks):
                         asset["eo:bands"] = new_eo_bands
 
         # Bands moved to common metadata
+        # The migration must apply to assets as well
         if version < "2.0.0":
-            if "eo:bands" in obj.get("properties", {}):
-                old_bands = obj["properties"]["eo:bands"]
-                to_be_renamed = [
-                    "common_name",
-                    "center_wavelength",
-                    "full_width_half_max",
-                    "solar_illumination",
-                ]
-                if "bands" not in obj["properties"]:
-                    obj["properties"]["bands"] = [
-                        {
-                            PREFIX + k if k in to_be_renamed else k: v
-                            for k, v in band.items()
-                        }
-                        for band in old_bands
-                    ]
-
-                # Bands from Raster already exist and have been processed
-                elif "bands" in obj["properties"] and len(
-                    obj["properties"]["bands"]
-                ) == len(old_bands):
-                    for band, old_band in zip(obj["properties"]["bands"], old_bands):
-                        band.update(
-                            {
-                                PREFIX + k if k in to_be_renamed else k: v
-                                for k, v in old_band.items()
-                            }
-                        )
-
-                # If "band" has been instantiated before but needs an update
-                else:
-                    old_band_names = {band["name"] for band in old_bands}
-                    saw_band_names = set()
-
-                    for idx_band, band in enumerate(obj["properties"]["bands"]):
-                        band_name = band["name"]
-                        if band_name in old_band_names:
-                            saw_band_names.add(band_name)
-                            old_band = next(
-                                b for b in old_bands if b["name"] == band_name
-                            )
-                            for k, v in old_band.items():
-                                new_k = PREFIX + k if k in to_be_renamed else k
-                                obj["properties"]["bands"][idx_band][new_k] = v
-
-                    # Add the bands that weren't seen
-                    obj["properties"]["bands"].extend(
-                        [
-                            {
-                                PREFIX + k if k in to_be_renamed else k: v
-                                for k, v in band.items()
-                            }
-                            for band in obj["properties"]["eo:bands"]
-                            if band["name"] not in saw_band_names
-                        ]
-                    )
-
-                del obj["properties"]["eo:bands"]
-                # Once "bands" is created, identify and remove duplicates
-                # Dominant element must be set on the property
-                # Minor elements can stay in the bands
-                n_elements = len(obj["properties"]["bands"])
-                # One band, most metadata goes back up into the asset/item
-                if n_elements == 1:
-                    for k, v in obj["properties"]["bands"][0].items():
-                        if k not in ["name", "description"]:
-                            obj["properties"][k] = v
-
-                    obj["properties"]["bands"][0] = {
-                        k: v
-                        for k, v in obj["properties"]["bands"][0].items()
-                        if k not in ["name", "description"]
-                    }
-                else:
-                    counters: dict[str, Counter[Any]] = {
-                        PREFIX + eo_field: Counter() for eo_field in to_be_renamed
-                    }
-
-                    for band in obj["properties"]["bands"]:
-                        for k in counters.keys():
-                            # If missing, skip
-                            if k in band.keys():
-                                counters[k] += Counter([band[k]])
-
-                    for k, v in counters.items():
-                        # Element is unique and isn't missing
-                        # Move everything up and
-                        if len(counters[k]) == 1 and counters[k].total() == n_elements:
-                            obj["properties"][k] = list(v)[0]
-                            for band in obj["properties"]["bands"]:
-                                del band[k]
-                        # A dominant element is present
-                        elif (
-                            0 < len(counters[k]) < n_elements
-                            and counters[k].total() == n_elements
-                        ):
-                            dom_el = counters[k].most_common()[0][0]
-                            obj["properties"][k] = dom_el
-                            for band in obj["properties"]["bands"]:
-                                if band[k] != dom_el:
-                                    del band[k]
+            # if "eo:bands" in obj.get("properties", {}):
+            if "properties" in obj:
+                self._migrate_obj_with_bands(obj["properties"])
+                if "assets" in obj.keys():
+                    for asset in obj["assets"].values():
+                        self._migrate_obj_with_bands(asset)
 
         super().migrate(obj, version, info)
 
