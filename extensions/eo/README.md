@@ -5,6 +5,7 @@ This extension provides fields for describing electro-optical sensor data, inclu
 
 ## Supported versions
 
+- [v2.0.0](https://stac-extensions.github.io/eo/v2.0.0/schema.json)
 - [v1.1.0](https://stac-extensions.github.io/eo/v1.1.0/schema.json)
 - [v1.0.0](https://stac-extensions.github.io/eo/v1.0.0/schema.json)
 
