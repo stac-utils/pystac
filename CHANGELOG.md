@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.15.0](https://github.com/stac-utils/pystac/compare/v1.14.3...v1.15.0) (2026-04-22)
+
+
+### Features
+
+* update storage extension to v2.0.0 ([#1561](https://github.com/stac-utils/pystac/issues/1561)) ([89189ad](https://github.com/stac-utils/pystac/commit/89189ad23016dacb591918e639c1c48c7a5e3e43))
+
+
+### Bug Fixes
+
+* asv (benchmarking) ([#1704](https://github.com/stac-utils/pystac/issues/1704)) ([319f4c4](https://github.com/stac-utils/pystac/commit/319f4c4b7f5c611c7e0049ec9164adc6617f70d6))
+* pull static script ([#1692](https://github.com/stac-utils/pystac/issues/1692)) ([7a8c769](https://github.com/stac-utils/pystac/commit/7a8c769f16a5a85b6938f449c62deaf25a7ab985))
+* type error ([#1705](https://github.com/stac-utils/pystac/issues/1705)) ([b8ce28d](https://github.com/stac-utils/pystac/commit/b8ce28daeff7cb0faaebb010262c2f9d364d5cca))
+* vcr header filtering ([#1697](https://github.com/stac-utils/pystac/issues/1697)) ([8660d02](https://github.com/stac-utils/pystac/commit/8660d028f260284ec97485dd434a64325fd0bcd7))
+
+
+### Dependencies
+
+* floor aiohttp to remove a vuln (docs group only) ([#1631](https://github.com/stac-utils/pystac/issues/1631)) ([9bc7f70](https://github.com/stac-utils/pystac/commit/9bc7f7040a4f46a1eab758eba2889656ec802ed1))
+
 ## [1.14.3](https://github.com/stac-utils/pystac/compare/v1.14.2...v1.14.3) (2026-01-08)
 
 
