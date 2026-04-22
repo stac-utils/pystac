@@ -317,18 +317,18 @@ def test_str_to_datetime() -> None:
 
     _set_tzinfo(None)
     utc_datetime = str_to_datetime(utc_timestamp)
-    assert utc_datetime.tzinfo is tz.tzutc()
     assert utc_datetime.tzinfo is not tz.tzlocal()
+    assert utc_datetime.tzinfo is tz.tzutc()
 
     _set_tzinfo("UTC")
     utc_datetime = str_to_datetime(utc_timestamp)
-    assert utc_datetime.tzinfo is tz.tzutc()
     assert utc_datetime.tzinfo is not tz.tzlocal()
+    assert utc_datetime.tzinfo is tz.tzutc()
 
     _set_tzinfo("US/Central")
     utc_datetime = str_to_datetime(utc_timestamp)
-    assert utc_datetime.tzinfo is tz.tzutc()
     assert utc_datetime.tzinfo is not tz.tzlocal()
+    assert utc_datetime.tzinfo is tz.tzutc()
 
     if prev_tz is not None:
         _set_tzinfo(prev_tz)
