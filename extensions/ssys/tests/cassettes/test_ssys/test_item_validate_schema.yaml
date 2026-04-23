@@ -1,0 +1,72 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://raw.githubusercontent.com/thareUSGS/ssys/main/examples/catalog.json
+  response:
+    body:
+      string: "{\n  \"id\": \"usgs_europa_catalog\",\n  \"type\": \"Catalog\",\n  \"stac_version\":
+        \"1.1.0\",\n  \"stac_extensions\": [\n    \"https://stac-extensions.github.io/ssys/v1.1.1/schema.json\"\n
+        \ ],\n  \"description\": \"USGS provided analysis ready data for Europa. All
+        collections within this catalog are GIS ready and served as cloud optimized
+        Geotiffs. To visualize these data in ArcGIS Pro please [see this guide](https://opengislab.com/blog/2021/4/25/accessing-cloud-optimized-geotiffs-in-arcgis-pro),
+        to access these data in QGIS please [see this guide](https://www.cogeo.org/qgis-tutorial.html).\\n\",\n
+        \ \"ssys:targets\": [\n    \"Europa\"\n  ],\n  \"links\": [\n    {\n      \"rel\":
+        \"root\",\n      \"href\": \"https://raw.githubusercontent.com/thareUSGS/ssys/main/examples/catalog.json\",\n
+        \     \"type\": \"application/json\"\n    },\n    {\n      \"rel\": \"self\",\n
+        \     \"href\": \"https://raw.githubusercontent.com/thareUSGS/ssys/main/examples/catalog.json\",\n
+        \     \"type\": \"application/json\"\n    },\n    {\n      \"rel\": \"child\",\n
+        \     \"href\": \"https://raw.githubusercontent.com/thareUSGS/ssys/main/examples/collection.json\",\n
+        \     \"type\": \"application/json\",\n      \"title\": \"USGS photogrammetrically
+        controlled image mosaics using Galileo, Voyager 1 and Voyager 2 data.\"\n
+        \   }\n  ],\n  \"title\": \"USGS Astrogeology provided Europa analysis ready
+        data\"\n}"
+    headers: {}
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://stac-extensions.github.io/ssys/v1.1.1/schema.json
+  response:
+    body:
+      string: "{\n\t\"$schema\": \"http://json-schema.org/draft-07/schema#\",\n\t\"$id\":
+        \"https://stac-extensions.github.io/ssys/v1.1.1/schema.json\",\n\t\"title\":
+        \"SSYS Extension\",\n\t\"description\": \"STAC Solar System Extension for
+        STAC Items, Catalogs, and Collections.\",\n\t\"oneOf\": [\n\t\t{\n\t\t\t\"$ref\":
+        \"#/definitions/item\"\n\t\t},\n\t\t{\n\t\t\t\"$ref\": \"#/definitions/collection\"\n\t\t},\n\t\t{\n\t\t\t\"$ref\":
+        \"#/definitions/catalog\"\n\t\t}\n\t],\n\t\"definitions\": {\n\t\t\"fields\":
+        {\n\t\t\t\"type\": \"object\",\n\t\t\t\"description\": \"SSYS extension fields.\",\n\t\t\t\"properties\":
+        {\n\t\t\t\t\"ssys:targets\": {\n\t\t\t\t\t\"description\": \"List of solar
+        system targets relevant to the data.\",\n\t\t\t\t\t\"type\": \"array\",\n\t\t\t\t\t\"minItems\":
+        1,\n\t\t\t\t\t\"items\": {\n\t\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t\t}\n\t\t\t\t},\n\t\t\t\t\"ssys:local_time\":
+        {\n\t\t\t\t\t\"title\": \"Local Time\",\n\t\t\t\t\t\"description\": \"Local
+        solar time at the observation target.\",\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t},\n\t\t\t\t\"ssys:target_class\":
+        {\n\t\t\t\t\t\"title\": \"Target Class\",\n\t\t\t\t\t\"description\": \"Classification
+        of the observed target.\",\n\t\t\t\t\t\"type\": \"string\",\n\t\t\t\t\t\"enum\":
+        [\n\t\t\t\t\t\t\"asteroid\",\n\t\t\t\t\t\t\"dwarf_planet\",\n\t\t\t\t\t\t\"planet\",\n\t\t\t\t\t\t\"satellite\",\n\t\t\t\t\t\t\"comet\",\n\t\t\t\t\t\t\"exoplanet\",\n\t\t\t\t\t\t\"interplanetary_medium\",\n\t\t\t\t\t\t\"sample\",\n\t\t\t\t\t\t\"sky\",\n\t\t\t\t\t\t\"spacecraft\",\n\t\t\t\t\t\t\"spacejunk\",\n\t\t\t\t\t\t\"star\",\n\t\t\t\t\t\t\"calibration\"\n\t\t\t\t\t]\n\t\t\t\t}\n\t\t\t},\n\t\t\t\"patternProperties\":
+        {\n\t\t\t\t\"^(?!ssys:)\": {}\n\t\t\t},\n\t\t\t\"additionalProperties\": false\n\t\t},\n\t\t\"asset_fields\":
+        {\n\t\t\t\"type\": \"object\",\n\t\t\t\"additionalProperties\": {\n\t\t\t\t\"$ref\":
+        \"#/definitions/fields\"\n\t\t\t}\n\t\t},\n\t\t\"item\": {\n\t\t\t\"$comment\":
+        \"Schema for STAC Items.\",\n\t\t\t\"type\": \"object\",\n\t\t\t\"required\":
+        [\n\t\t\t\t\"type\",\n\t\t\t\t\"properties\",\n\t\t\t\t\"assets\"\n\t\t\t],\n\t\t\t\"properties\":
+        {\n\t\t\t\t\"type\": {\n\t\t\t\t\t\"const\": \"Feature\"\n\t\t\t\t},\n\t\t\t\t\"properties\":
+        {\n\t\t\t\t\t\"$ref\": \"#/definitions/fields\"\n\t\t\t\t},\n\t\t\t\t\"assets\":
+        {\n\t\t\t\t\t\"$ref\": \"#/definitions/asset_fields\"\n\t\t\t\t}\n\t\t\t}\n\t\t},\n\t\t\"collection\":
+        {\n\t\t\t\"$comment\": \"Schema for STAC Collections.\",\n\t\t\t\"type\":
+        \"object\",\n\t\t\t\"required\": [\n\t\t\t\t\"type\"\n\t\t\t],\n\t\t\t\"properties\":
+        {\n\t\t\t\t\"type\": {\n\t\t\t\t\t\"const\": \"Collection\"\n\t\t\t\t},\n\t\t\t\t\"assets\":
+        {\n\t\t\t\t\t\"$ref\": \"#/definitions/asset_fields\"\n\t\t\t\t},\n\t\t\t\t\"item_assets\":
+        {\n\t\t\t\t\t\"$ref\": \"#/definitions/asset_fields\"\n\t\t\t\t}\n\t\t\t}\n\t\t},\n\t\t\"catalog\":
+        {\n\t\t\t\"$comment\": \"Schema for STAC Catalogs.\",\n\t\t\t\"type\": \"object\",\n\t\t\t\"required\":
+        [\n\t\t\t\t\"type\"\n\t\t\t],\n\t\t\t\"properties\": {\n\t\t\t\t\"type\":
+        {\n\t\t\t\t\t\"const\": \"Catalog\"\n\t\t\t\t}\n\t\t\t},\n\t\t\t\"allOf\":
+        [ \n\t\t\t\t{ \n\t\t\t\t\t\"$ref\": \"#/definitions/fields\" \n\t\t\t\t} \n\t\t\t]\n\t\t}\n\t}\n}"
+    headers: {}
+    status:
+      code: 200
+      message: OK
+version: 1

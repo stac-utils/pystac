@@ -1,0 +1,324 @@
+{
+  "type": "Feature",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/ssys/v1.1.1/schema.json"
+  ],
+  "id": "item",
+  "properties": {
+    "title": "Absolutely Controlled Image Mosaic; Europa; s0349875139.equi.photr",
+    "description": "The Solid State Imager (SSI) on NASA's Galileo spacecraft acquired more than 500 images of Jupiter's moon, Europa, providing the only moderate- to high-resolution images of the moon's surface. These images vary from relatively low-resolution hemispherical imaging, to high-resolution targeted images that cover a small portion of the surface. Here we provide a set of 481 minimally processed, projected (level 2) Galileo images with photogrammetrically improved locations on Europa's surface. These individual images were subsequently used as input into a set of 92 observation mosaics that are also available through the USGS. These images provide users with nearly the entire Galileo Europa imaging dataset at its native resolution and with improved relative image locations.The Solid State Imager (SSI) on NASA's Galileo spacecraft provided the only moderate- to high-resolution images of Jupiter's moon, Europa. Unfortunately, uncertainty in the position and pointing of the spacecraft, as well as the position and orientation of Europa, when the images were acquired resulted in significant errors in image locations on the surface. The result of these errors is that images acquired during different Galileo orbits, or even at different times during the same orbit, are significantly misaligned (errors of up to 100 km on the surface). Previous work has generated global mosaics of Galileo and Voyager images that photogrammetrically control a subset of the available images to correct their relative locations. However, these efforts result in a \"static\" mosaic that is projected to a consistent pixel scale, and only use a fraction of the dataset (e.g., high resolution images are not included). The purpose of this current dataset is to increase the usability of the entire Galileo image set by photogrammetrically improving the locations of nearly every Europa image acquired by Galileo, and making them available to the community projected at their native resolution. The dataset therefore provides a set of individual images that can be used for scientific analysis and mission planning activities.",
+    "mission": "Voyager 1,Voyager 2,Galileo",
+    "instruments": ["Voyager I ISS, Voyager II ISS, Galileo SSI"],
+    "ssys:targets": ["Europa"],
+    "ssys:target_class": "planet",
+    "gsd": 1570,
+    "license": "PDDL-1.0",
+    "proj:epsg": null,
+    "proj:wkt2": "\"PROJCS[\\\"Equirectangular EUROPA\\\",GEOGCS[\\\"GCS_EUROPA\\\",DATUM[\\\"D_EUROPA\\\",SPHEROID[\\\"EUROPA_localRadius\\\",1560800,0]],PRIMEM[\\\"Reference_Meridian\\\",0],UNIT[\\\"degree\\\",0.0174532925199433,AUTHORITY[\\\"EPSG\\\",\\\"9122\\\"]]],PROJECTION[\\\"Equirectangular\\\"],PARAMETER[\\\"standard_parallel_1\\\",0],PARAMETER[\\\"central_meridian\\\",180],PARAMETER[\\\"false_easting\\\",0],PARAMETER[\\\"false_northing\\\",0],UNIT[\\\"metre\\\",1,AUTHORITY[\\\"EPSG\\\",\\\"9001\\\"]],AXIS[\\\"Easting\\\",EAST],AXIS[\\\"Northing\\\",NORTH]]\"",
+    "proj:projjson": {
+      "$schema": "https://proj.org/schemas/v0.2/projjson.schema.json",
+      "type": "ProjectedCRS",
+      "name": "Equirectangular EUROPA",
+      "base_crs": {
+        "name": "GCS_EUROPA",
+        "datum": {
+          "type": "GeodeticReferenceFrame",
+          "name": "D_EUROPA",
+          "ellipsoid": {
+            "name": "EUROPA_localRadius",
+            "radius": 1560800
+          },
+          "prime_meridian": {
+            "name": "Reference meridian",
+            "longitude": 0
+          }
+        },
+        "coordinate_system": {
+          "subtype": "ellipsoidal",
+          "axis": [
+            {
+              "name": "Longitude",
+              "abbreviation": "lon",
+              "direction": "east",
+              "unit": "degree"
+            },
+            {
+              "name": "Latitude",
+              "abbreviation": "lat",
+              "direction": "north",
+              "unit": "degree"
+            }
+          ]
+        }
+      },
+      "conversion": {
+        "name": "unknown",
+        "method": {
+          "name": "Equidistant Cylindrical (Spherical)",
+          "id": {
+            "authority": "EPSG",
+            "code": 1029
+          }
+        },
+        "parameters": [
+          {
+            "name": "Latitude of 1st standard parallel",
+            "value": 0,
+            "unit": "degree",
+            "id": {
+              "authority": "EPSG",
+              "code": 8823
+            }
+          },
+          {
+            "name": "Latitude of natural origin",
+            "value": 0,
+            "unit": "degree",
+            "id": {
+              "authority": "EPSG",
+              "code": 8801
+            }
+          },
+          {
+            "name": "Longitude of natural origin",
+            "value": 180,
+            "unit": "degree",
+            "id": {
+              "authority": "EPSG",
+              "code": 8802
+            }
+          },
+          {
+            "name": "False easting",
+            "value": 0,
+            "unit": "metre",
+            "id": {
+              "authority": "EPSG",
+              "code": 8806
+            }
+          },
+          {
+            "name": "False northing",
+            "value": 0,
+            "unit": "metre",
+            "id": {
+              "authority": "EPSG",
+              "code": 8807
+            }
+          }
+        ]
+      },
+      "coordinate_system": {
+        "subtype": "Cartesian",
+        "axis": [
+          {
+            "name": "Easting",
+            "abbreviation": "E",
+            "direction": "east",
+            "unit": "metre"
+          },
+          {
+            "name": "Northing",
+            "abbreviation": "N",
+            "direction": "north",
+            "unit": "metre"
+          }
+        ]
+      }
+    },
+    "proj:bbox": [
+      50.05904111309201, -7.248122813850102, 146.06385423664898,
+      60.53051661180874
+    ],
+    "proj:shape": [1177, 1731],
+    "proj:transform": [-3642400, 1570, 0, 1650070, 0, -1570],
+    "cube:dimensions": {
+      "x": {
+        "type": "spatial",
+        "axis": "x",
+        "extent": [50.05904111309201, 146.06385423664898]
+      },
+      "y": {
+        "type": "spatial",
+        "axis": "y",
+        "extent": [-7.248122813850102, 60.53051661180874]
+      }
+    },
+    "datetime": "2021-01-01T00:00:00Z"
+  },
+  "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+      [
+        [
+          [54.91605773396355, 7.625853752400096],
+          [53.98948224814965, 9.74143659287247],
+          [53.04458179595695, 11.892195352407247],
+          [52.12565522801849, 13.971039433171317],
+          [51.21417880123797, 16.01456555340284],
+          [50.33800273463805, 17.95633735020426],
+          [50.05904111309201, 18.569125678778025],
+          [56.048386284912276, 22.36328061744225],
+          [59.5996421721501, 25.046823278074875],
+          [62.3288264849984, 27.36090436353051],
+          [64.60748163184054, 29.473595225481624],
+          [66.59087031342172, 31.456088463452602],
+          [68.36133413843683, 33.34679239449515],
+          [69.96860448491417, 35.16942368331772],
+          [71.44528635961893, 36.9399867600371],
+          [72.81397392406275, 38.6699986938109],
+          [74.09093132863308, 40.36817052090274],
+          [75.28816216753573, 42.041364266253595],
+          [76.41464417588688, 43.69517581276608],
+          [77.47709576174395, 45.334309845909544],
+          [78.4804610248243, 46.96283245279091],
+          [79.42821339344162, 48.584348390999786],
+          [80.32253287617776, 50.202130274577506],
+          [81.16438625206062, 51.81921619006909],
+          [81.95352316853446, 53.43848612679345],
+          [82.68838882710602, 55.06272393242141],
+          [83.36594245633965, 56.694669171470544],
+          [83.9813573986182, 58.33706163929696],
+          [84.5275602224729, 59.99267995141067],
+          [84.75667674933763, 60.53051661180874],
+          [90.10793762412733, 59.78020463489576],
+          [94.89280634949492, 58.89563766771595],
+          [99.20755805443834, 57.90584951715394],
+          [103.11148250946616, 56.835314950378745],
+          [106.65704383908567, 55.70259166815201],
+          [109.89017057794224, 54.52184457318947],
+          [112.85074645252824, 53.3039395411959],
+          [115.57322287350672, 52.057243355347076],
+          [118.0872719844407, 50.78821582159449],
+          [120.41842322738835, 49.501851824056864],
+          [122.58865072607246, 48.2020136372542],
+          [124.61689665992647, 46.89168227275674],
+          [126.5195271149456, 45.573148675433096],
+          [128.31072328120382, 44.248159955668555],
+          [130.00281400128227, 42.918031809143315],
+          [131.60655683978723, 41.58373535830109],
+          [133.13137490587644, 40.245964526882396],
+          [134.58555615947307, 38.905188506315966],
+          [135.97642118817404, 37.56169273136316],
+          [137.3104646358921, 36.21561093917001],
+          [138.59347468976327, 34.86695025939445],
+          [139.83063433244695, 33.5156108150663],
+          [141.0266074584379, 32.161400961995334],
+          [142.18561243551932, 30.804049028111425],
+          [143.31148525963815, 29.44321221096082],
+          [144.40773409334068, 28.078483134951032],
+          [145.47758668437547, 26.709394448047703],
+          [146.06385423664898, 25.92096815697751],
+          [144.53467591681076, 24.957722959430683],
+          [143.04475576757778, 23.98916751831114],
+          [141.57723452981202, 23.00637207791589],
+          [140.12985249014937, 22.009337011350873],
+          [138.70040155060093, 20.997986213404054],
+          [137.28671159533408, 19.97216746995831],
+          [135.88663653833464, 18.93165181203333],
+          [134.49803981052395, 17.876131808847614],
+          [133.1187790093407, 16.805218722746147],
+          [131.74668938504945, 15.7184384122413],
+          [130.37956577246993, 14.615225825261573],
+          [129.01514248931562, 13.494917870147656],
+          [127.65107060525877, 12.35674438275626],
+          [126.28489182884485, 11.199816818542043],
+          [124.91400804696151, 10.023114180677727],
+          [123.53564526177772, 8.825465537510429],
+          [122.14681026984158, 7.605528267877782],
+          [120.74423786836533, 6.3617608758378195],
+          [119.32432557910187, 5.09238879846824],
+          [117.88305173357882, 3.795361031950267],
+          [116.41587107764339, 2.468294527269705],
+          [114.9175795233192, 1.1084020034487845],
+          [113.38213578990009, -0.2876031641361866],
+          [111.80242154910026, -1.7236344434606046],
+          [110.16991173699687, -3.204406537502003],
+          [108.47420997093417, -4.735679597133976],
+          [106.7023747738121, -6.324610832978284],
+          [105.64549377641242, -7.248122813850102],
+          [104.49540234481428, -6.005604028017529],
+          [103.31960302368151, -4.806833395903901],
+          [102.10503569626744, -3.639491568647288],
+          [100.84902180039515, -2.503386280068551],
+          [99.54855084771914, -1.3985952624610976],
+          [98.20022609351756, -0.3254792178025971],
+          [96.80019476371096, 0.7152957901751589],
+          [95.34405779052521, 1.7227245204776458],
+          [93.82675169684865, 2.6954141755218166],
+          [92.24239171566077, 3.631516630255046],
+          [90.58405959685696, 4.528633820855919],
+          [88.84351032190736, 5.383684600146178],
+          [87.01075625314354, 6.192714204245895],
+          [85.07345941450146, 6.950614835107286],
+          [83.01601074376715, 7.650702395563816],
+          [80.81807263588453, 8.284048153630492],
+          [78.45214321137182, 8.838366053057662],
+          [75.87919367211359, 9.296028731043474],
+          [73.04010215459506, 9.63019049674804],
+          [69.83651975721168, 9.796168805811343],
+          [66.0788057555562, 9.708103137144922],
+          [61.28341441058544, 9.148551155046775],
+          [54.91605773396355, 7.625853752400096]
+        ]
+      ]
+    ]
+  },
+  "links": [
+    {
+      "rel": "self",
+      "href": "https://raw.githubusercontent.com/thareUSGS/ssys/main/examples/item.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "parent",
+      "href": "https://raw.githubusercontent.com/thareUSGS/ssys/main/examples/collection.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "root",
+      "href": "https://raw.githubusercontent.com/thareUSGS/ssys/main/examples/catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "collection",
+      "href": "https://raw.githubusercontent.com/thareUSGS/ssys/main/examples/collection.json",
+      "type": "application/json"
+    }
+  ],
+  "assets": {
+    "thumbnail": {
+      "href": "https://asc-jupiter.s3-us-west-2.amazonaws.com/europa/galileo_voyager/controlled_images/s0349875139.equi.photr-cog.jpeg",
+      "type": "image/jpeg",
+      "title": "Image Thumbnail",
+      "key": "thumbnail",
+      "roles": ["thumbnail"]
+    },
+    "image": {
+      "href": "https://asc-jupiter.s3-us-west-2.amazonaws.com/europa/galileo_voyager/controlled_images/s0349875139.equi.photr-cog.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "Controlled Image",
+      "key": "image",
+      "roles": ["data"]
+    },
+    "fgdc_metadata": {
+      "href": "https://asc-jupiter.s3-us-west-2.amazonaws.com/europa/galileo_voyager/controlled_images/s0349875139.equi.photr-cog.xml",
+      "type": "application/xml",
+      "title": "FGDC Metadata",
+      "key": "fgdc_metadata",
+      "roles": ["metadata"]
+    },
+    "pds_label": {
+      "href": "https://asc-jupiter.s3-us-west-2.amazonaws.com/europa/galileo_voyager/controlled_images/s0349875139.equi.photr-cog.tif.aux.xml",
+      "type": "text/plain",
+      "title": "Supplemental XML Metadata",
+      "key": "pds_label",
+      "roles": ["metadata"]
+    }
+  },
+  "bbox": [
+    50.05904111309201, -7.248122813850102, 146.06385423664898, 60.53051661180874
+  ],
+  "collection": "usgs_controlled_images_voy1_voy2_galileo"
+}
