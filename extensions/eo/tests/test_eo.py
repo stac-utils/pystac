@@ -575,14 +575,17 @@ def test_band_is_now_pystac_band() -> None:
 
     with pytest.warns(DeprecationWarning):
         Band = eo.Band
-    assert Band is pystac.Band  # used in assertion, no ruff complaint
+    assert isinstance(Band, type)
+    assert issubclass(Band, pystac.Band)
 
 
 def test_eo_bands_getter_is_deprecated() -> None:
     item = pystac.Item.from_file(LANDSAT_EXAMPLE_URI)
 
     b1_asset = item.assets["B1"]
-    with pytest.warns(DeprecationWarning, match="ext.eo.bands is deprecated"):
+    with pytest.warns(
+        DeprecationWarning, match="eo.Band is deprecated due to the change"
+    ):
         _ = b1_asset.ext.eo.bands
 
 
@@ -590,7 +593,9 @@ def test_eo_bands_setter_is_deprecated() -> None:
     item = pystac.Item.from_file(LANDSAT_EXAMPLE_URI)
 
     b1_asset = item.assets["B1"]
-    with pytest.warns(DeprecationWarning, match="ext.eo.bands is deprecated"):
+    with pytest.warns(
+        DeprecationWarning, match="eo.Band is deprecated due to the change"
+    ):
         b1_asset.ext.eo.bands = []
 
 

@@ -214,7 +214,19 @@ class Band:
                     "`name`, `description` or `extra_fields`"
                 ),
             )
-        return cls(name=name, description=description, extra_fields=extra_fields)
+        return cls(
+            name=name,
+            description=description,
+            extra_fields={
+                k: v.to_dict()
+                if hasattr(v, "to_dict") and callable(getattr(v, "to_dict"))
+                else v
+                for k, v in extra_fields.items()
+                if v is not None
+            }
+            if extra_fields is not None
+            else extra_fields,
+        )
 
     @property
     def ext(self) -> BandExt:

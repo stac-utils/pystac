@@ -10,6 +10,7 @@ from typing import (
     Any,
     Generic,
     Literal,
+    Optional,
     TypeVar,
     cast,
 )
@@ -27,10 +28,42 @@ from pystac.summaries import RangeSummary
 from pystac.utils import StringEnum, map_opt
 
 
-def __getattr__(name: str) -> object:
-    if name == "Band":
+class _EOBandCompat(pystac.Band):
+    """Compatibility class for older versions of eo.Band
+
+    This is **exclusively** for `pystac.Band` compatibility issues.
+    Do not use it as a traditional Python import.
+    """
+
+    @classmethod
+    def create(  # type: ignore[override]
+        cls,
+        name: str,
+        common_name: str | None = None,
+        description: str | None = None,
+        center_wavelength: float | None = None,
+        full_width_half_max: float | None = None,
+        solar_illumination: float | None = None,
+    ) -> pystac.Band:
+        """
+        Creates a new band.
+
+        Args:
+            name : The name of the band (e.g., "B01", "B02", "B1", "B5", "QA").
+            common_name : The name commonly used to refer to the band to make it easier
+                to search for bands across instruments. See the :stac-ext:`list of
+                accepted common names <eo#common-band-names>`.
+            description : Description to fully explain the band.
+            center_wavelength : The center wavelength of the band, in micrometers (μm).
+            full_width_half_max : Full width at half maximum (FWHM). The width of the
+                band, as measured at half the maximum transmission, in micrometers (μm).
+            solar_illumination: The solar illumination of the band,
+                as measured at half the maximum transmission, in W/m2/micrometers.
+        """
         warnings.warn(
-            "eo.Band is deprecated and will be removed in v2.0. "
+            "eo.Band is deprecated due to the change of specs for eo's v2.0.0. "
+            "Consult the release notes (https://github.com/stac-extensions/eo/releases/tag/v2.0.0)"
+            " for more details."
             "Use pystac.Band with band.ext.eo for spectral fields instead:\n"
             "  band = pystac.Band.create('B01')\n"
             "  band.ext.eo.common_name = 'red'\n"
@@ -38,9 +71,106 @@ def __getattr__(name: str) -> object:
             DeprecationWarning,
             stacklevel=2,
         )
-        from pystac import Band
+        return super().create(
+            name=name,
+            description=description,
+            extra_fields={
+                "eo:common_name": common_name,
+                "eo:center_wavelength": center_wavelength,
+                "eo:full_width_half_max": full_width_half_max,
+                "eo:solar_illumination": solar_illumination,
+            },
+        )
 
-        return Band
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> _EOBandCompat:
+        # Reuse base validation and field parsing, but construct as _EOBandCompat
+        # so that common_name and other eo: properties are accessible via get_prop()
+
+        # handles empty-dict validation and extra_fields parsing
+        base = pystac.Band.from_dict(d)
+        return cls(
+            name=base.name,
+            description=base.description,
+            extra_fields=base.extra_fields,
+        )
+
+    # Deprecated properties
+    @property
+    def common_name(self) -> str | None:
+        """Get or sets the name commonly used to refer to the band to make it easier
+            to search for bands across instruments. See the :stac-ext:`list of accepted
+            common names <eo#common-band-names>`.
+
+        Returns:
+            Optional[str]
+        """
+        return cast(Optional[str], self.get_prop("eo:common_name"))
+
+    @common_name.setter
+    def common_name(self, v: str | None) -> None:
+        self.set_prop("eo:common_name", v)
+
+    @property
+    def center_wavelength(self) -> float | None:
+        """Get or sets the center wavelength of the band, in micrometers (μm).
+
+        Returns:
+            float
+        """
+        return cast(Optional[float], self.get_prop("eo:center_wavelength"))
+
+    @center_wavelength.setter
+    def center_wavelength(self, v: float | None) -> None:
+        self.set_prop("eo:center_wavelength", v)
+
+    @property
+    def full_width_half_max(self) -> float | None:
+        """Get or sets the full width at half maximum (FWHM). The width of the band,
+            as measured at half the maximum transmission, in micrometers (μm).
+
+        Returns:
+            [float]
+        """
+        return cast(Optional[float], self.get_prop("eo:full_width_half_max"))
+
+    @full_width_half_max.setter
+    def full_width_half_max(self, v: float | None) -> None:
+        self.set_prop("eo:full_width_half_max", v)
+
+    @property
+    def solar_illumination(self) -> float | None:
+        """Get or sets the solar illumination of the band,
+            as measured at half the maximum transmission, in W/m2/micrometers.
+
+        Returns:
+            [float]
+        """
+        return cast(Optional[float], self.get_prop("eo:solar_illumination"))
+
+    @solar_illumination.setter
+    def solar_illumination(self, v: float | None) -> None:
+        self.set_prop("eo:solar_illumination", v)
+
+    def __repr__(self) -> str:
+        return f"<Band name={self.name}>"
+
+
+def __getattr__(name: str) -> object:
+    if name == "Band":
+        warnings.warn(
+            "eo.Band is deprecated due to the change of specs for eo's v2.0.0. "
+            "Consult the release notes (https://github.com/stac-extensions/eo/releases/tag/v2.0.0)"
+            " for more details."
+            "Use pystac.Band with band.ext.eo for spectral fields instead:\n"
+            "  band = pystac.Band.create('B01')\n"
+            "  band.ext.eo.common_name = 'red'\n"
+            "  band.ext.eo.center_wavelength = 0.65",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        return _EOBandCompat
     raise AttributeError(f"module 'pystac.extensions.eo' has no attribute {name!r}")
 
 
@@ -361,7 +491,9 @@ class EOExtension(
     @property
     def bands(self) -> list[pystac.Band] | None:
         warnings.warn(
-            "ext.eo.bands is deprecated and will be removed in v2.0. "
+            "eo.Band is deprecated due to the change of specs for eo's v2.0.0. "
+            "Consult the release notes (https://github.com/stac-extensions/eo/releases/tag/v2.0.0)"
+            " for more details."
             "Use asset.common_metadata.bands instead.",
             DeprecationWarning,
             stacklevel=2,
@@ -371,7 +503,9 @@ class EOExtension(
     @bands.setter
     def bands(self, v: list[pystac.Band] | None) -> None:
         warnings.warn(
-            "ext.eo.bands is deprecated and will be removed in v2.0. "
+            "eo.Band is deprecated due to the change of specs for eo's v2.0.0. "
+            "Consult the release notes (https://github.com/stac-extensions/eo/releases/tag/v2.0.0)"
+            " for more details."
             "Use asset.common_metadata.bands instead.",
             DeprecationWarning,
             stacklevel=2,
@@ -466,7 +600,9 @@ class ItemEOExtension(EOExtension[pystac.Item]):
     @property
     def bands(self) -> list[pystac.Band] | None:
         warnings.warn(
-            "ext.eo.bands is deprecated and will be removed in v2.0. "
+            "eo.Band is deprecated due to the change of specs for eo's v2.0.0. "
+            "Consult the release notes (https://github.com/stac-extensions/eo/releases/tag/v2.0.0)"
+            " for more details."
             "Use asset.common_metadata.bands instead.",
             DeprecationWarning,
             stacklevel=2,
@@ -491,7 +627,9 @@ class ItemEOExtension(EOExtension[pystac.Item]):
     @bands.setter
     def bands(self, v: list[pystac.Band] | None) -> None:
         warnings.warn(
-            "ext.eo.bands is deprecated and will be removed in v2.0. "
+            "eo.Band is deprecated due to the change of specs for eo's v2.0.0. "
+            "Consult the release notes (https://github.com/stac-extensions/eo/releases/tag/v2.0.0)"
+            " for more details."
             "Use asset.common_metadata.bands instead.",
             DeprecationWarning,
             stacklevel=2,
@@ -541,7 +679,9 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
     @property
     def bands(self) -> list[pystac.Band] | None:
         warnings.warn(
-            "ext.eo.bands is deprecated and will be removed in v2.0. "
+            "eo.Band is deprecated due to the change of specs for eo's v2.0.0. "
+            "Consult the release notes (https://github.com/stac-extensions/eo/releases/tag/v2.0.0)"
+            " for more details."
             "Use asset.common_metadata.bands instead.",
             DeprecationWarning,
             stacklevel=2,
@@ -550,7 +690,7 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
             return None
         return list(
             map(
-                lambda band: pystac.Band.from_dict(band),
+                lambda band: _EOBandCompat.from_dict(band),
                 cast(list[dict[str, Any]], self.properties.get("bands")),
             )
         )
@@ -558,7 +698,9 @@ class AssetEOExtension(EOExtension[pystac.Asset]):
     @bands.setter
     def bands(self, v: list[pystac.Band] | None) -> None:
         warnings.warn(
-            "ext.eo.bands is deprecated and will be removed in v2.0. "
+            "eo.Band is deprecated due to the change of specs for eo's v2.0.0. "
+            "Consult the release notes (https://github.com/stac-extensions/eo/releases/tag/v2.0.0)"
+            " for more details."
             "Use asset.common_metadata.bands instead.",
             DeprecationWarning,
             stacklevel=2,
@@ -711,7 +853,9 @@ class SummariesEOExtension(SummariesExtension):
     @property
     def bands(self) -> list[pystac.Band] | None:
         warnings.warn(
-            "ext.eo.bands is deprecated and will be removed in v2.0. "
+            "eo.Band is deprecated due to the change of specs for eo's v2.0.0. "
+            "Consult the release notes (https://github.com/stac-extensions/eo/releases/tag/v2.0.0)"
+            " for more details."
             "Use asset.common_metadata.bands instead.",
             DeprecationWarning,
             stacklevel=2,
@@ -719,14 +863,16 @@ class SummariesEOExtension(SummariesExtension):
         bands = self.summaries.get_list("bands")
 
         if bands is not None:
-            return [pystac.Band.from_dict(b) for b in bands]
+            return [_EOBandCompat.from_dict(b) for b in bands]
 
         return None
 
     @bands.setter
     def bands(self, v: list[pystac.Band] | None) -> None:
         warnings.warn(
-            "ext.eo.bands is deprecated and will be removed in v2.0. "
+            "eo.Band is deprecated due to the change of specs for eo's v2.0.0. "
+            "Consult the release notes (https://github.com/stac-extensions/eo/releases/tag/v2.0.0)"
+            " for more details."
             "Use asset.common_metadata.bands instead.",
             DeprecationWarning,
             stacklevel=2,
@@ -847,6 +993,10 @@ class EOExtensionHooks(ExtensionHooks):
             for band in bands:
                 if json.dumps(band.get(k), sort_keys=True) == dom_element:
                     del band[k]
+
+        # Next make sure "bands" is empty
+        if all([len(b) == 0 for b in bands]):
+            del obj["bands"]
 
     def migrate(
         self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription

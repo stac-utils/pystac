@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import json
+import warnings
 from collections import Counter
 from collections.abc import Iterable
 from typing import (
     Any,
     Generic,
     Literal,
+    Optional,
     TypeVar,
     cast,
 )
@@ -24,23 +26,256 @@ from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import StringEnum, get_required, map_opt
 
 
+class _RasterBandCompat(pystac.Band):
+    """Compatibility class for older versions of RasterBand
+
+    This is **exclusively** for `pystac.Band` compatibility issues.
+    Do not use it as a traditional Python import.
+    """
+
+    @classmethod
+    def create(  # type: ignore[override]
+        cls,
+        nodata: float | pystac.NoDataStrings | None = None,
+        sampling: Sampling | None = None,
+        data_type: pystac.DataType | None = None,
+        bits_per_sample: float | None = None,
+        spatial_resolution: float | None = None,
+        statistics: pystac.Statistics | None = None,
+        unit: str | None = None,
+        scale: float | None = None,
+        offset: float | None = None,
+        histogram: Histogram | None = None,
+    ) -> pystac.Band:
+        """
+        Creates a new band.
+
+        Args:
+            nodata : Pixel values used to identify pixels that are nodata in the assets.
+            sampling : One of area or point. Indicates whether a pixel value should be
+                assumed to represent a sampling over the region of the pixel or a point
+                sample at the center of the pixel.
+            data_type :The data type of the band.
+                One of the data types as described in the
+                :stac-ext:`Raster Data Types <raster/#data-types> docs`.
+            bits_per_sample : The actual number of bits used for this band.
+                Normally only present when the number of bits is non-standard for the
+                datatype, such as when a 1 bit TIFF is represented as byte
+            spatial_resolution : Average spatial resolution (in meters) of the pixels in
+                the band.
+            statistics: Statistics of all the pixels in the band
+            unit: unit denomination of the pixel value
+            scale: multiplicator factor of the pixel value to transform into the value
+                (i.e. translate digital number to reflectance).
+            offset: number to be added to the pixel value (after scaling) to transform
+                into the value (i.e. translate digital number to reflectance).
+            histogram: Histogram distribution information of the pixels values in the
+                band
+        """
+        warnings.warn(
+            "RasterBand is deprecated  since v2.0.0 and will be "
+            "replaced by pystac.Band for raster attributes instead. Please consult "
+            "the release notes (https://github.com/stac-extensions/raster/releases/tag/v2.0.0)"
+            " for more details."
+            "Use pystac.Band with band.ext.raster for raster fields instead:\n"
+            "  band = pystac.Band.create('B01')\n"
+            "  band.ext.raster.bits_per_sample = 15\n"
+            "  band.ext.raster.sampling = 'area'\n"
+            "  band.ext.raster.histogram = Histogram(min=0, max=255)",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return super().create(
+            name=None,
+            description=None,
+            extra_fields={
+                "nodata": nodata,
+                "data_type": data_type,
+                "statistics": statistics,
+                "unit": unit,
+                "raster:sampling": sampling,
+                "raster:bits_per_sample": bits_per_sample,
+                "raster:spatial_resolution": spatial_resolution,
+                "raster:scale": scale,
+                "raster:offset": offset,
+                "raster:histogram": histogram,
+            },
+        )
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> _RasterBandCompat:
+        # Reuse base validation and field parsing, but construct as _EOBandCompat
+        # so that common_name and other eo: properties are accessible via get_prop()
+        base = pystac.Band.from_dict(
+            d
+        )  # handles empty-dict validation and extra_fields parsing
+        return cls(
+            name=base.name,
+            description=base.description,
+            extra_fields=base.extra_fields,
+        )
+
+    # old properties
+    @property
+    def nodata(self) -> float | pystac.NoDataStrings | None:
+        """Get or sets the nodata pixel value
+
+        Returns:
+            Optional[float]
+        """
+        return cast(Optional[pystac.NoDataStrings], self.get_prop("no_data"))
+
+    @nodata.setter
+    def nodata(self, v: float | pystac.NoDataStrings | None) -> None:
+        self.set_prop("no_data", v)
+
+    @property
+    def sampling(self) -> Sampling | None:
+        """Get or sets the property indicating whether a pixel value should be assumed
+        to represent a sampling over the region of the pixel or a point sample
+        at the center of the pixel.
+
+        Returns:
+            Optional[Sampling]
+        """
+        return cast(Optional[Sampling], self.get_prop("raster:sampling"))
+
+    @sampling.setter
+    def sampling(self, v: Sampling | None) -> None:
+        self.set_prop("raster:sampling", v)
+
+    @property
+    def data_type(self) -> pystac.DataType | None:
+        """Get or sets the data type of the band.
+
+        Returns:
+            Optional[DataType]
+        """
+        return cast(Optional[pystac.DataType], self.get_prop("data_type"))
+
+    @data_type.setter
+    def data_type(self, v: pystac.DataType | None) -> None:
+        self.set_prop("data_type", v)
+
+    @property
+    def bits_per_sample(self) -> float | None:
+        """Get or sets the actual number of bits used for this band.
+
+        Returns:
+            float
+        """
+        return cast(Optional[float], self.get_prop("raster:bits_per_sample"))
+
+    @bits_per_sample.setter
+    def bits_per_sample(self, v: float | None) -> None:
+        self.set_prop("raster:bits_per_sample", v)
+
+    @property
+    def spatial_resolution(self) -> float | None:
+        """Get or sets the average spatial resolution (in meters) of the pixels in the
+        band.
+
+        Returns:
+            [float]
+        """
+        return cast(Optional[float], self.get_prop("raster:spatial_resolution"))
+
+    @spatial_resolution.setter
+    def spatial_resolution(self, v: float | None) -> None:
+        self.set_prop("raster:spatial_resolution", v)
+
+    @property
+    def statistics(self) -> pystac.Statistics | None:
+        """Get or sets the average spatial resolution (in meters) of the pixels in the
+        band.
+
+        Returns:
+            [Statistics]
+        """
+        return cast(Optional[pystac.Statistics], self.get_prop("statistics"))
+
+    @statistics.setter
+    def statistics(self, v: pystac.Statistics | None) -> None:
+        self.set_prop("statistics", v)
+
+    @property
+    def unit(self) -> str | None:
+        """Get or sets the unit denomination of the pixel value
+
+        Returns:
+            [str]
+        """
+        return cast(Optional[str], self.get_prop("unit"))
+
+    @unit.setter
+    def unit(self, v: str | None) -> None:
+        self.set_prop("unit", v)
+
+    @property
+    def scale(self) -> float | None:
+        """Get or sets the multiplicator factor of the pixel value to transform
+        into the value (i.e. translate digital number to reflectance).
+
+        Returns:
+            [float]
+        """
+        return cast(Optional[float], self.get_prop("raster:scale"))
+
+    @scale.setter
+    def scale(self, v: float | None) -> None:
+        self.set_prop("raster:scale", v)
+
+    @property
+    def offset(self) -> float | None:
+        """Get or sets the number to be added to the pixel value (after scaling)
+        to transform into the value (i.e. translate digital number to reflectance).
+
+        Returns:
+            [float]
+        """
+        return cast(Optional[float], self.get_prop("raster:float"))
+
+    @offset.setter
+    def offset(self, v: float | None) -> None:
+        self.set_prop("raster:offset", v)
+
+    @property
+    def histogram(self) -> Histogram | None:
+        """Get or sets the histogram distribution information of the pixels values in
+        the band.
+
+        Returns:
+            [Histogram]
+        """
+        return cast(Optional[Histogram], self.get_prop("raster:histogram"))
+
+    @histogram.setter
+    def histogram(self, v: Histogram | None) -> None:
+        self.set_prop("raster:histogram", v)
+
+    def __repr__(self) -> str:
+        return "<Raster Band>"
+
+
 def __getattr__(name: str) -> object:
     if name == "RasterBand":
         import warnings
 
         warnings.warn(
-            "RasterBand is deprecated and will be removed in v2.0. "
+            "RasterBand is deprecated  since v2.0.0 and will be "
+            "replaced by pystac.Band for raster attributes instead. Please consult "
+            "the release notes (https://github.com/stac-extensions/raster/releases/tag/v2.0.0)"
+            " for more details."
             "Use pystac.Band with band.ext.raster for raster fields instead:\n"
             "  band = pystac.Band.create('B01')\n"
-            "  band.ext.raster.nodata = 0\n"
-            "  band.ext.raster.data_type = DataType.FLOAT32\n"
-            "  band.ext.raster.spatial_resolution = 10.0",
+            "  band.ext.raster.bits_per_sample = 15\n"
+            "  band.ext.raster.sampling = 'area'\n"
+            "  band.ext.raster.histogram = Histogram(min=0, max=255)",
             DeprecationWarning,
             stacklevel=2,
         )
-        from pystac import Band
 
-        return Band
+        return _RasterBandCompat
     raise AttributeError(f"module 'pystac.extensions.raster' has no attribute {name!r}")
 
 
@@ -384,6 +619,51 @@ class RasterExtension(
     def get_statistics(self) -> pystac.Statistics | None:
         pass
 
+    # Deprecated
+    @property
+    def bands(self) -> list[_RasterBandCompat] | None:
+        """Gets or sets a list of available bands where each item is a
+        :class:`~RasterBand` object (or ``None`` if no bands have been set). If not
+        available the field should not be provided.
+        """
+        warnings.warn(
+            "RasterBand is deprecated  since v2.0.0 and will be "
+            "replaced by pystac.Band for raster attributes instead. Please consult "
+            "the release notes (https://github.com/stac-extensions/raster/releases/tag/v2.0.0)"
+            " for more details."
+            "Use pystac.Band with band.ext.raster for raster fields instead:\n"
+            "  band = pystac.Band.create('B01')\n"
+            "  band.ext.raster.bits_per_sample = 15\n"
+            "  band.ext.raster.sampling = 'area'\n"
+            "  band.ext.raster.histogram = Histogram(min=0, max=255)",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self._get_bands()
+
+    @bands.setter
+    def bands(self, v: list[pystac.Band] | None) -> None:
+        warnings.warn(
+            "RasterBand is deprecated  since v2.0.0 and will be "
+            "replaced by pystac.Band for raster attributes instead. Please consult "
+            "the release notes (https://github.com/stac-extensions/raster/releases/tag/v2.0.0)"
+            " for more details."
+            "Use pystac.Band with band.ext.raster for raster fields instead:\n"
+            "  band = pystac.Band.create('B01')\n"
+            "  band.ext.raster.bits_per_sample = 15\n"
+            "  band.ext.raster.sampling = 'area'\n"
+            "  band.ext.raster.histogram = Histogram(min=0, max=255)",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._set_bands(v)
+
+    def _get_bands(self) -> list[_RasterBandCompat] | None:
+        pass
+
+    def _set_bands(self, v: list[pystac.Band] | None) -> None:
+        pass
+
 
 class AssetRasterExtension(RasterExtension[pystac.Asset]):
     asset_href: str
@@ -414,6 +694,21 @@ class AssetRasterExtension(RasterExtension[pystac.Asset]):
                 cast(list[dict[str, Any]], self.properties.get("bands")),
             )
         )
+
+    # Deprecated
+    def _get_bands(self) -> list[_RasterBandCompat] | None:
+        if "bands" not in self.properties:
+            return None
+        return list(
+            map(
+                lambda band: _RasterBandCompat.from_dict(band),
+                cast(list[dict[str, Any]], self.properties.get("bands")),
+            )
+        )
+
+    def _set_bands(self, v: list[pystac.Band] | None) -> None:
+        if v is not None:
+            self.properties["bands"] = [b.to_dict() for b in v]
 
 
 class ItemAssetsRasterExtension(RasterExtension[pystac.ItemAssetDefinition]):
@@ -558,6 +853,10 @@ class RasterExtensionHooks(ExtensionHooks):
             for band in bands:
                 if json.dumps(band.get(k), sort_keys=True) == dom_element:
                     del band[k]
+
+        # Next make sure "bands" is empty
+        if all([len(b) == 0 for b in bands]):
+            del obj["bands"]
 
     def migrate(
         self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription

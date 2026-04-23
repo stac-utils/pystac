@@ -312,4 +312,5 @@ def test_raster_band_is_now_pystac_band() -> None:
 
     with pytest.warns(DeprecationWarning):
         RasterBand = raster.RasterBand
-    assert RasterBand is pystac.Band  # used in assertion, no ruff complaint
+    assert isinstance(RasterBand, type)
+    assert issubclass(RasterBand, pystac.Band)
