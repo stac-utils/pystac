@@ -608,6 +608,118 @@ def test_eo_bands_redirects_to_common_metadata() -> None:
     assert bands == b1_asset.common_metadata.bands
 
 
+def test_band_is_eo_band_compat() -> None:
+    from pystac.extensions import eo
+
+    with pytest.warns(DeprecationWarning):
+        Band = eo.Band
+    assert isinstance(Band, type)
+    assert issubclass(Band, pystac.Band)
+
+
+def test_eo_band_create_is_deprecated() -> None:
+    from pystac.extensions.eo import _EOBandCompat
+
+    with pytest.warns(DeprecationWarning, match="eo.Band is deprecated"):
+        _ = _EOBandCompat.create(name="B01", common_name="red")
+
+
+def test_eo_band_create_packs_eo_fields_into_extra_fields() -> None:
+    from pystac.extensions.eo import _EOBandCompat
+
+    with pytest.warns(DeprecationWarning):
+        band = _EOBandCompat.create(
+            name="B01",
+            common_name="red",
+            center_wavelength=0.65,
+            full_width_half_max=0.04,
+            solar_illumination=1823.24,
+        )
+    assert band.name == "B01"
+    assert band.extra_fields["eo:common_name"] == "red"
+    assert band.extra_fields["eo:center_wavelength"] == 0.65
+    assert band.extra_fields["eo:full_width_half_max"] == 0.04
+    assert band.extra_fields["eo:solar_illumination"] == 1823.24
+
+
+def test_eo_band_create_omits_none_fields() -> None:
+    from pystac.extensions.eo import _EOBandCompat
+
+    with pytest.warns(DeprecationWarning):
+        band = _EOBandCompat.create(name="B01", common_name="red")
+    assert "eo:center_wavelength" not in band.extra_fields
+    assert "eo:full_width_half_max" not in band.extra_fields
+    assert "eo:solar_illumination" not in band.extra_fields
+
+
+def test_eo_band_create_returns_pystac_band() -> None:
+    from pystac.extensions.eo import _EOBandCompat
+
+    with pytest.warns(DeprecationWarning):
+        band = _EOBandCompat.create(name="B01")
+    assert isinstance(band, pystac.Band)
+
+
+def test_eo_band_from_dict_roundtrips() -> None:
+    from pystac.extensions.eo import _EOBandCompat
+
+    d = {
+        "name": "B01",
+        "description": "Coastal",
+        "eo:common_name": "coastal",
+        "eo:center_wavelength": 0.44,
+    }
+    band = _EOBandCompat.from_dict(d)
+    assert band.name == "B01"
+    assert band.description == "Coastal"
+    assert band.extra_fields["eo:common_name"] == "coastal"
+    assert band.extra_fields["eo:center_wavelength"] == 0.44
+
+
+def test_eo_band_from_dict_raises_on_empty() -> None:
+    from pystac.errors import RequiredPropertyMissing
+    from pystac.extensions.eo import _EOBandCompat
+
+    with pytest.raises(RequiredPropertyMissing):
+        _EOBandCompat.from_dict({})
+
+
+def test_eo_band_compat_properties_read() -> None:
+    from pystac.extensions.eo import _EOBandCompat
+
+    with pytest.warns(DeprecationWarning):
+        band = _EOBandCompat.create(
+            name="B01",
+            common_name="red",
+            center_wavelength=0.65,
+            full_width_half_max=0.04,
+            solar_illumination=1823.24,
+        )
+    assert cast(_EOBandCompat, band).common_name == "red"
+    assert cast(_EOBandCompat, band).center_wavelength == 0.65
+    assert cast(_EOBandCompat, band).full_width_half_max == 0.04
+    assert cast(_EOBandCompat, band).solar_illumination == 1823.24
+
+
+def test_eo_band_compat_properties_write() -> None:
+    from pystac.extensions.eo import _EOBandCompat
+
+    with pytest.warns(DeprecationWarning):
+        band = _EOBandCompat.create(name="B01")
+    cast(_EOBandCompat, band).common_name = "red"
+    cast(_EOBandCompat, band).center_wavelength = 0.65
+    assert band.extra_fields["eo:common_name"] == "red"
+    assert band.extra_fields["eo:center_wavelength"] == 0.65
+
+
+def test_eo_band_compat_repr() -> None:
+    from pystac.extensions.eo import _EOBandCompat
+
+    with pytest.warns(DeprecationWarning):
+        band = _EOBandCompat.create(name="B01")
+    assert repr(band) == "<Band name=B01>"
+
+
 def test_asset_migration_with_raster() -> None:
     with open(SAMPLE_ASSET) as f:
         new_asset_d = json.load(f)

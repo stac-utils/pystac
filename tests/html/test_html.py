@@ -76,6 +76,9 @@ def test_nested_objects_valid_html() -> None:
     provider = (asset.common_metadata.providers or [])[0]
     parse_html(provider._repr_html_())
 
+    band = (asset.common_metadata.bands or [])[0]
+    parse_html(band._repr_html_())
+
 
 def test_nested_objects_missing_jinja2(mocker: MockerFixture) -> None:
     get_jinja_env.cache_clear()
@@ -94,5 +97,8 @@ def test_nested_objects_missing_jinja2(mocker: MockerFixture) -> None:
 
     provider = (asset.common_metadata.providers or [])[0]
     assert pystac.Provider.__name__ in provider._repr_html_()
+
+    band = (asset.common_metadata.bands or [])[0]
+    assert pystac.Band.__name__ in band._repr_html_()
 
     get_jinja_env.cache_clear()
