@@ -988,14 +988,13 @@ class TestCatalog:
                         assert asset.title != "NEW TITLE"
             assert found
 
-    @pytest.mark.xfail(reason=".media_type replaced with .type")
     def test_map_assets_tup(self) -> None:
         changed_assets: list[str] = []
 
         def asset_mapper(
             key: str, asset: pystac.Asset
         ) -> pystac.Asset | tuple[str, pystac.Asset]:
-            if asset.media_type and "geotiff" in asset.media_type:
+            if asset.type and "geotiff" in asset.type:
                 asset.title = "NEW TITLE"
                 changed_assets.append(key)
                 return (f"{key}-modified", asset)
@@ -1026,14 +1025,13 @@ class TestCatalog:
             assert found
             assert not_found
 
-    @pytest.mark.xfail(reason=".media_type replaced with .type")
     def test_map_assets_multi(self) -> None:
         changed_assets = []
 
         def asset_mapper(
             key: str, asset: pystac.Asset
         ) -> pystac.Asset | dict[str, pystac.Asset]:
-            if asset.media_type and "geotiff" in asset.media_type:
+            if asset.type and "geotiff" in asset.type:
                 changed_assets.append(key)
                 mod1 = asset.clone()
                 mod1.title = "NEW TITLE 1"
