@@ -1387,7 +1387,6 @@ class TestCatalog:
         assert len(all_collections) == 4
         assert all(isinstance(c, pystac.Collection) for c in all_collections)
 
-    @pytest.mark.xfail(reason="Catalog.get_single_link media_type parameter removed")
     def test_get_single_links_media_type(self) -> None:
         catalog = TestCases.case_1()
 
@@ -1415,9 +1414,10 @@ class TestCatalog:
         assert no_link is None
         first_link = catalog.get_single_link()
         assert first_link is not None
-        assert first_link.rel == "self"
+        assert (
+            first_link.rel == "child"
+        )  # was "self" but self links are not auto-populated anymore
 
-    @pytest.mark.xfail(reason="Catalog.get_single_link media_type parameter removed")
     def test_get_links(self) -> None:
         catalog = TestCases.case_1()
 
@@ -1439,7 +1439,7 @@ class TestCatalog:
         )
         assert len(catalog.get_links(rel="search")) == 2
         assert len(catalog.get_links(rel="via")) == 0
-        assert len(catalog.get_links()) == 6
+        assert len(catalog.get_links()) == 5  # self no longer autopopulated
 
     def test_to_dict_no_self_href(self) -> None:
         catalog = Catalog(id="an-id", description="A test Catalog")
@@ -1595,20 +1595,6 @@ class TestCatalogSubClass:
         custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
         cloned_catalog = custom_catalog.clone()
         assert isinstance(cloned_catalog, self.BasicCustomCatalog)
-
-    @pytest.mark.xfail(reason="Catalog.get_all_items method removed")
-    def test_get_all_items_works(self) -> None:
-        custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
-        cloned_catalog = custom_catalog.clone()
-        with pytest.warns(DeprecationWarning):
-            cloned_catalog.get_all_items()
-
-    @pytest.mark.xfail(reason="Catalog.get_item does not emit deprecation warning")
-    def test_get_item_works(self) -> None:
-        custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
-        cloned_catalog = custom_catalog.clone()
-        with pytest.warns(DeprecationWarning):
-            cloned_catalog.get_item("area-1-1-imagery")
 
 
 def test_custom_catalog_from_dict(catalog: Catalog) -> None:
