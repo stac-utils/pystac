@@ -279,7 +279,6 @@ def test_get_assets() -> None:
     assert no_assets == {}
 
 
-@pytest.mark.xfail(reason="Pystac v2 doesn't support summaries yet")
 def test_removing_optional_attributes() -> None:
     path = TestCases.get_path("data-files/collections/with-assets.json")
     with open(path) as file:
@@ -295,7 +294,7 @@ def test_removing_optional_attributes() -> None:
     assert collection.stac_extensions
     assert collection.keywords
     assert collection.providers
-    assert collection.summaries
+    assert collection.summaries is not None
     assert collection.assets
 
     # Remove all of the optional stuff
@@ -350,7 +349,6 @@ def test_from_dict_set_root() -> None:
     assert collection.get_root() is catalog
 
 
-@pytest.mark.xfail(reason="Pystac v2 doesn't support summaries yet")
 def test_schema_summary() -> None:
     collection = pystac.Collection.from_file(
         TestCases.get_path(
@@ -358,7 +356,7 @@ def test_schema_summary() -> None:
         )
     )
     instruments_schema = get_required(
-        collection.summaries.get_schema("instruments"),
+        collection.summaries["instruments"],
         collection.summaries,
         "instruments",
     )
