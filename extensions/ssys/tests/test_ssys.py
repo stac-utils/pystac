@@ -5,7 +5,7 @@ from typing import Any, cast
 import pytest
 
 import pystac
-from extensions.ssys.pystac.extensions.ssys import (
+from pystac.extensions.ssys import (
     CatalogSolSysExtension,
     ItemSolSysExtension,
     SolSysExtension,
