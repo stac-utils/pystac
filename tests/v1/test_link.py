@@ -1,9 +1,10 @@
 import json
 import os
+import re
 from datetime import datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Any, cast
+from typing import Any
 
 import pytest
 
@@ -14,6 +15,8 @@ from pystac.link import HIERARCHICAL_LINKS
 from pystac.utils import make_posix_style
 
 from .utils.test_cases import ARBITRARY_EXTENT
+
+pytestmark = pytest.mark.passing_v2
 
 TEST_DATETIME: datetime = datetime(2020, 3, 14, 16, 32)
 
@@ -32,7 +35,7 @@ def test_minimal(item: pystac.Item) -> None:
     assert target == link.get_href()
     assert target == link.get_absolute_href()
 
-    expected_repr = f"<Link rel={rel} target={target}>"
+    expected_repr = f"Link(rel={rel}, href={target})"
     assert expected_repr == link.__repr__()
 
     assert not link.is_resolved()
@@ -51,20 +54,14 @@ def test_minimal(item: pystac.Item) -> None:
 
     assert expected_dict == clone.to_dict()
 
-    # Try the modification methods.
-    assert link.owner is None
-    link.set_owner(None)
-    assert link.owner is None
-
-    link.set_owner(item)
-    assert item == link.owner
-
 
 def test_relative() -> None:
     rel = "my rel"
     target = "../elsewhere"
     mime_type = "example/stac_thing"
-    link = pystac.Link(rel, target, mime_type, "a title", extra_fields={"a": "b"})
+    link = pystac.Link(
+        rel, target, media_type=mime_type, title="a title", extra_fields={"a": "b"}
+    )
     expected_dict = {
         "rel": rel,
         "href": target,
@@ -115,34 +112,45 @@ def test_resolved_self_href() -> None:
 def test_target_getter_setter(item: pystac.Item) -> None:
     link = pystac.Link("my rel", target="./foo/bar.json")
     assert link.target == "./foo/bar.json"
-    assert link.get_target_str() == "./foo/bar.json"
+    assert link.get_href() == "./foo/bar.json"
 
+    item.set_self_href("file:///bad/beef.json")
     link.target = item
     assert link.target == item
-    assert link.get_target_str() == item.get_self_href()
+    # get_target_str is gone, so replaced with get_href
+    assert link.get_href() == item.get_self_href()
 
-    link.target = "./bar/foo.json"
-    assert link.target == "./bar/foo.json"
+    # target property
+    link.set_href("./dead/d011.json")
+    assert link.target == item  # target remains unchanged
+    assert link.get_href() == "./dead/d011.json"  # href is updated
+
+    expected_pattern_ltsh = r"file://([A-Z]:)?/bad/beef.json"
+    actual_ltsh = link.target.get_self_href()
+    # windows compatible absolute url regular expression.
+    # set_href doesn't update target, but self_href is mutated to be absolute.
+    assert actual_ltsh and re.match(expected_pattern_ltsh, actual_ltsh), (
+        f"{actual_ltsh} does not match {expected_pattern_ltsh}"
+    )
 
 
 def test_get_target_str_no_href(item: pystac.Item) -> None:
     item.remove_links("self")
     link = pystac.Link("self", target=item)
     item.add_link(link)
-    assert link.get_target_str() is None
+    assert link.get_href() is None
 
 
 def test_relative_self_href(item: pystac.Item) -> None:
     with TemporaryDirectory() as temporary_directory:
-        pystac.write_file(
-            item,
+        item.save_object(
             include_self_link=False,
             dest_href=os.path.join(temporary_directory, "item.json"),
         )
         previous = os.getcwd()
         try:
             os.chdir(temporary_directory)
-            item = cast(pystac.Item, pystac.read_file("item.json"))
+            item = pystac.read_file("item.json")
             href = item.get_self_href()
             assert href
             assert os.path.isabs(href), f"Not an absolute path: {href}"
@@ -183,8 +191,9 @@ def test_auto_title_is_serialized(item: pystac.Item) -> None:
         extent=extent,
         title="Collection Title",
     )
+    collection.set_self_href("file:///dev/null")
+    ## link.to_dict needs to extract href from `target` or have it passed in
     link = pystac.Link("my rel", target=collection)
-
     assert link.to_dict().get("title") == collection.title
 
 
@@ -203,7 +212,14 @@ def test_title_as_init_argument(item: pystac.Item) -> None:
         extent=extent,
         title="Collection Title",
     )
-    link = pystac.Link("my rel", title=link_title, target=collection)
+
+    ## link.to_dict needs to extract href from `target` or have it passed in
+    link = pystac.Link(
+        "my rel",
+        title=link_title,
+        target=collection,
+        href="file:///dev/null",
+    )
 
     assert link.title == link_title
     assert link.to_dict().get("title") == link_title
@@ -212,7 +228,14 @@ def test_title_as_init_argument(item: pystac.Item) -> None:
 def test_serialize_link() -> None:
     href = "https://some-domain/path/to/item.json"
     title = "A Test Link"
-    link = pystac.Link(pystac.RelType.SELF, href, pystac.MediaType.JSON, title)
+    # Positional is lame
+    # link = Link(RelType.SELF, None, href, MediaType.JSON, title)
+    link = pystac.Link(
+        rel=pystac.RelType.SELF,
+        href=href,
+        media_type=pystac.MediaType.JSON,
+        title=title,
+    )
     link_dict = link.to_dict()
 
     assert link_dict["rel"] == "self"
@@ -223,7 +246,6 @@ def test_serialize_link() -> None:
 
 def test_static_from_dict_round_trip() -> None:
     test_cases: list[dict[str, Any]] = [
-        {"rel": "", "href": ""},  # Not valid, but works.
         {"rel": "r", "href": "t"},
         {"rel": "r", "href": "/t"},
         {"rel": "r", "href": "t", "type": "a/b", "title": "t", "c": "d", "1": 2},
@@ -232,38 +254,55 @@ def test_static_from_dict_round_trip() -> None:
         d2 = pystac.Link.from_dict(d).to_dict()
         assert d == d2
     d = {"rel": "self", "href": "t"}
-    d2 = {"rel": "self", "href": make_posix_style(os.path.join(os.getcwd(), "t"))}
-    assert pystac.Link.from_dict(d).to_dict() == d2
+    d2 = {"rel": "self", "href": "t"}
+    assert Link.from_dict(d).to_dict() == d2
 
 
 def test_static_from_dict_failures() -> None:
     dicts: list[dict[str, Any]] = [{}, {"href": "t"}, {"rel": "r"}]
     for d in dicts:
-        with pytest.raises(KeyError):
-            pystac.Link.from_dict(d)
+        with pytest.raises((TypeError, ValueError)):
+            Link.from_dict(d)
 
 
-def test_static_collection(collection: pystac.Collection) -> None:
-    link = pystac.Link.collection(collection)
-    expected = {"rel": "collection", "href": None, "type": "application/json"}
+def test_static_collection(self_link_collection: Collection) -> None:
+    link = pystac.Link.collection(self_link_collection)
+    expected = {
+        "rel": "collection",
+        "href": self_link_collection.get_self_href(),
+        "type": "application/json",
+    }
     assert expected == link.to_dict()
 
 
-def test_static_child(collection: pystac.Collection) -> None:
-    link = pystac.Link.child(collection)
-    expected = {"rel": "child", "href": None, "type": "application/json"}
+def test_static_child(self_link_collection: Collection) -> None:
+    link = pystac.Link.child(self_link_collection)
+    expected = {
+        "rel": "child",
+        "href": self_link_collection.get_self_href(),
+        "type": "application/json",
+    }
     assert expected == link.to_dict()
 
 
 def test_static_canonical_item(item: pystac.Item) -> None:
+    item.set_self_href("file:///bad/beef.json")
     link = pystac.Link.canonical(item)
-    expected = {"rel": "canonical", "href": None, "type": "application/json"}
+    expected = {
+        "rel": "canonical",
+        "href": item.get_self_href(),
+        "type": "application/json",
+    }
     assert expected == link.to_dict()
 
 
-def test_static_canonical_collection(collection: pystac.Collection) -> None:
-    link = pystac.Link.canonical(collection)
-    expected = {"rel": "canonical", "href": None, "type": "application/json"}
+def test_static_canonical_collection(self_link_collection: Collection) -> None:
+    link = pystac.Link.canonical(self_link_collection)
+    expected = {
+        "rel": "canonical",
+        "href": self_link_collection.get_self_href(),
+        "type": "application/json",
+    }
     assert expected == link.to_dict()
 
 

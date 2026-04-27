@@ -2,18 +2,20 @@ from __future__ import annotations
 
 import copy
 import warnings
-from typing import TYPE_CHECKING, Any, override
+from typing import TYPE_CHECKING, Any, Self, override
 
 from typing_extensions import deprecated
 
+import pystac
 from pystac.errors import STACError
 from pystac.media_type import MediaType
 from pystac.rel_type import RelType
-from pystac.utils import make_absolute_href, make_posix_style
+from pystac.utils import is_absolute_href, make_absolute_href, make_posix_style
 
 from .reader import Reader
 
 if TYPE_CHECKING:
+    from . import Catalog, Collection, Item
     from .stac_object import STACObject
 
 HIERARCHICAL_LINKS = [
@@ -46,10 +48,18 @@ class Link:
         self.method: str | None = method
         self.headers: dict[str, str | list[str]] | None = headers
         self.body: Any | None = body
+        extra_fields = kwargs.pop("extra_fields", None)
         self.extra_fields: dict[str, Any] = kwargs
+        if extra_fields:
+            warnings.warn(
+                "Pass extra_fields entries as kwargs "
+                "instead of extra_fields as keyword argument."
+            )
+            self.extra_fields.update(extra_fields)
 
         if isinstance(target, STACObject):
             self._href: str | None = href or target.get_self_href()
+            self.title = title or getattr(target, "title", None)
             self._target: STACObject | None = target
         elif href and target:
             raise ValueError("Both target and href were provided as strings")
@@ -81,6 +91,9 @@ class Link:
             return None
         else:
             return super().__getattribute__(name)
+
+    def clone(self: Self) -> Self:
+        return copy.deepcopy(self)
 
     @classmethod
     def try_from(cls, data: dict[str, Any] | Link) -> Link:
@@ -120,6 +133,12 @@ class Link:
     def get_href(self) -> str | None:
         return self._href or self._target and self._target.get_self_href()
 
+    def get_absolute_href(self, start_href: str = "") -> str | None:
+        href = self.get_href()
+        if href is None:
+            return href
+        return make_absolute_href(href, start_href, start_is_dir=False)
+
     def set_href(self, href: str) -> None:
         self._href = href
 
@@ -132,6 +151,34 @@ class Link:
     @deprecated("target is deprecated, either use .get_href() or .get_target()")
     def target(self) -> str | STACObject | None:
         return self._target or self._href
+
+    @target.setter
+    @deprecated("target is deprecated, either use .set_href() or .set_target()")
+    def target(self, value: str | STACObject) -> None:
+        if isinstance(value, str):
+            warnings.warn(
+                "Setting Link.target to href is no longer supported pystac v2.  "
+                "Assigning value to href instead."
+            )
+            self.set_href(value)
+        else:
+            self.set_target(value)
+            if href := value.get_self_href():
+                self.set_href(href)
+
+    @deprecated("use .get_href()")
+    def get_target_str(self) -> str | None:
+        """Returns this link's target as a string.
+
+        If a string href was provided, returns that. If not, tries to resolve
+        the self link of the target object.
+        """
+        return self.get_href()
+
+    @deprecated("use bool(link.get_href())")
+    def has_target_href(self) -> bool:
+        """Returns true if this link has a string href in its target information."""
+        return bool(self.get_href())
 
     def get_target(self, start_href: str | None, reader: Reader) -> STACObject:
         from .stac_object import STACObject
@@ -183,6 +230,91 @@ class Link:
             data["body"] = self.body
         return data
 
+    def resolve_stac_object(self, start_href: str = "") -> Link:
+        """Resolves a STAC object from the HREF of this link, if the link is not
+        already resolved.
+
+        Args:
+            start_href : Optional string to put ahead of the href in this Link.
+
+        NOTE: This uses reader.DEFAULT_READER to read the HREF, if necessary.
+        """
+        if self._target:
+            return self
+        elif self._href:
+            # If it's a relative link, base it off the parent.
+            target_href = self._href
+            if not is_absolute_href(target_href):
+                target_href = make_absolute_href(self._href, start_href=start_href)
+            try:
+                obj = pystac.read_file(target_href)
+            except Exception as e:
+                raise STACError(
+                    f"HREF: '{target_href}' does not resolve to a STAC object"
+                ) from e
+            self._target = obj
+        else:
+            raise ValueError("Cannot resolve STAC object without a target")
+
+        return self
+
     @override
     def __repr__(self) -> str:
         return f"Link(rel={self.rel}, href={self._href})"
+
+    ##### Convenience methods for Link creation #####
+    @classmethod
+    def root(cls: type[Self], c: Catalog) -> Self:
+        """Creates a link to a root Catalog or Collection."""
+        return cls(RelType.ROOT, c, media_type=MediaType.JSON)
+
+    @classmethod
+    def parent(cls: type[Self], c: Catalog, title: str | None = None) -> Self:
+        """Creates a link to a parent Catalog or Collection."""
+        return cls(RelType.PARENT, c, title=title, media_type=MediaType.JSON)
+
+    @classmethod
+    def collection(cls: type[Self], c: Collection) -> Self:
+        """Creates a link to a Collection."""
+        return cls(RelType.COLLECTION, c, media_type=MediaType.JSON)
+
+    @classmethod
+    def self_href(cls: type[Self], href: str) -> Self:
+        """Creates a self link to a file's location."""
+        return cls(RelType.SELF, href, media_type=MediaType.JSON)
+
+    @classmethod
+    def child(cls: type[Self], c: Catalog, title: str | None = None) -> Self:
+        """Creates a link to a child Catalog or Collection."""
+        return cls(RelType.CHILD, c, title=title, media_type=MediaType.JSON)
+
+    @classmethod
+    def item(cls: type[Self], item: Item, title: str | None = None) -> Self:
+        """Creates a link to an Item."""
+        return cls(RelType.ITEM, item, title=title, media_type=MediaType.GEOJSON)
+
+    @classmethod
+    def derived_from(
+        cls: type[Self], item: Item | str, title: str | None = None
+    ) -> Self:
+        """Creates a link to a derived_from Item."""
+        return cls(
+            RelType.DERIVED_FROM,
+            item,
+            title=title,
+            media_type=MediaType.JSON,
+        )
+
+    @classmethod
+    def canonical(
+        cls: type[Self],
+        item_or_collection: Item | Collection,
+        title: str | None = None,
+    ) -> Self:
+        """Creates a canonical link to an Item or Collection."""
+        return cls(
+            RelType.CANONICAL,
+            item_or_collection,
+            title=title,
+            media_type=MediaType.JSON,
+        )
