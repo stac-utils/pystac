@@ -4,13 +4,17 @@ from os.path import relpath
 from typing import Any, cast
 
 import pytest
+from unittest.mock import Mock
 
 import pystac
 from pystac import Item, StacIO
 from pystac.item_collection import ItemCollection
+from pystac.reader import DEFAULT_READER
 
 from .utils import TestCases
-from .utils.stac_io_mock import MockDefaultStacIO
+
+
+pytestmark = pytest.mark.passing_v2
 
 SIMPLE_ITEM = TestCases.get_path("data-files/examples/1.0.0-RC1/simple-item.json")
 CORE_ITEM = TestCases.get_path("data-files/examples/1.0.0-RC1/core-item.json")
@@ -19,6 +23,16 @@ EXTENDED_ITEM = TestCases.get_path("data-files/examples/1.0.0-RC1/extended-item.
 ITEM_COLLECTION = TestCases.get_path(
     "data-files/item-collection/sample-item-collection.json"
 )
+
+class MockReader:
+    mock: Mock
+
+    def __init__(self) -> None:
+        self.mock = Mock()
+
+    def get_json(self, href: str) -> dict[str, Any]:
+        self.mock.read_json(href)
+        return DEFAULT_READER.get_json(href)
 
 
 @pytest.fixture
@@ -199,9 +213,8 @@ def test_from_dict_sets_root(item_collection_dict: dict[str, Any]) -> None:
 
 
 def test_to_dict_does_not_read_root_link_of_items() -> None:
-    with MockDefaultStacIO() as mock_stac_io:
-        item_collection = pystac.ItemCollection.from_file(ITEM_COLLECTION)
+    mock_reader = MockReader()
+    item_collection = ItemCollection.from_file(ITEM_COLLECTION, reader=mock_reader)
+    item_collection.to_dict()
 
-        item_collection.to_dict()
-
-        assert mock_stac_io.mock.read_text.call_count == 1
+    assert mock_reader.mock.read_json.call_count == 1
