@@ -26,12 +26,14 @@ class ItemCollection:
         if "root" in kwargs:
             raise
 
-        self.extra_fields: dict[str, Any]
-        if "extra_fields" in kwargs:
-            self.extra_fields = kwargs.pop("extra_fields")
-            assert len(kwargs) == 0
-        else:
-            self.extra_fields = kwargs
+        extra_fields = kwargs.pop("extra_fields", {})
+        self.extra_fields: dict[str, Any] =  kwargs
+        if extra_fields:
+            warnings.warn(
+                "Pass extra_fields entries as kwargs, "
+                "instead of in extra_fields dictionary."
+            )
+            self.extra_fields.update(extra_fields)
 
     def __len__(self) -> int:
         return len(self.items)
