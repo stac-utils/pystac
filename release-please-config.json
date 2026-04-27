@@ -76,6 +76,10 @@
       "component": "pystac-ext-scientific",
       "prerelease-type": "rc"
     },
+    "extensions/ssys": {
+      "component": "pystac-ext-ssys",
+      "prerelease-type": "rc"
+    },
     "extensions/storage": {
       "component": "pystac-ext-storage",
       "prerelease-type": "rc"

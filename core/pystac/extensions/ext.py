@@ -31,6 +31,7 @@ from pystac.extensions.render import Render, RenderExtension
 from pystac.extensions.sar import SarExtension
 from pystac.extensions.sat import SatExtension
 from pystac.extensions.scientific import ScientificExtension
+from pystac.extensions.ssys import SolSysExtension
 from pystac.extensions.storage import StorageExtension
 from pystac.extensions.table import TableExtension
 from pystac.extensions.timestamps import TimestampsExtension
@@ -61,6 +62,7 @@ EXTENSION_NAMES = Literal[
     "sar",
     "sat",
     "sci",
+    "ssys",
     "storage",
     "table",
     "timestamps",
@@ -85,6 +87,7 @@ EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     SarExtension.name: SarExtension,
     SatExtension.name: SatExtension,
     ScientificExtension.name: ScientificExtension,
+    SolSysExtension.name: SolSysExtension,
     StorageExtension.name: StorageExtension,
     TableExtension.name: TableExtension,
     TimestampsExtension.name: TimestampsExtension,
@@ -171,6 +174,10 @@ class CollectionExt(CatalogExt):
     @property
     def sci(self) -> ScientificExtension[Collection]:
         return ScientificExtension.ext(self.stac_object)
+
+    @property
+    def ssys(self) -> SolSysExtension[Collection]:
+        return SolSysExtension.ext(self.stac_object)
 
     @property
     def storage(self) -> StorageExtension[Collection]:
@@ -267,6 +274,10 @@ class ItemExt:
     @property
     def sci(self) -> ScientificExtension[Item]:
         return ScientificExtension.ext(self.stac_object)
+
+    @property
+    def ssys(self) -> SolSysExtension[Item]:
+        return SolSysExtension.ext(self.stac_object)
 
     @property
     def storage(self) -> StorageExtension[Item]:
