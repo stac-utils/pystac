@@ -2,7 +2,7 @@
   ".": "1.14.3",
   "core": "1.14.3",
   "extensions/classification": "2.0.0",
-  "extensions/datacube": "2.2.0",
+  "extensions/datacube": "2.3.0",
   "extensions/eo": "1.1.0",
   "extensions/file": "2.1.0",
   "extensions/grid": "1.1.0",
