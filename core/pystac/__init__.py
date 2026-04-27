@@ -34,6 +34,8 @@ __all__ = [
     "TemporalExtent",
     "Summaries",
     "CommonMetadata",
+    "NoDataStrings",
+    "DataType",
     "RangeSummary",
     "Item",
     "Asset",
@@ -81,7 +83,7 @@ from pystac.collection import (
     SpatialExtent,
     TemporalExtent,
 )
-from pystac.common_metadata import CommonMetadata
+from pystac.common_metadata import CommonMetadata, NoDataStrings, DataType
 from pystac.summaries import RangeSummary, Summaries
 from pystac.asset import Asset
 from pystac.item import Item
