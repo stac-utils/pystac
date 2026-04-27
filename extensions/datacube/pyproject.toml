@@ -2,7 +2,7 @@
 name = "pystac-ext-datacube"
 description = "Datacube extension for PySTAC"
 readme = "README.md"
-version = "2.2.0"
+version = "2.3.0"
 authors = []
 maintainers = []
 keywords = ["pystac", "imagery", "raster", "catalog", "STAC", "datacube"]
