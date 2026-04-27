@@ -1,68 +1,25 @@
 from __future__ import annotations
 
-from abc import abstractmethod
-from collections.abc import Iterable
+import copy
+import datetime as dt
+from collections.abc import Iterable, Iterator, MutableMapping
 from enum import Enum
 from functools import cache
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Generic,
-    Protocol,
-    TypeVar,
-)
+from typing import TYPE_CHECKING, Any, TypedDict, override
 
-import pystac
-from pystac.utils import get_required
+from .reader import DEFAULT_READER
 
 if TYPE_CHECKING:
-    from pystac.collection import Collection
-    from pystac.item import Item
+    from .collection import Collection
+    from .item import Item
 
 
-def __getattr__(name: str) -> Any:
-    if name == "FIELDS_JSON_URL":
-        import warnings
-
-        warnings.warn(
-            "FIELDS_JSON_URL is deprecated and will be removed in v2",
-            DeprecationWarning,
-        )
-        return (
-            "https://cdn.jsdelivr.net/npm/@radiantearth/"
-            "stac-fields/fields-normalized.json"
-        )
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+class RangeSummaryDict[T: (int, float, dt.datetime)](TypedDict):
+    minimum: T
+    maximum: T
 
 
-class _Comparable_x(Protocol):
-    """Protocol for annotating comparable types.
-
-    For matching __lt__ that takes an 'x' parameter
-    (e.g. float)
-    """
-
-    @abstractmethod
-    def __lt__(self: T, x: T) -> bool:
-        return NotImplemented
-
-
-class _Comparable_other(Protocol):
-    """Protocol for annotating comparable types.
-
-    For matching __lt___ that takes an 'other' parameter
-    (e.g. datetime)
-    """
-
-    @abstractmethod
-    def __lt__(self: T, other: T) -> bool:
-        return NotImplemented
-
-
-T = TypeVar("T", bound=_Comparable_x | _Comparable_other)
-
-
-class RangeSummary(Generic[T]):
+class RangeSummary[T: (int, float, dt.datetime)]:
     minimum: T
     maximum: T
 
@@ -70,7 +27,7 @@ class RangeSummary(Generic[T]):
         self.minimum = minimum
         self.maximum = maximum
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> RangeSummaryDict[T]:
         return {"minimum": self.minimum, "maximum": self.maximum}
 
     def update_with_value(self, v: T) -> None:
@@ -78,17 +35,19 @@ class RangeSummary(Generic[T]):
         self.maximum = max(self.maximum, v)
 
     @classmethod
-    def from_dict(cls, d: dict[str, Any]) -> RangeSummary[T]:
-        minimum: T = get_required(d.get("minimum"), "RangeSummary", "minimum")
-        maximum: T = get_required(d.get("maximum"), "RangeSummary", "maximum")
+    def from_dict(cls, d: RangeSummaryDict[T]) -> RangeSummary[T]:
+        minimum: T = d["minimum"]
+        maximum: T = d["maximum"]
         return cls(minimum=minimum, maximum=maximum)
 
-    def __eq__(self, o: object) -> bool:
-        if not isinstance(o, RangeSummary):
+    @override
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, RangeSummary):
             return NotImplemented
 
-        return self.to_dict() == o.to_dict()
+        return self.to_dict() == other.to_dict()
 
+    @override
     def __repr__(self) -> str:
         return self.to_dict().__repr__()
 
@@ -107,7 +66,7 @@ def _get_fields_json(url: str | None) -> dict[str, Any]:
             .read_text()
         )
         return jsonfields
-    return pystac.StacIO.default().read_json(url)
+    return DEFAULT_READER.get_json(url)
 
 
 class SummaryStrategy(Enum):
@@ -116,6 +75,20 @@ class SummaryStrategy(Enum):
     SCHEMA = "s"
     DONT_SUMMARIZE = False
     DEFAULT = True
+
+    @classmethod
+    def try_from(
+        cls, strategy: SummaryStrategy | dict[str, Any] | None
+    ) -> SummaryStrategy:
+        if isinstance(strategy, SummaryStrategy):
+            return strategy
+
+        if isinstance(strategy, dict):
+            strategy_value = strategy.get("summary", True)
+            if strategy_value in cls:
+                return SummaryStrategy(strategy_value)
+
+        return SummaryStrategy.DEFAULT
 
 
 class Summarizer:
@@ -145,65 +118,55 @@ class Summarizer:
 
     summaryfields: dict[str, SummaryStrategy]
 
-    def __init__(self, fields: str | dict[str, SummaryStrategy] | None = None):
+    def __init__(
+        self,
+        fields: str | dict[str, SummaryStrategy | dict[str, Any] | None] | None = None,
+    ):
+        json_fields: dict[str, SummaryStrategy | dict[str, Any] | None]
         if isinstance(fields, dict):
-            self._set_field_definitions(fields)
+            json_fields = fields
         else:
-            jsonfields = _get_fields_json(fields)
-            self._set_field_definitions(jsonfields["metadata"])
+            json_fields = _get_fields_json(fields)["metadata"]
 
-    def _set_field_definitions(self, fields: dict[str, Any]) -> None:
         self.summaryfields = {}
-        for name, desc in fields.items():
-            strategy: SummaryStrategy = SummaryStrategy.DEFAULT
-            if isinstance(desc, SummaryStrategy):
-                strategy = desc
-            elif isinstance(desc, dict):
-                strategy_value = desc.get("summary", True)
-                try:
-                    strategy = SummaryStrategy(strategy_value)
-                except ValueError:
-                    pass
-
+        for name, desc in json_fields.items():
+            strategy = SummaryStrategy.try_from(desc)
             if strategy != SummaryStrategy.DONT_SUMMARIZE:
                 self.summaryfields[name] = strategy
 
     def _update_with_item(self, summaries: Summaries, item: Item) -> None:
-        import numbers
-
         for k, v in item.properties.items():
             if k in self.summaryfields:
                 strategy = self.summaryfields[k]
-                if strategy == SummaryStrategy.RANGE or (
-                    strategy == SummaryStrategy.DEFAULT
-                    and isinstance(v, numbers.Number)
-                    and not isinstance(v, bool)
-                ):
-                    rangesummary: RangeSummary[Any] | None = summaries.get_range(k)
-                    if rangesummary is None:
-                        summaries.add(k, RangeSummary(v, v))
+                summary = summaries.get(k)
+                if strategy in [
+                    SummaryStrategy.RANGE,
+                    SummaryStrategy.DEFAULT,
+                ] and isinstance(v, (int, float, dt.datetime)):
+                    if summary is None:
+                        summaries[k] = RangeSummary(minimum=v, maximum=v)
                     else:
-                        rangesummary.update_with_value(v)
-                elif strategy == SummaryStrategy.ARRAY or (
-                    strategy == SummaryStrategy.DEFAULT and isinstance(v, list)
-                ):
-                    listsummary: list[Any] = summaries.get_list(k) or []
-                    if not isinstance(v, list):
-                        v = [v]
-                    for element in v:
-                        if element not in listsummary:
-                            listsummary.append(element)
-                    summaries.add(k, listsummary)
+                        summaries[k] = summary.update_with_value(v)
+                elif strategy in [
+                    SummaryStrategy.ARRAY,
+                    SummaryStrategy.DEFAULT,
+                ] and isinstance(v, list):
+                    if summary is None:
+                        summaries[k] = v
+                    else:
+                        summaries[k] = [*set(summary).union(set(v))]
                 else:
-                    summary: list[Any] = summaries.get_list(k) or []
-                    if v not in summary:
-                        summary.append(v)
-                    summaries.add(k, summary)
+                    if summary is None:
+                        summaries[k] = [v]
+                    elif v not in summary:
+                        summaries[k] = [*summary, v]
 
     def summarize(self, source: Collection | Iterable[Item]) -> Summaries:
         """Creates summaries from items"""
+        from .collection import Collection
+
         summaries = Summaries.empty()
-        if isinstance(source, pystac.Collection):
+        if isinstance(source, Collection):
             for item in source.get_items(recursive=True):
                 self._update_with_item(summaries, item)
         else:
@@ -216,119 +179,71 @@ class Summarizer:
 DEFAULT_MAXCOUNT = 25
 
 
-class Summaries:
-    _summaries: dict[str, Any]
-
-    lists: dict[str, list[Any]]
-    other: dict[str, Any]
-    ranges: dict[str, RangeSummary[Any]]
-    schemas: dict[str, dict[str, Any]]
+class Summaries(MutableMapping[str, Any]):
     maxcount: int
 
     def __init__(
         self, summaries: dict[str, Any], maxcount: int = DEFAULT_MAXCOUNT
     ) -> None:
-        self._summaries = summaries
+        self._store = summaries
         self.maxcount = maxcount
 
-        self.lists = {}
-        self.ranges = {}
-        self.schemas = {}
-        self.other = {}
+    @classmethod
+    def try_from(cls, summaries: Summaries | dict[str, Any] | None) -> Summaries:
+        if isinstance(summaries, Summaries):
+            return summaries
+        elif isinstance(summaries, dict):
+            return Summaries(summaries)
+        else:
+            return Summaries({})
 
-        for prop_key, summary in summaries.items():
-            self.add(prop_key, summary)
+    @override
+    def __getitem__(self, key: str) -> Any:
+        return self._store[key]
+
+    @override
+    def __setitem__(self, name: str, value: Any, /) -> None:
+        if isinstance(value, dict):
+            RangeSummary.from_dict(value)
+        self._store[name] = value
+
+    @override
+    def __delitem__(self, key: str) -> None:
+        del self._store[key]
+
+    @override
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._store)
+
+    @override
+    def __len__(self) -> int:
+        return len(self._store)
 
     def get_list(self, prop: str) -> list[Any] | None:
-        return self.lists.get(prop)
+        value = self._store.get(prop)
+        if value is not None:
+            assert isinstance(value, list)
+            return value
 
     def get_range(self, prop: str) -> RangeSummary[Any] | None:
-        return self.ranges.get(prop)
-
-    def get_schema(self, prop: str) -> dict[str, Any] | None:
-        return self.schemas.get(prop)
-
-    def add(
-        self,
-        prop_key: str,
-        summary: list[Any] | RangeSummary[Any] | dict[str, Any],
-    ) -> None:
-        if isinstance(summary, list):
-            self.lists[prop_key] = summary
-        elif isinstance(summary, dict):
-            if "minimum" in summary:
-                self.ranges[prop_key] = RangeSummary[Any].from_dict(summary)
-            else:
-                self.schemas[prop_key] = summary
-        elif isinstance(summary, RangeSummary):
-            self.ranges[prop_key] = summary
-        else:
-            self.other[prop_key] = summary
-
-    def remove(self, prop_key: str) -> None:
-        self.lists.pop(prop_key, None)
-        self.ranges.pop(prop_key, None)
-        self.schemas.pop(prop_key, None)
-        self.other.pop(prop_key, None)
-
-    def update(self, summaries: Summaries) -> None:
-        self.lists.update(summaries.lists)
-        self.ranges.update(summaries.ranges)
-        self.schemas.update(summaries.schemas)
-        self.other.update(summaries.other)
-
-    def combine(self, summaries: Summaries) -> None:
-        for listname, listvalue in summaries.lists.items():
-            if listname in self.lists:
-                self.lists[listname].extend(listvalue)
-            else:
-                self.lists[listname] = listvalue
-        for rangename, rang in summaries.ranges.items():
-            if rangename in self.ranges:
-                self.ranges[rangename].update_with_value(rang.minimum)
-                self.ranges[rangename].update_with_value(rang.maximum)
-            else:
-                self.ranges[rangename] = rang
-        for schemaname, schema in summaries.schemas.items():
-            if schemaname in self.schemas:
-                self.schemas[schemaname].update(schema)
-            else:
-                self.schemas[schemaname] = schema
-        for k, v in summaries.other.items():
-            if k in self.other:
-                self.other[k].update(v)
-            else:
-                self.other[k] = v
-
-    def is_empty(self) -> bool:
-        return not (
-            any(self.lists) or any(self.ranges) or any(self.schemas) or any(self.other)
-        )
-
-    def clone(self) -> Summaries:
-        """Clones this object.
-
-        Returns:
-            Summaries: The clone of this object
-        """
-        from copy import deepcopy
-
-        cls = self.__class__
-        summaries = cls(summaries=deepcopy(self._summaries), maxcount=self.maxcount)
-        summaries.lists = deepcopy(self.lists)
-        summaries.other = deepcopy(self.other)
-        summaries.ranges = deepcopy(self.ranges)
-        summaries.schemas = deepcopy(self.schemas)
-        return summaries
+        value = self._store.get(prop)
+        if value is not None:
+            assert isinstance(value, RangeSummary)
+            return value
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            **{k: v for k, v in self.lists.items() if len(v) < self.maxcount},
-            **{k: v.to_dict() for k, v in self.ranges.items()},
-            **self.schemas,
-            **self.other,
+            k: v if not isinstance(v, RangeSummary) else v.to_dict()
+            for k, v in self._store.items()
+            if not isinstance(v, list) or len(v) < self.maxcount
         }
+
+    def is_empty(self) -> bool:
+        return len(self) == 0
 
     @classmethod
     def empty(cls) -> Summaries:
         return Summaries({})
+
+    def clone(self) -> Summaries:
+        return copy.deepcopy(self)

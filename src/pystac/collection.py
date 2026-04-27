@@ -22,6 +22,7 @@ from .constants import DEFAULT_LICENSE, DEFAULT_STAC_VERSION, STAC_OBJECT_TYPE
 from .container import Container
 from .link import Link
 from .provider import Provider
+from .summaries import Summaries
 from .utils import to_datetime_str
 
 if TYPE_CHECKING:
@@ -55,7 +56,7 @@ class Collection(Container, Assets):
         keywords: list[str] | None = None,
         license: str = DEFAULT_LICENSE,
         providers: list[Provider | dict[str, Any]] | None = None,
-        summaries: dict[str, Any] | None = None,
+        summaries: Summaries | dict[str, Any] | None = None,
         assets: dict[str, Asset | dict[str, Any]] | None = None,
         item_assets: dict[str, ItemAsset] | None = None,
         stac_version: str = DEFAULT_STAC_VERSION,
@@ -85,7 +86,7 @@ class Collection(Container, Assets):
                 "temporal extents"
             )
         self.extent: Extent = Extent.try_from(extent)
-        self.summaries: dict[str, Any] | None = summaries
+        self.summaries: Summaries = Summaries.try_from(summaries)
 
         self.assets: dict[str, Asset] = {}
         if assets is not None:
@@ -197,7 +198,7 @@ class Collection(Container, Assets):
             data["providers"] = [provider.to_dict() for provider in self.providers]
         data["extent"] = self.extent.to_dict()
         if self.summaries:
-            data["summaries"] = self.summaries
+            data["summaries"] = self.summaries.to_dict()
         if self.bands is not None:
             data["bands"] = [band.to_dict() for band in self.bands]
         if self.assets:
