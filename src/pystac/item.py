@@ -118,6 +118,10 @@ class Item(STACObject, Assets):
     def datetime(self) -> dt.datetime | None:
         return self.properties.datetime
 
+    @datetime.setter
+    def datetime(self, value: dt.datetime) -> None:
+        self.properties.datetime = value
+
     @deprecated("Get the datetime from the asset directly")
     def get_datetime(self, asset: Asset | None = None) -> dt.datetime | None:
         if asset and (datetime := asset.datetime):
