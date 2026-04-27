@@ -1,0 +1,151 @@
+{
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/eo/v2.0.0/schema.json"
+  ],
+  "type": "Feature",
+  "id": "20201211_223832_CS2",
+  "collection": "eo-collection",
+  "bbox": [
+    172.91173669923782,
+    1.3438851951615003,
+    172.95469614953714,
+    1.3690476620161975
+  ],
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          172.91173669923782,
+          1.3438851951615003
+        ],
+        [
+          172.95469614953714,
+          1.3438851951615003
+        ],
+        [
+          172.95469614953714,
+          1.3690476620161975
+        ],
+        [
+          172.91173669923782,
+          1.3690476620161975
+        ],
+        [
+          172.91173669923782,
+          1.3438851951615003
+        ]
+      ]
+    ]
+  },
+  "properties": {
+    "datetime": "2020-12-11T22:38:32.125Z",
+    "created": "2020-12-12T01:48:13.725Z",
+    "updated": "2020-12-12T01:48:13.725Z",
+    "platform": "cool_sat2",
+    "instruments": [
+      "cool_sensor_v1"
+    ],
+    "gsd": 0.66,
+    "eo:cloud_cover": 1.2,
+    "eo:snow_cover": 0
+  },
+  "assets": {
+    "analytic": {
+      "href": "https://storage.googleapis.com/open-cogs/stac-examples/20201211_223832_CS2_analytic.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "4-Band Analytic",
+      "roles": [
+        "data"
+      ],
+      "eo:cloud_cover": 1.2,
+      "bands": [
+        {
+          "name": "band1",
+          "eo:common_name": "blue",
+          "eo:center_wavelength": 0.47,
+          "eo:full_width_half_max": 0.07,
+          "eo:solar_illumination": 1959.66
+        },
+        {
+          "name": "band2",
+          "eo:common_name": "green",
+          "eo:center_wavelength": 0.56,
+          "eo:full_width_half_max": 0.08,
+          "eo:solar_illumination": 1823.24
+        },
+        {
+          "name": "band3",
+          "eo:common_name": "red",
+          "eo:center_wavelength": 0.645,
+          "eo:full_width_half_max": 0.09,
+          "eo:solar_illumination": 1512.06
+        },
+        {
+          "name": "band4",
+          "eo:common_name": "nir",
+          "eo:center_wavelength": 0.8,
+          "eo:full_width_half_max": 0.152,
+          "eo:solar_illumination": 1041.63
+        }
+      ]
+    },
+    "thumbnail": {
+      "href": "https://storage.googleapis.com/open-cogs/stac-examples/20201211_223832_CS2.jpg",
+      "title": "Thumbnail",
+      "type": "image/png",
+      "roles": [
+        "thumbnail"
+      ]
+    },
+    "visual": {
+      "href": "https://storage.googleapis.com/open-cogs/stac-examples/20201211_223832_CS2.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
+      "title": "3-Band Visual",
+      "roles": [
+        "visual"
+      ],
+      "bands": [
+        {
+          "name": "band3",
+          "eo:common_name": "red",
+          "eo:center_wavelength": 0.645,
+          "eo:full_width_half_max": 0.09
+        },
+        {
+          "name": "band2",
+          "eo:common_name": "green",
+          "eo:center_wavelength": 0.56,
+          "eo:full_width_half_max": 0.08
+        },
+        {
+          "name": "band1",
+          "eo:common_name": "blue",
+          "eo:center_wavelength": 0.47,
+          "eo:full_width_half_max": 0.07
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "rel": "root",
+      "href": "./collection.json",
+      "type": "application/json",
+      "title": "Simple Example Collection"
+    },
+    {
+      "rel": "parent",
+      "href": "./collection.json",
+      "type": "application/json",
+      "title": "Simple Example Collection"
+    },
+    {
+      "rel": "collection",
+      "href": "./collection.json",
+      "type": "application/json",
+      "title": "Simple Example Collection"
+    }
+  ]
+}

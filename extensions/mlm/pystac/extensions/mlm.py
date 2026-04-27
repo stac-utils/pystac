@@ -20,7 +20,8 @@ from pystac.extensions.base import (
 )
 from pystac.extensions.classification import Classification
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.extensions.raster import DataType
+
+# from pystac.extensions.raster import pystac.DataType
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import StringEnum, get_required
 
@@ -674,7 +675,7 @@ class InputStructure:
         self,
         shape: list[int],
         dim_order: list[str],
-        data_type: DataType,
+        data_type: pystac.DataType,
     ) -> None:
         """
         Set the properties for a new InputStructure.
@@ -695,7 +696,7 @@ class InputStructure:
 
     @classmethod
     def create(
-        cls, shape: list[int], dim_order: list[str], data_type: DataType
+        cls, shape: list[int], dim_order: list[str], data_type: pystac.DataType
     ) -> InputStructure:
         """
         Create a new InputStructure.
@@ -747,12 +748,12 @@ class InputStructure:
         self.properties[DIM_ORDER_INPUT_STRUCTURE_PROP] = v
 
     @property
-    def data_type(self) -> DataType:
+    def data_type(self) -> pystac.DataType:
         """
         Get or set the required data_type property of this InputStructure object
         """
         return cast(
-            DataType,
+            pystac.DataType,
             get_required(
                 self.properties.get(DATA_TYPE_INPUT_STRUCTURE_PROP),
                 self,
@@ -761,7 +762,7 @@ class InputStructure:
         )
 
     @data_type.setter
-    def data_type(self, v: DataType) -> None:
+    def data_type(self, v: pystac.DataType) -> None:
         self.properties[DATA_TYPE_INPUT_STRUCTURE_PROP] = v
 
     def to_dict(self) -> dict[str, Any]:
@@ -1037,7 +1038,7 @@ class ResultStructure:
         )
 
     def apply(
-        self, shape: list[int], dim_order: list[str], data_type: DataType
+        self, shape: list[int], dim_order: list[str], data_type: pystac.DataType
     ) -> None:
         """
         Set the properties for a new ResultStructure.
@@ -1057,7 +1058,7 @@ class ResultStructure:
 
     @classmethod
     def create(
-        cls, shape: list[int], dim_order: list[str], data_type: DataType
+        cls, shape: list[int], dim_order: list[str], data_type: pystac.DataType
     ) -> ResultStructure:
         """
         Creates a new ResultStructure.
@@ -1109,12 +1110,12 @@ class ResultStructure:
         self.properties[DIM_ORDER_RESULT_STRUCTURE_PROP] = v
 
     @property
-    def data_type(self) -> DataType:
+    def data_type(self) -> pystac.DataType:
         """
         Gets or sets the required data_type property of the ResultStructure object
         """
         return cast(
-            DataType,
+            pystac.DataType,
             get_required(
                 self.properties.get(DATA_TYPE_RESULT_STRUCTURE_PROP),
                 self,
@@ -1123,7 +1124,7 @@ class ResultStructure:
         )
 
     @data_type.setter
-    def data_type(self, v: DataType) -> None:
+    def data_type(self, v: pystac.DataType) -> None:
         self.properties[DATA_TYPE_RESULT_STRUCTURE_PROP] = v
 
     def to_dict(self) -> dict[str, Any]:

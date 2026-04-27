@@ -21,13 +21,12 @@ from pystac.extensions.base import (
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.extensions.raster import RasterBand
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import get_required, map_opt
 
 #: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Asset`,
-#: :class:`~pystac.ItemAssetDefinition` or :class:`~pystac.extensions.raster.RasterBand`
-T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition, RasterBand)
+#: :class:`~pystac.ItemAssetDefinition` or :class:`~pystac.Band`
+T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition, pystac.Band)
 
 SCHEMA_URI_PATTERN: str = (
     "https://stac-extensions.github.io/classification/v{version}/schema.json"
@@ -39,6 +38,8 @@ SUPPORTED_VERSIONS: list[str] = ["2.0.0", "1.1.0", "1.0.0"]
 PREFIX: str = "classification:"
 BITFIELDS_PROP: str = PREFIX + "bitfields"
 CLASSES_PROP: str = PREFIX + "classes"
+# This needs an upgrade of the generic extension
+# to fit in with the new bands metadata
 RASTER_BANDS_PROP: str = "raster:bands"
 
 COLOR_HINT_PATTERN: Pattern[str] = re.compile("^([0-9A-Fa-f]{6})$")
@@ -636,7 +637,7 @@ class ClassificationExtension(
             return cast(
                 ClassificationExtension[T], ItemAssetsClassificationExtension(obj)
             )
-        elif isinstance(obj, RasterBand):
+        elif isinstance(obj, pystac.Band):
             return cast(
                 ClassificationExtension[T], RasterBandClassificationExtension(obj)
             )
@@ -697,13 +698,13 @@ class ItemAssetsClassificationExtension(
         )
 
 
-class RasterBandClassificationExtension(ClassificationExtension[RasterBand]):
+class RasterBandClassificationExtension(ClassificationExtension[pystac.Band]):
     properties: dict[str, Any]
-    raster_band: RasterBand
+    raster_band: pystac.Band
 
-    def __init__(self, raster_band: RasterBand):
+    def __init__(self, raster_band: pystac.Band):
         self.raster_band = raster_band
-        self.properties = raster_band.properties
+        self.properties = raster_band.extra_fields
 
     def __repr__(self) -> str:
         return f"<RasterBandClassificationExtension RasterBand={self.raster_band}>"

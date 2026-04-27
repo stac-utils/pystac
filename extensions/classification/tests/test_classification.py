@@ -19,7 +19,6 @@ from pystac.extensions.classification import (
     Classification,
     ClassificationExtension,
 )
-from pystac.extensions.raster import RasterBand, RasterExtension
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger()
@@ -298,8 +297,9 @@ def test_add_to(plain_item: Item) -> None:
 
 
 @pytest.mark.vcr()
-def test_validate_classification(landsat_item: Item) -> None:
-    landsat_item.validate()
+def test_validate_classification(item_dict: dict[str, Any]) -> None:
+    stable_landsat_item = Item.from_dict(item_dict, migrate=False)
+    stable_landsat_item.validate()
 
 
 def test_add_item_classes(plain_item: Item) -> None:
@@ -322,9 +322,14 @@ def test_add_asset_classes(plain_item: Item) -> None:
 
 
 def test_item_asset_raster_classes(classification_collection: Collection) -> None:
+    # from pystac.extensions.raster import RasterBand
+
     assert classification_collection.item_assets
     item_asset = classification_collection.item_assets["cloud-mask-raster"]
-    raster_bands = cast(list[RasterBand], RasterExtension.ext(item_asset).bands)
+    raster_bands = cast(
+        list[pystac.Band],
+        [pystac.Band.from_dict(b) for b in item_asset.properties["bands"]],
+    )
     raster_bands_ext = ClassificationExtension.ext(raster_bands[0])
     raster_bands_ext.__repr__()
     assert raster_bands_ext.classes is not None

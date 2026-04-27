@@ -3,7 +3,7 @@ from typing import Any
 
 import pytest
 
-from pystac import CommonMetadata, Item, Provider, ProviderRole, utils
+from pystac import Band, CommonMetadata, Item, Provider, ProviderRole, utils
 from tests.utils import TestCases
 
 
@@ -158,6 +158,47 @@ def test_common_metadata_providers(sample_full_item: Item) -> None:
         assert isinstance(pd1, dict)
         assert isinstance(pd2, dict)
         assert pd1 == pd2
+
+
+def test_common_metadata_bands(sample_full_item: Item) -> None:
+    x = sample_full_item.clone()
+
+    bands_dict_list: list[dict[str, Any]] = [
+        {"name": "band1"},
+        {"name": "band1"},
+        {"name": "band2"},
+        {"name": "band3"},
+    ]
+
+    bands_object_list = [Band.from_dict(d) for d in bands_dict_list]
+
+    for i in range(len(utils.get_opt(x.common_metadata.bands))):
+        b1 = utils.get_opt(x.common_metadata.bands)[i]
+        b2 = bands_object_list[i]
+        assert isinstance(b1, Band)
+        assert isinstance(b2, Band)
+        assert b1.to_dict() == b2.to_dict()
+
+        bd1 = x.properties["bands"][i]
+        bd2 = bands_dict_list[i]
+        assert isinstance(bd1, dict)
+        assert isinstance(bd2, dict)
+        assert bd1 == bd2
+
+    x.common_metadata.bands = bands_object_list
+
+    for i in range(len(x.common_metadata.bands)):
+        b1 = x.common_metadata.bands[i]
+        b2 = bands_object_list[i]
+        assert isinstance(b1, Band)
+        assert isinstance(b2, Band)
+        assert b1.to_dict() == b2.to_dict()
+
+        bd1 = x.properties["bands"][i]
+        bd2 = bands_dict_list[i]
+        assert isinstance(bd1, dict)
+        assert isinstance(bd2, dict)
+        assert bd1 == bd2
 
 
 def test_common_metadata_basics(sample_full_item: Item) -> None:
@@ -371,6 +412,32 @@ class TestAssetCommonMetadata:
 
         assert analytic_cm.providers == set_value
         assert analytic.to_dict()["providers"] == [p.to_dict() for p in set_value]
+
+    def test_bands(self, item: Item) -> None:
+        cm = item.common_metadata
+        analytic = item.assets["analytic"]
+        analytic_cm = CommonMetadata(analytic)
+        thumbnail = item.assets["thumbnail"]
+        thumbnail_cm = CommonMetadata(thumbnail)
+
+        item_value = cm.bands
+        a2_known_value = [
+            Band(name="band1"),
+            Band(name="band1"),
+            Band(name="band2"),
+            Band(name="band3"),
+        ]
+
+        # Get
+        assert thumbnail_cm.bands != item_value
+        assert thumbnail_cm.bands == a2_known_value
+
+        # Set
+        set_value = [Band("extra-swir-band", description="My Etxra SWIR band")]
+        analytic_cm.bands = set_value
+
+        assert analytic_cm.bands == set_value
+        assert analytic.to_dict()["bands"] == [p.to_dict() for p in set_value]
 
     def test_platform(self, item: Item) -> None:
         cm = item.common_metadata

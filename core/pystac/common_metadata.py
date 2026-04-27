@@ -9,11 +9,218 @@ from pystac.errors import STACError
 
 if TYPE_CHECKING:
     from pystac.asset import Asset
+    from pystac.band import Band
     from pystac.item import Item
     from pystac.provider import Provider
 
 
 P = TypeVar("P")
+
+
+class DataType(utils.StringEnum):
+    INT8 = "int8"
+    INT16 = "int16"
+    INT32 = "int32"
+    INT64 = "int64"
+    UINT8 = "uint8"
+    UINT16 = "uint16"
+    UINT32 = "uint32"
+    UINT64 = "uint64"
+    FLOAT16 = "float16"
+    FLOAT32 = "float32"
+    FLOAT64 = "float64"
+    CINT16 = "cint16"
+    CINT32 = "cint32"
+    CFLOAT32 = "cfloat32"
+    CFLOAT64 = "cfloat64"
+    OTHER = "other"
+
+
+class NoDataStrings(utils.StringEnum):
+    INF = "inf"
+    NINF = "-inf"
+    NAN = "nan"
+
+
+class Statistics:
+    """Represents statistics information attached to raster bands in the
+    common metadata.
+
+    Use Statistics.create to create a new Statistics instance.
+    """
+
+    properties: dict[str, Any]
+
+    def __init__(self, properties: dict[str, float | None]) -> None:
+        self.properties = properties
+
+    def apply(
+        self,
+        minimum: float | None = None,
+        maximum: float | None = None,
+        mean: float | None = None,
+        stddev: float | None = None,
+        count: int | None = None,
+        valid_percent: float | None = None,
+    ) -> None:
+        """
+        Sets the properties for this Statistics object.
+
+        Args:
+            minimum : Minimum value of all the pixels in the band.
+            maximum : Maximum value of all the pixels in the band.
+            mean : Mean value of all the pixels in the band.
+            stddev : Standard Deviation value of all the pixels in the band.
+            count : Ttal number of all data values (>=0)
+            valid_percent : Percentage of valid (not nodata) pixel.
+        """
+        self.minimum = minimum
+        self.maximum = maximum
+        self.mean = mean
+        self.stddev = stddev
+        self.count = count
+        self.valid_percent = valid_percent
+
+    @classmethod
+    def create(
+        cls,
+        minimum: float | None = None,
+        maximum: float | None = None,
+        mean: float | None = None,
+        stddev: float | None = None,
+        count: int | None = None,
+        valid_percent: float | None = None,
+    ) -> Statistics:
+        """
+        Creates a new statistics object.
+
+        Args:
+            minimum : Minimum value of all the pixels in the band.
+            maximum : Maximum value of all the pixels in the band.
+            mean : Mean value of all the pixels in the band.
+            stddev : Standard Deviation value of all the pixels in the band.
+            valid_percent : Percentage of valid (not nodata) pixel.
+            extra_fields : Additional information (ie. land/vegetation cover)
+        """
+        b = cls({})
+        b.apply(
+            minimum=minimum,
+            maximum=maximum,
+            mean=mean,
+            stddev=stddev,
+            count=count,
+            valid_percent=valid_percent,
+        )
+        return b
+
+    @property
+    def minimum(self) -> float | None:
+        """Get or sets the minimum pixel value
+
+        Returns:
+            Optional[float]
+        """
+        return self.properties.get("minimum")
+
+    @minimum.setter
+    def minimum(self, v: float | None) -> None:
+        if v is not None:
+            self.properties["minimum"] = v
+        else:
+            self.properties.pop("minimum", None)
+
+    @property
+    def maximum(self) -> float | None:
+        """Get or sets the maximum pixel value
+
+        Returns:
+            Optional[float]
+        """
+        return self.properties.get("maximum")
+
+    @maximum.setter
+    def maximum(self, v: float | None) -> None:
+        if v is not None:
+            self.properties["maximum"] = v
+        else:
+            self.properties.pop("maximum", None)
+
+    @property
+    def mean(self) -> float | None:
+        """Get or sets the mean pixel value
+
+        Returns:
+            Optional[float]
+        """
+        return self.properties.get("mean")
+
+    @mean.setter
+    def mean(self, v: float | None) -> None:
+        if v is not None:
+            self.properties["mean"] = v
+        else:
+            self.properties.pop("mean", None)
+
+    @property
+    def stddev(self) -> float | None:
+        """Get or sets the standard deviation pixel value
+
+        Returns:
+            Optional[float]
+        """
+        return self.properties.get("stddev")
+
+    @stddev.setter
+    def stddev(self, v: float | None) -> None:
+        if v is not None:
+            self.properties["stddev"] = v
+        else:
+            self.properties.pop("stddev", None)
+
+    @property
+    def count(self) -> int | None:
+        """Get or sets the total number of data values (>= 0)."""
+        return self.properties.get("count")
+
+    @count.setter
+    def count(self, v: int | None) -> None:
+        if v is not None:
+            self.properties["count"] = v
+        else:
+            self.properties.pop("count", None)
+
+    @property
+    def valid_percent(self) -> float | None:
+        """Get or sets the Percentage of valid (not nodata) pixel
+
+        Returns:
+            Optional[float]
+        """
+        return self.properties.get("valid_percent")
+
+    @valid_percent.setter
+    def valid_percent(self, v: float | None) -> None:
+        if v is not None:
+            self.properties["valid_percent"] = v
+        else:
+            self.properties.pop("valid_percent", None)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Returns these statistics as a dictionary.
+
+        Returns:
+            dict: The serialization of the Statistics.
+        """
+        return self.properties
+
+    @staticmethod
+    def from_dict(d: dict[str, Any]) -> Statistics:
+        """Constructs a Statistics from a dict.
+
+        Returns:
+            Statistics: The Statistics deserialized from the JSON dict.
+        """
+        return Statistics(properties=d)
 
 
 class CommonMetadata:
@@ -149,6 +356,22 @@ class CommonMetadata:
             utils.map_opt(lambda providers: [p.to_dict() for p in providers], v),
         )
 
+    # Bands
+    # V2.0.0 for some extensions like raster and eo regroup them
+    @property
+    def bands(self) -> list[Band] | None:
+        """Get or set a list of the object's bands."""
+        return utils.map_opt(
+            lambda bands: [pystac.Band.from_dict(d) for d in bands],
+            self._get_field("bands", list[dict[str, Any]]),
+        )
+
+    @bands.setter
+    def bands(self, v: list[Band] | None) -> None:
+        self._set_field(
+            "bands", utils.map_opt(lambda bands: [b.to_dict() for b in bands], v)
+        )
+
     # Instrument
     @property
     def platform(self) -> str | None:
@@ -249,3 +472,63 @@ class CommonMetadata:
     @roles.setter
     def roles(self, v: list[str] | None) -> None:
         self._set_field("roles", v)
+
+    # nodata
+    @property
+    def nodata(self) -> float | NoDataStrings | None:
+        """Get or set the no-data value of the entity
+
+        `nodata` can be a string or a number
+        """
+        return utils.map_opt(
+            lambda v: (
+                NoDataStrings(v)
+                if v in [v for v in NoDataStrings.__members__.values()]
+                else float(v)
+            ),
+            self._get_field("nodata", str),
+        )
+
+    @nodata.setter
+    def nodata(self, v: float | NoDataStrings | None) -> None:
+        self._set_field("nodata", v)
+
+    # data_type
+    @property
+    def data_type(self) -> DataType | None:
+        """Get or set the data type of the values"""
+        return self._get_field("data_type", DataType)
+
+    @data_type.setter
+    def data_type(self, v: DataType) -> None:
+        self._set_field("data_type", v)
+
+    # statistics
+    @property
+    def statistics(self) -> Statistics | None:
+        """Get or set the statistics of all the values"""
+        return utils.map_opt(
+            Statistics.from_dict, self._get_field("statistics", dict[str, Any])
+        )
+
+    @statistics.setter
+    def statistics(self, v: Statistics | None) -> None:
+        self._set_field("statistics", utils.map_opt(lambda s: s.to_dict(), v))
+
+    # unit
+    @property
+    def unit(self) -> str | None:
+        """Get or set the unit of measurement of the value
+
+        It is STRONGLY RECOMMENDED to provide units in one of the following two formats:
+
+            - UCUM: The unit code that is compliant to the UCUM specification.
+                https://ucum.org/
+            - UDUNITS-2: The unit symbol if available, otherwise the singular unit name.
+                https://ncics.org/portfolio/other-resources/udunits2/
+        """
+        return self._get_field("unit", str)
+
+    @unit.setter
+    def unit(self, v: str | None) -> None:
+        self._set_field("unit", v)

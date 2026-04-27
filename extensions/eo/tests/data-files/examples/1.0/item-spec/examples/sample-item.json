@@ -1,0 +1,101 @@
+{
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/eo/v2.0.0/schema.json",
+    "https://stac-extensions.github.io/raster/v2.0.0/schema.json"
+  ],
+  "type": "Feature",
+  "id": "20201211_223832_CS2",
+  "collection": "eo-collection",
+  "bbox": [
+    172.91173669923782, 1.3438851951615003, 172.95469614953714,
+    1.3690476620161975
+  ],
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [172.91173669923782, 1.3438851951615003],
+        [172.95469614953714, 1.3438851951615003],
+        [172.95469614953714, 1.3690476620161975],
+        [172.91173669923782, 1.3690476620161975],
+        [172.91173669923782, 1.3438851951615003]
+      ]
+    ]
+  },
+  "properties": {
+    "datetime": "2020-12-11T22:38:32.125Z",
+    "created": "2020-12-12T01:48:13.725Z",
+    "updated": "2020-12-12T01:48:13.725Z",
+    "platform": "cool_sat2",
+    "instruments": ["cool_sensor_v1"],
+    "gsd": 0.66,
+    "eo:cloud_cover": 1.2,
+    "eo:snow_cover": 0
+  },
+  "assets": {
+    "example": {
+      "href": "example.tif",
+      "eo:bands": [
+        {
+          "name": "r",
+          "common_name": "red"
+        },
+        {
+          "name": "g",
+          "common_name": "green"
+        },
+        {
+          "name": "b",
+          "common_name": "blue"
+        },
+        {
+          "name": "nir",
+          "common_name": "nir"
+        }
+      ],
+      "raster:bands": [
+        {
+          "data_type": "uint16",
+          "spatial_resolution": 10,
+          "sampling": "area"
+        },
+        {
+          "data_type": "uint16",
+          "spatial_resolution": 10,
+          "sampling": "area"
+        },
+        {
+          "data_type": "uint16",
+          "spatial_resolution": 10,
+          "sampling": "area"
+        },
+        {
+          "data_type": "uint16",
+          "spatial_resolution": 30,
+          "sampling": "area"
+        }
+      ]
+    }
+  },
+  "links": [
+    {
+      "rel": "root",
+      "href": "./collection.json",
+      "type": "application/json",
+      "title": "Simple Example Collection"
+    },
+    {
+      "rel": "parent",
+      "href": "./collection.json",
+      "type": "application/json",
+      "title": "Simple Example Collection"
+    },
+    {
+      "rel": "collection",
+      "href": "./collection.json",
+      "type": "application/json",
+      "title": "Simple Example Collection"
+    }
+  ]
+}

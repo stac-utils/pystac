@@ -34,6 +34,9 @@ __all__ = [
     "TemporalExtent",
     "Summaries",
     "CommonMetadata",
+    "Statistics",
+    "NoDataStrings",
+    "DataType",
     "RangeSummary",
     "Item",
     "Asset",
@@ -41,6 +44,7 @@ __all__ = [
     "ItemCollection",
     "Provider",
     "ProviderRole",
+    "Band",
     "read_file",
     "read_dict",
     "write_file",
@@ -81,13 +85,14 @@ from pystac.collection import (
     SpatialExtent,
     TemporalExtent,
 )
-from pystac.common_metadata import CommonMetadata
+from pystac.common_metadata import CommonMetadata, Statistics, NoDataStrings, DataType
 from pystac.summaries import RangeSummary, Summaries
 from pystac.asset import Asset
 from pystac.item import Item
 from pystac.item_assets import ItemAssetDefinition
 from pystac.item_collection import ItemCollection
 from pystac.provider import ProviderRole, Provider
+from pystac.band import Band
 from pystac.utils import HREF
 
 import pystac.extensions.hooks

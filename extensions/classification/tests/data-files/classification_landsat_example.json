@@ -4,10 +4,7 @@
   "id": "LC08_L2SP_047027_20201204_02_T1",
   "properties": {
     "platform": "landsat-8",
-    "instruments": [
-      "oli",
-      "tirs"
-    ],
+    "instruments": ["oli", "tirs"],
     "created": "2022-03-18T14:15:28.445062Z",
     "gsd": 30,
     "description": "Landsat Collection 2 Level-2",
@@ -16,18 +13,8 @@
     "view:sun_elevation": 18.80722985,
     "view:sun_azimuth": 164.91405951,
     "proj:epsg": 32610,
-    "proj:shape": [
-      7971,
-      7861
-    ],
-    "proj:transform": [
-      30,
-      0,
-      353685,
-      0,
-      -30,
-      5374215
-    ],
+    "proj:shape": [7971, 7861],
+    "proj:transform": [30, 0, 353685, 0, -30, 5374215],
     "landsat:cloud_cover_land": 1.9,
     "landsat:wrs_type": "2",
     "landsat:wrs_path": "047",
@@ -43,26 +30,11 @@
     "type": "Polygon",
     "coordinates": [
       [
-        [
-          -124.27384594041735,
-          48.508330109565485
-        ],
-        [
-          -121.83965465293758,
-          48.078217267779486
-        ],
-        [
-          -122.53780648794415,
-          46.376775468741904
-        ],
-        [
-          -124.89627102658746,
-          46.80206928347854
-        ],
-        [
-          -124.27384594041735,
-          48.508330109565485
-        ]
+        [-124.27384594041735, 48.508330109565485],
+        [-121.83965465293758, 48.078217267779486],
+        [-122.53780648794415, 46.376775468741904],
+        [-124.89627102658746, 46.80206928347854],
+        [-124.27384594041735, 48.508330109565485]
       ]
     ]
   },
@@ -90,53 +62,41 @@
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_thumb_small.jpeg",
       "type": "image/jpeg",
       "title": "Thumbnail image",
-      "roles": [
-        "thumbnail"
-      ]
+      "roles": ["thumbnail"]
     },
     "reduced_resolution_browse": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_thumb_large.jpeg",
       "type": "image/jpeg",
       "title": "Reduced resolution browse image",
-      "roles": [
-        "overview"
-      ]
+      "roles": ["overview"]
     },
     "mtl.json": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_MTL.json",
       "type": "application/json",
       "title": "Product Metadata File (json)",
       "description": "Collection 2 Level-2 Product Metadata File (json)",
-      "roles": [
-        "metadata"
-      ]
+      "roles": ["metadata"]
     },
     "mtl.txt": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_MTL.txt",
       "type": "text/plain",
       "title": "Product Metadata File (txt)",
       "description": "Collection 2 Level-2 Product Metadata File (txt)",
-      "roles": [
-        "metadata"
-      ]
+      "roles": ["metadata"]
     },
     "mtl.xml": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_MTL.xml",
       "type": "application/xml",
       "title": "Product Metadata File (xml)",
       "description": "Collection 2 Level-2 Product Metadata File (xml)",
-      "roles": [
-        "metadata"
-      ]
+      "roles": ["metadata"]
     },
     "ang": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_ANG.txt",
       "type": "text/plain",
       "title": "Angle Coefficients File",
       "description": "Collection 2 Level-1 Angle Coefficients File",
-      "roles": [
-        "metadata"
-      ]
+      "roles": ["metadata"]
     },
     "qa_pixel": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_QA_PIXEL.TIF",
@@ -409,12 +369,7 @@
           ]
         }
       ],
-      "roles": [
-        "cloud",
-        "cloud-shadow",
-        "snow-ice",
-        "water-mask"
-      ]
+      "roles": ["cloud", "cloud-shadow", "snow-ice", "water-mask"]
     },
     "qa_radsat": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_QA_RADSAT.TIF",
@@ -683,205 +638,158 @@
           ]
         }
       ],
-      "roles": [
-        "saturation"
-      ]
+      "roles": ["saturation"]
     },
     "coastal": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_SR_B1.TIF",
       "type": "image/tiff; application=geotiff; profile=cloud-optimized",
       "title": "Coastal/Aerosol Band",
       "description": "Collection 2 Level-2 Coastal/Aerosol Band (SR_B1) Surface Reflectance",
-      "eo:bands": [
+      "nodata": 0,
+      "data_type": "uint16",
+      "bands": [
         {
           "name": "OLI_B1",
-          "common_name": "coastal",
+          "eo:common_name": "coastal",
           "description": "Coastal/Aerosol",
-          "center_wavelength": 0.44,
-          "full_width_half_max": 0.02
+          "eo:center_wavelength": 0.44,
+          "eo:full_width_half_max": 0.02,
+          "raster:spatial_resolution": 30,
+          "raster:scale": 0.0000275,
+          "raster:offset": -0.2
         }
       ],
-      "raster:bands": [
-        {
-          "nodata": 0,
-          "data_type": "uint16",
-          "spatial_resolution": 30,
-          "scale": 0.0000275,
-          "offset": -0.2
-        }
-      ],
-      "roles": [
-        "data",
-        "reflectance"
-      ]
+      "roles": ["data", "reflectance"]
     },
     "blue": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_SR_B2.TIF",
       "type": "image/tiff; application=geotiff; profile=cloud-optimized",
       "title": "Blue Band",
       "description": "Collection 2 Level-2 Blue Band (SR_B2) Surface Reflectance",
-      "eo:bands": [
+      "nodata": 0,
+      "data_type": "uint16",
+      "bands": [
         {
           "name": "OLI_B2",
-          "common_name": "blue",
+          "eo:common_name": "blue",
           "description": "Visible blue",
-          "center_wavelength": 0.48,
-          "full_width_half_max": 0.06
+          "eo:center_wavelength": 0.48,
+          "eo:full_width_half_max": 0.06,
+
+          "raster:spatial_resolution": 30,
+          "raster:scale": 0.0000275,
+          "raster:offset": -0.2
         }
       ],
-      "raster:bands": [
-        {
-          "nodata": 0,
-          "data_type": "uint16",
-          "spatial_resolution": 30,
-          "scale": 0.0000275,
-          "offset": -0.2
-        }
-      ],
-      "roles": [
-        "data",
-        "reflectance"
-      ]
+      "roles": ["data", "reflectance"]
     },
     "green": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_SR_B3.TIF",
       "type": "image/tiff; application=geotiff; profile=cloud-optimized",
       "title": "Green Band",
       "description": "Collection 2 Level-2 Green Band (SR_B3) Surface Reflectance",
-      "eo:bands": [
+      "nodata": 0,
+      "data_type": "uint16",
+      "bands": [
         {
           "name": "OLI_B3",
-          "common_name": "green",
+          "eo:common_name": "green",
           "description": "Visible green",
-          "center_wavelength": 0.56,
-          "full_width_half_max": 0.06
+          "eo:center_wavelength": 0.56,
+          "eo:full_width_half_max": 0.06,
+
+          "raster:spatial_resolution": 30,
+          "raster:scale": 0.0000275,
+          "raster:offset": -0.2
         }
       ],
-      "raster:bands": [
-        {
-          "nodata": 0,
-          "data_type": "uint16",
-          "spatial_resolution": 30,
-          "scale": 0.0000275,
-          "offset": -0.2
-        }
-      ],
-      "roles": [
-        "data",
-        "reflectance"
-      ]
+
+      "roles": ["data", "reflectance"]
     },
     "red": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_SR_B4.TIF",
       "type": "image/tiff; application=geotiff; profile=cloud-optimized",
       "title": "Red Band",
       "description": "Collection 2 Level-2 Red Band (SR_B4) Surface Reflectance",
-      "eo:bands": [
+      "nodata": 0,
+      "data_type": "uint16",
+      "bands": [
         {
           "name": "OLI_B4",
-          "common_name": "red",
+          "eo:common_name": "red",
           "description": "Visible red",
-          "center_wavelength": 0.65,
-          "full_width_half_max": 0.04
+          "eo:center_wavelength": 0.65,
+          "eo:full_width_half_max": 0.04,
+          "raster:spatial_resolution": 30,
+          "raster:scale": 0.0000275,
+          "raster:offset": -0.2
         }
       ],
-      "raster:bands": [
-        {
-          "nodata": 0,
-          "data_type": "uint16",
-          "spatial_resolution": 30,
-          "scale": 0.0000275,
-          "offset": -0.2
-        }
-      ],
-      "roles": [
-        "data",
-        "reflectance"
-      ]
+      "roles": ["data", "reflectance"]
     },
     "nir08": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_SR_B5.TIF",
       "type": "image/tiff; application=geotiff; profile=cloud-optimized",
       "title": "Near Infrared Band 0.8",
       "description": "Collection 2 Level-2 Near Infrared Band 0.8 (SR_B5) Surface Reflectance",
-      "eo:bands": [
+      "nodata": 0,
+      "data_type": "uint16",
+      "bands": [
         {
           "name": "OLI_B5",
-          "common_name": "nir08",
+          "eo:common_name": "nir08",
           "description": "Near infrared",
-          "center_wavelength": 0.87,
-          "full_width_half_max": 0.03
+          "eo:center_wavelength": 0.87,
+          "eo:full_width_half_max": 0.03,
+          "raster:spatial_resolution": 30,
+          "raster:scale": 0.0000275,
+          "raster:offset": -0.2
         }
       ],
-      "raster:bands": [
-        {
-          "nodata": 0,
-          "data_type": "uint16",
-          "spatial_resolution": 30,
-          "scale": 0.0000275,
-          "offset": -0.2
-        }
-      ],
-      "roles": [
-        "data",
-        "reflectance"
-      ]
+      "roles": ["data", "reflectance"]
     },
     "swir16": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_SR_B6.TIF",
       "type": "image/tiff; application=geotiff; profile=cloud-optimized",
       "title": "Short-wave Infrared Band 1.6",
       "description": "Collection 2 Level-2 Short-wave Infrared Band 1.6 (SR_B6) Surface Reflectance",
-      "eo:bands": [
+      "nodata": 0,
+      "data_type": "uint16",
+      "bands": [
         {
           "name": "OLI_B6",
-          "common_name": "swir16",
+          "eo:common_name": "swir16",
           "description": "Short-wave infrared",
-          "center_wavelength": 1.61,
-          "full_width_half_max": 0.09
+          "eo:center_wavelength": 1.61,
+          "eo:full_width_half_max": 0.09,
+
+          "raster:spatial_resolution": 30,
+          "raster:scale": 0.0000275,
+          "raster:offset": -0.2
         }
       ],
-      "raster:bands": [
-        {
-          "nodata": 0,
-          "data_type": "uint16",
-          "spatial_resolution": 30,
-          "scale": 0.0000275,
-          "offset": -0.2
-        }
-      ],
-      "roles": [
-        "data",
-        "reflectance"
-      ]
+      "roles": ["data", "reflectance"]
     },
     "swir22": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_SR_B7.TIF",
       "type": "image/tiff; application=geotiff; profile=cloud-optimized",
       "title": "Short-wave Infrared Band 2.2",
       "description": "Collection 2 Level-2 Short-wave Infrared Band 2.2 (SR_B7) Surface Reflectance",
-      "eo:bands": [
+      "nodata": 0,
+      "data_type": "uint16",
+      "bands": [
         {
           "name": "OLI_B7",
-          "common_name": "swir22",
+          "eo:common_name": "swir22",
           "description": "Short-wave infrared",
-          "center_wavelength": 2.2,
-          "full_width_half_max": 0.19
+          "eo:center_wavelength": 2.2,
+          "eo:full_width_half_max": 0.19,
+          "raster:spatial_resolution": 30,
+          "raster:scale": 0.0000275,
+          "raster:offset": -0.2
         }
       ],
-      "raster:bands": [
-        {
-          "nodata": 0,
-          "data_type": "uint16",
-          "spatial_resolution": 30,
-          "scale": 0.0000275,
-          "offset": -0.2
-        }
-      ],
-      "roles": [
-        "data",
-        "reflectance"
-      ]
+      "roles": ["data", "reflectance"]
     },
     "qa_aerosol": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_SR_QA_AEROSOL.TIF",
@@ -1024,40 +932,30 @@
           ]
         }
       ],
-      "roles": [
-        "data-mask",
-        "water-mask"
-      ]
+      "roles": ["data-mask", "water-mask"]
     },
     "lwir11": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_ST_B10.TIF",
       "type": "image/tiff; application=geotiff; profile=cloud-optimized",
       "title": "Surface Temperature Band",
       "description": "Collection 2 Level-2 Thermal Infrared Band (ST_B10) Surface Temperature",
-      "eo:bands": [
+      "nodata": 0,
+      "data_type": "uint16",
+      "unit": "kelvin",
+      "bands": [
         {
           "name": "TIRS_B10",
-          "common_name": "lwir11",
+          "eo:common_name": "lwir11",
           "description": "Long-wave infrared",
-          "center_wavelength": 10.9,
-          "full_width_half_max": 0.59
-        }
-      ],
-      "raster:bands": [
-        {
-          "nodata": 0,
-          "data_type": "uint16",
-          "spatial_resolution": 30,
-          "unit": "kelvin",
-          "scale": 0.00341802,
-          "offset": 149
+          "eo:center_wavelength": 10.9,
+          "eo:full_width_half_max": 0.59,
+          "raster:spatial_resolution": 30,
+          "raster:scale": 0.00341802,
+          "raster:offset": 149
         }
       ],
       "gsd": 100,
-      "roles": [
-        "data",
-        "temperature"
-      ]
+      "roles": ["data", "temperature"]
     },
     "atran": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_ST_ATRAN.TIF",
@@ -1072,9 +970,7 @@
           "scale": 0.0001
         }
       ],
-      "roles": [
-        "data"
-      ]
+      "roles": ["data"]
     },
     "cdist": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_ST_CDIST.TIF",
@@ -1090,9 +986,7 @@
           "scale": 0.01
         }
       ],
-      "roles": [
-        "data"
-      ]
+      "roles": ["data"]
     },
     "drad": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_ST_DRAD.TIF",
@@ -1108,9 +1002,7 @@
           "scale": 0.001
         }
       ],
-      "roles": [
-        "data"
-      ]
+      "roles": ["data"]
     },
     "urad": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_ST_URAD.TIF",
@@ -1126,9 +1018,7 @@
           "scale": 0.001
         }
       ],
-      "roles": [
-        "data"
-      ]
+      "roles": ["data"]
     },
     "trad": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_ST_TRAD.TIF",
@@ -1144,9 +1034,7 @@
           "scale": 0.001
         }
       ],
-      "roles": [
-        "data"
-      ]
+      "roles": ["data"]
     },
     "emis": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_ST_EMIS.TIF",
@@ -1162,9 +1050,7 @@
           "scale": 0.0001
         }
       ],
-      "roles": [
-        "data"
-      ]
+      "roles": ["data"]
     },
     "emsd": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_ST_EMSD.TIF",
@@ -1180,9 +1066,7 @@
           "scale": 0.0001
         }
       ],
-      "roles": [
-        "data"
-      ]
+      "roles": ["data"]
     },
     "qa": {
       "href": "LC08_L2SP_047027_20201204_20210313_02_T1_ST_QA.TIF",
@@ -1198,15 +1082,11 @@
           "scale": 0.01
         }
       ],
-      "roles": [
-        "data"
-      ]
+      "roles": ["data"]
     }
   },
   "bbox": [
-    -124.98085491310867,
-    46.35352512466258,
-    -121.78788697796408,
+    -124.98085491310867, 46.35352512466258, -121.78788697796408,
     48.51466487533742
   ],
   "stac_extensions": [

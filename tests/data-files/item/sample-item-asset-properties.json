@@ -9,19 +9,27 @@
     "providers": [
       {
         "name": "CoolSat",
-        "roles": [
-          "producer",
-          "licensor"
-        ],
+        "roles": ["producer", "licensor"],
         "url": "https://cool-sat.com/"
+      }
+    ],
+    "bands": [
+      {
+        "name": "BAND-1"
+      },
+      {
+        "name": "BAND-1"
+      },
+      {
+        "name": "BAND-2"
+      },
+      {
+        "name": "BAND-3"
       }
     ],
     "gsd": 30,
     "platform": "political",
-    "instruments": [
-      "guitar",
-      "violin"
-    ],
+    "instruments": ["guitar", "violin"],
     "constellation": "big dipper",
     "mission": "impossible",
     "created": "2017-03-17T13:22:30.040Z",
@@ -31,26 +39,11 @@
     "type": "Polygon",
     "coordinates": [
       [
-        [
-          -122.308150179,
-          37.488035566
-        ],
-        [
-          -122.597502109,
-          37.538869539
-        ],
-        [
-          -122.576687533,
-          37.613537207
-        ],
-        [
-          -122.2880486,
-          37.562818007
-        ],
-        [
-          -122.308150179,
-          37.488035566
-        ]
+        [-122.308150179, 37.488035566],
+        [-122.597502109, 37.538869539],
+        [-122.576687533, 37.613537207],
+        [-122.2880486, 37.562818007],
+        [-122.308150179, 37.488035566]
       ]
     ]
   },
@@ -80,29 +73,33 @@
         {
           "name": "USGS",
           "url": "https://landsat.usgs.gov/",
-          "roles": [
-            "producer",
-            "licensor"
-          ]
+          "roles": ["producer", "licensor"]
         }
       ],
       "gsd": 40,
       "platform": "shoes",
-      "instruments": [
-        "caliper"
-      ],
+      "instruments": ["caliper"],
       "constellation": "little dipper",
       "mission": "possible",
       "created": "2017-05-17T13:22:30.040Z",
-      "updated": "2017-05-18T13:22:30.040Z"
+      "updated": "2017-05-18T13:22:30.040Z",
+      "bands": [
+        {
+          "name": "band1"
+        },
+        {
+          "name": "band1"
+        },
+        {
+          "name": "band2"
+        },
+        {
+          "name": "band3"
+        }
+      ]
     }
   },
-  "bbox": [
-    -122.59750209,
-    37.48803556,
-    -122.2880486,
-    37.613537207
-  ],
+  "bbox": [-122.59750209, 37.48803556, -122.2880486, 37.613537207],
   "stac_extensions": [],
   "collection": "CS3"
 }
