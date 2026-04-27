@@ -17,6 +17,7 @@
   "extensions/sar": "1.0.0",
   "extensions/sat": "1.0.0",
   "extensions/scientific": "1.0.0",
+  "extensions/ssys": "1.1.1",
   "extensions/storage": "2.0.0",
   "extensions/table": "1.2.0",
   "extensions/timestamps": "1.1.0",
