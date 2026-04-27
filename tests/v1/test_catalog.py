@@ -80,7 +80,9 @@ class TestCatalogType:
         catalog_type = CatalogType.determine_type(cat_json)
         assert catalog_type == CatalogType.SELF_CONTAINED
 
-    @pytest.mark.xfail(reason="CatalogType is deprecated in v2, so it's not worth fixing this test")
+    @pytest.mark.xfail(
+        reason="CatalogType is deprecated in v2, so it's not worth fixing this test"
+    )
     def test_determine_type_for_unknown(self) -> None:
         catalog = Catalog(id="test", description="test desc")
         subcat = Catalog(id="subcat", description="subcat desc")
@@ -110,7 +112,9 @@ class TestCatalog:
 
             assert len(list(items)) == 8
 
-    @pytest.mark.xfail(reason="We no longer migrate by default in v2, so this test should fail")
+    @pytest.mark.xfail(
+        reason="We no longer migrate by default in v2, so this test should fail"
+    )
     def test_from_dict_preserves_dict(self) -> None:
         catalog_dict = TestCases.case_1().to_dict()
         param_dict = deepcopy(catalog_dict)
@@ -385,20 +389,6 @@ class TestCatalog:
         cat = TestCases.case_1()
         child = cat.get_child("thisshouldnotbeachildid", recursive=True)
         assert child is None
-
-    @pytest.mark.xfail(reason="We've advertised that get_item will be removed in v2")
-    def test_get_item_is_deprecated_but_still_works(self) -> None:
-        cat = TestCases.case_1()
-        with pytest.warns(DeprecationWarning):
-            item = cat.get_item("area-2-1-imagery", recursive=True)
-            assert item is not None
-
-    @pytest.mark.xfail(reason="We've advertised that get_item will be removed in v2")
-    def test_get_item_returns_none_if_not_found(self) -> None:
-        cat = TestCases.case_1()
-        with pytest.warns(DeprecationWarning):
-            item = cat.get_item("thisshouldnotbeanitemid", recursive=True)
-            assert item is None
 
     @pytest.mark.xfail(reason="We've advertised that get_all_items will be removed in v2")
     def test_get_all_items_is_deprecated_but_still_works(self) -> None:
