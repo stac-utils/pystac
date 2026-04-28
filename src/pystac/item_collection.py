@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import warnings
 from collections.abc import Iterator
 from pathlib import Path
 from typing import Any, Literal, TypedDict, override
@@ -20,14 +21,18 @@ class T_ItemCollection(TypedDict):
 
 
 class ItemCollection:
-    def __init__(self, items: list[Item], **kwargs: Any):
+    def __init__(self, items: list[Item], root: Container | None = None, **kwargs: Any):
         self.items: list[Item] = [Item.try_from(item) for item in items]
 
         if "root" in kwargs:
-            raise
+            raise KeyError(
+                "root is not a valid key word argument to ``ItemCollection()``. "
+                "If root is required try instantiating the items directly and "
+                "providing root."
+            )
 
         extra_fields = kwargs.pop("extra_fields", {})
-        self.extra_fields: dict[str, Any] =  kwargs
+        self.extra_fields: dict[str, Any] = kwargs
         if extra_fields:
             warnings.warn(
                 "Pass extra_fields entries as kwargs, "
