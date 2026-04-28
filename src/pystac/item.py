@@ -89,6 +89,13 @@ class Item(STACObject, Assets):
 
         self._collection: Collection | str | None = collection
 
+    @classmethod
+    def try_from(cls, data: dict[str, Any] | Item) -> Item:
+        if isinstance(data, Item):
+            return data
+        else:
+            return cls(**data)
+
     @override
     @classmethod
     def from_dict(
