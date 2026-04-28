@@ -69,7 +69,7 @@ class ItemCollection:
     def clone(self) -> ItemCollection:
         return copy.deepcopy(self)
 
-    @deprecated("Use `ItemCollection.from_dict` instead")
+    @deprecated("Try `ItemCollection.from_dict` and handle any exceptions instead")
     @staticmethod
     def is_item_collection(data: dict[str, Any]) -> bool:
         return data.get("type", "") == "FeatureCollection"
