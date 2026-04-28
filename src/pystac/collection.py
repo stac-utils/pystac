@@ -174,6 +174,9 @@ class Collection(Container, Assets):
     def STAC_OBJECT_TYPE(self) -> STAC_OBJECT_TYPE:
         return self.type
 
+    def get_item(self, id: str, recursive: bool = False) -> Item | None:
+        return next(self.get_items(id, recursive=recursive), None)
+
     @override
     def set_self_href(self, href: str | None) -> None:
         if self.assets:

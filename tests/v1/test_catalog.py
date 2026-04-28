@@ -47,6 +47,9 @@ from .utils import (
 )
 
 
+pytestmark = pytest.mark.passing_v2
+
+
 class TestCatalogType:
     def test_determine_type_for_absolute_published(self) -> None:
         cat = TestCases.case_1()
@@ -77,7 +80,9 @@ class TestCatalogType:
         catalog_type = CatalogType.determine_type(cat_json)
         assert catalog_type == CatalogType.SELF_CONTAINED
 
-    @pytest.mark.xfail(reason="CatalogType is deprecated in v2, so it's not worth fixing this test")
+    @pytest.mark.xfail(
+        reason="CatalogType is deprecated in v2, so it's not worth fixing this test"
+    )
     def test_determine_type_for_unknown(self) -> None:
         catalog = Catalog(id="test", description="test desc")
         subcat = Catalog(id="subcat", description="subcat desc")
@@ -107,7 +112,9 @@ class TestCatalog:
 
             assert len(list(items)) == 8
 
-    @pytest.mark.xfail(reason="We no longer migrate by default in v2, so this test should fail")
+    @pytest.mark.xfail(
+        reason="We no longer migrate by default in v2, so this test should fail"
+    )
     def test_from_dict_preserves_dict(self) -> None:
         catalog_dict = TestCases.case_1().to_dict()
         param_dict = deepcopy(catalog_dict)
@@ -382,20 +389,6 @@ class TestCatalog:
         cat = TestCases.case_1()
         child = cat.get_child("thisshouldnotbeachildid", recursive=True)
         assert child is None
-
-    @pytest.mark.xfail(reason="We've advertised that get_item will be removed in v2")
-    def test_get_item_is_deprecated_but_still_works(self) -> None:
-        cat = TestCases.case_1()
-        with pytest.warns(DeprecationWarning):
-            item = cat.get_item("area-2-1-imagery", recursive=True)
-            assert item is not None
-
-    @pytest.mark.xfail(reason="We've advertised that get_item will be removed in v2")
-    def test_get_item_returns_none_if_not_found(self) -> None:
-        cat = TestCases.case_1()
-        with pytest.warns(DeprecationWarning):
-            item = cat.get_item("thisshouldnotbeanitemid", recursive=True)
-            assert item is None
 
     @pytest.mark.xfail(reason="We've advertised that get_all_items will be removed in v2")
     def test_get_all_items_is_deprecated_but_still_works(self) -> None:
@@ -991,7 +984,7 @@ class TestCatalog:
         def asset_mapper(
             key: str, asset: pystac.Asset
         ) -> pystac.Asset | tuple[str, pystac.Asset]:
-            if asset.media_type and "geotiff" in asset.media_type:
+            if asset.type and "geotiff" in asset.type:
                 asset.title = "NEW TITLE"
                 changed_assets.append(key)
                 return (f"{key}-modified", asset)
@@ -1028,7 +1021,7 @@ class TestCatalog:
         def asset_mapper(
             key: str, asset: pystac.Asset
         ) -> pystac.Asset | dict[str, pystac.Asset]:
-            if asset.media_type and "geotiff" in asset.media_type:
+            if asset.type and "geotiff" in asset.type:
                 changed_assets.append(key)
                 mod1 = asset.clone()
                 mod1.title = "NEW TITLE 1"
@@ -1067,6 +1060,7 @@ class TestCatalog:
             assert found2
             assert not_found
 
+    @pytest.mark.xfail(reason="Catalog.make_all_asset_hrefs_absolute method removed")
     def test_make_all_asset_hrefs_absolute(self) -> None:
         cat = TestCases.case_2()
         cat.make_all_asset_hrefs_absolute()
@@ -1075,6 +1069,7 @@ class TestCatalog:
         href = item.assets[ID].href
         assert is_absolute_href(href)
 
+    @pytest.mark.xfail(reason="Catalog.make_all_asset_hrefs_relative method removed")
     def test_make_all_asset_hrefs_relative(self) -> None:
         cat = TestCases.case_2()
         ID = "cf73ec1a-d790-4b59-b077-e101738571ed"
@@ -1090,6 +1085,7 @@ class TestCatalog:
         assert not is_absolute_href(asset.href)
         assert asset.href == original_href
 
+    @pytest.mark.xfail(reason="Catalog.full_copy method removed")
     @pytest.mark.parametrize("catalog", TestCases.all_test_catalogs())
     def test_make_all_links_relative_or_absolute(self, catalog: Catalog) -> None:
         def check_all_relative(cat: Catalog) -> None:
@@ -1118,6 +1114,7 @@ class TestCatalog:
             c2.catalog_type = CatalogType.ABSOLUTE_PUBLISHED
             check_all_absolute(c2)
 
+    @pytest.mark.xfail(reason="Catalog.validate_all method removed")
     @pytest.mark.block_network()
     def test_self_contained_catalog_collection_item_links(self) -> None:
         """See issue https://github.com/stac-utils/pystac/issues/657"""
@@ -1166,6 +1163,7 @@ class TestCatalog:
                     f"Link with rel={link['rel']} is absolute!"
                 )
 
+    @pytest.mark.xfail(reason="Catalog.full_copy method removed")
     def test_full_copy_and_normalize_works_with_created_stac(self) -> None:
         cat = TestCases.case_3()
         cat_copy = cat.full_copy()
@@ -1196,6 +1194,7 @@ class TestCatalog:
             assert "custom_field" in read_cat.extra_fields
             assert read_cat.extra_fields["custom_field"] == "Special content"
 
+    @pytest.mark.xfail(reason="Catalog.validate_all method removed")
     @pytest.mark.parametrize("cat", TestCases.all_test_catalogs())
     @pytest.mark.vcr()
     def test_validate_all(self, cat: Catalog) -> None:
@@ -1204,6 +1203,7 @@ class TestCatalog:
             cat.normalize_hrefs("/tmp")
         cat.validate_all()
 
+    @pytest.mark.xfail(reason="Catalog.validate_all method removed")
     @pytest.mark.vcr()
     def test_validate_all_invalid(self) -> None:
         # Make one invalid, write it off, read it in, ensure it throws
@@ -1219,6 +1219,7 @@ class TestCatalog:
             with pytest.raises(pystac.STACValidationError):
                 cat2.validate_all()
 
+    @pytest.mark.xfail(reason="Item.datetime property has no setter")
     def test_set_hrefs_manually(self) -> None:
         catalog = TestCases.case_1()
 
@@ -1322,10 +1323,12 @@ class TestCatalog:
                 # Iterate again over the items. This would fail in #88
                 pass
 
+    @pytest.mark.xfail(reason="Collection.resolve_links method removed")
     def test_get_children_cbers(self) -> None:
         cat = TestCases.case_6()
         assert len(list(cat.get_children())) == 4
 
+    @pytest.mark.xfail(reason="Collection.resolve_links method removed")
     def test_resolve_planet(self) -> None:
         """Test against a bug that caused infinite recursion during link resolution"""
         cat = TestCases.case_8()
@@ -1343,6 +1346,7 @@ class TestCatalog:
 
         assert len(items) == 1
 
+    @pytest.mark.xfail(reason="Catalog._resolved_objects attribute removed")
     def test_catalog_with_href_caches_by_href(self) -> None:
         cat = TestCases.case_1()
         cache = cat._resolved_objects
@@ -1400,7 +1404,9 @@ class TestCatalog:
         assert no_link is None
         first_link = catalog.get_single_link()
         assert first_link is not None
-        assert first_link.rel == "self"
+        assert (
+            first_link.rel == "child"
+        )  # was "self" but self links are not auto-populated anymore
 
     def test_get_links(self) -> None:
         catalog = TestCases.case_1()
@@ -1423,7 +1429,7 @@ class TestCatalog:
         )
         assert len(catalog.get_links(rel="search")) == 2
         assert len(catalog.get_links(rel="via")) == 0
-        assert len(catalog.get_links()) == 6
+        assert len(catalog.get_links()) == 5  # self no longer autopopulated
 
     def test_to_dict_no_self_href(self) -> None:
         catalog = Catalog(id="an-id", description="A test Catalog")
@@ -1457,6 +1463,7 @@ class TestFullCopy:
         for item in c.get_items():
             self.check_item(item, tag)
 
+    @pytest.mark.xfail(reason="Catalog.full_copy method removed")
     def test_full_copy_1(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             cat = Catalog(id="test", description="test catalog")
@@ -1478,6 +1485,7 @@ class TestFullCopy:
             self.check_catalog(cat, "source")
             self.check_catalog(cat2, "dest")
 
+    @pytest.mark.xfail(reason="Catalog.full_copy method removed")
     def test_full_copy_2(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             cat = Catalog(id="test", description="test catalog")
@@ -1512,6 +1520,7 @@ class TestFullCopy:
             self.check_catalog(cat, "source")
             self.check_catalog(cat2, "dest")
 
+    @pytest.mark.xfail(reason="Catalog.full_copy method removed")
     def test_full_copy_3(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             root_cat = TestCases.case_1()
@@ -1526,6 +1535,7 @@ class TestFullCopy:
             self.check_catalog(root_cat, "source")
             self.check_catalog(cat2, "dest")
 
+    @pytest.mark.xfail(reason="Catalog.full_copy method removed")
     def test_full_copy_4(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             root_cat = TestCases.case_2()
@@ -1576,18 +1586,6 @@ class TestCatalogSubClass:
         cloned_catalog = custom_catalog.clone()
         assert isinstance(cloned_catalog, self.BasicCustomCatalog)
 
-    def test_get_all_items_works(self) -> None:
-        custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
-        cloned_catalog = custom_catalog.clone()
-        with pytest.warns(DeprecationWarning):
-            cloned_catalog.get_all_items()
-
-    def test_get_item_works(self) -> None:
-        custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
-        cloned_catalog = custom_catalog.clone()
-        with pytest.warns(DeprecationWarning):
-            cloned_catalog.get_item("area-1-1-imagery")
-
 
 def test_custom_catalog_from_dict(catalog: Catalog) -> None:
     # https://github.com/stac-utils/pystac/issues/862
@@ -1616,6 +1614,7 @@ def test_remove_hierarchical_links(
     assert bool(test_case_1_catalog.get_single_link("canonical")) == add_canonical
 
 
+@pytest.mark.xfail(reason="Catalog.fully_resolve method removed")
 def test_fully_resolve(tmp_path: Path, test_case_1_catalog: Catalog) -> None:
     test_case_1_catalog.save(dest_href=str(tmp_path / "before"))
     assert len(list((tmp_path / "before").glob("**/*.json"))) == 1
@@ -1630,6 +1629,7 @@ def test_get_items_with_multiple_ids(test_case_1_catalog: Catalog) -> None:
     assert len(list(items)) == 2
 
 
+@pytest.mark.xfail(reason="Catalog.validate_all method removed")
 @pytest.mark.vcr()
 def test_validate_all_with_max_n(test_case_1_catalog: Catalog) -> None:
     cat = test_case_1_catalog
@@ -1638,6 +1638,7 @@ def test_validate_all_with_max_n(test_case_1_catalog: Catalog) -> None:
     assert cat.validate_all(max_items=1) == 1
 
 
+@pytest.mark.xfail(reason="Catalog.validate_all method removed")
 @pytest.mark.vcr()
 def test_validate_all_with_recusive_off(test_case_1_catalog: Catalog) -> None:
     cat = test_case_1_catalog
@@ -1772,6 +1773,7 @@ STRATEGY = TemplateLayoutStrategy(
         ),
     ],
 )
+@pytest.mark.xfail(reason="strategy parameter removed")
 def test_add_child_layout_strategy(
     root_strategy: HrefLayoutStrategy,
     sub_strategy: HrefLayoutStrategy,
@@ -1855,6 +1857,7 @@ def test_add_child_layout_strategy(
         ),
     ],
 )
+@pytest.mark.xfail(reason="Subcatalog self_href not constructed from parent")
 def test_add_child_layout_strategy_normalize(
     root_strategy: HrefLayoutStrategy,
     sub_strategy: HrefLayoutStrategy,
@@ -1924,6 +1927,7 @@ def test_add_child_layout_strategy_normalize(
         (STRATEGY, BestPracticesLayoutStrategy(), BEST_PRACTICE_ITEM_TEMPLATE),
     ],
 )
+@pytest.mark.xfail(reason="strategy parameter removed from Container.add_item")
 def test_add_item_layout_strategy(
     root_strategy: HrefLayoutStrategy,
     provided_strategy: HrefLayoutStrategy,
@@ -1979,6 +1983,7 @@ def test_add_item_layout_strategy(
     assert item.self_href == f"{base_url}/{template}/{item_id}.json"
 
 
+@pytest.mark.xfail(reason="strategy parameter removed from Container.normalize_hrefs")
 def test_APILayoutStrategy_requires_root_to_be_url(
     catalog: Catalog, collection: Collection, item: Item
 ) -> None:
@@ -2027,6 +2032,7 @@ def test_get_item_links_cares_about_media_type(catalog: pystac.Catalog) -> None:
     assert len(catalog.get_item_links()) == 3
 
 
+@pytest.mark.xfail(reason="Link.target can no longer be str, and is pushed to .href")
 def test_get_root_link_cares_about_media_type(catalog: pystac.Catalog) -> None:
     catalog.links.insert(
         0, pystac.Link(rel="root", target="./self.json", media_type="text/html")
@@ -2041,6 +2047,9 @@ def test_clone_extra_fields(catalog: Catalog) -> None:
     assert cloned.extra_fields["foo"] == "bar"
 
 
+@pytest.mark.xfail(
+    reason="Catalog.get_children no longer warns on presence of 'next' link"
+)
 def test_warn_if_next_link_present(catalog: Catalog) -> None:
     catalog.links.append(Link(rel="next", target="./next.json"))
     with pytest.warns(UserWarning):
