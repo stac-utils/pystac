@@ -3,7 +3,7 @@ from __future__ import annotations
 import copy
 import warnings
 from enum import StrEnum
-from typing import Any, ClassVar, override
+from typing import TYPE_CHECKING, Any, ClassVar, override
 
 from typing_extensions import deprecated
 
@@ -12,6 +12,9 @@ from .constants import DEFAULT_STAC_VERSION, STAC_OBJECT_TYPE
 from .container import Container
 from .link import Link
 from .rel_type import RelType
+
+if TYPE_CHECKING:
+    from .extensions.ext import CatalogExt
 
 
 class Catalog(Container):
@@ -82,6 +85,18 @@ class Catalog(Container):
         )
         data["description"] = self.description
         return data
+
+    @property
+    def ext(self) -> CatalogExt:
+        """Accessor for extension classes on this catalog
+
+        Example::
+
+            print(collection.ext.version)
+        """
+        from pystac.extensions.ext import CatalogExt
+
+        return CatalogExt(stac_object=self)
 
 
 @deprecated("CatalogType is deprecated")
