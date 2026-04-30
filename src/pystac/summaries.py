@@ -186,6 +186,12 @@ class Summarizer:
 DEFAULT_MAXCOUNT = 25
 
 
+def _maybe_range(value: Any) -> RangeSummary[Any] | Any:
+    if isinstance(value, dict) and "minimum" in value:
+        return RangeSummary[Any](**value)
+    return cast(Any, value)
+
+
 class Summaries(MutableMapping[str, Any]):
     _store: dict[str, Any]
     maxcount: int
@@ -193,7 +199,7 @@ class Summaries(MutableMapping[str, Any]):
     def __init__(
         self, summaries: dict[str, Any], maxcount: int = DEFAULT_MAXCOUNT
     ) -> None:
-        self._store = summaries
+        self._store = {k: _maybe_range(v) for k, v in summaries.items()}
         self.maxcount = maxcount
 
     @classmethod
