@@ -8,6 +8,9 @@ from pystac.summaries import RangeSummary, Summaries, Summarizer, SummaryStrateg
 from .utils import TestCases
 
 
+pytestmark = pytest.mark.passing_v2
+
+
 def test_summary() -> None:
     coll = TestCases.case_5()
     summaries = Summarizer().summarize(coll.get_items(recursive=True))
