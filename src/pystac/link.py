@@ -16,6 +16,7 @@ from .reader import Reader
 
 if TYPE_CHECKING:
     from . import Catalog, Collection, Item
+    from .extensions.ext import LinkExt
     from .stac_object import STACObject
 
 HIERARCHICAL_LINKS = [
@@ -318,3 +319,15 @@ class Link:
             title=title,
             media_type=MediaType.JSON,
         )
+
+    @property
+    def ext(self) -> LinkExt:
+        """Accessor for extension classes on this link
+
+        Example::
+
+            link.ext.file.size = 8675309
+        """
+        from pystac.extensions.ext import LinkExt
+
+        return LinkExt(stac_object=self)

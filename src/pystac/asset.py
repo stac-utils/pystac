@@ -18,6 +18,7 @@ from .utils import (
 from .writer import Writer
 
 if TYPE_CHECKING:
+    from .extensions.ext import AssetExt
     from .stac_object import STACObject
 
 
@@ -131,6 +132,18 @@ class Asset(ItemAsset):
     def to_dict(self) -> dict[str, Any]:
         data = super().to_dict()
         return {"href": self.href, **data}
+
+    @property
+    def ext(self) -> AssetExt:
+        """Accessor for extension classes on this asset
+
+        Example::
+
+            asset.ext.proj.code = "EPSG:4326"
+        """
+        from pystac.extensions.ext import AssetExt
+
+        return AssetExt(stac_object=self)
 
 
 class Assets(Protocol):

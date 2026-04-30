@@ -28,6 +28,7 @@ from .utils import make_posix_style
 
 if TYPE_CHECKING:
     from .collection import Collection
+    from .extensions.ext import ItemExt
 
 
 class Item(STACObject, Assets):
@@ -239,6 +240,18 @@ class Item(STACObject, Assets):
     @property
     def __geo_interface__(self) -> dict[str, Any]:
         return self.to_dict(include_self_link=False)
+
+    @property
+    def ext(self) -> ItemExt:
+        """Accessor for extension classes on this item
+
+        Example::
+
+            item.ext.proj.code = "EPSG:4326"
+        """
+        from pystac.extensions.ext import ItemExt
+
+        return ItemExt(stac_object=self)
 
 
 @final
