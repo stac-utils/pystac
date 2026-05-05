@@ -37,9 +37,9 @@ class SummariesExtension:
         v: list[Any] | pystac.RangeSummary[Any] | dict[str, Any] | None,
     ) -> None:
         if v is None:
-            self.summaries.remove(prop_key)
+            del self.summaries[prop_key]
         else:
-            self.summaries.add(prop_key, v)
+            self.summaries[prop_key] = v
 
 
 P = TypeVar("P")

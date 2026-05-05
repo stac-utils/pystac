@@ -31,6 +31,7 @@ from .media_type import MediaType
 from .provider import Provider, ProviderRole
 from .rel_type import RelType
 from .stac_object import STACObject
+from .summaries import Summaries
 from .version import __version__
 
 
@@ -87,6 +88,7 @@ __all__ = [
     "STACTypeError",
     "STACValidationError",
     "SpatialExtent",
+    "Summaries",
     "TemporalExtent",
     "read_file",
     "__version__",

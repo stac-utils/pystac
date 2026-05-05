@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import datetime as dt
 import warnings
+from collections.abc import Iterator, MutableMapping
 from typing import TYPE_CHECKING, Any, ClassVar, final, override
 
 from typing_extensions import deprecated
@@ -242,7 +243,9 @@ class Item(STACObject, Assets):
 
 
 @final
-class Properties(Basics, DateTime, Licensing, Providers, Instrument):
+class Properties(
+    MutableMapping[str, Any], Basics, DateTime, Licensing, Providers, Instrument
+):
     def __init__(
         self,
         *,
@@ -260,13 +263,32 @@ class Properties(Basics, DateTime, Licensing, Providers, Instrument):
         else:
             self.bands = None
 
+    @override
     def __getitem__(self, key: str) -> Any:
         return self.extra_fields[key]
 
+    @override
     def __setitem__(self, name: str, value: Any, /) -> None:
         self.extra_fields[name] = value
 
-    def __contains__(self, key: str) -> bool:
+    @override
+    def __delitem__(self, key: str) -> None:
+        del self.extra_fields[key]
+
+    @override
+    def __iter__(self) -> Iterator[str]:
+        if self.bands is not None:
+            return iter({**self.extra_fields, "bands": self.bands})
+        return iter(self.extra_fields)
+
+    @override
+    def __len__(self) -> int:
+        if self.bands is not None:
+            return len(self.extra_fields) + 1
+        return len(self.extra_fields)
+
+    @override
+    def __contains__(self, key: object) -> bool:
         return key == "bands" or key in self.extra_fields
 
     def __deepcopy__(self, memo: dict[int, Any]) -> Properties:
@@ -274,12 +296,6 @@ class Properties(Basics, DateTime, Licensing, Providers, Instrument):
             bands=self.bands,
             **copy.deepcopy(self.extra_fields, memo),
         )
-
-    def get(self, key: str, default: Any = None) -> Any:
-        try:
-            return self[key]
-        except KeyError:
-            return default
 
     @classmethod
     def try_from(
