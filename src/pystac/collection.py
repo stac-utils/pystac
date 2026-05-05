@@ -26,6 +26,7 @@ from .summaries import Summaries
 from .utils import to_datetime_str
 
 if TYPE_CHECKING:
+    from .extensions.ext import CollectionExt
     from .item import Item
     from .item_collection import ItemCollection
 
@@ -217,6 +218,18 @@ class Collection(Container, Assets):
         Update datetime and bbox based on all items to a single bbox and time window.
         """
         self.extent = Extent.from_items(self.get_items(recursive=True))
+
+    @property
+    def ext(self) -> CollectionExt:
+        """Accessor for extension classes on this collection
+
+        Example::
+
+            print(collection.ext.xarray)
+        """
+        from pystac.extensions.ext import CollectionExt
+
+        return CollectionExt(stac_object=self)
 
 
 class Extent:
