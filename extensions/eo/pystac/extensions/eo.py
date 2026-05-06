@@ -229,9 +229,11 @@ class EOCommonName(StringEnum):
 
 def band_range(common_name: EOCommonName) -> tuple[float, float] | None:
     """Gets the band range for a common band name.
+
     Args:
-        common_name : The common band name. Must be one of the :stac-ext:`list of
+        common_name: The common band name. Must be one of the :stac-ext:`list of
             accepted common names <eo#common-band-names>`.
+
     Returns:
         Tuple[float, float] or None: The band range for this name as (min, max), or
         None if this is not a recognized common name.
@@ -264,9 +266,11 @@ def band_range(common_name: EOCommonName) -> tuple[float, float] | None:
 
 def band_description(common_name: EOCommonName) -> str | None:
     """Returns a description of the band for one with a common name.
+
     Args:
-        common_name : The common band name. Must be one of the :stac-ext:`list of
+        common_name: The common band name. Must be one of the :stac-ext:`list of
             accepted common names <eo#common-band-names>`.
+
     Returns:
         str or None: If a recognized common name, returns a description including
         the band range. Otherwise, returns None.
