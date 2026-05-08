@@ -38,7 +38,7 @@ StatusType = Literal["automatic", "reviewed", "deleted"]
 
 
 class EarthquakeSource(TypedDict, total=False):
-    """A single source entry stored in :data:`eq:sources <SOURCES_PROP>`."""
+    """A single source entry stored in the ``eq:sources`` field."""
 
     name: str
     code: str
