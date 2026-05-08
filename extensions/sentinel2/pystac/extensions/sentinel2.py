@@ -156,9 +156,7 @@ class Sentinel2Extension(
         self.degraded_msi_data_percentage = degraded_msi_data_percentage
         self.high_proba_clouds_percentage = high_proba_clouds_percentage
         self.medium_proba_clouds_percentage = medium_proba_clouds_percentage
-        self.saturated_defective_pixel_percentage = (
-            saturated_defective_pixel_percentage
-        )
+        self.saturated_defective_pixel_percentage = saturated_defective_pixel_percentage
         self.reflectance_conversion_factor = reflectance_conversion_factor
         self.mgrs_tile = mgrs_tile
 

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any, Generic, Literal, TypeVar, TypedDict, cast
+from typing import Any, Generic, Literal, TypedDict, TypeVar, cast
 
 import pystac
 from pystac.extensions.base import (
@@ -195,8 +195,7 @@ class Sentinel3Extension(
     def gsd(self) -> S3GSD | None:
         return cast(
             S3GSD | None,
-            self._get_property(GSD_PROP, dict)
-            or self._get_property(GSD_PROP, int),
+            self._get_property(GSD_PROP, dict) or self._get_property(GSD_PROP, int),
         )
 
     @gsd.setter
@@ -357,9 +356,7 @@ class Sentinel3Extension(
 
     @property
     def spatial_resolution(self) -> list[int] | None:
-        return cast(
-            list[int] | None, self._get_property(SPATIAL_RESOLUTION_PROP, list)
-        )
+        return cast(list[int] | None, self._get_property(SPATIAL_RESOLUTION_PROP, list))
 
     @spatial_resolution.setter
     def spatial_resolution(self, v: list[int] | None) -> None:

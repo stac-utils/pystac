@@ -1,7 +1,7 @@
 """Tests for pystac.extensions.sentinel2."""
 
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
 import pytest
 
@@ -130,8 +130,7 @@ def test_from_dict() -> None:
 
     ext = Sentinel2Extension.ext(item)
     assert (
-        ext.tile_id
-        == "S2A_OPER_MSI_L1C_TL_SGS__20200101T000000_A012345_T32TQM_N02.09"
+        ext.tile_id == "S2A_OPER_MSI_L1C_TL_SGS__20200101T000000_A012345_T32TQM_N02.09"
     )
     assert ext.reflectance_conversion_factor == 1.032
 
@@ -212,7 +211,7 @@ def test_collection_hint(collection: Collection) -> None:
         ExtensionTypeError,
         match=r"Hint: Did you mean to use `Sentinel2Extension.summaries` instead\\?",
     ):
-        Sentinel2Extension.ext(collection)  # type: ignore[arg-type]
+        Sentinel2Extension.ext(cast(Any, collection))
 
 
 def test_summaries_ext_add_to(collection: Collection) -> None:
