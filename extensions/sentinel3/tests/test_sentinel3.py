@@ -1,7 +1,7 @@
 """Tests for pystac.extensions.sentinel3."""
 
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
 import pytest
 
@@ -27,7 +27,9 @@ def item() -> Item:
         datetime=datetime(2020, 1, 1),
         properties={},
     )
-    item.add_asset("measurement", pystac.Asset(href="https://example.com/measurement.nc"))
+    item.add_asset(
+        "measurement", pystac.Asset(href="https://example.com/measurement.nc")
+    )
     Sentinel3Extension.add_to(item)
     return item
 
@@ -199,7 +201,7 @@ def test_collection_hint(collection: Collection) -> None:
         ExtensionTypeError,
         match=r"Hint: Did you mean to use `Sentinel3Extension.summaries` instead\\?",
     ):
-        Sentinel3Extension.ext(collection)  # type: ignore[arg-type]
+        Sentinel3Extension.ext(cast(Any, collection))
 
 
 def test_summaries_ext_add_to(collection: Collection) -> None:

@@ -249,9 +249,7 @@ class SummariesSentinel1Extension(SummariesExtension):
 
     @property
     def product_identifier(self) -> list[str] | None:
-        return cast(
-            list[str] | None, self.summaries.get_list(PRODUCT_IDENTIFIER_PROP)
-        )
+        return cast(list[str] | None, self.summaries.get_list(PRODUCT_IDENTIFIER_PROP))
 
     @product_identifier.setter
     def product_identifier(self, v: list[str] | None) -> None:
@@ -259,9 +257,7 @@ class SummariesSentinel1Extension(SummariesExtension):
 
     @property
     def product_timeliness(self) -> list[str] | None:
-        return cast(
-            list[str] | None, self.summaries.get_list(PRODUCT_TIMELINESS_PROP)
-        )
+        return cast(list[str] | None, self.summaries.get_list(PRODUCT_TIMELINESS_PROP))
 
     @product_timeliness.setter
     def product_timeliness(self, v: list[str] | None) -> None:

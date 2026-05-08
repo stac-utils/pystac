@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any, Generic, Literal, TypeVar, TypedDict, cast
+from typing import Any, Generic, Literal, TypedDict, TypeVar, cast
 
 import pystac
 from pystac.errors import ExtensionTypeError

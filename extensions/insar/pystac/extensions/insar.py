@@ -359,9 +359,7 @@ class SummariesInsarExtension(SummariesExtension):
 
     @processing_dem.setter
     def processing_dem(self, v: str | None) -> None:
-        self._set_singleton_list_value(
-            PROC_DEM_PROP, _validated_str(v, PROC_DEM_PROP)
-        )
+        self._set_singleton_list_value(PROC_DEM_PROP, _validated_str(v, PROC_DEM_PROP))
 
     @property
     def geocoding_dem(self) -> str | None:
@@ -377,9 +375,7 @@ class SummariesInsarExtension(SummariesExtension):
 
     @geocoding_dem.setter
     def geocoding_dem(self, v: str | None) -> None:
-        self._set_singleton_list_value(
-            GEOC_DEM_PROP, _validated_str(v, GEOC_DEM_PROP)
-        )
+        self._set_singleton_list_value(GEOC_DEM_PROP, _validated_str(v, GEOC_DEM_PROP))
 
 
 class InsarExtensionHooks(ExtensionHooks):

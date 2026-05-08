@@ -1,7 +1,7 @@
 """Tests for pystac.extensions.sentinel1."""
 
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
 import pytest
 
@@ -190,7 +190,7 @@ def test_collection_hint(collection: Collection) -> None:
         ExtensionTypeError,
         match=r"Hint: Did you mean to use `Sentinel1Extension.summaries` instead\\?",
     ):
-        Sentinel1Extension.ext(collection)  # type: ignore[arg-type]
+        Sentinel1Extension.ext(cast(Any, collection))
 
 
 def test_summaries_ext_add_to(collection: Collection) -> None:

@@ -14,8 +14,13 @@ from pystac.extensions.base import (
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
-from pystac.utils import StringEnum, datetime_to_str, get_required, map_opt
-from pystac.utils import str_to_datetime
+from pystac.utils import (
+    StringEnum,
+    datetime_to_str,
+    get_required,
+    map_opt,
+    str_to_datetime,
+)
 
 T = TypeVar(
     "T",
@@ -73,9 +78,7 @@ class OrderExtension(
     @property
     def status(self) -> OrderStatus:
         return get_required(
-            map_opt(
-                lambda x: OrderStatus(x), self._get_property(STATUS_PROP, str)
-            ),
+            map_opt(lambda x: OrderStatus(x), self._get_property(STATUS_PROP, str)),
             self,
             STATUS_PROP,
         )
