@@ -3,7 +3,7 @@ from __future__ import annotations
 import copy
 import warnings
 from abc import ABC, abstractmethod
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from enum import StrEnum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar, override
@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, override
 from typing_extensions import deprecated
 
 from pystac.errors import STACTypeError
+from pystac.media_type import MediaType
 from pystac.rel_type import RelType
 from pystac.writer import DEFAULT_WRITER
 
@@ -30,6 +31,9 @@ if TYPE_CHECKING:
     from .container import Container
     from .href_generator import HrefGenerator
     from .writer import Writer
+
+
+type OptionalMediaType = str | MediaType | None
 
 
 class STACObject(ABC):
@@ -161,15 +165,41 @@ class STACObject(ABC):
             data["stac_extensions"] = self.stac_extensions
         return data
 
-    def get_link(self, rel: str) -> Link | None:
-        return next((link for link in self.links if link.rel == rel), None)
+    def _link_filter(
+        self,
+        rel: str | RelType | None = None,
+        media_type: OptionalMediaType | Iterable[OptionalMediaType] = None,
+    ) -> Iterator[Link]:
+        if media_type and isinstance(media_type, (str, MediaType)):
+            media_type = [media_type]
+        for link in self.links:
+            if (rel is None or link.rel == rel) and (
+                media_type is None
+                or (link.media_type and link.media_type in media_type)
+            ):
+                yield link
 
-    def get_links(self, rel: str | None = None) -> list[Link]:
-        return list(link for link in self.links if rel is None or link.rel == rel)
+    def get_link(
+        self,
+        rel: str | RelType | None = None,
+        media_type: OptionalMediaType | Iterable[OptionalMediaType] = None,
+    ) -> Link | None:
+        return next(self._link_filter(rel, media_type), None)
+
+    def get_links(
+        self,
+        rel: str | RelType | None = None,
+        media_type: OptionalMediaType | Iterable[OptionalMediaType] = None,
+    ) -> list[Link]:
+        return list(self._link_filter(rel, media_type))
 
     @deprecated("Use .get_link()")
-    def get_single_link(self, rel: str) -> Link | None:
-        return self.get_link(rel)
+    def get_single_link(
+        self,
+        rel: str | RelType | None = None,
+        media_type: str | MediaType | None = None,
+    ) -> Link | None:
+        return self.get_link(rel, media_type)
 
     def get_derived_from(self) -> list[STACObject]:
         derived_from: list[STACObject] = []

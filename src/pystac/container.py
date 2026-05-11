@@ -28,9 +28,6 @@ if TYPE_CHECKING:
 
 
 class Container(STACObject, ABC):
-    def get_item(self, id: str, recursive: bool = False) -> Item | None:
-        return next(self.get_items(id, recursive=recursive), None)
-
     def get_items(self, *ids: str, recursive: bool = False) -> Iterator[Item]:
         for link in self.links:
             if link.is_item():
