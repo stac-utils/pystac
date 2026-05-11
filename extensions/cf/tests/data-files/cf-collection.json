@@ -1,0 +1,25 @@
+{
+  "type": "Collection",
+  "id": "test-cf-collection",
+  "description": "Test CF collection",
+  "license": "proprietary",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/cf/v0.2.0/schema.json"
+  ],
+  "links": [],
+  "extent": {
+    "spatial": {
+      "bbox": [[-180, -90, 180, 90]]
+    },
+    "temporal": {
+      "interval": [["2021-01-01T00:00:00Z", null]]
+    }
+  },
+  "cf:parameter": [
+    {
+      "name": "air_temperature",
+      "unit": "K"
+    }
+  ]
+}
