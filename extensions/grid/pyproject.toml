@@ -2,7 +2,7 @@
 name = "pystac-ext-grid"
 description = "Grid extension for PySTAC"
 readme = "README.md"
-version = "1.1.0"
+version = "1.1.0-rc.0"
 authors = []
 maintainers = []
 keywords = ["pystac", "imagery", "raster", "catalog", "STAC", "grid"]

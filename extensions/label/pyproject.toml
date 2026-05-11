@@ -2,7 +2,7 @@
 name = "pystac-ext-label"
 description = "Label extension for PySTAC"
 readme = "README.md"
-version = "1.0.1"
+version = "1.0.1-rc.0"
 authors = []
 maintainers = []
 keywords = ["pystac", "imagery", "raster", "catalog", "STAC", "label"]

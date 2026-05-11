@@ -2,7 +2,7 @@
 name = "pystac-core"
 description = "Core functionality for PySTAC without extensions. Most users will want to use pystac, not this package"
 readme = "README.md"
-version = "1.14.3"
+version = "1.15.0-rc.0"
 authors = [
     { name = "Rob Emanuele", email = "rdemanuele@gmail.com" },
     { name = "Jon Duckworth", email = "duckontheweb@gmail.com" },
