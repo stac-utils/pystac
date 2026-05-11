@@ -2,7 +2,7 @@
 name = "pystac-ext-item-assets"
 description = "Item Assets extension for PySTAC"
 readme = "README.md"
-version = "1.0.0"
+version = "1.0.0-rc.0"
 authors = []
 maintainers = []
 keywords = ["pystac", "imagery", "raster", "catalog", "STAC", "item-assets"]
