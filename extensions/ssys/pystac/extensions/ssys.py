@@ -89,11 +89,11 @@ class SolSysExtension(
 
         Args:
             targets : Array to hold list of target bodies (e.g. Mars, Moon, Earth)
-                conforming to the `International Virtual Observatory Alliance<https://www.ivoa.net/documents/EPNTAP/20220822/REC-EPNTAP-2.0.html#tth_sEc2.1.3>`_
+                conforming to the `International Virtual Observatory Alliance <https://www.ivoa.net/documents/EPNTAP/20220822/REC-EPNTAP-2.0.html#tth_sEc2.1.3>`_
                 target name specification.
             local_time : Lexicographically sortable time string (e.g., `01:115:12.343`)
             target_class : The identity of the type of the target as defined by
-                the `International Virtual Observatory Alliance<https://www.ivoa.net/documents/EPNTAP/20220822/REC-EPNTAP-2.0.html#tth_sEc2.1.3>`_
+                the `International Virtual Observatory Alliance <https://www.ivoa.net/documents/EPNTAP/20220822/REC-EPNTAP-2.0.html#tth_sEc2.1.3>`_
         """
         self.targets = targets
         self.local_time = local_time
@@ -105,7 +105,7 @@ class SolSysExtension(
         This can happen, for example, if several moons are in the same view.
 
         As an example, this scene has both of Ganymede and Jupiter in the same image
-        as taken by the NASA mission Cassini `PIA02862<https://photojournal.jpl.nasa.gov/catalog/PIA02862>`_.
+        as taken by the NASA mission Cassini `PIA02862 <https://photojournal.jpl.nasa.gov/catalog/PIA02862>`_.
 
         Returns:
             list[str] or None
