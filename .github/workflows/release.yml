@@ -38,7 +38,7 @@ jobs:
           echo "path=$path" >> "$GITHUB_OUTPUT"
       - name: Build
         working-directory: ${{ steps.package.outputs.path }}
-        run: uv build
+        run: uv build -o dist
       - uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
         with:
           packages-dir: ${{ steps.package.outputs.path }}/dist
