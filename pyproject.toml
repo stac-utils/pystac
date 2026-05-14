@@ -26,20 +26,28 @@ dependencies = [
     "pystac-core==1.14.3",
     "pystac-ext-classification",
     "pystac-ext-datacube",
+    "pystac-ext-earthquake",
     "pystac-ext-eo",
     "pystac-ext-file",
     "pystac-ext-grid",
+    "pystac-ext-insar",
     "pystac-ext-item-assets",
     "pystac-ext-label",
     "pystac-ext-mgrs",
     "pystac-ext-mlm",
+    "pystac-ext-order",
     "pystac-ext-pointcloud",
+    "pystac-ext-processing",
+    "pystac-ext-product",
     "pystac-ext-projection",
     "pystac-ext-raster",
     "pystac-ext-render",
     "pystac-ext-sar",
     "pystac-ext-sat",
     "pystac-ext-scientific",
+    "pystac-ext-sentinel-1",
+    "pystac-ext-sentinel-2",
+    "pystac-ext-sentinel-3",
     "pystac-ext-storage",
     "pystac-ext-table",
     "pystac-ext-timestamps",
@@ -137,20 +145,28 @@ mypy_path = [
     "core",
     "extensions/classification",
     "extensions/datacube",
+    "extensions/earthquake",
     "extensions/eo",
     "extensions/file",
     "extensions/grid",
+    "extensions/insar",
     "extensions/item_assets",
     "extensions/label",
     "extensions/mgrs",
     "extensions/mlm",
+    "extensions/order",
     "extensions/pointcloud",
+    "extensions/processing",
+    "extensions/product",
     "extensions/projection",
     "extensions/raster",
     "extensions/render",
     "extensions/sar",
     "extensions/sat",
     "extensions/scientific",
+    "extensions/sentinel1",
+    "extensions/sentinel2",
+    "extensions/sentinel3",
     "extensions/storage",
     "extensions/table",
     "extensions/timestamps",
@@ -183,20 +199,28 @@ only-include = ["README.md"]
 pystac-core = { workspace = true }
 pystac-ext-classification = { workspace = true }
 pystac-ext-datacube = { workspace = true }
+pystac-ext-earthquake = { workspace = true }
 pystac-ext-eo = { workspace = true }
 pystac-ext-file = { workspace = true }
 pystac-ext-grid = { workspace = true }
+pystac-ext-insar = { workspace = true }
 pystac-ext-item-assets = { workspace = true }
 pystac-ext-label = { workspace = true }
 pystac-ext-mgrs = { workspace = true }
 pystac-ext-mlm = { workspace = true }
+pystac-ext-order = { workspace = true }
 pystac-ext-pointcloud = { workspace = true }
+pystac-ext-processing = { workspace = true }
+pystac-ext-product = { workspace = true }
 pystac-ext-projection = { workspace = true }
 pystac-ext-raster = { workspace = true }
 pystac-ext-render = { workspace = true }
 pystac-ext-sar = { workspace = true }
 pystac-ext-sat = { workspace = true }
 pystac-ext-scientific = { workspace = true }
+pystac-ext-sentinel-1 = { workspace = true }
+pystac-ext-sentinel-2 = { workspace = true }
+pystac-ext-sentinel-3 = { workspace = true }
 pystac-ext-storage = { workspace = true }
 pystac-ext-table = { workspace = true }
 pystac-ext-timestamps = { workspace = true }
