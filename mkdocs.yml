@@ -34,6 +34,8 @@ watch:
 nav:
   - Home: index.md
   - pystac-v2.0.md
+  - Migration Guide: migration-guide.md
+
 
 extra:
   alias: true
