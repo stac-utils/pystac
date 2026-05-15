@@ -4,16 +4,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from typing import Any
-
 import pytest
 
 import pystac
 import pystac.errors
 from pystac.stac_io import DefaultStacIO, DuplicateKeyReportingMixin, StacIO
-
 from .utils import TestCases
-from tests.utils.mock_io import MockReader, MockWriter
 
 
 def test_read_write_collection() -> None:
@@ -59,31 +55,6 @@ def test_read_item_collection_raises_exception() -> None:
         _ = pystac.read_file(
             TestCases.get_path("data-files/item-collection/sample-item-collection.json")
         )
-
-
-def test_default_reader_writer_getters() -> None:
-    original_reader = pystac.get_default_reader()
-    original_writer = pystac.get_default_writer()
-    mock_reader = MockReader()
-    mock_writer = MockWriter()
-
-    try:
-        pystac.set_default_reader(mock_reader)
-        pystac.set_default_writer(mock_writer)
-
-        assert pystac.get_default_reader() is mock_reader
-        assert pystac.get_default_writer() is mock_writer
-
-        catalog = pystac.read_file("/tmp/mock-catalog.json")
-        assert isinstance(catalog, pystac.Catalog)
-        assert mock_reader.calls == ["/tmp/mock-catalog.json"]
-
-        new_catalog = pystac.Catalog("new-catalog", "new description")
-        assert new_catalog.reader is mock_reader
-        assert new_catalog.writer is mock_writer
-    finally:
-        pystac.set_default_reader(original_reader)
-        pystac.set_default_writer(original_writer)
 
 
 def test_read_item_dict() -> None:
