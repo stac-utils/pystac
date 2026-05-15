@@ -10,5 +10,6 @@ def read_file(href: str | Path, reader: Reader | None = None) -> STACObject:
         reader = get_default_reader()
     data = reader.get_json(href)
     obj = from_dict(data)
+    obj.reader = reader
     obj.set_self_href(str(href))
     return obj
