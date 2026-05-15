@@ -4,13 +4,40 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from typing import Any
+
 import pytest
 
 import pystac
 import pystac.errors
+from pystac.reader import StandardLibraryReader, Reader
+from pystac.writer import StandardLibraryWriter, Writer
 from pystac.stac_io import DefaultStacIO, DuplicateKeyReportingMixin, StacIO
 
 from .utils import TestCases
+
+
+class MockReader(Reader):
+    def __init__(self) -> None:
+        self.calls: list[str] = []
+        self.reader = StandardLibraryReader()
+
+    def get_json(self, href: str | Path) -> dict[str, Any]:
+        self.calls.append(str(href))
+        return self.reader.get_json(href)
+
+
+class MockWriter(Writer):
+    def __init__(self) -> None:
+        self.calls: list[tuple[dict[str, Any], str | Path]] = []
+        self.writer = StandardLibraryWriter()
+
+    def put_json(self, data: dict[str, Any], href: str | Path) -> None:
+        self.calls.append((data, href))
+        self.writer.put_json(data, href)
+
+    def delete(self, href: str | Path) -> None:
+        self.writer.delete(href)
 
 
 def test_read_write_collection() -> None:
@@ -56,6 +83,31 @@ def test_read_item_collection_raises_exception() -> None:
         _ = pystac.read_file(
             TestCases.get_path("data-files/item-collection/sample-item-collection.json")
         )
+
+
+def test_default_reader_writer_getters() -> None:
+    original_reader = pystac.get_default_reader()
+    original_writer = pystac.get_default_writer()
+    mock_reader = MockReader()
+    mock_writer = MockWriter()
+
+    try:
+        pystac.set_default_reader(mock_reader)
+        pystac.set_default_writer(mock_writer)
+
+        assert pystac.get_default_reader() is mock_reader
+        assert pystac.get_default_writer() is mock_writer
+
+        catalog = pystac.read_file("/tmp/mock-catalog.json")
+        assert isinstance(catalog, pystac.Catalog)
+        assert mock_reader.calls == ["/tmp/mock-catalog.json"]
+
+        new_catalog = pystac.Catalog("new-catalog", "new description")
+        assert new_catalog.reader is mock_reader
+        assert new_catalog.writer is mock_writer
+    finally:
+        pystac.set_default_reader(original_reader)
+        pystac.set_default_writer(original_writer)
 
 
 def test_read_item_dict() -> None:

@@ -13,7 +13,7 @@ from referencing import Registry
 from pystac.errors import STACValidationError
 
 from .constants import STAC_OBJECT_TYPE
-from .reader import DEFAULT_READER
+from .reader import get_default_reader
 from .utils import get_stac_type
 
 
@@ -33,7 +33,7 @@ class JSONSchemaValidator:
             except FileNotFoundError:
                 warnings.warn(f"Local schema not found for {stac_type} v{version}")
                 url = f"https://schemas.stacspec.org/v{version}/{stac_type}-spec/json-schema/{stac_type}.json"
-                schema_data = DEFAULT_READER.get_json(url)
+                schema_data = get_default_reader().get_json(url)
             self.cache[path] = Draft7Validator(schema_data, registry=self.registry)
         return self.cache[path]
 
@@ -48,7 +48,7 @@ class JSONSchemaValidator:
 
     def validate_extension(self, extension: str, data: dict[str, Any]) -> None:
         if extension not in self.cache:
-            schema_data = DEFAULT_READER.get_json(extension)
+            schema_data = get_default_reader().get_json(extension)
             self.cache[extension] = Draft7Validator(schema_data, registry=self.registry)
         validator = self.cache[extension]
         try:
@@ -59,7 +59,7 @@ class JSONSchemaValidator:
 
 @referencing.retrieval.to_cached_resource()
 def cached_retrieve(uri: str) -> str:
-    return json.dumps(DEFAULT_READER.get_json(uri))
+    return json.dumps(get_default_reader().get_json(uri))
 
 
 def registry_contents() -> Iterator[tuple[str, dict[str, Any]]]:
