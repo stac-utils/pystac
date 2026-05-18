@@ -9,6 +9,7 @@ import pytest
 import pystac
 import pystac.errors
 from pystac.stac_io import DefaultStacIO, DuplicateKeyReportingMixin, StacIO
+
 from .utils import TestCases
 
 
