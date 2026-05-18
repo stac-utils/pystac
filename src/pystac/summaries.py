@@ -7,7 +7,7 @@ from enum import Enum
 from functools import cache
 from typing import TYPE_CHECKING, Any, TypedDict, cast, override
 
-from .reader import DEFAULT_READER
+from .reader import get_default_reader
 
 if TYPE_CHECKING:
     from .collection import Collection
@@ -66,7 +66,7 @@ def _get_fields_json(url: str | None) -> dict[str, Any]:
             .read_text()
         )
         return jsonfields
-    return DEFAULT_READER.get_json(url)
+    return get_default_reader().get_json(url)
 
 
 class SummaryStrategy(Enum):

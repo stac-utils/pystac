@@ -29,10 +29,12 @@ from .item_collection import ItemCollection
 from .link import HIERARCHICAL_LINKS, Link
 from .media_type import MediaType
 from .provider import Provider, ProviderRole
+from .reader import get_default_reader, set_default_reader
 from .rel_type import RelType
 from .stac_object import STACObject
 from .summaries import Summaries
 from .version import __version__
+from .writer import get_default_writer, set_default_writer
 
 
 def __getattr__(name: str) -> Any:
@@ -82,11 +84,15 @@ __all__ = [
     "Provider",
     "from_dict",
     "ProviderRole",
+    "get_default_reader",
+    "get_default_writer",
     "STACError",
     "STACObject",
     "TemplateError",
     "STACTypeError",
     "STACValidationError",
+    "set_default_reader",
+    "set_default_writer",
     "SpatialExtent",
     "Summaries",
     "TemporalExtent",

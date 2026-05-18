@@ -1,3 +1,4 @@
+from collections.abc import Generator
 from pathlib import Path
 from typing import Any, cast
 from urllib.request import Request
@@ -8,6 +9,8 @@ from pytest import FixtureRequest, Parser
 import pystac.jsonschema
 from pystac import Catalog, Item
 from pystac.jsonschema import JSONSchemaValidator
+from pystac.reader import Reader, StandardLibraryReader, set_default_reader
+from pystac.writer import StandardLibraryWriter, Writer, set_default_writer
 
 V1_DIR = Path(__file__).parent / "v1"
 
@@ -76,3 +79,42 @@ def proj_example(examples_path: Path) -> Item:
     return Item.from_file(
         examples_path / "extensions-collection" / "proj-example" / "proj-example.json"
     )
+
+
+class MockReader(Reader):
+    def __init__(self) -> None:
+        self.calls: list[str] = []
+        self.reader = StandardLibraryReader()
+
+    def get_json(self, href: str | Path) -> dict[str, Any]:
+        self.calls.append(str(href))
+        return self.reader.get_json(href)
+
+
+class MockWriter(Writer):
+    def __init__(self) -> None:
+        self.calls: list[tuple[dict[str, Any], str | Path]] = []
+        self.writer = StandardLibraryWriter()
+
+    def put_json(self, data: dict[str, Any], href: str | Path) -> None:
+        self.calls.append((data, href))
+        self.writer.put_json(data, href)
+
+    def delete(self, href: str | Path) -> None:
+        self.writer.delete(href)
+
+
+@pytest.fixture
+def mock_reader() -> Generator[MockReader]:
+    reader = MockReader()
+    set_default_reader(reader)
+    yield reader
+    set_default_reader(StandardLibraryReader())
+
+
+@pytest.fixture
+def mock_writer() -> Generator[MockWriter]:
+    writer = MockWriter()
+    set_default_writer(writer)
+    yield writer
+    set_default_writer(StandardLibraryWriter())

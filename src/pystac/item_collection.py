@@ -11,7 +11,7 @@ from typing_extensions import deprecated
 from .container import Container
 from .errors import STACTypeError
 from .item import Item
-from .reader import DEFAULT_READER, Reader
+from .reader import Reader, get_default_reader
 from .utils import make_absolute_href
 
 
@@ -108,8 +108,10 @@ class ItemCollection:
 
     @classmethod
     def from_file(
-        cls, path: str | Path, reader: Reader = DEFAULT_READER
+        cls, path: str | Path, reader: Reader | None = None
     ) -> ItemCollection:
+        if reader is None:
+            reader = get_default_reader()
         href = make_absolute_href(str(path))
         data = reader.get_json(href)
 
