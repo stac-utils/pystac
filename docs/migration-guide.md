@@ -207,10 +207,89 @@ bbox = collection.extent.spatial.bbox  # Was bboxes, now bbox
 interval = collection.extent.temporal.interval  # Was intervals, now interval
 ```
 
-### TODO: Copying Items in v2
+### Copying Items and Catalogs in v2
 
-Add a short example here that shows how to copy an item in PySTAC v2, including what changed from v1.
+**What changed:** The `clone()` method still exists on `Item`, `Catalog`, and `Collection`, but `full_copy()` has been removed. In v1, `clone()` deep-copied an object's own data (properties, geometry, etc.) and cloned its links, but link targets (children, items) remained shared with the original—which is why `full_copy()` existed to recursively clone the entire tree. In v2, `clone()` is simply `copy.deepcopy(self)`, and since links are lazy (unresolved links are just href strings), there's no need for a separate recursive copy method.
 
-### TODO: Saving Items in v2
+**v1:**
+```python
+from pystac import Catalog, CatalogType, Item
 
-Add a short example here that shows how to save items in PySTAC v2, including any v2-specific changes.
+catalog = Catalog.from_file("catalog.json")
+
+# Clone a single item
+item = next(catalog.get_items(recursive=True))
+cloned_item = item.clone()
+cloned_item.id = "item-copy"
+
+# Deep copy an entire catalog tree (recursive)
+cat_copy = catalog.full_copy()
+cat_copy.normalize_hrefs("./copy")
+cat_copy.save(catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
+```
+
+**v2:**
+```python
+from pystac import Catalog, Item
+
+catalog = Catalog.from_file("catalog.json")
+
+# Clone a single item (just copy.deepcopy under the hood)
+item = next(catalog.get_items(recursive=True))
+cloned_item = item.clone()
+cloned_item.id = "item-copy"
+
+# full_copy() is removed — use clone() to deep-copy
+# NOTE: v2 links are lazy. clone() only copies what's already resolved in memory.
+# Unresolved child/item links (still just hrefs) are copied as-is but won't
+# trigger loading from disk.
+cat_copy = catalog.clone()
+cat_copy.normalize_hrefs("./copy")
+cat_copy.save_all()
+```
+
+The `clone()` method preserves subclass types (e.g., if you subclass `Item`, `clone()` returns an instance of your subclass). Since it uses `copy.deepcopy`, resolved objects are fully independent—mutating the clone does not affect the original. However, unresolved links (those not yet loaded from disk) remain as href strings and are not fetched during the clone.
+
+### Saving Items and Catalogs in v2
+
+**What changed:** In v1, saving was done via `catalog.save(catalog_type)` which recursively saved all children, handling href conversion implicitly during serialization. In v2, `save()` is deprecated—use `save_all()` instead. The key difference is that href normalization must happen *before* saving (via `normalize_hrefs()`), not during the save call. For saving individual objects, `save_object()` still exists but now takes a `writer` instead of `stac_io`.
+
+**v1:**
+```python
+from pystac import Catalog, CatalogType
+
+catalog = Catalog.from_file("catalog.json")
+
+# Save entire tree — CatalogType controls href style AND self-link inclusion
+catalog.normalize_hrefs("./output")
+catalog.save(catalog_type=CatalogType.SELF_CONTAINED)
+
+# Or use the convenience method:
+catalog.normalize_and_save("./output", catalog_type=CatalogType.ABSOLUTE_PUBLISHED)
+
+# Save a single object
+item = next(catalog.get_items(recursive=True))
+item.save_object(include_self_link=True, dest_href="./item.json", stac_io=stac_io)
+```
+
+**v2:**
+```python
+from pystac import Catalog
+
+catalog = Catalog.from_file("catalog.json")
+
+# Normalize hrefs first, then save — two explicit steps
+catalog.normalize_hrefs("./output")
+catalog.save_all()
+
+# Save a single object — uses Writer instead of StacIO
+item = next(catalog.get_items(recursive=True))
+item.save_object(include_self_link=True, dest_href="./item.json", writer=writer)
+```
+
+Key differences:
+- `catalog.save(catalog_type=...)` is deprecated → use `catalog.save_all()`
+- Href style is set during `normalize_hrefs(use_absolute_links=True/False)`, not at save time
+- `save_object()` accepts a `writer` parameter (a `Writer` protocol) instead of `stac_io`
+- `save_all()` also accepts `writer` and `include_self_links` parameters
+- `save_iter()` is new in v2—it yields each object as it's saved
