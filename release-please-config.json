@@ -6,6 +6,7 @@
     ".": {
       "changelog-path": "CHANGELOG.md",
       "component": "pystac",
+      "include-component-in-tag": false,
       "prerelease-type": "rc"
     },
     "core": {
