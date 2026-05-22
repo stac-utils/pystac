@@ -25,6 +25,7 @@ exclude-newer-span = "P10D"
 members = [
     "pystac",
     "pystac-core",
+    "pystac-ext-alternate",
     "pystac-ext-classification",
     "pystac-ext-datacube",
     "pystac-ext-eo",
@@ -4006,6 +4007,17 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [{ name = "python-dateutil", specifier = ">=2.7.0" }]
+
+[[package]]
+name = "pystac-ext-alternate"
+version = "1.2.0rc0"
+source = { editable = "extensions/alternate" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
 
 [[package]]
 name = "pystac-ext-classification"
