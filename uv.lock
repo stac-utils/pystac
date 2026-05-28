@@ -3665,7 +3665,7 @@ wheels = [
 
 [[package]]
 name = "pystac"
-version = "1.15.0rc0"
+version = "1.15.0rc1"
 source = { editable = "." }
 dependencies = [
     { name = "pystac-core" },
@@ -3871,7 +3871,7 @@ wheels = [
 
 [[package]]
 name = "pystac-core"
-version = "1.15.0rc0"
+version = "1.15.0rc1"
 source = { editable = "core" }
 dependencies = [
     { name = "python-dateutil" },
