@@ -42,4 +42,8 @@ def set_default_writer(writer: Writer) -> None:
     DEFAULT_WRITER = writer  # pyright: ignore[reportConstantRedefinition]
 
 
+def get_default_writer() -> Writer:
+    return DEFAULT_WRITER
+
+
 DEFAULT_WRITER = StandardLibraryWriter()

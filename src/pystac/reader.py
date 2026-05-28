@@ -35,4 +35,8 @@ def set_default_reader(reader: Reader) -> None:
     DEFAULT_READER = reader  # pyright: ignore[reportConstantRedefinition]
 
 
+def get_default_reader() -> Reader:
+    return DEFAULT_READER
+
+
 DEFAULT_READER = StandardLibraryReader()

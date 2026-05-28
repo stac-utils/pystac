@@ -12,18 +12,17 @@ from typing_extensions import deprecated
 
 from pystac.errors import STACTypeError
 from pystac.rel_type import RelType
-from pystac.writer import DEFAULT_WRITER
 
 from .constants import STAC_OBJECT_TYPE
 from .link import Link
-from .reader import DEFAULT_READER, Reader
+from .reader import Reader, get_default_reader
 from .utils import (
     is_absolute_href,
     make_absolute_href,
     make_relative_href,
 )
 from .validator import Validator
-from .writer import Writer
+from .writer import Writer, get_default_writer
 
 if TYPE_CHECKING:
     from .collection import Collection
@@ -67,8 +66,8 @@ class STACObject(ABC):
             self.links = []
         self.extra_fields: dict[str, Any] = kwargs
 
-        self.reader: Reader = DEFAULT_READER
-        self.writer: Writer = DEFAULT_WRITER
+        self.reader: Reader = get_default_reader()
+        self.writer: Writer = get_default_writer()
 
         self._root: Container | None = None
         self._href: str | None = None
@@ -90,8 +89,10 @@ class STACObject(ABC):
 
     @classmethod
     def from_file[T: STACObject](
-        cls: type[T], path: str | Path, reader: Reader = DEFAULT_READER
+        cls: type[T], path: str | Path, reader: Reader | None = None
     ) -> T:
+        if reader is None:
+            reader = get_default_reader()
         href = make_absolute_href(str(path))
         data = reader.get_json(href)
         if "type" not in data:
