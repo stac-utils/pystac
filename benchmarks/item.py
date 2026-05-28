@@ -2,11 +2,11 @@ import json
 import os
 import shutil
 import tempfile
+from pathlib import Path
 
 from pystac import Item, StacIO
 
 from ._base import Bench
-from ._util import get_data_path
 
 
 class ItemBench(Bench):
@@ -16,7 +16,14 @@ class ItemBench(Bench):
         self.stac_io = StacIO.default()
 
         # using an item with many assets to better test deserialization timing
-        self.item_path = get_data_path("eo/eo-sentinel2-item.json")
+        self.item_path = (
+            Path(__file__).parents[1]
+            / "extensions"
+            / "eo"
+            / "tests"
+            / "data-files"
+            / "eo-sentinel2-item.json"
+        )
         with open(self.item_path) as src:
             self.item_dict = json.load(src)
         self.item = Item.from_file(self.item_path)
