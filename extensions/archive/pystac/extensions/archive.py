@@ -3,19 +3,25 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any, Generic, Literal, TypeVar, Union, cast
+from typing import Any, Generic, Literal, TypeVar, cast
 
-import pystac
+# import pystac
+from pystac import (
+    Asset,
+    Collection,
+    ExtensionTypeError,
+    Item,
+    Link,
+    STACObjectType,
+)
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
-    # SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
 
-T = TypeVar(
-    "T", pystac.Collection, pystac.Item, pystac.Asset, pystac.ItemAssetDefinition
-)
+#: Generalized version of :class:`~pystac.Asset`, :class:`~pystac.Link`,
+T = TypeVar("T", Asset, Link)
 
 SCHEMA_URI = "https://stac-extensions.github.io/archive/v1.0.0/schema.json"
 PREFIX: str = "archive:"
@@ -32,21 +38,19 @@ ARCHIVE_DESCRIPTION_PROP = PREFIX + "description"
 class ArchiveExtension(
     Generic[T],
     PropertiesExtension,
-    ExtensionManagementMixin[Union[pystac.Collection, pystac.Item]],
+    ExtensionManagementMixin[Collection | Item],
 ):
-    """An abstract class that can be used to extend the properties of a
-    :class:`~pystac.Collection`, :class:`~pystac.Item`, or :class:`~pystac.Asset` with
-    properties from the :stac-ext:`Archive Extension <archive>`. This class is
-    generic over the type of STAC Object to be extended (e.g. :class:`~pystac.Item`,
-    :class:`~pystac.Asset`).
+    """A class that can be used to extend the properties of an :class:`~pystac.Asset`
+    or :class:`~pystac.Link` with properties from the
+    :stac-ext:`Archive Extension <archive>`.
 
     To create a concrete instance of :class:`ArchiveExtension`, use the
     :meth:`ArchiveExtension.ext` method. For example:
 
     .. code-block:: python
 
-       >>> item: pystac.Item = ...
-       >>> arch_ext = ArchiveExtension.ext(item)
+       >>> asset: pystac.Asset = ...
+       >>> archive_ext =ArchiveExtension.ext(asset)
     """
 
     name: Literal["archive"] = "archive"
@@ -61,7 +65,7 @@ class ArchiveExtension(
         description: str | None = None,
     ) -> None:
         """Applies Archive Extension properties to the extended
-        :class:`~pystac.Collection`, :class:`~pystac.Item` or :class:`~pystac.Asset`.
+        :class:`~pystac.Asset`.
 
         Args:
             href (str) : The location of the file within the archive specified by the
@@ -157,79 +161,51 @@ class ArchiveExtension(
         return SCHEMA_URI
 
     @classmethod
-    def ext(cls, obj: T, add_if_missing: bool = False) -> ArchiveExtension[T]:
-        """Extends the given STAC Object with properties from the :stac-ext:`Archive
-        Extension <archive>`.
+    def ext(
+        cls, obj: Asset | Link, add_if_missing: bool = False
+    ) -> ArchiveExtension[T]:
+        """Extends the given STAC Object with properties from the 
+        :stac-ext:`Archive Extension <archive>`.
 
-        This extension can be applied to instances of :class:`~pystac.Collection`,
-        :class:`~pystac.Item` or :class:`~pystac.Asset`.
-
-        Raises:
-
-            pystac.ExtensionTypeError : If an invalid object type is passed.
+        This extension can be applied to instances of :class:`~pystac.Asset` or
+        :class:`~pystac.Link`
         """
-        if isinstance(obj, pystac.Item):
-            cls.ensure_has_extension(obj, add_if_missing)
-            return cast(ArchiveExtension[T], ItemArchiveExtension(obj))
-        elif isinstance(obj, pystac.Asset):
+        if isinstance(obj, Asset):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(ArchiveExtension[T], AssetArchiveExtension(obj))
-        elif isinstance(obj, pystac.ItemAssetDefinition):
+        elif isinstance(obj, Link):
             cls.ensure_owner_has_extension(obj, add_if_missing)
-            return cast(ArchiveExtension[T], ItemAssetsArchiveExtension(obj))
+            return cast(ArchiveExtension[T], LinkArchiveExtension(obj))
         else:
-            raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
-
-    '''
-    @classmethod
-    def summaries(
-        cls, obj: pystac.Collection, add_if_missing: bool = False
-    ) -> SummariesArchiveExtension:
-        """Returns the extended summaries object for the given collection."""
-        cls.ensure_has_extension(obj, add_if_missing)
-        return SummariesArchiveExtension(obj)
-    '''
+            raise ExtensionTypeError(cls._ext_error_message(obj))
 
 
-class ItemArchiveExtension(ArchiveExtension[pystac.Item]):
+class AssetArchiveExtension(ArchiveExtension[Asset]):
     """A concrete implementation of :class:`ArchiveExtension` on an
-    :class:`~pystac.Item` that extends the properties of the Item to include properties
+    :class:`~pystac.Asset` that extends the Asset fields to include properties
     defined in the :stac-ext:`Archive Extension <archive>`.
-
-    This class should generally not be instantiated directly. Instead, call
-    :meth:`ArchiveExtension.ext` on an :class:`~pystac.Item` to extend it.
-    """
-
-    item: pystac.Item
-    properties: dict[str, Any]
-
-    def __init__(self, item: pystac.Item):
-        self.item = item
-        self.properties = item.properties
-
-    def __repr__(self) -> str:
-        return f"<ItemArchiveExtension Item id={self.item.id}>"
-
-
-class AssetArchiveExtension(ArchiveExtension[pystac.Asset]):
-    """A concrete implementation of :class:`ArchiveExtension` on an
-    :class:`~pystac.Asset` that extends the Asset fields to include properties defined
-    in the :stac-ext:`Archive Extension <archive>`.
 
     This class should generally not be instantiated directly. Instead, call
     :meth:`ArchiveExtension.ext` on an :class:`~pystac.Asset` to extend it.
     """
 
-    asset: pystac.Asset
-    asset_href: str
-    properties: dict[str, Any]
-    additional_read_properties: Iterable[dict[str, Any]] | None
+    asset: Asset
 
-    def __init__(self, asset: pystac.Asset):
+    asset_href: str
+    """The ``href`` value of the :class:`~pystac.Asset` being extended."""
+
+    properties: dict[str, Any]
+    """The :class:`~pystac.Asset` fields, including extension properties."""
+
+    additional_read_properties: Iterable[dict[str, Any]] | None = None
+    """If present, this will be a list containing 1 dictionary representing the
+    properties of the owner."""
+
+    def __init__(self, asset: Asset):
         self.asset = asset
         self.asset_href = asset.href
         self.properties = asset.extra_fields
-        if asset.owner and isinstance(asset.owner, pystac.Item):
+        if asset.owner and hasattr(asset.owner, "properties"):
             self.additional_read_properties = [asset.owner.properties]
         else:
             self.additional_read_properties = None
@@ -238,16 +214,33 @@ class AssetArchiveExtension(ArchiveExtension[pystac.Asset]):
         return f"<AssetArchiveExtension Asset href={self.asset_href}>"
 
 
-class ItemAssetsArchiveExtension(ArchiveExtension[pystac.ItemAssetDefinition]):
-    properties: dict[str, Any]
-    asset_defn: pystac.ItemAssetDefinition
+class LinkArchiveExtension(ArchiveExtension[Link]):
+    """A concrete implementation of :class:`ArchiveExtension` on an
+    :class:`~pystac.Link` that extends the Link fields to include properties defined
+    in the :stac-ext:`Archive Extension <archive>`.
 
-    def __init__(self, item_asset: pystac.ItemAssetDefinition):
-        self.asset_defn = item_asset
-        self.properties = item_asset.properties
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`ArchiveExtension.ext` on an :class:`~pystac.Link` to extend it.
+    """
+
+    link_href: str
+    """The ``href`` value of the :class:`~pystac.Link` being extended."""
+
+    properties: dict[str, Any]
+    """The :class:`~pystac.Link` fields, including extension properties."""
+
+    additional_read_properties: Iterable[dict[str, Any]] | None = None
+    """If present, this will be a list containing 1 dictionary representing the
+    properties of the owner."""
+
+    def __init__(self, link: Link):
+        self.link_href = link.href
+        self.properties = link.extra_fields
+        if link.owner and hasattr(link.owner, "properties"):
+            self.additional_read_properties = [link.owner.properties]
 
     def __repr__(self) -> str:
-        return f"<ItemAssetsArchiveExtension ItemAssetDefinition={self.asset_defn}>"
+        return f"<LinkArchiveExtension Link href={self.link_href}>"
 
 
 class ArchiveExtensionHooks(ExtensionHooks):
@@ -258,7 +251,7 @@ class ArchiveExtensionHooks(ExtensionHooks):
     prev_extension_ids = {
         "archive",
     }
-    stac_object_types = {pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM}
+    stac_object_types = {STACObjectType.COLLECTION, STACObjectType.ITEM}
 
 
 ARCHIVE_EXTENSION_HOOKS: ExtensionHooks = ArchiveExtensionHooks()

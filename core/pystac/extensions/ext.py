@@ -155,12 +155,7 @@ class CollectionExt(CatalogExt):
 
     stac_object: Collection
 
-    '''
-    @property
-    def archive(self) -> ArchiveExtension[Collection]:
-        return ArchiveExtension.ext(self.stac_object)
-    '''
-    
+
     @property
     def cube(self) -> DatacubeExtension[Collection]:
         return DatacubeExtension.ext(self.stac_object)
@@ -228,10 +223,6 @@ class ItemExt:
             name : Extension identifier (eg: 'eo')
         """
         _get_class_by_name(name).remove_from(self.stac_object)
-
-    @property
-    def archive(self) -> ArchiveExtension[Item]:
-        return ArchiveExtension.ext(self.stac_object)
 
     @property
     def classification(self) -> ClassificationExtension[Item]:
@@ -361,10 +352,6 @@ class _AssetExt(_AssetsExt[U]):
     stac_object: U
 
     @property
-    def archive(self) -> ArchiveExtension[U]:
-        return ArchiveExtension.ext(self.stac_object)
-
-    @property
     def classification(self) -> ClassificationExtension[U]:
         return ClassificationExtension.ext(self.stac_object)
 
@@ -422,6 +409,10 @@ class AssetExt(_AssetExt[Asset]):
     stac_object: Asset
 
     @property
+    def archive(self) -> ArchiveExtension[Asset]:
+        return ArchiveExtension.ext(self.stac_object)
+
+    @property
     def file(self) -> FileExtension[Asset]:
         return FileExtension.ext(self.stac_object)
 
@@ -465,6 +456,10 @@ class LinkExt(_AssetsExt[Link]):
     """
 
     stac_object: Link
+
+    @property
+    def archive(self) -> ArchiveExtension[Link]:
+        return ArchiveExtension.ext(self.stac_object)
 
     @property
     def file(self) -> FileExtension[Link]:
