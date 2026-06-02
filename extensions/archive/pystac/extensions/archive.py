@@ -164,7 +164,7 @@ class ArchiveExtension(
     def ext(
         cls, obj: Asset | Link, add_if_missing: bool = False
     ) -> ArchiveExtension[T]:
-        """Extends the given STAC Object with properties from the 
+        """Extends the given STAC Object with properties from the
         :stac-ext:`Archive Extension <archive>`.
 
         This extension can be applied to instances of :class:`~pystac.Asset` or

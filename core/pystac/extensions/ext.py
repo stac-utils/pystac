@@ -155,7 +155,6 @@ class CollectionExt(CatalogExt):
 
     stac_object: Collection
 
-
     @property
     def cube(self) -> DatacubeExtension[Collection]:
         return DatacubeExtension.ext(self.stac_object)

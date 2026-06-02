@@ -306,7 +306,7 @@ class DefaultStacIO(StacIO):
                             "User-Agent": f"pystac/{pystac.__version__}",
                             **self.headers,
                         },
-                        preload_content=False,  # MKM
+                        preload_content=False,
                     ) as f:
                         href_contents = f.read().decode("utf-8")
                 else:
@@ -461,7 +461,7 @@ if HAS_URLLIB3:
                             "User-Agent": f"pystac/{pystac.__version__}",
                             **self.headers,
                         },
-                        retries=self.retry,  # MKM
+                        retries=self.retry,
                     )
                     # return cast(str, response.data.decode("utf-8")) #MKM
                     return response.data.decode("utf-8")

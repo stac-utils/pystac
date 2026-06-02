@@ -1,20 +1,13 @@
 import json
-import random
 from pathlib import Path
-from typing import Any
 
 import pytest
 from pytest_pystac.plugin import assert_to_from_dict
 
-from pystac import 
-    (
-        Asset, 
-        Collection, 
-        Item,
-        ExtensionNotImplemented,
-        ExtensionTypeError,
-    )
-from pystac.extensions.archive import ArchiveExtension
+from pystac import (
+    Collection,
+    Item,
+)
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 
@@ -54,7 +47,7 @@ def test_validate_collection(ext_collection: Collection) -> None:
     ext_collection.validate()
 
 
-#def test_add_to(sample_item: Item) -> None:
+# def test_add_to(sample_item: Item) -> None:
 #    assert ArchiveExtension.get_schema_uri() not in sample_item.stac_extensions
 #
 #    # Check that the URI gets added to stac_extensions
@@ -74,21 +67,21 @@ def test_validate_collection(ext_collection: Collection) -> None:
 #    assert len(archive_uris) == 1
 #
 #
-#@pytest.mark.vcr()
-#def test_validate_archive(archive_item: Item) -> None:
+# @pytest.mark.vcr()
+# def test_validate_archive(archive_item: Item) -> None:
 #    print(f"In test_validate_archive: {archive_item.properties}", flush=True)
 #    print(f"{archive_item.assets['ext-asset'].extra_fields}", flush=True)
 #    archive_item.validate()
 #
 #
-#def test_extend_invalid_object() -> None:
+# def test_extend_invalid_object() -> None:
 #    link = pystac.Link("child", "https://some-domain.com/some/path/to.json")
 #
 #    with pytest.raises(pystac.ExtensionTypeError):
 #        ArchiveExtension.ext(link)
 #
 #
-#def test_extension_not_implemented(sample_item: Item) -> None:
+# def test_extension_not_implemented(sample_item: Item) -> None:
 #    # Should raise exception if Item does not include extension URI
 #
 #    if ArchiveExtension.get_schema_uri() not in sample_item.stac_extensions:
@@ -105,7 +98,7 @@ def test_validate_collection(ext_collection: Collection) -> None:
 #    _ = ArchiveExtension.ext(ownerless_asset)
 #
 #
-#def test_item_ext_add_to(sample_item: Item) -> None:
+# def test_item_ext_add_to(sample_item: Item) -> None:
 #    assert ArchiveExtension.get_schema_uri() not in sample_item.stac_extensions
 #
 #    asset = sample_item.assets["thumbnail"]
@@ -114,7 +107,7 @@ def test_validate_collection(ext_collection: Collection) -> None:
 #    assert ArchiveExtension.get_schema_uri() in sample_item.stac_extensions
 #
 #
-#def test_asset_ext_add_to_ownerless_asset(sample_item: Item) -> None:
+# def test_asset_ext_add_to_ownerless_asset(sample_item: Item) -> None:
 #    asset_dict = sample_item.assets["thumbnail"].to_dict()
 #    asset = pystac.Asset.from_dict(asset_dict)
 #
@@ -122,7 +115,7 @@ def test_validate_collection(ext_collection: Collection) -> None:
 #        _ = ArchiveExtension.ext(asset, add_if_missing=True)
 #
 #
-#def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
+# def test_should_raise_exception_when_passing_invalid_extension_object() -> None:
 #    with pytest.raises(
 #        ExtensionTypeError, match=r"^ArchiveExtension does not apply to type 'object'$"
 #    ):
@@ -130,7 +123,7 @@ def test_validate_collection(ext_collection: Collection) -> None:
 #        ArchiveExtension.ext(object())  # type: ignore
 #
 #
-#def test_item_apply() -> None:
+# def test_item_apply() -> None:
 #    example_empty_item_uri = str(DATA_FILES / "example-empty-Item.json")
 #    example_empty_item = pystac.Item.from_file(example_empty_item_uri)
 #    asset = example_empty_item.assets["example"]
@@ -155,15 +148,15 @@ def test_validate_collection(ext_collection: Collection) -> None:
 #    example_empty_item.validate()
 #
 #
-#@pytest.mark.vcr()
-#def test_partial_apply(archive_asset: Asset) -> None:
+# @pytest.mark.vcr()
+# def test_partial_apply(archive_asset: Asset) -> None:
 #    ArchiveExtension.ext(archive_asset).apply(href="some/href/path")
 #
 #    assert ArchiveExtension.ext(archive_asset).href == "some/href/path"
 #
 #
-#@pytest.mark.vcr()
-#def test_asset_href(archive_item: Item) -> None:
+# @pytest.mark.vcr()
+# def test_asset_href(archive_item: Item) -> None:
 #    # Grab a random asset with the platform property
 #    asset = random.choice(
 #        [
@@ -190,8 +183,8 @@ def test_validate_collection(ext_collection: Collection) -> None:
 #    assert "archive:href" not in asset.extra_fields
 #
 #
-#@pytest.mark.vcr()
-#def test_asset_type(archive_item: Item) -> None:
+# @pytest.mark.vcr()
+# def test_asset_type(archive_item: Item) -> None:
 #    # Grab a random asset with the platform property
 #    asset = random.choice(
 #        [
@@ -218,8 +211,8 @@ def test_validate_collection(ext_collection: Collection) -> None:
 #    assert "archive:type" not in asset.extra_fields
 #
 #
-#@pytest.mark.vcr()
-#def test_asset_roles(archive_item: Item) -> None:
+# @pytest.mark.vcr()
+# def test_asset_roles(archive_item: Item) -> None:
 #    # Grab a random asset with the platform property
 #    asset = random.choice(
 #        [
@@ -248,8 +241,8 @@ def test_validate_collection(ext_collection: Collection) -> None:
 #    archive_item.validate()
 #
 #
-#@pytest.mark.vcr()
-#def test_asset_range(archive_item: Item) -> None:
+# @pytest.mark.vcr()
+# def test_asset_range(archive_item: Item) -> None:
 #    # Grab a random asset with the platform property
 #    asset = random.choice(
 #        [
@@ -278,8 +271,8 @@ def test_validate_collection(ext_collection: Collection) -> None:
 #    archive_item.validate()
 #
 #
-#@pytest.mark.vcr()
-#def test_asset_title(archive_item: Item) -> None:
+# @pytest.mark.vcr()
+# def test_asset_title(archive_item: Item) -> None:
 #    # Grab a random asset with the platform property
 #    asset = random.choice(
 #        [
@@ -308,8 +301,8 @@ def test_validate_collection(ext_collection: Collection) -> None:
 #    archive_item.validate()
 #
 #
-#@pytest.mark.vcr()
-#def test_asset_description(archive_item: Item) -> None:
+# @pytest.mark.vcr()
+# def test_asset_description(archive_item: Item) -> None:
 #    # Grab a random asset with the platform property
 #    asset = random.choice(
 #        [
