@@ -102,6 +102,7 @@
       "prerelease-type": "rc"
     }
   },
+  "extra-files": ["pyproject.toml", "core/pystac/version.py"],
   "plugins": [
     {
       "type": "linked-versions",
