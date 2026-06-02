@@ -2,13 +2,13 @@ import json
 from pathlib import Path
 
 import pytest
-from tests.utils import assert_to_from_dict
-#from pytest_pystac.plugin import assert_to_from_dict
 
+# from pytest_pystac.plugin import assert_to_from_dict
 from pystac import (
     Collection,
     Item,
 )
+from tests.utils import assert_to_from_dict
 
 DATA_FILES = Path(__file__).resolve().parent / "data-files"
 
