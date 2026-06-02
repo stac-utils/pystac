@@ -2,7 +2,8 @@ import json
 from pathlib import Path
 
 import pytest
-from pytest_pystac.plugin import assert_to_from_dict
+from tests.utils import assert_to_from_dict
+#from pytest_pystac.plugin import assert_to_from_dict
 
 from pystac import (
     Collection,
