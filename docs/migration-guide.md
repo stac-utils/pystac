@@ -1,17 +1,16 @@
 # Migration Guide: PySTAC v1 to v2
 
-This guide helps you migrate your PySTAC code from v1.x to v2.0. PySTAC v2.0 is a ground-up rewrite that changes how you read, write, and work with STAC catalogs. While the core data structure APIs remain familiar, **there are significant breaking changes** you need to address.
+This guide helps you migrate your PySTAC code from v1.x to v2.0. PySTAC v2.0 is a ground-up rewrite that changes how you read, write, and work with STAC catalogs (see the [PySTAC v2.0 overview](https://stac-utils.github.io/pystac/pystac-v2.0/)). While the core data structure APIs remain familiar, **there are significant breaking changes** you need to address.
 
 ## What's Different
 
 The key differences between v1 and v2 are:
 
 - **`CatalogType` is removed** - use explicit boolean arguments instead
-- **`StacIO` is replaced** with `Reader` and `Writer` classes
-- **Reading methods move to classes** - `pystac.read_file()` becomes `Item.from_file()`, etc.
+- **`StacIO` is deprecated** - prefer `Reader` and `Writer` classes
 - **Collection is no longer a Catalog subclass** - both inherit from `Container` instead
 - **Href handling is explicit** - `normalize_hrefs()` must be called before serialization
-- **No auto-mutation on read** - data is not modified when loading
+- **No auto-mutation on read** - data is not modified when loading, other than casting it to the appropriate type or doing simple fixes to ensure valid STAC
 - **Assets require keyword arguments** - only `href` is positional
 - **Extents have stricter structure**
 
@@ -37,14 +36,19 @@ catalog.normalize_hrefs("./catalog")
 catalog.save(use_absolute_hrefs=False, include_self_href=True)
 ```
 
-With this change, `CatalogType.SELF_CONTAINED` is equivalent to `use_absolute_hrefs=False`.
-`CatalogType.ABSOLUTE` is equivalent to `use_absolute_hrefs=True`.
-`CatalogType.RELATIVE` is equivalent to `use_absolute_hrefs=False, include_self_href=False`.
-Additionally, the `save()` method no longer requires `catalog_type` - it's inferred from the normalize_hrefs call.
+Use this table of mappings from v1 `CatalogType` to v2 `save()` arguments to help you migrate your code with equivalent behavior.
 
-### StacIO is Replaced with Reader and Writer
+| CatalogType | use_absolute_hrefs | include_self_href |
+| --- | --- | --- |
+| `CatalogType.SELF_CONTAINED` | `False` | `True` |
+| `CatalogType.ABSOLUTE` | `True` | `True` |
+| `CatalogType.RELATIVE` | `False` | `False` |
 
-**What changed:** The `StacIO` class is replaced by separate `Reader` and `Writer` classes. Reading is now a method on objects rather than a top-level function.
+`save()` no longer takes `catalog_type`; that behavior is determined by your normalize_hrefs(...) settings.
+
+### StacIO is Deprecated (Use Reader and Writer)
+
+**What changed:** The `StacIO` class is deprecated in favor of separate `Reader` and `Writer` classes. Reading is now a method on objects rather than a top-level function.
 
 **v1:**
 ```python
