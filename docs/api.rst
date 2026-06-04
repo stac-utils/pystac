@@ -114,6 +114,7 @@ PySTAC provides support for the following STAC Extensions:
 * :mod:`SAR <pystac.extensions.sar>`
 * :mod:`Satellite <pystac.extensions.sat>`
 * :mod:`Scientific Citation <pystac.extensions.scientific>`
+* :mod:`Solar System<pystac.extensions.ssys>`
 * :mod:`Table <pystac.extensions.table>`
 * :mod:`Timestamps <pystac.extensions.timestamps>`
 * :mod:`Versioning Indicators <pystac.extensions.version>`

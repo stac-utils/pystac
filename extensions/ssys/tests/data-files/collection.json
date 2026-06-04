@@ -1,0 +1,43 @@
+{
+  "id": "usgs_controlled_images_voy1_voy2_galileo",
+  "type": "Collection",
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/ssys/v1.1.1/schema.json"
+  ],
+  "ssys:targets": ["Europa"],
+  "description": "The Solid State Imager (SSI) on NASA's Galileo spacecraft acquired more than 500 images of Jupiter's moon, Europa, providing the only moderate- to high-resolution images of the moon's surface. Images were acquired as observation sequences during each orbit that targeted the moon. Each of these observation sequences consists of between 1 and 19 images acquired close in time, that typically overlap, have consistent illumination and similar pixel scale. The observations vary from relatively low-resolution hemispherical imaging, to high-resolution targeted images that cover a small portion of the surface. Here we provide average mosaics of each of the individual observation sequences acquired by the Galileo spacecraft. These observation mosaics were constructed from a set of 481 Galileo images that were photogrammetrically controlled globally (along with 221 Voyager 1 and 2 images) to improve their relative locations on Europa's surface. The 92 observation mosaics provide users with nearly the entire Galileo Europa imaging dataset at its native resolution and with improved relative image locations.The Solid State Imager (SSI) on NASA's Galileo spacecraft provided the only moderate- to high-resolution images of Jupiter's moon, Europa. Unfortunately, uncertainty in the position and pointing of the spacecraft, as well as the position and orientation of Europa, when the images were acquired resulted in significant errors in image locations on the surface. The result of these errors is that images acquired during different Galileo orbits, or even at different times during the same orbit, are significantly misaligned (errors of up to 100 km on the surface).Previous work has generated global mosaics of Galileo and Voyager images that photogrammetrically control a subset of the available images to correct their relative locations. However, these efforts result in a \"static\" mosaic that is projected to a consistent pixel scale, and only use a fraction of the dataset (e.g., high resolution images are not included). The purpose of this current dataset is to increase the usability of the entire Galileo image set by photogrammetrically improving the locations of nearly every Europa image acquired by Galileo, and making them available to the community at their native resolution and in easy-to-use regional mosaics based on their acquisition time.The dataset therefore provides a set of image mosaics that can be used for scientific analysis and mission planning activities.",
+  "links": [
+    {
+      "rel": "root",
+      "href": "https://asc-stacbrowser.s3-website-us-west-2.amazonaws.com/catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "self",
+      "href": "https://asc-jupiter.s3-us-west-2.amazonaws.com/europa/galileo_voyager/controlled_images/collection.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "parent",
+      "href": "https://asc-jupiter.s3-us-west-2.amazonaws.com/europa/catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "item",
+      "href": "https://raw.githubusercontent.com/thareUSGS/ssys/main/examples/item.json",
+      "type": "application/json",
+      "title": "Absolutely Controlled Image Mosaic; Europa; s0349875139.equi.photr"
+    }
+  ],
+  "title": "USGS Controlled Europa Voyager 1, Voyager 2, and Galileo Image Data",
+  "extent": {
+    "spatial": {
+      "bbox": [[-180, -90, 180, 90]]
+    },
+    "temporal": {
+      "interval": [["2021-01-01T00:00:00Z", null]]
+    }
+  },
+  "license": "PDDL-1.0"
+}
