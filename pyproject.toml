@@ -135,6 +135,7 @@ strict = true
 exclude = ["conftest\\.py$"]
 mypy_path = [
     "core",
+    "extensions/archive",
     "extensions/classification",
     "extensions/datacube",
     "extensions/eo",
@@ -181,6 +182,7 @@ only-include = ["README.md"]
 
 [tool.uv.sources]
 pystac-core = { workspace = true }
+pystac-ext-archive = { workspace = true }
 pystac-ext-classification = { workspace = true }
 pystac-ext-datacube = { workspace = true }
 pystac-ext-eo = { workspace = true }

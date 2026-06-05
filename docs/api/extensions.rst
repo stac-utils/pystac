@@ -13,6 +13,7 @@ pystac.extensions
 
 .. autosummary::
 
+    archive.ArchiveExtension
     classification.ClassificationExtension
     datacube.DatacubeExtension
     eo.EOExtension
