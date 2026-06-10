@@ -8,7 +8,6 @@ import pytest
 from pytest import MonkeyPatch
 
 import pystac
-import pystac.errors
 from pystac.stac_io import DefaultStacIO, DuplicateKeyReportingMixin, StacIO
 from tests.utils import TestCases
 
@@ -243,3 +242,25 @@ def test_proj_json_schema_is_readable() -> None:
     _ = stac_io.read_text_from_href(
         "https://proj.org/schemas/v0.7/projjson.schema.json"
     )
+
+
+@pytest.mark.vcr()
+def test_custom_stac_io() -> None:
+    class CustomStacIO(DefaultStacIO):
+        def __init__(self, headers: dict[str, str] | None = None):
+            super().__init__(headers)
+            self.calls = 0
+
+        def read_text_from_href(self, href: str) -> str:
+            self.calls += 1
+            return super().read_text_from_href(href)
+
+    stac_io = CustomStacIO()
+    item = pystac.read_file(
+        "https://raw.githubusercontent.com/radiantearth/stac-spec/refs/heads/master/examples/simple-item.json",
+        stac_io=stac_io,
+    )
+    link = item.get_single_link(rel="self")
+    assert link
+    link.get_href()
+    assert stac_io.calls == 2

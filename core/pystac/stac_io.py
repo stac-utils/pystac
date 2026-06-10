@@ -162,21 +162,25 @@ class StacIO(ABC):
         d = migrate_to_latest(d, info)
 
         if info.object_type == pystac.STACObjectType.CATALOG:
-            result = pystac.Catalog.from_dict(
+            catalog = pystac.Catalog.from_dict(
                 d, href=href_str, root=root, migrate=True, preserve_dict=preserve_dict
             )
-            result._stac_io = self
-            return result
+            catalog._stac_io = self
+            return catalog
 
         if info.object_type == pystac.STACObjectType.COLLECTION:
-            return pystac.Collection.from_dict(
+            collection = pystac.Collection.from_dict(
                 d, href=href_str, root=root, migrate=True, preserve_dict=preserve_dict
             )
+            collection._stac_io = self
+            return collection
 
         if info.object_type == pystac.STACObjectType.ITEM:
-            return pystac.Item.from_dict(
+            item = pystac.Item.from_dict(
                 d, href=href_str, root=root, migrate=True, preserve_dict=preserve_dict
             )
+            item._stac_io = self
+            return item
 
         raise ValueError(f"Unknown STAC object type {info.object_type}")
 
