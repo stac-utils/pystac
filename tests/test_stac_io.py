@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 import pytest
+from pytest import MonkeyPatch
 
 import pystac
 import pystac.errors
@@ -124,6 +125,7 @@ def test_headers_stac_io(request_mock: unittest.mock.MagicMock) -> None:
     catalog = pystac.Catalog("an-id", "a description").to_dict()
     # required until https://github.com/stac-utils/pystac/pull/896 is merged
     catalog["links"] = []
+    request_mock.return_value.__enter__.return_value.status = 200
     request_mock.return_value.__enter__.return_value.read.return_value = json.dumps(
         catalog
     ).encode("utf-8")
@@ -157,6 +159,60 @@ def test_retry_stac_io_404() -> None:
             "https://planetarycomputer.microsoft.com"
             "/api/stac/v1/collections/not-a-collection-id"
         )
+
+
+def test_read_text_raises_on_429_with_urllib3(
+    monkeypatch: MonkeyPatch,
+) -> None:
+    # https://github.com/stac-utils/pystac/issues/1738
+    urllib3 = pytest.importorskip("urllib3")
+
+    class FakeResponse:
+        status = 429
+
+        def read(self) -> bytes:
+            return b'{"error": "Nope!"}'
+
+        def __enter__(self) -> "FakeResponse":
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            pass
+
+    class FakePoolManager:
+        def request(self, *args: object, **kwargs: object) -> FakeResponse:
+            return FakeResponse()
+
+    monkeypatch.setattr(urllib3, "PoolManager", FakePoolManager)
+
+    stac_io = DefaultStacIO()
+    with pytest.raises(Exception):
+        stac_io.read_text("http://localhost:5000")
+
+
+def test_retry_stac_io_raises_on_429(monkeypatch: MonkeyPatch) -> None:
+    # https://github.com/stac-utils/pystac/issues/1738
+    pytest.importorskip("urllib3")
+    from urllib3 import PoolManager
+
+    from pystac.stac_io import RetryStacIO
+
+    class FakeResponse:
+        status = 429
+        reason = "Too Many Requests"
+        headers: dict[str, str] = {}
+        data = b'{"error": "Nope!"}'
+
+    def fake_request(
+        self: PoolManager, *args: object, **kwargs: object
+    ) -> FakeResponse:
+        return FakeResponse()
+
+    monkeypatch.setattr(PoolManager, "request", fake_request)
+
+    stac_io = RetryStacIO()
+    with pytest.raises(Exception):
+        stac_io.read_text("http://localhost:5000")
 
 
 def test_save_http_href_errors(tmp_path: Path) -> None:
