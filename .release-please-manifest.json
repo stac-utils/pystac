@@ -1,5 +1,5 @@
 {
-  ".": "1.15.0-rc.1",
+  ".": "1.15.1-rc.1",
   "core": "1.15.0-rc.1",
   "extensions/classification": "2.0.0-rc.0",
   "extensions/datacube": "2.2.0-rc.0",
