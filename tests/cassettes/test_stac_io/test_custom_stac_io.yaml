@@ -1,0 +1,90 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/refs/heads/master/examples/simple-item.json
+  response:
+    body:
+      string: "{\n  \"stac_version\": \"1.1.0\",\n  \"stac_extensions\": [],\n  \"type\":
+        \"Feature\",\n  \"id\": \"20201211_223832_CS2\",\n  \"bbox\": [\n    172.91173669923782,\n
+        \   1.3438851951615003,\n    172.95469614953714,\n    1.3690476620161975\n
+        \ ],\n  \"geometry\": {\n    \"type\": \"Polygon\",\n    \"coordinates\":
+        [\n      [\n        [\n          172.91173669923782,\n          1.3438851951615003\n
+        \       ],\n        [\n          172.95469614953714,\n          1.3438851951615003\n
+        \       ],\n        [\n          172.95469614953714,\n          1.3690476620161975\n
+        \       ],\n        [\n          172.91173669923782,\n          1.3690476620161975\n
+        \       ],\n        [\n          172.91173669923782,\n          1.3438851951615003\n
+        \       ]\n      ]\n    ]\n  },\n  \"properties\": {\n    \"datetime\": \"2020-12-11T22:38:32.125000Z\"\n
+        \ },\n  \"collection\": \"simple-collection\",\n  \"links\": [\n    {\n      \"rel\":
+        \"collection\",\n      \"href\": \"./collection.json\",\n      \"type\": \"application/json\",\n
+        \     \"title\": \"Simple Example Collection\"\n    },\n    {\n      \"rel\":
+        \"root\",\n      \"href\": \"./collection.json\",\n      \"type\": \"application/json\",\n
+        \     \"title\": \"Simple Example Collection\"\n    },\n    {\n      \"rel\":
+        \"parent\",\n      \"href\": \"./collection.json\",\n      \"type\": \"application/json\",\n
+        \     \"title\": \"Simple Example Collection\"\n    }\n  ],\n  \"assets\":
+        {\n    \"visual\": {\n      \"href\": \"https://storage.googleapis.com/open-cogs/stac-examples/20201211_223832_CS2.tif\",\n
+        \     \"type\": \"image/tiff; application=geotiff; profile=cloud-optimized\",\n
+        \     \"title\": \"3-Band Visual\",\n      \"roles\": [\n        \"visual\"\n
+        \     ]\n    },\n    \"thumbnail\": {\n      \"href\": \"https://storage.googleapis.com/open-cogs/stac-examples/20201211_223832_CS2.jpg\",\n
+        \     \"title\": \"Thumbnail\",\n      \"type\": \"image/jpeg\",\n      \"roles\":
+        [\n        \"thumbnail\"\n      ]\n    }\n  }\n}\n"
+    headers: {}
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://raw.githubusercontent.com/radiantearth/stac-spec/refs/heads/master/examples/collection.json
+  response:
+    body:
+      string: "{\n  \"id\": \"simple-collection\",\n  \"type\": \"Collection\",\n
+        \ \"stac_extensions\": [\n    \"https://stac-extensions.github.io/eo/v2.0.0/schema.json\",\n
+        \   \"https://stac-extensions.github.io/projection/v2.0.0/schema.json\",\n
+        \   \"https://stac-extensions.github.io/view/v1.0.0/schema.json\"\n  ],\n
+        \ \"stac_version\": \"1.1.0\",\n  \"description\": \"A simple collection demonstrating
+        core catalog fields with links to a couple of items\",\n  \"title\": \"Simple
+        Example Collection\",\n  \"keywords\": [\n    \"simple\",\n    \"example\",\n
+        \   \"collection\"\n  ],\n  \"providers\": [\n    {\n      \"name\": \"Remote
+        Data, Inc\",\n      \"description\": \"Producers of awesome spatiotemporal
+        assets\",\n      \"roles\": [\n        \"producer\",\n        \"processor\"\n
+        \     ],\n      \"url\": \"http://remotedata.io\"\n    }\n  ],\n  \"extent\":
+        {\n    \"spatial\": {\n      \"bbox\": [\n        [\n          172.91173669923782,\n
+        \         1.3438851951615003,\n          172.95469614953714,\n          1.3690476620161975\n
+        \       ]\n      ]\n    },\n    \"temporal\": {\n      \"interval\": [\n        [\n
+        \         \"2020-12-11T22:38:32.125Z\",\n          \"2020-12-14T18:02:31.437Z\"\n
+        \       ]\n      ]\n    }\n  },\n  \"license\": \"CC-BY-4.0\",\n  \"summaries\":
+        {\n    \"platform\": [\n      \"cool_sat1\",\n      \"cool_sat2\"\n    ],\n
+        \   \"constellation\": [\n      \"ion\"\n    ],\n    \"instruments\": [\n
+        \     \"cool_sensor_v1\",\n      \"cool_sensor_v2\"\n    ],\n    \"gsd\":
+        {\n      \"minimum\": 0.512,\n      \"maximum\": 0.66\n    },\n    \"eo:cloud_cover\":
+        {\n      \"minimum\": 1.2,\n      \"maximum\": 1.2\n    },\n    \"proj:cpde\":
+        [\n      \"EPSG:32659\"\n    ],\n    \"view:sun_elevation\": {\n      \"minimum\":
+        54.9,\n      \"maximum\": 54.9\n    },\n    \"view:off_nadir\": {\n      \"minimum\":
+        3.8,\n      \"maximum\": 3.8\n    },\n    \"view:sun_azimuth\": {\n      \"minimum\":
+        135.7,\n      \"maximum\": 135.7\n    },\n    \"statistics\": {\n      \"type\":
+        \"object\",\n      \"properties\": {\n        \"vegetation\": {\n          \"description\":
+        \"Percentage of pixels that are detected as vegetation, e.g. forests, grasslands,
+        etc.\",\n          \"minimum\": 0,\n          \"maximum\": 100\n        },\n
+        \       \"water\": {\n          \"description\": \"Percentage of pixels that
+        are detected as water, e.g. rivers, oceans and ponds.\",\n          \"minimum\":
+        0,\n          \"maximum\": 100\n        },\n        \"urban\": {\n          \"description\":
+        \"Percentage of pixels that detected as urban, e.g. roads and buildings.\",\n
+        \         \"minimum\": 0,\n          \"maximum\": 100\n        }\n      }\n
+        \   }\n  },\n  \"links\": [\n    {\n      \"rel\": \"root\",\n      \"href\":
+        \"./collection.json\",\n      \"type\": \"application/json\",\n      \"title\":
+        \"Simple Example Collection\"\n    },\n    {\n      \"rel\": \"item\",\n      \"href\":
+        \"./simple-item.json\",\n      \"type\": \"application/geo+json\",\n      \"title\":
+        \"Simple Item\"\n    },\n    {\n      \"rel\": \"item\",\n      \"href\":
+        \"./core-item.json\",\n      \"type\": \"application/geo+json\",\n      \"title\":
+        \"Core Item\"\n    },\n    {\n      \"rel\": \"item\",\n      \"href\": \"./extended-item.json\",\n
+        \     \"type\": \"application/geo+json\",\n      \"title\": \"Extended Item\"\n
+        \   },\n    {\n      \"rel\": \"self\",\n      \"href\": \"https://raw.githubusercontent.com/radiantearth/stac-spec/v1.1.0/examples/collection.json\",\n
+        \     \"type\": \"application/json\"\n    }\n  ]\n}\n"
+    headers: {}
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -321,6 +321,8 @@ class Link(PathLike):
             if root is not None:
                 obj = root._resolved_objects.get_by_href(target_href)
                 stac_io = root._stac_io
+            if stac_io is None and self.owner and hasattr(self.owner, "_stac_io"):
+                stac_io = self.owner._stac_io
 
             if obj is None:
                 if stac_io is None:
