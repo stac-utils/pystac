@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.15.0](https://github.com/stac-utils/pystac/compare/v1.15.0-rc.1...v1.15.0) (2026-06-11)
+
+
+### Bug Fixes
+
+* persist stac_io when reading items ([#1745](https://github.com/stac-utils/pystac/issues/1745)) ([3df1cef](https://github.com/stac-utils/pystac/commit/3df1cef4481fb6f576ab4209d0d2a2c6b6e3376b))
+* urllib3 raise on error status codes ([#1739](https://github.com/stac-utils/pystac/issues/1739)) ([34352df](https://github.com/stac-utils/pystac/commit/34352df85db2cc1e63cb1501ac35d546c546ffd3))
+
+
+### Miscellaneous Chores
+
+* manually set next versions ([64fd083](https://github.com/stac-utils/pystac/commit/64fd083d61e2d780117540800851a7ed993cae27))
+
 ## [1.14.3](https://github.com/stac-utils/pystac/compare/v1.14.2...v1.14.3) (2026-01-08)
 
 
