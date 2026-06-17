@@ -40,6 +40,7 @@ dependencies = [
     "pystac-ext-sar",
     "pystac-ext-sat",
     "pystac-ext-scientific",
+    "pystac-ext-ssys",
     "pystac-ext-storage",
     "pystac-ext-table",
     "pystac-ext-timestamps",
@@ -151,6 +152,7 @@ mypy_path = [
     "extensions/sar",
     "extensions/sat",
     "extensions/scientific",
+    "extensions/ssys",
     "extensions/storage",
     "extensions/table",
     "extensions/timestamps",
@@ -197,6 +199,7 @@ pystac-ext-render = { workspace = true }
 pystac-ext-sar = { workspace = true }
 pystac-ext-sat = { workspace = true }
 pystac-ext-scientific = { workspace = true }
+pystac-ext-ssys = { workspace = true}
 pystac-ext-storage = { workspace = true }
 pystac-ext-table = { workspace = true }
 pystac-ext-timestamps = { workspace = true }

@@ -15,7 +15,7 @@ resolution-markers = [
 ]
 
 [options]
-exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for backwards compatibility when using relative exclude-newer values.
+exclude-newer = "2026-04-17T10:11:57.439457934Z"
 exclude-newer-span = "P10D"
 
 [manifest]
@@ -38,6 +38,7 @@ members = [
     "pystac-ext-sar",
     "pystac-ext-sat",
     "pystac-ext-scientific",
+    "pystac-ext-ssys",
     "pystac-ext-storage",
     "pystac-ext-table",
     "pystac-ext-timestamps",
@@ -3685,6 +3686,7 @@ dependencies = [
     { name = "pystac-ext-sar" },
     { name = "pystac-ext-sat" },
     { name = "pystac-ext-scientific" },
+    { name = "pystac-ext-ssys" },
     { name = "pystac-ext-storage" },
     { name = "pystac-ext-table" },
     { name = "pystac-ext-timestamps" },
@@ -3792,6 +3794,7 @@ requires-dist = [
     { name = "pystac-ext-sar", editable = "extensions/sar" },
     { name = "pystac-ext-sat", editable = "extensions/sat" },
     { name = "pystac-ext-scientific", editable = "extensions/scientific" },
+    { name = "pystac-ext-ssys", editable = "extensions/ssys" },
     { name = "pystac-ext-storage", editable = "extensions/storage" },
     { name = "pystac-ext-table", editable = "extensions/table" },
     { name = "pystac-ext-timestamps", editable = "extensions/timestamps" },
@@ -4049,6 +4052,17 @@ requires-dist = [{ name = "pystac-core", editable = "core" }]
 name = "pystac-ext-scientific"
 version = "1.0.0rc0"
 source = { editable = "extensions/scientific" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-ssys"
+version = "1.1.1"
+source = { editable = "extensions/ssys" }
 dependencies = [
     { name = "pystac-core" },
 ]
