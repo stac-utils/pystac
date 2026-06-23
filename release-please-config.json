@@ -1,105 +1,103 @@
 {
   "release-type": "python",
-  "versioning": "prerelease",
-  "prerelease": true,
   "packages": {
     ".": {
       "changelog-path": "CHANGELOG.md",
       "component": "pystac",
       "include-component-in-tag": false,
-      "prerelease-type": "rc"
+      "release-as": "1.15.0"
     },
     "core": {
       "component": "pystac-core",
-      "prerelease-type": "rc"
+      "release-as": "1.15.0"
     },
     "extensions/classification": {
       "component": "pystac-ext-classification",
-      "prerelease-type": "rc"
+      "release-as": "2.0.0"
     },
     "extensions/datacube": {
       "component": "pystac-ext-datacube",
-      "prerelease-type": "rc"
+      "release-as": "2.2.0"
     },
     "extensions/eo": {
       "component": "pystac-ext-eo",
-      "prerelease-type": "rc"
+      "release-as": "1.1.0"
     },
     "extensions/file": {
       "component": "pystac-ext-file",
-      "prerelease-type": "rc"
+      "release-as": "2.1.0"
     },
     "extensions/grid": {
       "component": "pystac-ext-grid",
-      "prerelease-type": "rc"
+      "release-as": "1.1.0"
     },
     "extensions/item_assets": {
       "component": "pystac-ext-item-assets",
-      "prerelease-type": "rc"
+      "release-as": "1.0.0"
     },
     "extensions/label": {
       "component": "pystac-ext-label",
-      "prerelease-type": "rc"
+      "release-as": "1.0.1"
     },
     "extensions/mgrs": {
       "component": "pystac-ext-mgrs",
-      "prerelease-type": "rc"
+      "release-as": "1.0.0"
     },
     "extensions/mlm": {
       "component": "pystac-ext-mlm",
-      "prerelease-type": "rc"
+      "release-as": "1.4.0"
     },
     "extensions/pointcloud": {
       "component": "pystac-ext-pointcloud",
-      "prerelease-type": "rc"
+      "release-as": "1.0.0"
     },
     "extensions/projection": {
       "component": "pystac-ext-projection",
-      "prerelease-type": "rc"
+      "release-as": "2.0.0"
     },
     "extensions/raster": {
       "component": "pystac-ext-raster",
-      "prerelease-type": "rc"
+      "release-as": "1.1.0"
     },
     "extensions/render": {
       "component": "pystac-ext-render",
-      "prerelease-type": "rc"
+      "release-as": "2.0.0"
     },
     "extensions/sar": {
       "component": "pystac-ext-sar",
-      "prerelease-type": "rc"
+      "release-as": "1.0.0"
     },
     "extensions/sat": {
       "component": "pystac-ext-sat",
-      "prerelease-type": "rc"
+      "release-as": "1.0.0"
     },
     "extensions/scientific": {
       "component": "pystac-ext-scientific",
-      "prerelease-type": "rc"
+      "release-as": "1.0.0"
     },
     "extensions/storage": {
       "component": "pystac-ext-storage",
-      "prerelease-type": "rc"
+      "release-as": "2.0.0"
     },
     "extensions/table": {
       "component": "pystac-ext-table",
-      "prerelease-type": "rc"
+      "release-as": "1.2.0"
     },
     "extensions/timestamps": {
       "component": "pystac-ext-timestamps",
-      "prerelease-type": "rc"
+      "release-as": "1.1.0"
     },
     "extensions/version": {
       "component": "pystac-ext-version",
-      "prerelease-type": "rc"
+      "release-as": "1.2.0"
     },
     "extensions/view": {
       "component": "pystac-ext-view",
-      "prerelease-type": "rc"
+      "release-as": "1.0.0"
     },
     "extensions/xarray_assets": {
       "component": "pystac-ext-xarray-assets",
-      "prerelease-type": "rc"
+      "release-as": "1.0.0"
     }
   },
   "extra-files": ["pyproject.toml", "core/pystac/version.py"],
