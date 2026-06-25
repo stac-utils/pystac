@@ -12,9 +12,9 @@ interactions:
         \     \"type\": \"application/json\",\n      \"title\": \"Capella Open Data\"\n
         \   },\n    {\n      \"rel\": \"license\",\n      \"href\": \"https://creativecommons.org/licenses/by/4.0/\",\n
         \     \"title\": \"CC BY 4.0\"\n    },\n    {\n      \"rel\": \"item\",\n
-        \     \"href\": \"../../capella-open-data-by-datetime/capella-open-data-2024/capella-open-data-2024-11/capella-open-data-2024-11-30/CAPELLA_C09_SP_GEO_HH_20241130164247_20241130164315/CAPELLA_C09_SP_GEO_HH_20241130164247_20241130164315.json\",\n
-        \     \"type\": \"application/json\"\n    },\n    {\n      \"rel\": \"item\",\n
         \     \"href\": \"../../capella-open-data-by-datetime/capella-open-data-2024/capella-open-data-2024-11/capella-open-data-2024-11-30/CAPELLA_C09_SP_GEC_HH_20241130164247_20241130164315/CAPELLA_C09_SP_GEC_HH_20241130164247_20241130164315.json\",\n
+        \     \"type\": \"application/json\"\n    },\n    {\n      \"rel\": \"item\",\n
+        \     \"href\": \"../../capella-open-data-by-datetime/capella-open-data-2024/capella-open-data-2024-11/capella-open-data-2024-11-30/CAPELLA_C09_SP_GEO_HH_20241130164247_20241130164315/CAPELLA_C09_SP_GEO_HH_20241130164247_20241130164315.json\",\n
         \     \"type\": \"application/json\"\n    },\n    {\n      \"rel\": \"item\",\n
         \     \"href\": \"../../capella-open-data-by-datetime/capella-open-data-2024/capella-open-data-2024-11/capella-open-data-2024-11-30/CAPELLA_C09_SP_SICD_HH_20241130164247_20241130164315/CAPELLA_C09_SP_SICD_HH_20241130164247_20241130164315.json\",\n
         \     \"type\": \"application/json\"\n    },\n    {\n      \"rel\": \"item\",\n
