@@ -4,7 +4,8 @@
     ".": {
       "changelog-path": "CHANGELOG.md",
       "component": "pystac",
-      "include-component-in-tag": false
+      "include-component-in-tag": false,
+      "release-as": "1.15.0.post0"
     },
     "core": {
       "component": "pystac-core"

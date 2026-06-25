@@ -23,7 +23,7 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "pystac-core==1.15.0-rc.1",  # x-release-please-version
+    "pystac-core==1.15.0",  # x-release-please-version
     "pystac-ext-classification",
     "pystac-ext-datacube",
     "pystac-ext-eo",
