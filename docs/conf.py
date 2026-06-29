@@ -20,20 +20,6 @@ sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath("../"))
 from pystac.version import STACVersion, __version__  # noqa:E402
 
-#MKM added for DEBUG ---- BEGIN
-print("SPHINX PYTHON:", sys.executable)
-print("SPHINX VERSION:", sys.version)
-
-import typing
-from pystac.extensions.ext import T
-
-print(sys.executable)
-print(sys.version)
-print(typing.__file__)
-print(type(T))
-#MKM added for DEBUG ---- END
-
-
 git_branch = (
     subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"])
     .decode("utf-8")
