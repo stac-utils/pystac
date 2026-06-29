@@ -11,6 +11,9 @@
       "component": "pystac-core"
     },
     "extensions/classification": {
+      "component": "pystac-ext-archive"
+    },
+    "extensions/classification": {
       "component": "pystac-ext-classification"
     },
     "extensions/datacube": {
