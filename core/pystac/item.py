@@ -108,6 +108,11 @@ class Item(STACObject, Assets):
     stac_extensions: list[str]
     """List of extensions the Item implements."""
 
+    _stac_io: pystac.StacIO | None = None
+    """Optional instance of StacIO that will be used by default for any IO
+    operations. This is set when an item is read by a StacIO instance.
+    """
+
     STAC_OBJECT_TYPE = STACObjectType.ITEM
 
     def __init__(

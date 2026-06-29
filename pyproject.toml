@@ -2,7 +2,7 @@
 name = "pystac"
 description = "Python library for working with the SpatioTemporal Asset Catalog (STAC) specification"
 readme = "README.md"
-version = "1.15.0-rc.1"
+version = "1.15.0"
 authors = [
     { name = "Rob Emanuele", email = "rdemanuele@gmail.com" },
     { name = "Jon Duckworth", email = "duckontheweb@gmail.com" },
@@ -23,7 +23,7 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "pystac-core==1.15.0-rc.1",  # x-release-please-version
+    "pystac-core==1.15.0",  # x-release-please-version
     "pystac-ext-archive",
     "pystac-ext-classification",
     "pystac-ext-datacube",

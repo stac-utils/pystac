@@ -162,21 +162,25 @@ class StacIO(ABC):
         d = migrate_to_latest(d, info)
 
         if info.object_type == pystac.STACObjectType.CATALOG:
-            result = pystac.Catalog.from_dict(
+            catalog = pystac.Catalog.from_dict(
                 d, href=href_str, root=root, migrate=True, preserve_dict=preserve_dict
             )
-            result._stac_io = self
-            return result
+            catalog._stac_io = self
+            return catalog
 
         if info.object_type == pystac.STACObjectType.COLLECTION:
-            return pystac.Collection.from_dict(
+            collection = pystac.Collection.from_dict(
                 d, href=href_str, root=root, migrate=True, preserve_dict=preserve_dict
             )
+            collection._stac_io = self
+            return collection
 
         if info.object_type == pystac.STACObjectType.ITEM:
-            return pystac.Item.from_dict(
+            item = pystac.Item.from_dict(
                 d, href=href_str, root=root, migrate=True, preserve_dict=preserve_dict
             )
+            item._stac_io = self
+            return item
 
         raise ValueError(f"Unknown STAC object type {info.object_type}")
 
@@ -308,6 +312,8 @@ class DefaultStacIO(StacIO):
                         },
                         preload_content=False,
                     ) as f:
+                        if f.status >= 400:
+                            raise HTTPError(href, f.status, f.reason, f.headers, None)
                         href_contents = f.read().decode("utf-8")
                 else:
                     req = Request(
@@ -461,10 +467,17 @@ if HAS_URLLIB3:
                             "User-Agent": f"pystac/{pystac.__version__}",
                             **self.headers,
                         },
-                        retries=self.retry,
+                        retries=self.retry,  # type: ignore
                     )
-                    # return cast(str, response.data.decode("utf-8")) #MKM
-                    return response.data.decode("utf-8")
+                    if response.status >= 400:
+                        raise HTTPError(
+                            href,
+                            response.status,
+                            response.reason,
+                            response.headers,
+                            None,
+                        )
+                    return cast(str, response.data.decode("utf-8"))
                 except HTTPError as e:
                     raise Exception(f"Could not read uri {href}") from e
             else:

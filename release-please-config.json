@@ -1,109 +1,83 @@
 {
   "release-type": "python",
-  "versioning": "prerelease",
-  "prerelease": true,
   "packages": {
     ".": {
       "changelog-path": "CHANGELOG.md",
       "component": "pystac",
       "include-component-in-tag": false,
-      "prerelease-type": "rc"
+      "release-as": "1.15.0.post0"
     },
     "core": {
-      "component": "pystac-core",
-      "prerelease-type": "rc"
+      "component": "pystac-core"
     },
     "extensions/classification": {
-      "component": "pystac-ext-archive",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-archive"
     },
     "extensions/classification": {
-      "component": "pystac-ext-classification",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-classification"
     },
     "extensions/datacube": {
-      "component": "pystac-ext-datacube",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-datacube"
     },
     "extensions/eo": {
-      "component": "pystac-ext-eo",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-eo"
     },
     "extensions/file": {
-      "component": "pystac-ext-file",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-file"
     },
     "extensions/grid": {
-      "component": "pystac-ext-grid",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-grid"
     },
     "extensions/item_assets": {
-      "component": "pystac-ext-item-assets",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-item-assets"
     },
     "extensions/label": {
-      "component": "pystac-ext-label",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-label"
     },
     "extensions/mgrs": {
-      "component": "pystac-ext-mgrs",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-mgrs"
     },
     "extensions/mlm": {
-      "component": "pystac-ext-mlm",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-mlm"
     },
     "extensions/pointcloud": {
-      "component": "pystac-ext-pointcloud",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-pointcloud"
     },
     "extensions/projection": {
-      "component": "pystac-ext-projection",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-projection"
     },
     "extensions/raster": {
-      "component": "pystac-ext-raster",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-raster"
     },
     "extensions/render": {
-      "component": "pystac-ext-render",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-render"
     },
     "extensions/sar": {
-      "component": "pystac-ext-sar",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-sar"
     },
     "extensions/sat": {
-      "component": "pystac-ext-sat",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-sat"
     },
     "extensions/scientific": {
-      "component": "pystac-ext-scientific",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-scientific"
     },
     "extensions/storage": {
-      "component": "pystac-ext-storage",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-storage"
     },
     "extensions/table": {
-      "component": "pystac-ext-table",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-table"
     },
     "extensions/timestamps": {
-      "component": "pystac-ext-timestamps",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-timestamps"
     },
     "extensions/version": {
-      "component": "pystac-ext-version",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-version"
     },
     "extensions/view": {
-      "component": "pystac-ext-view",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-view"
     },
     "extensions/xarray_assets": {
-      "component": "pystac-ext-xarray-assets",
-      "prerelease-type": "rc"
+      "component": "pystac-ext-xarray-assets"
     }
   },
   "extra-files": ["pyproject.toml", "core/pystac/version.py"],

@@ -5,9 +5,9 @@ import unittest
 from pathlib import Path
 
 import pytest
+from pytest import MonkeyPatch
 
 import pystac
-import pystac.errors
 from pystac.stac_io import DefaultStacIO, DuplicateKeyReportingMixin, StacIO
 from tests.utils import TestCases
 
@@ -124,6 +124,7 @@ def test_headers_stac_io(request_mock: unittest.mock.MagicMock) -> None:
     catalog = pystac.Catalog("an-id", "a description").to_dict()
     # required until https://github.com/stac-utils/pystac/pull/896 is merged
     catalog["links"] = []
+    request_mock.return_value.__enter__.return_value.status = 200
     request_mock.return_value.__enter__.return_value.read.return_value = json.dumps(
         catalog
     ).encode("utf-8")
@@ -159,6 +160,60 @@ def test_retry_stac_io_404() -> None:
         )
 
 
+def test_read_text_raises_on_429_with_urllib3(
+    monkeypatch: MonkeyPatch,
+) -> None:
+    # https://github.com/stac-utils/pystac/issues/1738
+    urllib3 = pytest.importorskip("urllib3")
+
+    class FakeResponse:
+        status = 429
+
+        def read(self) -> bytes:
+            return b'{"error": "Nope!"}'
+
+        def __enter__(self) -> "FakeResponse":
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            pass
+
+    class FakePoolManager:
+        def request(self, *args: object, **kwargs: object) -> FakeResponse:
+            return FakeResponse()
+
+    monkeypatch.setattr(urllib3, "PoolManager", FakePoolManager)
+
+    stac_io = DefaultStacIO()
+    with pytest.raises(Exception):
+        stac_io.read_text("http://localhost:5000")
+
+
+def test_retry_stac_io_raises_on_429(monkeypatch: MonkeyPatch) -> None:
+    # https://github.com/stac-utils/pystac/issues/1738
+    pytest.importorskip("urllib3")
+    from urllib3 import PoolManager
+
+    from pystac.stac_io import RetryStacIO
+
+    class FakeResponse:
+        status = 429
+        reason = "Too Many Requests"
+        headers: dict[str, str] = {}
+        data = b'{"error": "Nope!"}'
+
+    def fake_request(
+        self: PoolManager, *args: object, **kwargs: object
+    ) -> FakeResponse:
+        return FakeResponse()
+
+    monkeypatch.setattr(PoolManager, "request", fake_request)
+
+    stac_io = RetryStacIO()
+    with pytest.raises(Exception):
+        stac_io.read_text("http://localhost:5000")
+
+
 def test_save_http_href_errors(tmp_path: Path) -> None:
     catalog = pystac.Catalog(id="test-catalog", description="")
     catalog.set_self_href("http://pystac.test/catalog.json")
@@ -187,3 +242,25 @@ def test_proj_json_schema_is_readable() -> None:
     _ = stac_io.read_text_from_href(
         "https://proj.org/schemas/v0.7/projjson.schema.json"
     )
+
+
+@pytest.mark.vcr()
+def test_custom_stac_io() -> None:
+    class CustomStacIO(DefaultStacIO):
+        def __init__(self, headers: dict[str, str] | None = None):
+            super().__init__(headers)
+            self.calls = 0
+
+        def read_text_from_href(self, href: str) -> str:
+            self.calls += 1
+            return super().read_text_from_href(href)
+
+    stac_io = CustomStacIO()
+    item = pystac.read_file(
+        "https://raw.githubusercontent.com/radiantearth/stac-spec/refs/heads/master/examples/simple-item.json",
+        stac_io=stac_io,
+    )
+    link = item.get_single_link(rel="self")
+    assert link
+    link.get_href()
+    assert stac_io.calls == 2
