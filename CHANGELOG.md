@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.15.1](https://github.com/stac-utils/pystac/compare/v1.15.0...v1.15.1) (2026-06-30)
+
+
+### Bug Fixes
+
+* actually link pystac-core and pystac via release-please ([207e38d](https://github.com/stac-utils/pystac/commit/207e38d7def9c03203129bd6ed4a06a7bce0aa9a))
+* consolidate core and top-level package in release-please ([#1760](https://github.com/stac-utils/pystac/issues/1760)) ([c6a9fbd](https://github.com/stac-utils/pystac/commit/c6a9fbd511375940d35b77e89c091eed3580d570))
+* more release-please flailing ([#1762](https://github.com/stac-utils/pystac/issues/1762)) ([bcf1062](https://github.com/stac-utils/pystac/commit/bcf106258abf9faa3085a32e4b2319f611ef7baa))
+* remove invalid version specifier ([#1756](https://github.com/stac-utils/pystac/issues/1756)) ([bc70651](https://github.com/stac-utils/pystac/commit/bc706511d4d04a111d3058fd9c29e9842d1888ea))
+
 ## [1.15.0](https://github.com/stac-utils/pystac/compare/v1.15.0-rc.1...v1.15.0) (2026-06-25)
 
 
