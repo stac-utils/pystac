@@ -2,7 +2,7 @@
 name = "pystac-core"
 description = "Core functionality for PySTAC without extensions. Most users will want to use pystac, not this package"
 readme = "README.md"
-version = "1.15.0"  # x-release-please-version
+dynamic = ["version"]
 authors = [
     { name = "Rob Emanuele", email = "rdemanuele@gmail.com" },
     { name = "Jon Duckworth", email = "duckontheweb@gmail.com" },
@@ -34,6 +34,9 @@ Discussions = "https://github.com/radiantearth/stac-spec/discussions/categories/
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "pystac/version.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["pystac"]
