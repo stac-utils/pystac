@@ -7,10 +7,6 @@
       "include-component-in-tag": false,
       "release-as": "1.15.0.post0"
     },
-    "core": {
-      "component": "pystac-core",
-      "extra-files": ["pystac/version.py"]
-    },
     "extensions/classification": {
       "component": "pystac-ext-classification"
     },
@@ -78,13 +74,10 @@
       "component": "pystac-ext-xarray-assets"
     }
   },
-  "extra-files": ["pyproject.toml"],
-  "plugins": [
-    {
-      "type": "linked-versions",
-      "groupName": "pystac",
-      "components": ["pystac", "pystac-core"]
-    }
+  "extra-files": [
+    "pyproject.toml",
+    "core/pyproject.toml",
+    "core/pystac/version.py"
   ],
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
 }
