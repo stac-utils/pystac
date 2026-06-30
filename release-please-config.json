@@ -4,8 +4,7 @@
     ".": {
       "changelog-path": "CHANGELOG.md",
       "component": "pystac",
-      "include-component-in-tag": false,
-      "release-as": "1.15.0.post0"
+      "include-component-in-tag": false
     },
     "extensions/classification": {
       "component": "pystac-ext-classification"
@@ -76,7 +75,6 @@
   },
   "extra-files": [
     "pyproject.toml",
-    "core/pyproject.toml",
     "core/pystac/version.py"
   ],
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
