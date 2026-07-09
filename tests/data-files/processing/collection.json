@@ -1,0 +1,120 @@
+{
+    "stac_version": "1.0.0",
+    "stac_extensions": [
+        "https://stac-extensions.github.io/processing/v1.2.0/schema.json"
+    ],
+    "type": "Collection",
+    "id": "Sentinel2-L2A",
+    "title": "Sentinel-2 MSI: MultiSpectral Instrument, Level-2A",
+    "description": "Sentinel-2 is a wide-swath, high-resolution, multi-spectral imaging mission.",
+    "license": "proprietary",
+    "providers": [
+        {
+            "name": "European Union/ESA/Copernicus",
+            "roles": [
+                "producer",
+                "licensor"
+            ],
+            "url": "https://sentinel.esa.int/web/sentinel/user-guides/sentinel-2-msi",
+            "processing:lineage": "Generation of Level-1C User Product",
+            "processing:level": "L1",
+            "processing:facility": "Copernicus S2 Processing and Archiving Facility",
+            "processing:version": "02.06"
+        },
+        {
+            "name": "Processing Corp.",
+            "roles": [
+                "processor"
+            ],
+            "processing:lineage": "Generation of Level-2A User Product",
+            "processing:level": "L2A",
+            "processing:software": {
+                "Sentinel-2 Toolbox": "8.0.0"
+            }
+        },
+        {
+            "name": "Storage Provider, Inc.",
+            "roles": [
+                "host"
+            ]
+        }
+    ],
+    "extent": {
+        "spatial": {
+            "bbox": [
+                [
+                    -180,
+                    -56,
+                    180,
+                    83
+                ]
+            ]
+        },
+        "temporal": {
+            "interval": [
+                [
+                    "2015-06-23T00:00:00Z",
+                    null
+                ]
+            ]
+        }
+    },
+    "summaries": {
+        "datetime": {
+            "minimum": "2015-06-23T00:00:00Z",
+            "maximum": "2019-07-10T13:44:56Z"
+        },
+        "platform": [
+            "sentinel-2a",
+            "sentinel-2b"
+        ],
+        "constellation": [
+            "sentinel-2"
+        ],
+        "instruments": [
+            "msi"
+        ],
+        "gsd": [
+            10,
+            30,
+            60
+        ],
+        "processing:level": [
+            "L1",
+            "L2"
+        ]
+    },
+    "links": [
+        {
+            "rel": "items",
+            "type": "application/geo+json",
+            "href": "https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-1-grd/items"
+        },
+        {
+            "rel": "parent",
+            "type": "application/json",
+            "href": "https://planetarycomputer.microsoft.com/api/stac/v1/"
+        },
+        {
+            "rel": "root",
+            "type": "application/json",
+            "href": "https://planetarycomputer.microsoft.com/api/stac/v1/"
+        },
+        {
+            "rel": "self",
+            "type": "application/json",
+            "href": "https://planetarycomputer.microsoft.com/api/stac/v1/collections/sentinel-1-grd"
+        },
+        {
+            "rel": "license",
+            "href": "https://sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice",
+            "title": "Copernicus Sentinel data terms"
+        },
+        {
+            "rel": "describedby",
+            "href": "https://planetarycomputer.microsoft.com/dataset/sentinel-1-grd",
+            "title": "Human readable dataset overview and reference",
+            "type": "text/html"
+        }
+    ]
+}
