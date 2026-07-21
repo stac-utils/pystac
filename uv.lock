@@ -24,20 +24,28 @@ members = [
     "pystac-core",
     "pystac-ext-classification",
     "pystac-ext-datacube",
+    "pystac-ext-earthquake",
     "pystac-ext-eo",
     "pystac-ext-file",
     "pystac-ext-grid",
+    "pystac-ext-insar",
     "pystac-ext-item-assets",
     "pystac-ext-label",
     "pystac-ext-mgrs",
     "pystac-ext-mlm",
+    "pystac-ext-order",
     "pystac-ext-pointcloud",
+    "pystac-ext-processing",
+    "pystac-ext-product",
     "pystac-ext-projection",
     "pystac-ext-raster",
     "pystac-ext-render",
     "pystac-ext-sar",
     "pystac-ext-sat",
     "pystac-ext-scientific",
+    "pystac-ext-sentinel-1",
+    "pystac-ext-sentinel-2",
+    "pystac-ext-sentinel-3",
     "pystac-ext-storage",
     "pystac-ext-table",
     "pystac-ext-timestamps",
@@ -3688,20 +3696,28 @@ dependencies = [
     { name = "pystac-core" },
     { name = "pystac-ext-classification" },
     { name = "pystac-ext-datacube" },
+    { name = "pystac-ext-earthquake" },
     { name = "pystac-ext-eo" },
     { name = "pystac-ext-file" },
     { name = "pystac-ext-grid" },
+    { name = "pystac-ext-insar" },
     { name = "pystac-ext-item-assets" },
     { name = "pystac-ext-label" },
     { name = "pystac-ext-mgrs" },
     { name = "pystac-ext-mlm" },
+    { name = "pystac-ext-order" },
     { name = "pystac-ext-pointcloud" },
+    { name = "pystac-ext-processing" },
+    { name = "pystac-ext-product" },
     { name = "pystac-ext-projection" },
     { name = "pystac-ext-raster" },
     { name = "pystac-ext-render" },
     { name = "pystac-ext-sar" },
     { name = "pystac-ext-sat" },
     { name = "pystac-ext-scientific" },
+    { name = "pystac-ext-sentinel-1" },
+    { name = "pystac-ext-sentinel-2" },
+    { name = "pystac-ext-sentinel-3" },
     { name = "pystac-ext-storage" },
     { name = "pystac-ext-table" },
     { name = "pystac-ext-timestamps" },
@@ -3795,20 +3811,28 @@ requires-dist = [
     { name = "pystac-core", editable = "core" },
     { name = "pystac-ext-classification", editable = "extensions/classification" },
     { name = "pystac-ext-datacube", editable = "extensions/datacube" },
+    { name = "pystac-ext-earthquake", editable = "extensions/earthquake" },
     { name = "pystac-ext-eo", editable = "extensions/eo" },
     { name = "pystac-ext-file", editable = "extensions/file" },
     { name = "pystac-ext-grid", editable = "extensions/grid" },
+    { name = "pystac-ext-insar", editable = "extensions/insar" },
     { name = "pystac-ext-item-assets", editable = "extensions/item_assets" },
     { name = "pystac-ext-label", editable = "extensions/label" },
     { name = "pystac-ext-mgrs", editable = "extensions/mgrs" },
     { name = "pystac-ext-mlm", editable = "extensions/mlm" },
+    { name = "pystac-ext-order", editable = "extensions/order" },
     { name = "pystac-ext-pointcloud", editable = "extensions/pointcloud" },
+    { name = "pystac-ext-processing", editable = "extensions/processing" },
+    { name = "pystac-ext-product", editable = "extensions/product" },
     { name = "pystac-ext-projection", editable = "extensions/projection" },
     { name = "pystac-ext-raster", editable = "extensions/raster" },
     { name = "pystac-ext-render", editable = "extensions/render" },
     { name = "pystac-ext-sar", editable = "extensions/sar" },
     { name = "pystac-ext-sat", editable = "extensions/sat" },
     { name = "pystac-ext-scientific", editable = "extensions/scientific" },
+    { name = "pystac-ext-sentinel-1", editable = "extensions/sentinel1" },
+    { name = "pystac-ext-sentinel-2", editable = "extensions/sentinel2" },
+    { name = "pystac-ext-sentinel-3", editable = "extensions/sentinel3" },
     { name = "pystac-ext-storage", editable = "extensions/storage" },
     { name = "pystac-ext-table", editable = "extensions/table" },
     { name = "pystac-ext-timestamps", editable = "extensions/timestamps" },
@@ -3919,6 +3943,17 @@ dependencies = [
 requires-dist = [{ name = "pystac-core", editable = "core" }]
 
 [[package]]
+name = "pystac-ext-earthquake"
+version = "1.0.0"
+source = { editable = "extensions/earthquake" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
 name = "pystac-ext-eo"
 version = "1.1.0"
 source = { editable = "extensions/eo" }
@@ -3944,6 +3979,17 @@ requires-dist = [{ name = "pystac-core", editable = "core" }]
 name = "pystac-ext-grid"
 version = "1.1.0"
 source = { editable = "extensions/grid" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-insar"
+version = "1.0.0"
+source = { editable = "extensions/insar" }
 dependencies = [
     { name = "pystac-core" },
 ]
@@ -3996,9 +4042,42 @@ dependencies = [
 requires-dist = [{ name = "pystac-core", editable = "core" }]
 
 [[package]]
+name = "pystac-ext-order"
+version = "1.1.0"
+source = { editable = "extensions/order" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
 name = "pystac-ext-pointcloud"
 version = "1.0.0"
 source = { editable = "extensions/pointcloud" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-processing"
+version = "1.2.0"
+source = { editable = "extensions/processing" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-product"
+version = "1.0.0"
+source = { editable = "extensions/product" }
 dependencies = [
     { name = "pystac-core" },
 ]
@@ -4065,6 +4144,39 @@ requires-dist = [{ name = "pystac-core", editable = "core" }]
 name = "pystac-ext-scientific"
 version = "1.0.0"
 source = { editable = "extensions/scientific" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-sentinel-1"
+version = "0.2.0"
+source = { editable = "extensions/sentinel1" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-sentinel-2"
+version = "1.0.0"
+source = { editable = "extensions/sentinel2" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-sentinel-3"
+version = "0.2.0"
+source = { editable = "extensions/sentinel3" }
 dependencies = [
     { name = "pystac-core" },
 ]
