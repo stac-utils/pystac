@@ -29,6 +29,7 @@ TYPE_PROP: str = PREFIX + "type"
 TIMELINESS_PROP: str = PREFIX + "timeliness"
 TIMELINESS_CATEGORY_PROP: str = PREFIX + "timeliness_category"
 ACQUISITION_TYPE_PROP: str = PREFIX + "acquisition_type"
+STATUS_PROP: str = PREFIX + "status"
 
 
 class AcquisitionType(StringEnum):
@@ -37,6 +38,19 @@ class AcquisitionType(StringEnum):
     NOMINAL = "nominal"
     CALIBRATION = "calibration"
     OTHER = "other"
+
+
+class ProductStatus(StringEnum):
+    """Allowed values for :data:`product:status <STATUS_PROP>`."""
+
+    ARCHIVED = "archived"
+    ACQUIRED = "acquired"
+    CANCELLED = "cancelled"
+    FAILED = "failed"
+    PLANNED = "planned"
+    POTENTIAL = "potential"
+    REJECTED = "rejected"
+    QUALITY_DEGRADED = "qualitydegraded"
 
 
 class ProductExtension(
@@ -53,6 +67,7 @@ class ProductExtension(
         timeliness: str | None = None,
         timeliness_category: str | None = None,
         acquisition_type: AcquisitionType | str | None = None,
+        status: ProductStatus | None = None,
     ) -> None:
         if (
             timeliness_category is not None
@@ -69,6 +84,7 @@ class ProductExtension(
         if timeliness_category is not None:
             self.timeliness_category = timeliness_category
         self.acquisition_type = acquisition_type
+        self.status = status
 
     @property
     def product_type(self) -> str | None:
@@ -111,6 +127,21 @@ class ProductExtension(
     @acquisition_type.setter
     def acquisition_type(self, v: AcquisitionType | str | None) -> None:
         self._set_property(ACQUISITION_TYPE_PROP, None if v is None else str(v))
+
+    @property
+    def status(self) -> ProductStatus | None:
+        """Gets the product lifecycle status."""
+        raw = self._get_property(STATUS_PROP, str)
+        return None if raw is None else ProductStatus(raw)
+
+    @status.setter
+    def status(self, v: ProductStatus | None) -> None:
+        """Sets the product lifecycle status.
+
+        Args:
+            v: The product lifecycle status.
+        """
+        self._set_property(STATUS_PROP, None if v is None else v.value)
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -227,6 +258,20 @@ class SummariesProductExtension(SummariesExtension):
     @acquisition_type.setter
     def acquisition_type(self, v: list[str] | None) -> None:
         self._set_summary(ACQUISITION_TYPE_PROP, v)
+
+    @property
+    def status(self) -> list[ProductStatus] | None:
+        """Get the product lifecycle statuses from the summaries."""
+        return self.summaries.get_list(STATUS_PROP)
+
+    @status.setter
+    def status(self, v: list[ProductStatus] | None) -> None:
+        """Set the product lifecycle statuses in the summaries.
+
+        Args:
+            v: The product lifecycle statuses.
+        """
+        self._set_summary(STATUS_PROP, v)
 
 
 class ProductExtensionHooks(ExtensionHooks):

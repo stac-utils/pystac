@@ -9,11 +9,13 @@ import pystac
 from pystac.extensions.product import (
     ACQUISITION_TYPE_PROP,
     PRODUCT_EXTENSION_HOOKS,
+    STATUS_PROP,
     TIMELINESS_CATEGORY_PROP,
     TIMELINESS_PROP,
     TYPE_PROP,
     AcquisitionType,
     ProductExtension,
+    ProductStatus,
 )
 
 TemporalIntervals: TypeAlias = list[list[datetime | None]]
@@ -70,13 +72,16 @@ def test_item_apply_roundtrip_and_acquisition_type_enum() -> None:
         timeliness="PT3H",
         timeliness_category="NRT",
         acquisition_type=AcquisitionType.NOMINAL,
+        status=ProductStatus.ACQUIRED,
     )
 
     assert item.properties[TYPE_PROP] == "SLC"
     assert item.properties[TIMELINESS_PROP] == "PT3H"
     assert item.properties[TIMELINESS_CATEGORY_PROP] == "NRT"
     assert item.properties[ACQUISITION_TYPE_PROP] == "nominal"
+    assert item.properties[STATUS_PROP] == "acquired"
     assert ext.acquisition_type == AcquisitionType.NOMINAL
+    assert ext.status == ProductStatus.ACQUIRED
 
     # Unknown strings should roundtrip as raw strings
     ext.acquisition_type = "nonstandard"
@@ -97,7 +102,25 @@ def test_summaries_wrapper_sets_lists() -> None:
     sext = ProductExtension.summaries(col, add_if_missing=True)
 
     sext.product_type = ["L1C", "L2A"]
+    sext.status = [ProductStatus.PLANNED, ProductStatus.ACQUIRED]
     assert col.summaries.lists[TYPE_PROP] == ["L1C", "L2A"]
+    assert col.summaries.lists[STATUS_PROP] == [
+        ProductStatus.PLANNED,
+        ProductStatus.ACQUIRED,
+    ]
+
+
+def test_product_status_values_match_schema() -> None:
+    assert {status.value for status in ProductStatus} == {
+        "archived",
+        "acquired",
+        "cancelled",
+        "failed",
+        "planned",
+        "potential",
+        "rejected",
+        "qualitydegraded",
+    }
 
 
 def test_extension_hooks_are_declared() -> None:
