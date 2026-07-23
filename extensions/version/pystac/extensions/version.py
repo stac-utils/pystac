@@ -24,7 +24,7 @@ from pystac import (
     STACObject,
     STACObjectType,
 )
-from pystac.errors import DeprecatedWarning
+from pystac.errors import DeprecatedWarning, ExtensionNotImplemented
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.utils import StringEnum, map_opt
@@ -425,6 +425,23 @@ class VersionExtensionHooks(ExtensionHooks):
                 VersionRelType.PREDECESSOR,
                 VersionRelType.SUCCESSOR,
             ]
+        return None
+
+    def get_deprecation_message(self, obj: STACObject) -> str | None:
+        version: VersionExtension[Any]
+        try:
+            if isinstance(obj, Collection):
+                version = VersionExtension.ext(obj)
+                kind = "collection"
+            elif isinstance(obj, Item):
+                version = VersionExtension.ext(obj)
+                kind = "item"
+            else:
+                return None
+        except ExtensionNotImplemented:
+            return None
+        if version.deprecated:
+            return f"The {kind} '{obj.id}' is deprecated."
         return None
 
 

@@ -212,7 +212,12 @@ class ItemAssetDefinition:
 
             collection.item_assets["data"].ext.proj.epsg = 4326
         """
-        from pystac.extensions.ext import ItemAssetExt
+        try:
+            from pystac.extensions.ext import ItemAssetExt
+        except ModuleNotFoundError as e:
+            from pystac.errors import _raise_for_missing_ext
+
+            _raise_for_missing_ext(e)
 
         return ItemAssetExt(stac_object=self)
 
