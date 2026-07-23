@@ -174,10 +174,10 @@ filterwarnings = ["error"]
 addopts = "--block-network --record-mode=none"
 
 [tool.hatch.build.targets.sdist]
-only-include = ["README.md", "LICENSE"]
+only-include = ["README.md", "LICENSE", "pystac"]
 
 [tool.hatch.build.targets.wheel]
-only-include = ["README.md"]
+packages = ["pystac"]
 
 [tool.uv.sources]
 pystac-core = { workspace = true }

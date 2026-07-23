@@ -3902,10 +3902,14 @@ version = "2.0.0"
 source = { editable = "extensions/classification" }
 dependencies = [
     { name = "pystac-core" },
+    { name = "pystac-ext-raster" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pystac-core", editable = "core" }]
+requires-dist = [
+    { name = "pystac-core", editable = "core" },
+    { name = "pystac-ext-raster", editable = "extensions/raster" },
+]
 
 [[package]]
 name = "pystac-ext-datacube"
@@ -3924,10 +3928,16 @@ version = "1.1.0"
 source = { editable = "extensions/eo" }
 dependencies = [
     { name = "pystac-core" },
+    { name = "pystac-ext-projection" },
+    { name = "pystac-ext-view" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pystac-core", editable = "core" }]
+requires-dist = [
+    { name = "pystac-core", editable = "core" },
+    { name = "pystac-ext-projection", editable = "extensions/projection" },
+    { name = "pystac-ext-view", editable = "extensions/view" },
+]
 
 [[package]]
 name = "pystac-ext-file"
@@ -3990,10 +4000,16 @@ version = "1.4.0"
 source = { editable = "extensions/mlm" }
 dependencies = [
     { name = "pystac-core" },
+    { name = "pystac-ext-classification" },
+    { name = "pystac-ext-raster" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pystac-core", editable = "core" }]
+requires-dist = [
+    { name = "pystac-core", editable = "core" },
+    { name = "pystac-ext-classification", editable = "extensions/classification" },
+    { name = "pystac-ext-raster", editable = "extensions/raster" },
+]
 
 [[package]]
 name = "pystac-ext-pointcloud"

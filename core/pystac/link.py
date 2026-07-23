@@ -525,6 +525,11 @@ class Link(PathLike):
 
             link.ext.file.size = 8675309
         """
-        from pystac.extensions.ext import LinkExt
+        try:
+            from pystac.extensions.ext import LinkExt
+        except ModuleNotFoundError as e:
+            from pystac.errors import _raise_for_missing_ext
+
+            _raise_for_missing_ext(e)
 
         return LinkExt(stac_object=self)
