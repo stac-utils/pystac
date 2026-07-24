@@ -82,6 +82,7 @@ dev = [
     "types-urllib3>=1.26.25.14",
     "urllib3>=1.26.19",
     "virtualenv>=20.26.6",
+    "types-requests>=2.33.0.20260712",
 ]
 docs = [
     "adlfs>=2024.12.0",
