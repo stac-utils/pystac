@@ -290,7 +290,7 @@ def test_set_dimensions(ext_item: Item) -> None:
     assert ext_item.validate()
 
 
-@pytest.mark.parametrize("version", ["v1.0.0", "v2.0.0", "v2.1.0"])
+@pytest.mark.parametrize("version", ["v1.0.0", "v2.0.0", "v2.1.0", "v2.2.0"])
 def test_migrate(version: str, ext_item: Item) -> None:
     item_dict = ext_item.to_dict(include_self_link=False, transform_hrefs=False)
     item_dict["stac_extensions"] = [
@@ -298,7 +298,7 @@ def test_migrate(version: str, ext_item: Item) -> None:
     ]
     item = Item.from_dict(item_dict, migrate=True)
     assert (
-        "https://stac-extensions.github.io/datacube/v2.2.0/schema.json"
+        "https://stac-extensions.github.io/datacube/v2.3.0/schema.json"
         in item.stac_extensions
     )
 
