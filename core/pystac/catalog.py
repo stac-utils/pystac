@@ -1302,6 +1302,11 @@ class Catalog(STACObject):
 
             print(collection.ext.version)
         """
-        from pystac.extensions.ext import CatalogExt
+        try:
+            from pystac.extensions.ext import CatalogExt
+        except ModuleNotFoundError as e:
+            from pystac.errors import _raise_for_missing_ext
+
+            _raise_for_missing_ext(e)
 
         return CatalogExt(stac_object=self)
