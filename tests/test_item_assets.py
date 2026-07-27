@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from pystac import Collection
@@ -6,8 +8,15 @@ from pystac.extensions.item_assets import AssetDefinition, ItemAssetsExtension
 from pystac.item_assets import ItemAssetDefinition
 from tests.utils import TestCases
 
-CLASSIFICATION_COLLECTION_RASTER_URI = TestCases.get_path(
-    "data-files/classification/collection-item-assets-raster-bands.json"
+HERE = Path(__file__).resolve().parent
+
+CLASSIFICATION_COLLECTION_RASTER_URI = str(
+    HERE.parent
+    / "extensions"
+    / "classification"
+    / "tests"
+    / "data-files"
+    / "collection-item-assets-raster-bands.json"
 )
 
 
