@@ -19,7 +19,14 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 requires-python = ">=3.10"
-dependencies = ["pystac-core"]
+dependencies = [
+    "pystac-core",
+    "pystac-ext-projection",
+    "pystac-ext-view",
+]
+
+[project.entry-points."pystac.extensions"]
+eo = "pystac.extensions.eo:EO_EXTENSION_HOOKS"
 
 [project.urls]
 Documentation = "https://pystac.readthedocs.io"

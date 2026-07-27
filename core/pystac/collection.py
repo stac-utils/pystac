@@ -15,7 +15,7 @@ import pystac
 from pystac import CatalogType, STACObjectType
 from pystac.asset import Asset, Assets
 from pystac.catalog import Catalog
-from pystac.errors import DeprecatedWarning, ExtensionNotImplemented, STACTypeError
+from pystac.errors import DeprecatedWarning, STACTypeError
 from pystac.item_assets import ItemAssetDefinition, _ItemAssets
 from pystac.layout import HrefLayoutStrategy
 from pystac.link import Link
@@ -638,8 +638,6 @@ class Collection(Catalog, Assets):
     ) -> C:
         import warnings
 
-        from pystac.extensions.version import CollectionVersionExtension
-
         if migrate:
             info = identify_stac_object(d)
             d = migrate_to_latest(d, info)
@@ -710,16 +708,9 @@ class Collection(Catalog, Assets):
         if root:
             collection.set_root(root)
 
-        try:
-            version = CollectionVersionExtension.ext(collection)
-            if version.deprecated:
-                warnings.warn(
-                    f"The collection '{collection.id}' is deprecated.",
-                    DeprecatedWarning,
-                )
-            # Collection asset deprecation checks pending version extension support
-        except ExtensionNotImplemented:
-            pass
+        message = pystac.EXTENSION_HOOKS.get_deprecation_message(collection)
+        if message is not None:
+            warnings.warn(message, DeprecatedWarning)
 
         return collection
 
@@ -894,6 +885,11 @@ class Collection(Catalog, Assets):
 
             print(collection.ext.xarray)
         """
-        from pystac.extensions.ext import CollectionExt
+        try:
+            from pystac.extensions.ext import CollectionExt
+        except ModuleNotFoundError as e:
+            from pystac.errors import _raise_for_missing_ext
+
+            _raise_for_missing_ext(e)
 
         return CollectionExt(stac_object=self)

@@ -21,6 +21,9 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = ["pystac-core"]
 
+[project.entry-points."pystac.extensions"]
+scientific = "pystac.extensions.scientific:SCIENTIFIC_EXTENSION_HOOKS"
+
 [project.urls]
 Documentation = "https://pystac.readthedocs.io"
 Repository = "https://github.com/stac-utils/pystac"

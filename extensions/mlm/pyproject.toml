@@ -19,7 +19,14 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 requires-python = ">=3.10"
-dependencies = ["pystac-core"]
+dependencies = [
+    "pystac-core",
+    "pystac-ext-classification",
+    "pystac-ext-raster",
+]
+
+[project.entry-points."pystac.extensions"]
+mlm = "pystac.extensions.mlm:MLM_EXTENSION_HOOKS"
 
 [project.urls]
 Documentation = "https://pystac.readthedocs.io"
