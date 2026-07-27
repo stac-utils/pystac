@@ -487,11 +487,11 @@ def geometry_to_bbox(geometry: dict[str, Any]) -> list[float]:
                 lons.append(coords[1])
                 return
             if isinstance(x[0], list):
-                extract_coords(x)  # type:ignore
+                extract_coords(x)
             else:
                 lat, lon = x
-                lats.append(lat)  # type:ignore
-                lons.append(lon)  # type:ignore
+                lats.append(lat)
+                lons.append(lon)
 
     extract_coords(coords)
 
