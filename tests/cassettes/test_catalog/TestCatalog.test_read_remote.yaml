@@ -1,13 +1,7 @@
 interactions:
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
-      User-Agent:
-      - Python-urllib/3.11
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/catalog.json
   response:
@@ -19,67 +13,13 @@ interactions:
         \   },\n    {\n      \"rel\": \"child\",\n      \"href\": \"zanzibar/collection.json\"\n
         \   },\n    {\n      \"rel\": \"child\",\n      \"href\": \"spacenet-buildings/collection.json\"\n
         \   }\n  ]\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - close
-      Content-Length:
-      - '436'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Fri, 22 Sep 2023 19:13:47 GMT
-      ETag:
-      - '"e74ebcbc46d43c5b693ecb995381fbeba03583627e6d65b21ed7678a10d94729"'
-      Expires:
-      - Fri, 22 Sep 2023 19:18:47 GMT
-      Source-Age:
-      - '0'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 02289045ec4473cb0c90eb413af6020437e0a8e0
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - A942:394D:1B35C5:2001FB:650DE769
-      X-Served-By:
-      - cache-den8281-DEN
-      X-Timer:
-      - S1695410027.011637,VS0,VE150
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
-      User-Agent:
-      - Python-urllib/3.11
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/zanzibar/collection.json
   response:
@@ -109,67 +49,13 @@ interactions:
         \"parent\",\n      \"href\": \"../catalog.json\"\n    },\n    {\n      \"rel\":
         \"item\",\n      \"href\": \"znz001.json\"\n    },\n    {\n      \"rel\":
         \"item\",\n      \"href\": \"znz029.json\"\n    }\n  ]\n}\n"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - close
-      Content-Length:
-      - '1709'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Fri, 22 Sep 2023 19:13:47 GMT
-      ETag:
-      - '"ddd340bc27c120dd2e43868bcde0510a326a6223dac1b0c47c05100e20d1397e"'
-      Expires:
-      - Fri, 22 Sep 2023 19:18:47 GMT
-      Source-Age:
-      - '0'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 1faabc2f221d7528ed2cb4ce476bb4743267dec7
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 390A:531D:17C928:1C9465:650DE76A
-      X-Served-By:
-      - cache-den8274-DEN
-      X-Timer:
-      - S1695410027.284138,VS0,VE129
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
-      User-Agent:
-      - Python-urllib/3.11
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/zanzibar/znz001.json
   response:
@@ -209,67 +95,13 @@ interactions:
         \   },\n    {\n      \"rel\": \"source\",\n      \"href\": \"https://oin-hotosm.s3.amazonaws.com/5afeda152b6a08001185f11a/0/5afeda152b6a08001185f11b.tif\",\n
         \     \"title\": \"The source imagery these building labels were derived from\",\n
         \     \"label:assets\": [\n        \"building\"\n      ]\n    }\n  ]\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - close
-      Content-Length:
-      - '2776'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Fri, 22 Sep 2023 19:13:47 GMT
-      ETag:
-      - '"80ec96bc0acf2e604a03f109bd730426aa82e442d44946231cbe82a531b944f7"'
-      Expires:
-      - Fri, 22 Sep 2023 19:18:47 GMT
-      Source-Age:
-      - '0'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - af8a2e5e50cf4a6b7933ef2cd7c2c27078a65d39
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - 7364:1817:169CBE:1B6929:650DE76A
-      X-Served-By:
-      - cache-den8236-DEN
-      X-Timer:
-      - S1695410028.515211,VS0,VE166
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK
 - request:
     body: null
-    headers:
-      Connection:
-      - close
-      Host:
-      - raw.githubusercontent.com
-      User-Agent:
-      - Python-urllib/3.11
+    headers: {}
     method: GET
     uri: https://raw.githubusercontent.com/stac-extensions/label/main/examples/multidataset/zanzibar/znz029.json
   response:
@@ -309,55 +141,7 @@ interactions:
         \   },\n    {\n      \"rel\": \"source\",\n      \"href\": \"https://oin-hotosm.s3.amazonaws.com/5ae242fd0b093000130afd38/0/5ae242fd0b093000130afd39.tif\",\n
         \     \"title\": \"The source imagery these building labels were derived from\",\n
         \     \"label:assets\": [\n        \"building\"\n      ]\n    }\n  ]\n}"
-    headers:
-      Accept-Ranges:
-      - bytes
-      Access-Control-Allow-Origin:
-      - '*'
-      Cache-Control:
-      - max-age=300
-      Connection:
-      - close
-      Content-Length:
-      - '2774'
-      Content-Security-Policy:
-      - default-src 'none'; style-src 'unsafe-inline'; sandbox
-      Content-Type:
-      - text/plain; charset=utf-8
-      Cross-Origin-Resource-Policy:
-      - cross-origin
-      Date:
-      - Fri, 22 Sep 2023 19:13:47 GMT
-      ETag:
-      - '"726870312c74ead0b10c3125045c301e8600929684c49447d64c2db72dc779fc"'
-      Expires:
-      - Fri, 22 Sep 2023 19:18:47 GMT
-      Source-Age:
-      - '0'
-      Strict-Transport-Security:
-      - max-age=31536000
-      Vary:
-      - Authorization,Accept-Encoding,Origin
-      Via:
-      - 1.1 varnish
-      X-Cache:
-      - MISS
-      X-Cache-Hits:
-      - '0'
-      X-Content-Type-Options:
-      - nosniff
-      X-Fastly-Request-ID:
-      - 9e07dc7de7a765128e6a8ae9fc028d69a4502bdb
-      X-Frame-Options:
-      - deny
-      X-GitHub-Request-Id:
-      - BB3C:61A6:15AFE9:1A7D50:650DE76B
-      X-Served-By:
-      - cache-den8223-DEN
-      X-Timer:
-      - S1695410028.779866,VS0,VE131
-      X-XSS-Protection:
-      - 1; mode=block
+    headers: {}
     status:
       code: 200
       message: OK

@@ -4,15 +4,16 @@ __all__ = [
     "ARBITRARY_BBOX",
     "ARBITRARY_EXTENT",
     "MockStacIO",
+    "path_includes_drive_letter",
 ]
-import unittest
 from copy import deepcopy
 from datetime import datetime
-from typing import Any, Dict, Type
+from typing import Any
 
 from dateutil.parser import parse
 
 import pystac
+from tests.utils.os_utils import path_includes_drive_letter
 from tests.utils.stac_io_mock import MockStacIO
 from tests.utils.test_cases import (
     ARBITRARY_BBOX,
@@ -23,11 +24,10 @@ from tests.utils.test_cases import (
 
 
 def assert_to_from_dict(
-    test_class: unittest.TestCase,
-    stac_object_class: Type[pystac.STACObject],
-    d: Dict[str, Any],
+    stac_object_class: type[pystac.STACObject],
+    d: dict[str, Any],
 ) -> None:
-    def _parse_times(a_dict: Dict[str, Any]) -> None:
+    def _parse_times(a_dict: dict[str, Any]) -> None:
         for k, v in a_dict.items():
             if isinstance(v, dict):
                 _parse_times(v)
@@ -42,7 +42,7 @@ def assert_to_from_dict(
                         a_dict[k] = a_dict[k].replace(microsecond=0)
 
     d1 = deepcopy(d)
-    d2 = stac_object_class.from_dict(d).to_dict()
+    d2 = stac_object_class.from_dict(d, migrate=False).to_dict()
     _parse_times(d1)
     _parse_times(d2)
-    test_class.assertDictEqual(d1, d2)
+    assert d1 == d2

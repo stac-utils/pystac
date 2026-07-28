@@ -86,6 +86,18 @@ as to serialize and deserialize STAC object to and from JSON.
 * :class:`pystac.stac_io.DefaultStacIO`: The default :class:`pystac.StacIO`
   implementation used throughout the library.
 
+Client
+------
+
+A convenience method for accessing `pystac-client <https://github.com/stac-utils/pystac-client>`__
+
+**Example:**
+
+.. code-block:: python
+
+  from pystac.client import Client
+
+
 Extensions
 ----------
 
@@ -95,7 +107,6 @@ PySTAC provides support for the following STAC Extensions:
 * :mod:`Electro-Optical <pystac.extensions.eo>`
 * :mod:`File Info <pystac.extensions.file>`
 * :mod:`Item Assets <pystac.extensions.item_assets>`
-* :mod:`Label <pystac.extensions.label>`
 * :mod:`MGRS <pystac.extensions.mgrs>`
 * :mod:`Point Cloud <pystac.extensions.pointcloud>`
 * :mod:`Projection <pystac.extensions.projection>`
@@ -143,6 +154,9 @@ a template.
 * :class:`pystac.layout.BestPracticesLayoutStrategy`: Layout strategy that represents
   the catalog layout described in the :stac-spec:`STAC Best Practices documentation
   <best-practices.md>`.
+* :class:`pystac.layout.APILayoutStrategy`: Layout strategy that represents
+  the catalog layout described in
+  the :stac-api-spec:`STAC API documentation <overview.md#endpoints>`.
 * :class:`pystac.layout.TemplateLayoutStrategy`: Layout strategy that can take strings
   to be supplied to a :class:`~pystac.layout.LayoutTemplate` to derive paths.
 * :class:`pystac.layout.CustomLayoutStrategy`: Layout strategy that allows users to
@@ -177,9 +191,7 @@ Serialization
 The ``pystac.serialization`` sub-package contains tools used internally by PySTAC to
 identify, serialize, and migrate STAC objects:
 
-* :mod:`pystac.serialization.identify`: Tools for identifying STAC objects
-* :mod:`pystac.serialization.migrate`: Tools for migrating STAC objects from a previous
-  STAC Spec version.
+* :mod:`pystac.serialization`: Tools for identifying and migrating STAC objects
 
 
 Validation

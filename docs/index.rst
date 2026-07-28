@@ -16,12 +16,6 @@ of PySTAC are:
   as :stac-spec:`described in the best practices documentation
   <best-practices.md#use-of-links>`.
 
-.. raw:: html
-
-    <form class="bd-search align-items-center" action="search.html" method="get">
-      <input type="search" class="form-control" name="q" id="search-input" placeholder="&#128269; Search the docs ..." aria-label="Search the docs ..." autocomplete="off">
-    </form>
-
 .. grid:: 1 2 2 2
    :gutter: 2
 

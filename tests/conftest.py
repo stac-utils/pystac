@@ -1,32 +1,26 @@
 # TODO move all test case code to this file
 
+import json
 import shutil
 import uuid
-from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 import pytest
 
-from pystac import Asset, Catalog, Collection, Item
+from pystac import Asset, Catalog, Collection, Item, ItemCollection
 
-from .utils import ARBITRARY_BBOX, ARBITRARY_EXTENT, ARBITRARY_GEOM, TestCases
+from .utils import TestCases
 
-here = Path(__file__).resolve().parent
-
-
-@pytest.fixture
-def catalog() -> Catalog:
-    return Catalog("test-catalog", "A test catalog")
+HERE = Path(__file__).resolve().parent
 
 
 @pytest.fixture
-def collection() -> Catalog:
-    return Collection("test-collection", "A test collection", ARBITRARY_EXTENT)
-
-
-@pytest.fixture
-def item() -> Item:
-    return Item("test-item", ARBITRARY_GEOM, ARBITRARY_BBOX, datetime.now(), {})
+def multi_extent_collection() -> Collection:
+    # TODO this code is repeated many times; refactor to use this fixture
+    return Collection.from_file(
+        TestCases.get_path("data-files/collections/multi-extent.json")
+    )
 
 
 @pytest.fixture
@@ -46,12 +40,32 @@ def projection_landsat8_item() -> Item:
 
 
 def get_data_file(rel_path: str) -> str:
-    return str(here / "data-files" / rel_path)
+    return str(HERE / "data-files" / rel_path)
+
+
+@pytest.fixture
+def sample_item_dict() -> dict[str, Any]:
+    m = TestCases.get_path("data-files/item/sample-item.json")
+    with open(m) as f:
+        item_dict: dict[str, Any] = json.load(f)
+    return item_dict
 
 
 @pytest.fixture
 def sample_item() -> Item:
     return Item.from_file(TestCases.get_path("data-files/item/sample-item.json"))
+
+
+@pytest.fixture
+def sample_item_collection() -> ItemCollection:
+    return ItemCollection.from_file(
+        TestCases.get_path("data-files/item-collection/sample-item-collection.json")
+    )
+
+
+@pytest.fixture
+def sample_items(sample_item_collection: ItemCollection) -> list[Item]:
+    return list(sample_item_collection)
 
 
 @pytest.fixture(scope="function")

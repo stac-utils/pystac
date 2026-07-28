@@ -1,7 +1,7 @@
 import csv
 import os
-from datetime import datetime
-from typing import Any, Dict, List
+from datetime import datetime, timezone
+from typing import Any
 
 import pystac
 from pystac import (
@@ -13,13 +13,6 @@ from pystac import (
     MediaType,
     SpatialExtent,
     TemporalExtent,
-)
-from pystac.extensions.label import (
-    LabelClasses,
-    LabelCount,
-    LabelExtension,
-    LabelOverview,
-    LabelType,
 )
 
 TEST_LABEL_CATALOG = {
@@ -49,7 +42,7 @@ TEST_LABEL_CATALOG = {
     },
 }
 
-ARBITRARY_GEOM: Dict[str, Any] = {
+ARBITRARY_GEOM: dict[str, Any] = {
     "type": "Polygon",
     "coordinates": [
         [
@@ -62,7 +55,7 @@ ARBITRARY_GEOM: Dict[str, Any] = {
     ],
 }
 
-ARBITRARY_BBOX: List[float] = [
+ARBITRARY_BBOX: list[float] = [
     ARBITRARY_GEOM["coordinates"][0][0][0],
     ARBITRARY_GEOM["coordinates"][0][0][1],
     ARBITRARY_GEOM["coordinates"][0][1][0],
@@ -81,7 +74,7 @@ class ExampleInfo:
         path: str,
         object_type: pystac.STACObjectType,
         stac_version: str,
-        extensions: List[str],
+        extensions: list[str],
         valid: bool,
     ) -> None:
         self.path = path
@@ -99,8 +92,8 @@ class TestCases:
         return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", rel_path))
 
     @staticmethod
-    def get_examples_info() -> List[ExampleInfo]:
-        examples: List[ExampleInfo] = []
+    def get_examples_info() -> list[ExampleInfo]:
+        examples: list[ExampleInfo] = []
 
         info_path = TestCases.get_path("data-files/examples/example-info.csv")
         with open(TestCases.get_path("data-files/examples/example-info.csv")) as f:
@@ -108,7 +101,7 @@ class TestCases:
                 path = os.path.abspath(os.path.join(os.path.dirname(info_path), row[0]))
                 object_type = row[1]
                 stac_version = row[2]
-                extensions: List[str] = []
+                extensions: list[str] = []
                 if row[3]:
                     extensions = row[3].split("|")
 
@@ -130,7 +123,7 @@ class TestCases:
         return examples
 
     @staticmethod
-    def all_test_catalogs() -> List[Catalog]:
+    def all_test_catalogs() -> list[Catalog]:
         return [
             TestCases.case_1(),
             TestCases.case_2(),
@@ -163,7 +156,7 @@ class TestCases:
             id="imagery-item",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
-            datetime=datetime.utcnow(),
+            datetime=datetime.now(timezone.utc),
             properties={},
         )
 
@@ -171,33 +164,13 @@ class TestCases:
             "ortho", Asset(href="some/geotiff.tiff", media_type=MediaType.GEOTIFF)
         )
 
-        overviews = [
-            LabelOverview.create(
-                "label",
-                counts=[LabelCount.create("one", 1), LabelCount.create("two", 2)],
-            )
-        ]
-
         label_item = Item(
             id="label-items",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
-            datetime=datetime.utcnow(),
+            datetime=datetime.now(timezone.utc),
             properties={},
         )
-
-        LabelExtension.add_to(label_item)
-        label_ext = LabelExtension.ext(label_item)
-        label_ext.apply(
-            label_description="ML Labels",
-            label_type=LabelType.VECTOR,
-            label_properties=["label"],
-            label_classes=[LabelClasses.create(classes=["one", "two"], name="label")],
-            label_tasks=["classification"],
-            label_methods=["manual"],
-            label_overviews=overviews,
-        )
-        label_ext.add_source(image_item, assets=["ortho"])
 
         root_cat.add_item(image_item)
         root_cat.add_item(label_item)
@@ -241,6 +214,6 @@ class TestCases:
         """Planet disaster data example catalog, 1.0.0-beta.2"""
         return Collection.from_file(
             TestCases.get_path(
-                "data-files/catalogs/" "planet-example-v1.0.0-beta.2/collection.json"
+                "data-files/catalogs/planet-example-v1.0.0-beta.2/collection.json"
             )
         )

@@ -1,5 +1,3 @@
-import unittest
-
 import pytest
 
 import pystac
@@ -30,7 +28,7 @@ class TestIdentify:
         str_info = str(actual)
         assert isinstance(str_info, str)
 
-        msg = "Failed {}:".format(path)
+        msg = f"Failed {path}:"
 
         assert actual.object_type == example.object_type, msg
         version_contained_in_range = actual.version_range.contains(example.stac_version)
@@ -63,7 +61,7 @@ class TestIdentify:
                     "href": "https://tamn.snapplanet.io",
                 },
             ],
-            "stac_version": "1.0.0",
+            "stac_version": "1.1.0",
         }
 
         with pytest.raises(pystac.STACTypeError) as ctx:
@@ -93,28 +91,43 @@ class TestIdentify:
         assert identify_stac_object_type(not_stac) is None
 
 
-class VersionTest(unittest.TestCase):
-    def test_version_ordering(self) -> None:
-        self.assertEqual(STACVersionID("0.9.0"), STACVersionID("0.9.0"))
-        self.assertFalse(STACVersionID("0.9.0") < STACVersionID("0.9.0"))
-        self.assertFalse(STACVersionID("0.9.0") != STACVersionID("0.9.0"))
-        self.assertFalse(STACVersionID("0.9.0") > STACVersionID("0.9.0"))
-        self.assertTrue(STACVersionID("1.0.0-beta.2") < "1.0.0")
-        self.assertTrue(STACVersionID("0.9.1") > "0.9.0")
-        self.assertFalse(STACVersionID("0.9.0") > "0.9.0")
-        self.assertTrue(STACVersionID("0.9.0") <= "0.9.0")
-        self.assertTrue(STACVersionID("1.0.0-beta.1") <= STACVersionID("1.0.0-beta.2"))
-        self.assertFalse(STACVersionID("1.0.0") < STACVersionID("1.0.0-beta.2"))
+def test_version_ordering() -> None:
+    assert STACVersionID("0.9.0") == STACVersionID("0.9.0")
+    assert not STACVersionID("0.9.0") != STACVersionID("0.9.0")
+    assert not STACVersionID("0.9.0") > STACVersionID("0.9.0")
+    assert STACVersionID("1.0.0-beta.2") < "1.0.0"
+    assert STACVersionID("0.9.1") > "0.9.0"
+    assert not STACVersionID("0.9.0") > "0.9.0"
+    assert STACVersionID("0.9.0") <= "0.9.0"
+    assert STACVersionID("1.0.0-beta.1") <= STACVersionID("1.0.0-beta.2")
+    assert not STACVersionID("1.0.0") < STACVersionID("1.0.0-beta.2")
 
-    def test_version_range_ordering(self) -> None:
-        version_range = STACVersionRange("0.9.0", "1.0.0-beta.2")
-        self.assertIsInstance(str(version_range), str)
-        self.assertTrue(version_range.contains("1.0.0-beta.1"))
-        self.assertFalse(version_range.contains("1.0.0"))
-        self.assertTrue(version_range.is_later_than("0.8.9"))
 
-        version_range = STACVersionRange("0.9.0", "1.0.0-beta.1")
-        self.assertFalse(version_range.contains("1.0.0-beta.2"))
+def test_version_range_ordering() -> None:
+    version_range = STACVersionRange("0.9.0", "1.0.0-beta.2")
+    assert isinstance(str(version_range), str)
+    assert version_range.contains("1.0.0-beta.1")
+    assert not version_range.contains("1.0.0")
+    assert version_range.is_later_than("0.8.9")
 
-        version_range = STACVersionRange(min_version="0.6.0-rc1", max_version="0.9.0")
-        self.assertTrue(version_range.contains("0.9.0"))
+    version_range = STACVersionRange("0.9.0", "1.0.0-beta.1")
+    assert not version_range.contains("1.0.0-beta.2")
+
+    version_range = STACVersionRange(min_version="0.6.0-rc1", max_version="0.9.0")
+    assert version_range.contains("0.9.0")
+
+
+def test_version_range_set_to_single() -> None:
+    version_range = STACVersionRange()
+    version_range.set_min("1.0.0-beta.1")
+    version_range.set_to_single("1.0.0")
+
+    assert version_range.contains("1.0.0")
+
+
+def test_version_range_set_min_and_max_directly() -> None:
+    version_range = STACVersionRange()
+    version_range.min_version = "1.0.0-beta.1"
+    version_range.max_version = "1.1.0"
+
+    assert version_range.contains("1.0.0")

@@ -1,0 +1,44 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://schemas.stacspec.org/v1.0.0/catalog-spec/json-schema/catalog.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://schemas.stacspec.org/v1.0.0/catalog-spec/json-schema/catalog.json#\",\n
+        \ \"title\": \"STAC Catalog Specification\",\n  \"description\": \"This object
+        represents Catalogs in a SpatioTemporal Asset Catalog.\",\n  \"allOf\": [\n
+        \   {\n      \"$ref\": \"#/definitions/catalog\"\n    }\n  ],\n  \"definitions\":
+        {\n    \"catalog\": {\n      \"title\": \"STAC Catalog\",\n      \"type\":
+        \"object\",\n      \"required\": [\n        \"stac_version\",\n        \"type\",\n
+        \       \"id\",\n        \"description\",\n        \"links\"\n      ],\n      \"properties\":
+        {\n        \"stac_version\": {\n          \"title\": \"STAC version\",\n          \"type\":
+        \"string\",\n          \"const\": \"1.0.0\"\n        },\n        \"stac_extensions\":
+        {\n          \"title\": \"STAC extensions\",\n          \"type\": \"array\",\n
+        \         \"uniqueItems\": true,\n          \"items\": {\n            \"title\":
+        \"Reference to a JSON Schema\",\n            \"type\": \"string\",\n            \"format\":
+        \"iri\"\n          }\n        },\n        \"type\": {\n          \"title\":
+        \"Type of STAC entity\",\n          \"const\": \"Catalog\"\n        },\n        \"id\":
+        {\n          \"title\": \"Identifier\",\n          \"type\": \"string\",\n
+        \         \"minLength\": 1\n        },\n        \"title\": {\n          \"title\":
+        \"Title\",\n          \"type\": \"string\"\n        },\n        \"description\":
+        {\n          \"title\": \"Description\",\n          \"type\": \"string\",\n
+        \         \"minLength\": 1\n        },\n        \"links\": {\n          \"title\":
+        \"Links\",\n          \"type\": \"array\",\n          \"items\": {\n            \"$ref\":
+        \"#/definitions/link\"\n          }\n        }\n      }\n    },\n    \"link\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"rel\",\n
+        \       \"href\"\n      ],\n      \"properties\": {\n        \"href\": {\n
+        \         \"title\": \"Link reference\",\n          \"type\": \"string\",\n
+        \         \"format\": \"iri-reference\",\n          \"minLength\": 1\n        },\n
+        \       \"rel\": {\n          \"title\": \"Link relation type\",\n          \"type\":
+        \"string\",\n          \"minLength\": 1\n        },\n        \"type\": {\n
+        \         \"title\": \"Link type\",\n          \"type\": \"string\"\n        },\n
+        \       \"title\": {\n          \"title\": \"Link title\",\n          \"type\":
+        \"string\"\n        }\n      }\n    }\n  }\n}\n"
+    headers: {}
+    status:
+      code: 200
+      message: OK
+version: 1

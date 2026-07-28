@@ -10,3 +10,4 @@ pystac.validation
 
 .. automodule:: pystac.validation
     :members:
+    :undoc-members:

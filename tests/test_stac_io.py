@@ -5,118 +5,133 @@ import unittest
 from pathlib import Path
 
 import pytest
+from pytest import MonkeyPatch
 
 import pystac
 from pystac.stac_io import DefaultStacIO, DuplicateKeyReportingMixin, StacIO
 from tests.utils import TestCases
 
 
-class StacIOTest(unittest.TestCase):
-    def setUp(self) -> None:
-        self.stac_io = StacIO.default()
+def test_read_write_collection() -> None:
+    collection = pystac.read_file(
+        TestCases.get_path("data-files/collections/multi-extent.json")
+    )
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        dest_href = os.path.join(tmp_dir, "collection.json")
+        pystac.write_file(collection, dest_href=dest_href)
+        assert os.path.exists(dest_href), "File was not written."
 
-    def test_read_write_collection(self) -> None:
-        collection = pystac.read_file(
-            TestCases.get_path("data-files/collections/multi-extent.json")
+
+def test_read_write_collection_with_file_protocol() -> None:
+    collection = pystac.read_file(
+        "file://" + TestCases.get_path("data-files/collections/multi-extent.json")
+    )
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        dest_href = os.path.join(tmp_dir, "collection.json")
+        pystac.write_file(collection, dest_href="file://" + dest_href)
+        assert os.path.exists(dest_href), "File was not written."
+
+
+def test_read_item() -> None:
+    item = pystac.read_file(TestCases.get_path("data-files/item/sample-item.json"))
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        dest_href = os.path.join(tmp_dir, "item.json")
+        pystac.write_file(item, dest_href=dest_href)
+        assert os.path.exists(dest_href), "File was not written."
+
+
+def test_read_write_catalog() -> None:
+    catalog = pystac.read_file(
+        TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
+    )
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        dest_href = os.path.join(tmp_dir, "catalog.json")
+        pystac.write_file(catalog, dest_href=dest_href)
+        assert os.path.exists(dest_href), "File was not written."
+
+
+def test_read_item_collection_raises_exception() -> None:
+    with pytest.raises(pystac.STACTypeError):
+        _ = pystac.read_file(
+            TestCases.get_path("data-files/item-collection/sample-item-collection.json")
         )
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            dest_href = os.path.join(tmp_dir, "collection.json")
-            pystac.write_file(collection, dest_href=dest_href)
-            self.assertTrue(os.path.exists(dest_href), msg="File was not written.")
 
-    def test_read_item(self) -> None:
-        item = pystac.read_file(TestCases.get_path("data-files/item/sample-item.json"))
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            dest_href = os.path.join(tmp_dir, "item.json")
-            pystac.write_file(item, dest_href=dest_href)
-            self.assertTrue(os.path.exists(dest_href), msg="File was not written.")
 
-    def test_read_write_catalog(self) -> None:
-        catalog = pystac.read_file(
-            TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
-        )
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            dest_href = os.path.join(tmp_dir, "catalog.json")
-            pystac.write_file(catalog, dest_href=dest_href)
-            self.assertTrue(os.path.exists(dest_href), msg="File was not written.")
+def test_read_item_dict() -> None:
+    stac_io = StacIO.default()
+    item_dict = stac_io.read_json(
+        TestCases.get_path("data-files/item/sample-item.json")
+    )
+    item = pystac.read_dict(item_dict)
+    assert isinstance(item, pystac.Item)
 
-    def test_read_item_collection_raises_exception(self) -> None:
-        with self.assertRaises(pystac.STACTypeError):
-            _ = pystac.read_file(
-                TestCases.get_path(
-                    "data-files/item-collection/sample-item-collection.json"
-                )
-            )
 
-    def test_read_item_dict(self) -> None:
-        item_dict = self.stac_io.read_json(
-            TestCases.get_path("data-files/item/sample-item.json")
-        )
-        item = pystac.read_dict(item_dict)
-        self.assertIsInstance(item, pystac.Item)
+def test_read_collection_dict() -> None:
+    stac_io = StacIO.default()
+    collection_dict = stac_io.read_json(
+        TestCases.get_path("data-files/collections/multi-extent.json")
+    )
+    collection = pystac.read_dict(collection_dict)
+    assert isinstance(collection, pystac.Collection)
 
-    def test_read_collection_dict(self) -> None:
-        collection_dict = self.stac_io.read_json(
-            TestCases.get_path("data-files/collections/multi-extent.json")
-        )
-        collection = pystac.read_dict(collection_dict)
-        self.assertIsInstance(collection, pystac.Collection)
 
-    def test_read_catalog_dict(self) -> None:
-        catalog_dict = self.stac_io.read_json(
-            TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
-        )
-        catalog = pystac.read_dict(catalog_dict)
-        self.assertIsInstance(catalog, pystac.Catalog)
+def test_read_catalog_dict() -> None:
+    stac_io = StacIO.default()
+    catalog_dict = stac_io.read_json(
+        TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
+    )
+    catalog = pystac.read_dict(catalog_dict)
+    assert isinstance(catalog, pystac.Catalog)
 
-    def test_read_from_stac_object(self) -> None:
-        catalog = pystac.STACObject.from_file(
-            TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
-        )
-        self.assertIsInstance(catalog, pystac.Catalog)
 
-    def test_report_duplicate_keys(self) -> None:
-        # Directly from dict
-        class ReportingStacIO(DefaultStacIO, DuplicateKeyReportingMixin):
-            pass
+def test_read_from_stac_object() -> None:
+    catalog = pystac.STACObject.from_file(
+        TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
+    )
+    assert isinstance(catalog, pystac.Catalog)
 
-        stac_io = ReportingStacIO()
-        test_json = """{
-            "key": "value_1",
-            "key": "value_2"
-        }"""
 
-        with self.assertRaises(pystac.DuplicateObjectKeyError) as excinfo:
-            stac_io.json_loads(test_json)
-        self.assertEqual(str(excinfo.exception), 'Found duplicate object name "key"')
+def test_report_duplicate_keys() -> None:
+    # Directly from dict
+    class ReportingStacIO(DefaultStacIO, DuplicateKeyReportingMixin):
+        pass
 
-        # From file
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            src_href = os.path.join(tmp_dir, "test.json")
-            with open(src_href, "w") as dst:
-                dst.write(test_json)
+    stac_io = ReportingStacIO()
+    test_json = """{
+        "key": "value_1",
+        "key": "value_2"
+    }"""
 
-            with self.assertRaises(pystac.DuplicateObjectKeyError) as excinfo:
-                stac_io.read_json(src_href)
-            self.assertEqual(
-                str(excinfo.exception),
-                f'Found duplicate object name "key" in {src_href}',
-            )
+    with pytest.raises(pystac.DuplicateObjectKeyError) as excinfo:
+        stac_io.json_loads(test_json)
+    assert str(excinfo.value) == 'Found duplicate object name "key"'
 
-    @unittest.mock.patch("pystac.stac_io.urlopen")
-    def test_headers_stac_io(self, urlopen_mock: unittest.mock.MagicMock) -> None:
-        stac_io = DefaultStacIO(headers={"Authorization": "api-key fake-api-key-value"})
+    # From file
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        src_href = os.path.join(tmp_dir, "test.json")
+        with open(src_href, "w") as dst:
+            dst.write(test_json)
 
-        catalog = pystac.Catalog("an-id", "a description").to_dict()
-        # required until https://github.com/stac-utils/pystac/pull/896 is merged
-        catalog["links"] = []
-        urlopen_mock.return_value.__enter__.return_value.read.return_value = json.dumps(
-            catalog
-        ).encode("utf-8")
-        pystac.Catalog.from_file("https://example.com/catalog.json", stac_io=stac_io)
+        with pytest.raises(pystac.DuplicateObjectKeyError) as excinfo:
+            stac_io.read_json(src_href)
+        assert str(excinfo.value), f'Found duplicate object name "key" in {src_href}'
 
-        request_obj = urlopen_mock.call_args[0][0]
-        self.assertEqual(request_obj.headers, stac_io.headers)
+
+@unittest.mock.patch("pystac.stac_io.urllib3.PoolManager.request")
+def test_headers_stac_io(request_mock: unittest.mock.MagicMock) -> None:
+    stac_io = DefaultStacIO(headers={"Authorization": "api-key fake-api-key-value"})
+
+    catalog = pystac.Catalog("an-id", "a description").to_dict()
+    # required until https://github.com/stac-utils/pystac/pull/896 is merged
+    catalog["links"] = []
+    request_mock.return_value.__enter__.return_value.status = 200
+    request_mock.return_value.__enter__.return_value.read.return_value = json.dumps(
+        catalog
+    ).encode("utf-8")
+    pystac.Catalog.from_file("https://example.com/catalog.json", stac_io=stac_io)
+
+    headers = request_mock.call_args[1]["headers"]
+    assert headers == {"User-Agent": f"pystac/{pystac.__version__}", **stac_io.headers}
 
 
 @pytest.mark.vcr()
@@ -145,8 +160,107 @@ def test_retry_stac_io_404() -> None:
         )
 
 
+def test_read_text_raises_on_429_with_urllib3(
+    monkeypatch: MonkeyPatch,
+) -> None:
+    # https://github.com/stac-utils/pystac/issues/1738
+    urllib3 = pytest.importorskip("urllib3")
+
+    class FakeResponse:
+        status = 429
+
+        def read(self) -> bytes:
+            return b'{"error": "Nope!"}'
+
+        def __enter__(self) -> "FakeResponse":
+            return self
+
+        def __exit__(self, *args: object) -> None:
+            pass
+
+    class FakePoolManager:
+        def request(self, *args: object, **kwargs: object) -> FakeResponse:
+            return FakeResponse()
+
+    monkeypatch.setattr(urllib3, "PoolManager", FakePoolManager)
+
+    stac_io = DefaultStacIO()
+    with pytest.raises(Exception):
+        stac_io.read_text("http://localhost:5000")
+
+
+def test_retry_stac_io_raises_on_429(monkeypatch: MonkeyPatch) -> None:
+    # https://github.com/stac-utils/pystac/issues/1738
+    pytest.importorskip("urllib3")
+    from urllib3 import PoolManager
+
+    from pystac.stac_io import RetryStacIO
+
+    class FakeResponse:
+        status = 429
+        reason = "Too Many Requests"
+        headers: dict[str, str] = {}
+        data = b'{"error": "Nope!"}'
+
+    def fake_request(
+        self: PoolManager, *args: object, **kwargs: object
+    ) -> FakeResponse:
+        return FakeResponse()
+
+    monkeypatch.setattr(PoolManager, "request", fake_request)
+
+    stac_io = RetryStacIO()
+    with pytest.raises(Exception):
+        stac_io.read_text("http://localhost:5000")
+
+
 def test_save_http_href_errors(tmp_path: Path) -> None:
     catalog = pystac.Catalog(id="test-catalog", description="")
     catalog.set_self_href("http://pystac.test/catalog.json")
     with pytest.raises(NotImplementedError):
         catalog.save_object()
+
+
+@pytest.mark.vcr()
+def test_urls_with_non_ascii_characters() -> None:
+    from pystac.stac_io import HAS_URLLIB3
+
+    url = "https://capella-open-data.s3.us-west-2.amazonaws.com/stac/capella-open-data-by-capital/capella-open-data-malé/collection.json"
+
+    if HAS_URLLIB3:
+        pystac.Collection.from_file(url)
+    else:
+        with pytest.raises(pystac.STACError):
+            pystac.Collection.from_file(url)
+
+
+@pytest.mark.vcr()
+def test_proj_json_schema_is_readable() -> None:
+    from pystac.stac_io import DefaultStacIO
+
+    stac_io = DefaultStacIO()
+    _ = stac_io.read_text_from_href(
+        "https://proj.org/schemas/v0.7/projjson.schema.json"
+    )
+
+
+@pytest.mark.vcr()
+def test_custom_stac_io() -> None:
+    class CustomStacIO(DefaultStacIO):
+        def __init__(self, headers: dict[str, str] | None = None):
+            super().__init__(headers)
+            self.calls = 0
+
+        def read_text_from_href(self, href: str) -> str:
+            self.calls += 1
+            return super().read_text_from_href(href)
+
+    stac_io = CustomStacIO()
+    item = pystac.read_file(
+        "https://raw.githubusercontent.com/radiantearth/stac-spec/refs/heads/master/examples/simple-item.json",
+        stac_io=stac_io,
+    )
+    link = item.get_single_link(rel="self")
+    assert link
+    link.get_href()
+    assert stac_io.calls == 2

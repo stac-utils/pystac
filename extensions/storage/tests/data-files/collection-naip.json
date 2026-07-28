@@ -1,0 +1,86 @@
+{
+  "type": "Collection",
+  "id": "collection-naip",
+  "stac_version": "1.1.0",
+  "description": "Example collection for Storage Extension",
+  "links": [
+    {
+      "rel": "root",
+      "href": "./collection-naip.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "item",
+      "href": "./item-naip.json",
+      "type": "application/json"
+    }
+  ],
+  "stac_extensions": [
+    "https://stac-extensions.github.io/storage/v2.0.0/schema.json"
+  ],
+  "summaries": {
+    "storage:schemes": [
+      {
+        "naip-azure-nsl": {
+          "type": "ms-azure",
+          "platform": "https://{account}.blob.core.windows.net",
+          "account": "naip-nsl"
+        }
+      },
+      {
+        "naip-azure-eu": {
+          "type": "ms-azure",
+          "platform": "https://{account}.blob.core.windows.net",
+          "account": "naipeuwest",
+          "requester_pays": false
+        }
+      },
+      {
+        "naip-azure-blobs": {
+          "type": "ms-azure",
+          "platform": "https://{account}.blob.core.windows.net",
+          "account": "naipblobs",
+          "region": "eastus"
+        }
+      },
+      {
+        "naip-gcs": {
+          "type": "gcp",
+          "platform": "https://storage.googleapis.com/{bucket}",
+          "bucket": "naip-nsl",
+          "requester_pays": true
+        }
+      },
+      {
+        "naip-aws": {
+          "type": "gcp",
+          "platform": "https://{bucket}.s3.{region}.amazonaws.com",
+          "bucket": "naip-visualization",
+          "region": "us-west-2",
+          "requester_pays": true
+        }
+      }
+    ]
+  },
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          -97.75,
+          30.25,
+          -97.6875,
+          30.312499999999996
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "2016-09-28T00:00:00Z",
+          "2016-09-28T00:00:00Z"
+        ]
+      ]
+    }
+  },
+  "license": "other"
+}

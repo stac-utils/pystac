@@ -13,17 +13,20 @@ pystac.extensions
 
 .. autosummary::
 
-    datacube.DatacubeExtension
     classification.ClassificationExtension
+    datacube.DatacubeExtension
     eo.EOExtension
     file.FileExtension
     grid.GridExtension
     item_assets.ItemAssetsExtension
-    label.LabelExtension
     mgrs.MgrsExtension
+    mlm.MLMExtension
+    mlm.AssetGeneralMLMExtension
+    mlm.AssetDetailedMLMExtension
     pointcloud.PointcloudExtension
     projection.ProjectionExtension
     raster.RasterExtension
+    render.RenderExtension
     sar.SarExtension
     sat.SatExtension
     scientific.ScientificExtension

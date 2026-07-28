@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Configuration file for the Sphinx documentation builder.
 #
@@ -15,7 +14,7 @@
 import os
 import subprocess
 import sys
-from typing import Any, Dict, List
+from typing import Any
 
 sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath("../"))
@@ -62,13 +61,21 @@ extensions = [
 
 extlinks = {
     "tutorial": (
-        "https://github.com/stac-utils/pystac/"
-        "tree/{}/docs/tutorials/%s".format(git_branch),
+        "https://github.com/stac-utils/pystac/tree/{}/docs/tutorials/%s".format(
+            git_branch
+        ),
         "%s tutorial",
     ),
     "stac-spec": (
-        "https://github.com/radiantearth/stac-spec/tree/"
-        "v{}/%s".format(STACVersion.DEFAULT_STAC_VERSION),
+        "https://github.com/radiantearth/stac-spec/tree/v{}/%s".format(
+            STACVersion.DEFAULT_STAC_VERSION
+        ),
+        "%s path",
+    ),
+    "stac-api-spec": (
+        "https://github.com/radiantearth/stac-api-spec/tree/v{}/%s".format(
+            STACVersion.DEFAULT_STAC_API_VERSION
+        ),
         "%s path",
     ),
     "stac-ext": ("https://github.com/stac-extensions/%s", "%s extension"),
@@ -134,6 +141,7 @@ html_theme_options = {
         {"name": "STAC Spec", "url": "https://github.com/radiantearth/stac-spec"}
     ],
     "header_links_before_dropdown": 7,
+    "navigation_with_keys": False,
     # "navbar_end": ["navbar-icon-links.html", "search-field.html"]
 }
 
@@ -152,7 +160,7 @@ html_static_path = ["_static"]
 # default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
 # 'searchbox.html']``.
 #
-html_sidebars: Dict[str, List[str]] = {"index": []}
+html_sidebars: dict[str, list[str]] = {"index": []}
 
 
 # -- Options for HTMLHelp output ---------------------------------------------
@@ -163,7 +171,7 @@ htmlhelp_basename = "pystacdoc"
 
 # -- Options for LaTeX output ------------------------------------------------
 
-latex_elements: Dict[str, Any] = {
+latex_elements: dict[str, Any] = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
@@ -240,3 +248,11 @@ intersphinx_mapping = {
 # -- Substutition variables
 
 rst_epilog = f".. |stac_version| replace:: {STACVersion.DEFAULT_STAC_VERSION}"
+
+nitpick_ignore = [
+    ("py:class", "Datetime"),
+    ("py:class", "L"),
+    ("py:class", "pystac.summaries.T"),
+    ("py:class", "HREF"),  # this one partially works
+    ("py:class", "jsonschema.validators.Draft7Validator"),
+]

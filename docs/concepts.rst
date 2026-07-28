@@ -82,7 +82,8 @@ Layouts
 ~~~~~~~
 
 PySTAC provides a few different strategies for laying out the HREFs of a STAC.
-To use them you can pass in a strategy to the normalize_hrefs call.
+To use them you can pass in a strategy when instantiating a catalog or when
+calling `normalize_hrefs`.
 
 Using templates
 '''''''''''''''
@@ -124,6 +125,30 @@ Catalogs, Collections or Items. Similar to the templating strategy, you can prov
 fallback strategy (which defaults to
 :class:`~pystac.layout.BestPracticesLayoutStrategy`) for any stac object type that you
 don't supply a function for.
+
+
+Set a default catalog layout strategy
+'''''''''''''''''''''''''''''''''''''
+
+Instead of fixing the HREFs of child objects retrospectively using `normalize_hrefs`,
+you can also define a default strategy for a catalog. When instantiating a catalog,
+pass in a custom strategy and base href. Consequently, the HREFs of all child
+objects and items added to the catalog tree will be set correctly using that strategy.
+
+
+.. code-block:: python
+
+   from pystac import Catalog, Collection, Item
+
+   catalog = Catalog(...,
+                     href="/some/location/catalog.json",
+                     strategy=custom_strategy)
+   collection = Collection(...)
+   item = Item(...)
+   catalog.add_child(collection)
+   collection.add_item(item)
+   catalog.save()
+
 
 .. _catalog types:
 
@@ -210,7 +235,7 @@ in the catalog will produce a relative link, based on the self link of the paren
 object.
 
 You can make all the links of a catalog relative or absolute by setting the
-:func:`Catalog.catalog_type` field then resaving the entire catalog.
+:func:`~pystac.Catalog.catalog_type` field then resaving the entire catalog.
 
 .. _rel vs abs asset:
 
@@ -287,53 +312,201 @@ that you see all API calls.
 If you require more custom logic for I/O operations or would like to use a
 3rd-party library for I/O operations (e.g. ``requests``),
 you can create a sub-class of :class:`pystac.StacIO`
-(or :class:`pystac.DefaultStacIO`) and customize the methods as
+(or :class:`pystac.stac_io.DefaultStacIO`) and customize the methods as
 you see fit. You can then pass instances of this custom sub-class into the ``stac_io``
 argument of most object-specific I/O methods. You can also use
 :meth:`pystac.StacIO.set_default` in your client's ``__init__.py`` file to make this
 sub-class the default :class:`pystac.StacIO` implementation throughout the library.
 
-For example, this code will allow
+For example, the following code examples will allow
 for reading from AWS's S3 cloud object storage using `boto3
-<https://boto3.amazonaws.com/v1/documentation/api/latest/index.html>`__:
+<https://boto3.amazonaws.com/v1/documentation/api/latest/index.html>`__
+or Azure Blob Storage using the `Azure SDK for Python
+<https://learn.microsoft.com/en-us/python/api/overview/azure/storage-blob-readme?view=azure-python>`__:
 
-.. code-block:: python
+.. tab-set::
+   .. tab-item:: AWS S3
 
-   from urllib.parse import urlparse
-   import boto3
-   from pystac import Link
-   from pystac.stac_io import DefaultStacIO, StacIO
+      .. code-block:: python
 
-   class CustomStacIO(DefaultStacIO):
-      def __init__(self):
-         self.s3 = boto3.resource("s3")
+         from urllib.parse import urlparse
+         import boto3
+         from pystac import Link
+         from pystac.stac_io import DefaultStacIO, StacIO
+         from typing import Union, Any
 
-      def read_text(
-         self, source: Union[str, Link], *args: Any, **kwargs: Any
-      ) -> str:
-         parsed = urlparse(source)
-         if parsed.scheme == "s3":
-            bucket = parsed.netloc
-            key = parsed.path[1:]
+         class CustomStacIO(DefaultStacIO):
+            def __init__(self):
+               self.s3 = boto3.resource("s3")
+               super().__init__()
 
-            obj = self.s3.Object(bucket, key)
-            return obj.get()["Body"].read().decode("utf-8")
-         else:
-            return super().read_text(source, *args, **kwargs)
+            def read_text(
+               self, source: Union[str, Link], *args: Any, **kwargs: Any
+            ) -> str:
+               parsed = urlparse(source)
+               if parsed.scheme == "s3":
+                  bucket = parsed.netloc
+                  key = parsed.path[1:]
 
-      def write_text(
-         self, dest: Union[str, Link], txt: str, *args: Any, **kwargs: Any
-      ) -> None:
-         parsed = urlparse(dest)
-         if parsed.scheme == "s3":
-            bucket = parsed.netloc
-            key = parsed.path[1:]
-            self.s3.Object(bucket, key).put(Body=txt, ContentEncoding="utf-8")
-         else:
-            super().write_text(dest, txt, *args, **kwargs)
+                  obj = self.s3.Object(bucket, key)
+                  return obj.get()["Body"].read().decode("utf-8")
+               else:
+                  return super().read_text(source, *args, **kwargs)
 
-   StacIO.set_default(CustomStacIO)
+            def write_text(
+               self, dest: Union[str, Link], txt: str, *args: Any, **kwargs: Any
+            ) -> None:
+               parsed = urlparse(dest)
+               if parsed.scheme == "s3":
+                  bucket = parsed.netloc
+                  key = parsed.path[1:]
+                  self.s3.Object(bucket, key).put(Body=txt, ContentEncoding="utf-8")
+               else:
+                  super().write_text(dest, txt, *args, **kwargs)
 
+         StacIO.set_default(CustomStacIO)
+
+   .. tab-item:: Azure Blob Storage
+
+      .. code-block:: python
+
+         import os
+         import re
+         from typing import Any, Dict, Optional, Tuple, Union
+         from urllib.parse import urlparse
+
+         from azure.core.credentials import (
+            AzureNamedKeyCredential,
+            AzureSasCredential,
+            TokenCredential,
+         )
+         from azure.storage.blob import BlobClient, ContentSettings
+         from pystac import Link
+         from pystac.stac_io import DefaultStacIO
+
+         BLOB_HTTPS_URI_PATTERN = r"https:\/\/(.+?)\.blob\.core\.windows\.net"
+
+         AzureCredentialType = Union[
+            str,
+            Dict[str, str],
+            AzureNamedKeyCredential,
+            AzureSasCredential,
+            TokenCredential,
+         ]
+
+
+         class BlobStacIO(DefaultStacIO):
+            """A custom StacIO class for reading and writing STAC objects
+            from/to Azure Blob storage.
+            """
+
+            conn_str: Optional[str] = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+            account_url: Optional[str] = None
+            credential: Optional[AzureCredentialType] = None
+            overwrite: bool = True
+
+            def _is_blob_uri(self, href: str) -> bool:
+               """Check if href matches Blob URI pattern."""
+               if re.search(
+                     re.compile(BLOB_HTTPS_URI_PATTERN), href
+               ) is not None or href.startswith("abfs://"):
+                     return True
+               else:
+                     return False
+
+            def _parse_blob_uri(self, uri: str) -> Tuple[str, str]:
+               """Parse the container and blob name from a Blob URI.
+
+               Parameters
+               ----------
+               uri
+                     An Azure Blob URI.
+
+               Returns
+               -------
+                     The container and blob names.
+               """
+               if uri.startswith("abfs://"):
+                     path = uri.replace("abfs://", "/")
+               else:
+                     path = urlparse(uri).path
+
+               parts = path.split("/")
+               container = parts[1]
+               blob = "/".join(parts[2:])
+               return container, blob
+
+            def _get_blob_client(self, uri: str) -> BlobClient:
+               """Instantiate a `BlobClient` given a container and blob.
+
+               Parameters
+               ----------
+               uri
+                     An Azure Blob URI.
+
+               Returns
+               -------
+                     A `BlobClient` for interacting with `blob` in `container`.
+               """
+               container, blob = self._parse_blob_uri(uri)
+
+               if self.conn_str:
+                     return BlobClient.from_connection_string(
+                        self.conn_str,
+                        container_name=container,
+                        blob_name=blob,
+                     )
+               elif self.account_url:
+                     return BlobClient(
+                        account_url=self.account_url,
+                        container_name=container,
+                        blob_name=blob,
+                        credential=self.credential,
+                     )
+               else:
+                     raise ValueError(
+                        "Must set conn_str or account_url (and credential if required)"
+                     )
+
+            def read_text(self, source: Union[str, Link], *args: Any, **kwargs: Any) -> str:
+               if isinstance(source, Link):
+                     source = source.href
+               if self._is_blob_uri(source):
+                     blob_client = self._get_blob_client(source)
+                     obj = blob_client.download_blob().readall().decode()
+                     return obj
+               else:
+                     return super().read_text(source, *args, **kwargs)
+
+            def write_text(
+               self, dest: Union[str, Link], txt: str, *args: Any, **kwargs: Any
+            ) -> None:
+               """Write STAC Objects to Blob storage. Note: overwrites by default."""
+               if isinstance(dest, Link):
+                     dest = dest.href
+               if self._is_blob_uri(dest):
+                     blob_client = self._get_blob_client(dest)
+                     blob_client.upload_blob(
+                        txt,
+                        overwrite=self.overwrite,
+                        content_settings=ContentSettings(content_type="application/json"),
+                     )
+               else:
+                     super().write_text(dest, txt, *args, **kwargs)
+
+
+         # set Blob storage connection string
+         BlobStacIO.conn_str = "my-storage-connection-string"
+
+         # OR set Blob account URL, credential
+         BlobStacIO.account_url = "https://myblobstorageaccount.blob.core.windows.net"
+         BlobStacIO.credential = AzureSasCredential("my-sas-token")
+
+         # modify overwrite behavior
+         BlobStacIO.overwrite = False
+
+         # set BlobStacIO as default StacIO
+         StacIO.set_default(BlobStacIO)
 
 If you only need to customize read operations you can inherit from
 :class:`~pystac.stac_io.DefaultStacIO` and only overwrite the read method. For example,
@@ -345,6 +518,7 @@ to take advantage of connection pooling using a `requests.Session
    from urllib.parse import urlparse
    import requests
    from pystac.stac_io import DefaultStacIO, StacIO
+   from typing import Union, Any
 
    class ConnectionPoolingIO(DefaultStacIO):
       def __init__(self):
@@ -399,7 +573,7 @@ PySTAC package) or older versions (which are hosted at https://schemas.stacspec.
 This validation includes any extensions that the object extends (these are always
 accessed remotely based on their URIs).
 
-If there are validation errors, a :class:`~pystac.validation.STACValidationError`
+If there are validation errors, a :class:`~pystac.STACValidationError`
 is raised.
 
 You can also call :meth:`~pystac.Catalog.validate_all` on a Catalog or Collection to
@@ -413,7 +587,7 @@ Validating STAC JSON
 --------------------
 
 You can validate STAC JSON represented as a ``dict`` using the
-:meth:`pystac.validation.validate_dict` method:
+:func:`pystac.validation.validate_dict` method:
 
 .. code-block:: python
 
@@ -425,7 +599,7 @@ You can validate STAC JSON represented as a ``dict`` using the
    validate_dict(js)
 
 You can also recursively validate all of the catalogs, collections and items across STAC
-versions using the :meth:`pystac.validation.validate_all` method:
+versions using the :func:`pystac.validation.validate_all` method:
 
 .. code-block:: python
 
@@ -441,15 +615,16 @@ Using your own validator
 
 By default PySTAC uses the :class:`~pystac.validation.JsonSchemaSTACValidator`
 implementation for validation. Users can define their own implementations of
-:class:`~pystac.validation.STACValidator` and register it with pystac using
-:meth:`pystac.validation.set_validator`.
+:class:`~pystac.validation.stac_validator.STACValidator` and register it with pystac
+using :func:`pystac.validation.set_validator`.
 
 The :class:`~pystac.validation.JsonSchemaSTACValidator` takes a
-:class:`~pystac.validation.SchemaUriMap`, which by default uses the
-:class:`~pystac.validation.schema_uri_map.DefaultSchemaUriMap`. If desirable, users cn
-create their own implementation of :class:`~pystac.validation.SchemaUriMap` and register
+:class:`~pystac.validation.schema_uri_map.SchemaUriMap`, which by default uses the
+:class:`~pystac.validation.schema_uri_map.DefaultSchemaUriMap`. If desirable, users can
+create their own implementation of
+:class:`~pystac.validation.schema_uri_map.SchemaUriMap` and register
 a new instance of :class:`~pystac.validation.JsonSchemaSTACValidator` using that schema
-map with :meth:`pystac.validation.set_validator`.
+map with :func:`pystac.validation.set_validator`.
 
 Extensions
 ==========
@@ -475,44 +650,46 @@ Extension (e.g. Electro-Optical, Projection, etc.) and STAC Object
 (:class:`~pystac.Collection`, :class:`pystac.Item`, or :class:`pystac.Asset`). All
 classes that extend these objects inherit from
 :class:`pystac.extensions.base.PropertiesExtension`, and you can use the
-``ext`` method on these classes to extend an object.
+``ext`` accessor on the object to access the extension fields.
 
 For instance, if you have an item that implements the :stac-ext:`Electro-Optical
-Extension <eo>`, you can access the properties associated with that extension using
-:meth:`EOExtension.ext <pystac.extensions.eo.EOExtension.ext>`:
+Extension <eo>`, you can access the fields associated with that extension using
+:meth:`Item.ext <pystac.Item.ext>`:
 
 .. code-block:: python
 
    import pystac
-   from pystac.extensions.eo import EOExtension
 
    item = pystac.Item.from_file("tests/data-files/eo/eo-landsat-example.json")
 
-   # Check that the Item implements the EO Extension
-   if EOExtension.has_extension(item):
-      eo_ext = EOExtension.ext(item)
+   # As long as the Item implements the EO Extension you can access all the
+   # EO properties directly
+   bands = item.ext.eo.bands
+   cloud_cover = item.ext.eo.cloud_cover
+   ...
 
-      bands = eo_ext.bands
-      cloud_cover = eo_ext.cloud_cover
-      snow_cover = eo_ext.snow_cover
-      ...
-
-.. note:: The ``ext`` method will raise an :exc:`~pystac.ExtensionNotImplemented`
+.. note:: ``ext`` will raise an :exc:`~pystac.ExtensionNotImplemented`
    exception if the object does not implement that extension (e.g. if the extension
-   URI is not in that object's :attr:`~pystac.STACObject.stac_extensions` list). In
-   the example above, we check that the Item implements the EO Extension before calling
-   :meth:`EOExtension.ext <pystac.extensions.eo.EOExtension.ext>` to handle this. See
+   URI is not in that object's :attr:`~pystac.STACObject.stac_extensions` list). See
    the `Adding an Extension`_ section below for details on adding an extension to an
    object.
+
+If you don't want to raise an error you can use
+:meth:`Item.ext.has <pystac.extensions.ext.ItemExt.has>`
+to first check if the extension is implemented on your pystac object:
+
+.. code-block:: python
+
+   if item.ext.has("eo"):
+      bands = item.ext.eo.bands
 
 See the documentation for each extension implementation for details on the supported
 properties and other functionality.
 
-Instances of :class:`~pystac.extensions.base.PropertiesExtension` have a
-:attr:`~pystac.extensions.base.PropertiesExtension.properties` attribute that gives
-access to the properties of the extended object. *This attribute is a reference to the
-properties of the* :class:`~pystac.Item` *or* :class:`~pystac.Asset` *being extended and
-can therefore mutate those properties.* For instance:
+Extensions have access to the properties of the object. *This attribute is a reference
+to the properties of the* :class:`~pystac.Collection`, :class:`~pystac.Item` *or*
+:class:`~pystac.Asset` *being extended and can therefore mutate those properties.*
+For instance:
 
 .. code-block:: python
 
@@ -520,11 +697,10 @@ can therefore mutate those properties.* For instance:
    print(item.properties["eo:cloud_cover"])
    # 78
 
-   eo_ext = EOExtension.ext(item)
-   print(eo_ext.cloud_cover)
+   print(item.ext.eo.cloud_cover)
    # 78
 
-   eo_ext.cloud_cover = 45
+   item.ext.eo.cloud_cover = 45
    print(item.properties["eo:cloud_cover"])
    # 45
 
@@ -545,25 +721,16 @@ have a default value of ``None``:
 .. code-block:: python
 
    # Can also omit cloud_cover entirely...
-   eo_ext.apply(0.5, bands, cloud_cover=None)
-
-
-If you attempt to extend an object that is not supported by an extension, PySTAC will
-throw a :class:`pystac.ExtensionTypeError`.
+   item.ext.eo.apply(0.5, bands, cloud_cover=None)
 
 
 Adding an Extension
 -------------------
 
 You can add an extension to a STAC object that does not already implement that extension
-using the :meth:`ExtensionManagementMixin.add_to
-<pystac.extensions.base.ExtensionManagementMixin.add_to>` method. Any concrete
-extension implementations that extend existing STAC objects should inherit from the
-:class:`~pystac.extensions.base.ExtensionManagementMixin` class, and will therefore have
-this method available. The
-:meth:`~pystac.extensions.base.ExtensionManagementMixin.add_to` adds the correct schema
-URI to the :attr:`~pystac.STACObject.stac_extensions` list for the object being
-extended.
+using the :meth:`Item.ext.add <pystac.extensions.ext.ItemExt.add>` method.
+The :meth:`Item.ext.add <pystac.extensions.ext.ItemExt.add>` method adds the correct
+schema URI to the :attr:`~pystac.Item.stac_extensions` list for the STAC object.
 
 .. code-block:: python
 
@@ -573,7 +740,7 @@ extended.
    # []
 
    # Add the Electro-Optical extension
-   EOExtension.add_to(item)
+   item.ext.add("eo")
    print(item.stac_extensions)
    # ['https://stac-extensions.github.io/eo/v1.1.0/schema.json']
 
@@ -617,7 +784,7 @@ Item Asset properties
 =====================
 
 Properties that apply to Items can be found in two places: the Item's properties or in
-any of an Item's Assets. If the property is on an Asset, it applies only that specific
+any of an Item's Assets. If the property is on an Asset, it applies only to that specific
 asset. For example, gsd defined for an Item represents the best Ground Sample Distance
 (resolution) for the data within the Item. However, some assets may be lower resolution
 and thus have a higher gsd. In that case, the `gsd` can be found on the Asset.
@@ -688,11 +855,10 @@ Mapping over Items
 ------------------
 
 The :func:`Catalog.map_items <pystac.Catalog.map_items>` method is useful for
+into smaller chunks (e.g. tiling out large image items).
+item, you can return multiple items, in case you are generating new objects, or splitting items
 manipulating items in a STAC. This will create a full copy of the STAC, so will leave
 the original catalog unmodified. In the method that manipulates and returns the modified
-item, you can return multiple items, in case you are generating new objects (e.g.
-creating a :class:`~pystac.LabelItem` for image items in a stac), or splitting items
-into smaller chunks (e.g. tiling out large image items).
 
 .. code-block:: python
 
@@ -700,32 +866,14 @@ into smaller chunks (e.g. tiling out large image items).
        item.title = 'Some new title'
        return item
 
-   def create_label_item(item):
-       # Assumes the GeoJSON labels are in the
-       # same location as the image
-       img_href = item.assets['ortho'].href
-       label_href = '{}.geojson'.format(os.path.splitext(img_href)[0])
-       label_item = LabelItem(id='Labels',
-                         geometry=item.geometry,
-                         bbox=item.bbox,
-                         datetime=datetime.utcnow(),
-                         properties={},
-                         label_description='labels',
-                         label_type='vector',
-                         label_properties='label',
-                         label_classes=[
-                         LabelClasses(classes=['one', 'two'],
-                                      name='label')
-                         ],
-                         label_tasks=['classification'])
-       label_item.add_source(item, assets=['ortho'])
-       label_item.add_geojson_labels(label_href)
-
-       return [item, label_item]
+   def duplicate_item(item):
+       duplicated_item = item.clone()
+       duplicated_item.id += "-duplicated"
+       return [item, duplicated_item]
 
 
    c = catalog.map_items(modify_item_title)
-   c = c.map_items(create_label_item)
+   c = c.map_items(duplicate_item)
    new_catalog = c
 
 .. _copy stacs:
@@ -738,11 +886,7 @@ and mutations of STAC data. The :func:`STACObject.full_copy
 <pystac.STACObject.full_copy>` mechanism handles this in a way that ties the elements of
 the copies STAC together correctly. This includes situations where there might be cycles
 in the graph of connected objects of the STAC (which otherwise would be `a tree
-<https://en.wikipedia.org/wiki/Tree_(graph_theory)>`_). For example, if a
-:class:`~pystac.LabelItem` lists a :attr:`~pystac.LabelItem.source` that is an item also
-contained in the root catalog; the full copy of the STAC will ensure that the
-:class:`~pystac.Item` instance representing the source imagery item is the same instance
-that is linked to by the :class:`~pystac.LabelItem`.
+<https://en.wikipedia.org/wiki/Tree_(graph_theory)>`_).
 
 Resolving STAC objects
 ======================
@@ -783,7 +927,7 @@ in the catalog to have a unique identifier, which is unique across the entire ST
 
 When a link is being resolved from a STACObject that has it's root set, that root is
 passed into the :func:`Link.resolve_stac_object <pystac.Link.resolve_stac_object>` call.
-That root's :class:`~pystac.resolved_object_cache.ResolvedObjectCache` will be used to
+That root's :class:`~pystac.cache.ResolvedObjectCache` will be used to
 ensure that if the link is pointing to an object that has already been resolved, then
 that link will point to the same, single instance in the cache. This ensures working
 with STAC objects in memory doesn't create a situation where multiple copies of the same

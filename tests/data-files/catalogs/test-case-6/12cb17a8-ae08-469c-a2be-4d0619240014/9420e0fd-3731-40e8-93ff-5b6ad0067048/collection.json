@@ -1,7 +1,7 @@
 {
   "type": "Collection",
   "id": "9420e0fd-3731-40e8-93ff-5b6ad0067048",
-  "stac_version": "1.0.0",
+  "stac_version": "1.1.0",
   "description": "Scene collection in layer 12cb17a8-ae08-469c-a2be-4d0619240014",
   "links": [
     {

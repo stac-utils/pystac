@@ -1,13 +1,13 @@
+from __future__ import annotations
+
 import os
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     PathLike = os.PathLike[str]
-else:
-    PathLike = os.PathLike
 
 
-def get_data_path(rel_path: Union[str, PathLike]) -> str:
+def get_data_path(rel_path: str | PathLike) -> str:
     """Gets the absolute path to a file based on a path relative to the
     tests/data-files directory in this repo."""
     rel_path = os.fspath(rel_path)

@@ -15,6 +15,7 @@ pystac
       Summaries
       Item
       Asset
+      ItemAssetDefinition
       CommonMetadata
       ItemCollection
       Link
@@ -43,6 +44,7 @@ Catalog
 
 .. autoclass:: pystac.Catalog
    :members:
+   :inherited-members:
    :undoc-members:
 
 CatalogType
@@ -58,6 +60,7 @@ Collection
 
 .. autoclass:: pystac.Collection
    :members:
+   :inherited-members:
    :undoc-members:
 
 Extent
@@ -107,6 +110,7 @@ Item
 
 .. autoclass:: pystac.Item
    :members:
+   :inherited-members:
    :undoc-members:
 
 Asset
@@ -115,6 +119,14 @@ Asset
 .. autoclass:: pystac.Asset
    :members:
    :undoc-members:
+
+ItemAssetDefinition
+-------------------
+
+.. autoclass:: pystac.ItemAssetDefinition
+   :members:
+   :undoc-members:
+
 
 CommonMetadata
 --------------
@@ -128,12 +140,15 @@ ItemCollection
 
 .. autoclass:: pystac.ItemCollection
    :members:
+   :inherited-members:
+   :undoc-members:
 
 Link
 ----
 
 .. autoclass:: pystac.Link
    :members:
+   :inherited-members:
    :undoc-members:
 
 MediaType
@@ -199,3 +214,14 @@ STACValidationError
 ~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: pystac.STACValidationError
+
+TemplateError
+~~~~~~~~~~~~~
+
+.. autoclass:: pystac.TemplateError
+
+
+DeprecatedWarning
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.DeprecatedWarning

@@ -4,12 +4,12 @@ import json
 import os
 import posixpath
 import tempfile
-import unittest
 from collections import defaultdict
+from collections.abc import Iterator
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Optional, Tuple, Union, cast
+from typing import Any, cast
 
 import pytest
 
@@ -21,19 +21,32 @@ from pystac import (
     CatalogType,
     Collection,
     Item,
+    Link,
     MediaType,
 )
-from pystac.extensions.label import LabelClasses, LabelExtension, LabelType
+from pystac.errors import STACError
+from pystac.layout import (
+    APILayoutStrategy,
+    BestPracticesLayoutStrategy,
+    HrefLayoutStrategy,
+    TemplateLayoutStrategy,
+)
 from pystac.utils import (
     is_absolute_href,
     make_absolute_href,
     make_posix_style,
     make_relative_href,
 )
-from tests.utils import ARBITRARY_BBOX, ARBITRARY_GEOM, MockStacIO, TestCases
+from tests.utils import (
+    ARBITRARY_BBOX,
+    ARBITRARY_EXTENT,
+    ARBITRARY_GEOM,
+    MockStacIO,
+    TestCases,
+)
 
 
-class CatalogTypeTest(unittest.TestCase):
+class TestCatalogType:
     def test_determine_type_for_absolute_published(self) -> None:
         cat = TestCases.case_1()
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -43,7 +56,7 @@ class CatalogTypeTest(unittest.TestCase):
             )
 
         catalog_type = CatalogType.determine_type(cat_json)
-        self.assertEqual(catalog_type, CatalogType.ABSOLUTE_PUBLISHED)
+        assert catalog_type == CatalogType.ABSOLUTE_PUBLISHED
 
     def test_determine_type_for_relative_published(self) -> None:
         cat = TestCases.case_2()
@@ -54,14 +67,14 @@ class CatalogTypeTest(unittest.TestCase):
             )
 
         catalog_type = CatalogType.determine_type(cat_json)
-        self.assertEqual(catalog_type, CatalogType.RELATIVE_PUBLISHED)
+        assert catalog_type == CatalogType.RELATIVE_PUBLISHED
 
     def test_determine_type_for_self_contained(self) -> None:
         cat_json = pystac.StacIO.default().read_json(
             TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
         )
         catalog_type = CatalogType.determine_type(cat_json)
-        self.assertEqual(catalog_type, CatalogType.SELF_CONTAINED)
+        assert catalog_type == CatalogType.SELF_CONTAINED
 
     def test_determine_type_for_unknown(self) -> None:
         catalog = Catalog(id="test", description="test desc")
@@ -70,7 +83,7 @@ class CatalogTypeTest(unittest.TestCase):
         catalog.normalize_hrefs("http://example.com")
         d = catalog.to_dict(include_self_link=False)
 
-        self.assertIsNone(CatalogType.determine_type(d))
+        assert CatalogType.determine_type(d) is None
 
 
 class TestCatalog:
@@ -83,7 +96,7 @@ class TestCatalog:
                 cat_dir, catalog_type=CatalogType.ABSOLUTE_PUBLISHED
             )
 
-            read_catalog = Catalog.from_file("{}/catalog.json".format(cat_dir))
+            read_catalog = Catalog.from_file(f"{cat_dir}/catalog.json")
 
             collections = catalog.get_children()
             assert len(list(collections)) == 2
@@ -102,7 +115,7 @@ class TestCatalog:
 
         # assert that the parameter is not preserved with
         # non-default parameter
-        _ = Catalog.from_dict(param_dict, preserve_dict=False)
+        _ = Catalog.from_dict(param_dict, preserve_dict=False, migrate=False)
         assert param_dict != catalog_dict
 
     def test_from_file_bad_catalog(self) -> None:
@@ -140,7 +153,7 @@ class TestCatalog:
             id="test-item",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
-            datetime=datetime.utcnow(),
+            datetime=datetime.now(timezone.utc),
             properties={"key": "one"},
         )
         subcat.add_item(item)
@@ -154,7 +167,7 @@ class TestCatalog:
             id="test-item",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
-            datetime=datetime.utcnow(),
+            datetime=datetime.now(timezone.utc),
             properties={"key": "two"},
         )
         subcat.add_item(item)
@@ -168,7 +181,7 @@ class TestCatalog:
             id="test-item",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
-            datetime=datetime.utcnow(),
+            datetime=datetime.now(timezone.utc),
             properties={"key": "three"},
         )
         subcat.add_item(item)
@@ -404,13 +417,13 @@ class TestCatalog:
                 actual_catalog_iterations += 1
                 expected_catalog_iterations += len(list(root.get_children()))
 
-                assert set([c.id for c in root.get_children()]) == set(
-                    [c.id for c in children]
-                ), "Children unequal"
+                assert {c.id for c in root.get_children()} == {
+                    c.id for c in children
+                }, "Children unequal"
 
-                assert set([c.id for c in root.get_items()]) == set(
-                    [c.id for c in items]
-                ), "Items unequal"
+                assert {c.id for c in root.get_items()} == {c.id for c in items}, (
+                    "Items unequal"
+                )
 
             assert actual_catalog_iterations == expected_catalog_iterations
 
@@ -448,10 +461,10 @@ class TestCatalog:
             actual_counts = actual_link_types_to_counts[obj_id]
             assert set(expected_counts.keys()) == set(actual_counts.keys())
             for rel in expected_counts:
-                assert (
-                    actual_counts[rel] == expected_counts[rel]
-                ), "Clone of {} has {} {} links, original has {}".format(
-                    obj_id, actual_counts[rel], rel, expected_counts[rel]
+                assert actual_counts[rel] == expected_counts[rel], (
+                    "Clone of {} has {} {} links, original has {}".format(
+                        obj_id, actual_counts[rel], rel, expected_counts[rel]
+                    )
                 )
 
     def test_save_uses_previous_catalog_type(self) -> None:
@@ -542,12 +555,12 @@ class TestCatalog:
 
             # Check the root catalog path
             expected_root_catalog_path = os.path.join(tmp_dir, "catalog.json")
-            assert os.path.exists(
-                expected_root_catalog_path
-            ), f"{expected_root_catalog_path} does not exist."
-            assert os.path.isfile(
-                expected_root_catalog_path
-            ), f"{expected_root_catalog_path} is not a file."
+            assert os.path.exists(expected_root_catalog_path), (
+                f"{expected_root_catalog_path} does not exist."
+            )
+            assert os.path.isfile(expected_root_catalog_path), (
+                f"{expected_root_catalog_path} is not a file."
+            )
 
             # Check each child catalog
             for child_catalog in catalog.get_children():
@@ -559,12 +572,12 @@ class TestCatalog:
                     expected_root_catalog_path,
                     start_is_dir=False,
                 )
-                assert os.path.exists(
-                    expected_child_path
-                ), f"{expected_child_path} does not exist."
-                assert os.path.isfile(
-                    expected_child_path
-                ), f"{expected_child_path} is not a file."
+                assert os.path.exists(expected_child_path), (
+                    f"{expected_child_path} does not exist."
+                )
+                assert os.path.isfile(expected_child_path), (
+                    f"{expected_child_path} is not a file."
+                )
 
             # Check each item
             for item in catalog.get_items(recursive=True):
@@ -576,12 +589,12 @@ class TestCatalog:
                     expected_root_catalog_path,
                     start_is_dir=False,
                 )
-                assert os.path.exists(
-                    expected_item_path
-                ), f"{expected_item_path} does not exist."
-                assert os.path.isfile(
-                    expected_item_path
-                ), f"{expected_item_path} is not a file."
+                assert os.path.exists(expected_item_path), (
+                    f"{expected_item_path} does not exist."
+                )
+                assert os.path.isfile(expected_item_path), (
+                    f"{expected_item_path} is not a file."
+                )
 
     def test_clone_uses_previous_catalog_type(self) -> None:
         catalog = TestCases.case_1()
@@ -601,10 +614,10 @@ class TestCatalog:
                     target_href = cast(pystac.STACObject, link.target).self_href
                 else:
                     target_href = link.absolute_href
-                assert (
-                    "http://example.com" in target_href
-                ), '[{}] {} does not contain "{}"'.format(
-                    link.rel, target_href, "http://example.com"
+                assert "http://example.com" in target_href, (
+                    '[{}] {} does not contain "{}"'.format(
+                        link.rel, target_href, "http://example.com"
+                    )
                 )
             for item in items:
                 assert "http://example.com" in item.self_href
@@ -616,16 +629,6 @@ class TestCatalog:
         self_href = catalog.get_self_href()
         assert self_href is not None
         assert self_href.startswith(abspath)
-
-    def test_normalize_href_works_with_label_source_links(self) -> None:
-        catalog = TestCases.case_1()
-        catalog.normalize_hrefs("http://example.com")
-        item = next(catalog.get_items("area-1-1-labels", recursive=True))
-        source = next(iter(LabelExtension.ext(item).get_sources()))
-        assert source.get_self_href() == (
-            "http://example.com/country-1/area-1-1/area-1-1-imagery/"
-            "area-1-1-imagery.json"
-        )
 
     def test_normalize_hrefs_skip_unresolved(self) -> None:
         catalog = TestCases.case_1()
@@ -673,7 +676,7 @@ class TestCatalog:
             assert len(os.listdir(temporary_directory)) == 2
 
         with tempfile.TemporaryDirectory() as temporary_directory:
-            with pytest.raises(FileNotFoundError):
+            with pytest.raises(STACError, match="does not resolve to a STAC object"):
                 catalog.normalize_and_save(temporary_directory, skip_unresolved=False)
 
     def test_generate_subcatalogs_works_with_custom_properties(self) -> None:
@@ -685,9 +688,9 @@ class TestCatalog:
 
         month_cat = catalog.get_child("8", recursive=True)
         assert month_cat is not None
-        type_cats = set([cat.id for cat in month_cat.get_children()])
+        type_cats = {cat.id for cat in month_cat.get_children()}
 
-        assert type_cats == set(["PSScene4Band", "SkySatScene", "PlanetScope"])
+        assert type_cats == {"PSScene4Band", "SkySatScene", "PlanetScope"}
 
     def test_generate_subcatalogs_does_not_change_item_count(self) -> None:
         catalog = TestCases.case_7()
@@ -707,7 +710,7 @@ class TestCatalog:
             for child in cat2.get_children():
                 actual = len(list(child.get_items(recursive=True)))
                 expected = item_counts[child.id]
-                assert actual == expected, " for child '{}'".format(child.id)
+                assert actual == expected, f" for child '{child.id}'"
 
     def test_generate_subcatalogs_merge_template_elements(self) -> None:
         catalog = Catalog(id="test", description="Test")
@@ -717,19 +720,19 @@ class TestCatalog:
         for ni, properties in enumerate(item_properties):
             catalog.add_item(
                 Item(
-                    id="item{}".format(ni),
+                    id=f"item{ni}",
                     geometry=ARBITRARY_GEOM,
                     bbox=ARBITRARY_BBOX,
-                    datetime=datetime.utcnow(),
+                    datetime=datetime.now(timezone.utc),
                     properties=properties,
                 )
             )
         result = catalog.generate_subcatalogs("${property1}_${property2}")
 
-        actual_subcats = set([cat.id for cat in result])
-        expected_subcats = set(
-            ["{}_{}".format(d["property1"], d["property2"]) for d in item_properties]
-        )
+        actual_subcats = {cat.id for cat in result}
+        expected_subcats = {
+            "{}_{}".format(d["property1"], d["property2"]) for d in item_properties
+        }
         assert len(result) == len(expected_subcats)
         assert actual_subcats == expected_subcats
 
@@ -746,9 +749,9 @@ class TestCatalog:
         assert len(result) == 0
         catalog.normalize_hrefs("/tmp")
         for item in catalog.get_items(recursive=True):
-            assert (
-                item.get_self_href() == expected_hrefs[item.id]
-            ), " for item '{}'".format(item.id)
+            assert item.get_self_href() == expected_hrefs[item.id], (
+                f" for item '{item.id}'"
+            )
 
     def test_generate_subcatalogs_works_after_adding_more_items(self) -> None:
         catalog = Catalog(id="test", description="Test")
@@ -758,7 +761,7 @@ class TestCatalog:
                 id="item1",
                 geometry=ARBITRARY_GEOM,
                 bbox=ARBITRARY_BBOX,
-                datetime=datetime.utcnow(),
+                datetime=datetime.now(timezone.utc),
                 properties=properties,
             )
         )
@@ -768,7 +771,7 @@ class TestCatalog:
                 id="item2",
                 geometry=ARBITRARY_GEOM,
                 bbox=ARBITRARY_BBOX,
-                datetime=datetime.utcnow(),
+                datetime=datetime.now(timezone.utc),
                 properties=properties,
             )
         )
@@ -794,17 +797,17 @@ class TestCatalog:
         for ni, properties in enumerate(item_properties):
             catalog.add_item(
                 Item(
-                    id="item{}".format(ni),
+                    id=f"item{ni}",
                     geometry=ARBITRARY_GEOM,
                     bbox=ARBITRARY_BBOX,
-                    datetime=datetime.utcnow(),
+                    datetime=datetime.now(timezone.utc),
                     properties=properties,
                 )
             )
         result = catalog.generate_subcatalogs("${property1}/${property2}/${property3}")
         assert len(result) == 9
 
-        actual_subcats = set([cat.id for cat in result])
+        actual_subcats = {cat.id for cat in result}
         expected_subcats = {"A", "B", "1", "2", "i", "j"}
         assert actual_subcats == expected_subcats
 
@@ -819,10 +822,10 @@ class TestCatalog:
         for ni, properties in enumerate(item_properties):
             catalog.add_item(
                 Item(
-                    id="item{}".format(ni),
+                    id=f"item{ni}",
                     geometry=ARBITRARY_GEOM,
                     bbox=ARBITRARY_BBOX,
-                    datetime=datetime.utcnow(),
+                    datetime=datetime.now(timezone.utc),
                     properties=properties,
                 )
             )
@@ -831,13 +834,17 @@ class TestCatalog:
         assert len(result) == 6
 
         catalog.normalize_hrefs("/")
+
         for item in catalog.get_items(recursive=True):
             item_parent = item.get_parent()
             assert item_parent is not None
             parent_href = item_parent.self_href
             path_to_parent, _ = os.path.split(parent_href)
-            subcats = [el for el in path_to_parent.split("/") if el]
-            assert len(subcats) == 2, " for item '{}'".format(item.id)
+            subcats = list(
+                Path(path_to_parent).parts[1:]
+            )  # Skip drive letter if present (Windows)
+
+            assert len(subcats) == 2, f" for item '{item.id}'"
 
     def test_map_items(self) -> None:
         def item_mapper(item: pystac.Item) -> pystac.Item:
@@ -861,7 +868,7 @@ class TestCatalog:
                 assert "ITEM_MAPPER" not in item.properties
 
     def test_map_items_multiple(self) -> None:
-        def item_mapper(item: pystac.Item) -> List[pystac.Item]:
+        def item_mapper(item: pystac.Item) -> list[pystac.Item]:
             item2 = item.clone()
             item2.id = item2.id + "_2"
             item.properties["ITEM_MAPPER_1"] = "YEP"
@@ -906,7 +913,7 @@ class TestCatalog:
             id="item1",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
-            datetime=datetime.utcnow(),
+            datetime=datetime.now(timezone.utc),
             properties={},
         )
         item1.add_asset("ortho", Asset(href="/some/ortho.tif"))
@@ -917,7 +924,7 @@ class TestCatalog:
             id="item2",
             geometry=ARBITRARY_GEOM,
             bbox=ARBITRARY_BBOX,
-            datetime=datetime.utcnow(),
+            datetime=datetime.now(timezone.utc),
             properties={},
         )
         item2.add_asset("ortho", Asset(href="/some/other/ortho.tif"))
@@ -927,36 +934,13 @@ class TestCatalog:
             item.properties["title"] = "Some title"
             return item
 
-        def create_label_item(item: pystac.Item) -> List[pystac.Item]:
-            # Assumes the GEOJSON labels are in the
-            # same location as the image
-            img_href = item.assets["ortho"].href
-            label_href = "{}.geojson".format(os.path.splitext(img_href)[0])
-            label_item = Item(
-                id="Labels",
-                geometry=item.geometry,
-                bbox=item.bbox,
-                datetime=datetime.utcnow(),
-                properties={},
-            )
-            LabelExtension(label_item).add_to(label_item)
-            label_ext = LabelExtension.ext(label_item)
-            label_ext.apply(
-                label_description="labels",
-                label_type=LabelType.VECTOR,
-                label_properties=["label"],
-                label_classes=[
-                    LabelClasses.create(classes=["one", "two"], name="label")
-                ],
-                label_tasks=["classification"],
-            )
-            label_ext.add_source(item, assets=["ortho"])
-            label_ext.add_geojson_labels(label_href)
-
-            return [item, label_item]
+        def duplicate_item(item: pystac.Item) -> list[pystac.Item]:
+            duplicated_item = item.clone()
+            duplicated_item.id += "-duplicated"
+            return [item, duplicated_item]
 
         c = catalog.map_items(modify_item_title)
-        c = c.map_items(create_label_item)
+        c = c.map_items(duplicate_item)
         new_catalog = c
 
         items = new_catalog.get_items(recursive=True)
@@ -992,15 +976,15 @@ class TestCatalog:
             assert found
 
     def test_map_assets_tup(self) -> None:
-        changed_assets: List[str] = []
+        changed_assets: list[str] = []
 
         def asset_mapper(
             key: str, asset: pystac.Asset
-        ) -> Union[pystac.Asset, Tuple[str, pystac.Asset]]:
+        ) -> pystac.Asset | tuple[str, pystac.Asset]:
             if asset.media_type and "geotiff" in asset.media_type:
                 asset.title = "NEW TITLE"
                 changed_assets.append(key)
-                return ("{}-modified".format(key), asset)
+                return (f"{key}-modified", asset)
             else:
                 return asset
 
@@ -1033,14 +1017,14 @@ class TestCatalog:
 
         def asset_mapper(
             key: str, asset: pystac.Asset
-        ) -> Union[pystac.Asset, Dict[str, pystac.Asset]]:
+        ) -> pystac.Asset | dict[str, pystac.Asset]:
             if asset.media_type and "geotiff" in asset.media_type:
                 changed_assets.append(key)
                 mod1 = asset.clone()
                 mod1.title = "NEW TITLE 1"
                 mod2 = asset.clone()
                 mod2.title = "NEW TITLE 2"
-                return {"{}-mod-1".format(key): mod1, "{}-mod-2".format(key): mod2}
+                return {f"{key}-mod-1": mod1, f"{key}-mod-2": mod2}
             else:
                 return asset
 
@@ -1138,7 +1122,7 @@ class TestCatalog:
                     spatial=pystac.SpatialExtent([[-180.0, -90.0, 180.0, 90.0]]),
                     temporal=pystac.TemporalExtent([[datetime(2021, 11, 1), None]]),
                 ),
-                license="proprietary",
+                license="other",
             )
 
             item = pystac.Item(
@@ -1168,9 +1152,9 @@ class TestCatalog:
                     continue
 
                 href = link["href"]
-                assert not is_absolute_href(
-                    href
-                ), f"Link with rel={link['rel']} is absolute!"
+                assert not is_absolute_href(href), (
+                    f"Link with rel={link['rel']} is absolute!"
+                )
 
     def test_full_copy_and_normalize_works_with_created_stac(self) -> None:
         cat = TestCases.case_3()
@@ -1275,8 +1259,8 @@ class TestCatalog:
                 for item in items:
                     assert item.datetime is not None
                     end = posixpath.join(
-                        "{}-{}".format(item.datetime.year, item.datetime.month),
-                        "{}.json".format(item.id),
+                        f"{item.datetime.year}-{item.datetime.month}",
+                        f"{item.id}.json",
                     )
                     self_href = item.get_self_href()
                     assert self_href is not None
@@ -1288,7 +1272,7 @@ class TestCatalog:
     def test_collections_cache_correctly(self, cat: Catalog) -> None:
         mock_io = MockStacIO()
         cat._stac_io = mock_io
-        expected_collection_reads = set([])
+        expected_collection_reads = set()
         for root, _, items in cat.walk():
             if isinstance(root, Collection) and root != cat:
                 expected_collection_reads.add(root.get_self_href())
@@ -1296,7 +1280,7 @@ class TestCatalog:
             # Iterate over items to make sure they are read
             assert list(items) is not None
 
-        call_uris: List[Any] = [
+        call_uris: list[Any] = [
             call[0][0]
             for call in mock_io.mock.read_text.call_args_list
             if call[0][0] in expected_collection_reads
@@ -1314,7 +1298,7 @@ class TestCatalog:
         cat = Catalog.from_file(stac_uri)
 
         # Iterate over the items. This was causing failure in
-        # in the later iterations as per issue #88
+        # the later iterations as per issue #88
         for item in cat.get_items(recursive=True):
             pass
 
@@ -1378,7 +1362,7 @@ class TestCatalog:
         catalog = TestCases.case_1()
         all_collections = list(catalog.get_all_collections())
 
-        assert len(all_collections) > 0
+        assert len(all_collections) == 4
         assert all(isinstance(c, pystac.Collection) for c in all_collections)
 
     def test_get_single_links_media_type(self) -> None:
@@ -1425,6 +1409,10 @@ class TestCatalog:
             len(catalog.get_links(rel="search", media_type="application/geo+json")) == 1
         )
         assert len(catalog.get_links(media_type="text/html")) == 1
+        assert (
+            len(catalog.get_links(media_type=["text/html", "application/geo+json"]))
+            == 2
+        )
         assert len(catalog.get_links(rel="search")) == 2
         assert len(catalog.get_links(rel="via")) == 0
         assert len(catalog.get_links()) == 6
@@ -1435,7 +1423,7 @@ class TestCatalog:
         Catalog.from_dict(d)
 
 
-class FullCopyTest(unittest.TestCase):
+class TestFullCopy:
     def check_link(self, link: pystac.Link, tag: str) -> None:
         if link.is_resolved():
             target_href: str = cast(pystac.STACObject, link.target).self_href
@@ -1450,7 +1438,7 @@ class FullCopyTest(unittest.TestCase):
             self.check_link(link, tag)
 
     def check_catalog(self, c: Catalog, tag: str) -> None:
-        self.assertEqual(len(c.get_links("root")), 1, msg=f"{c}")
+        assert len(c.get_links("root")) == 1, f"Failure for catalog: {c}"
 
         for link in c.links:
             self.check_link(link, tag)
@@ -1469,7 +1457,7 @@ class FullCopyTest(unittest.TestCase):
                 id="test_item",
                 geometry=ARBITRARY_GEOM,
                 bbox=ARBITRARY_BBOX,
-                datetime=datetime.utcnow(),
+                datetime=datetime.now(timezone.utc),
                 properties={},
             )
 
@@ -1489,35 +1477,22 @@ class FullCopyTest(unittest.TestCase):
                 id="Imagery",
                 geometry=ARBITRARY_GEOM,
                 bbox=ARBITRARY_BBOX,
-                datetime=datetime.utcnow(),
+                datetime=datetime.now(timezone.utc),
                 properties={},
             )
             for key in ["ortho", "dsm"]:
                 image_item.add_asset(
                     key,
-                    Asset(href="some/{}.tif".format(key), media_type=MediaType.GEOTIFF),
+                    Asset(href=f"some/{key}.tif", media_type=MediaType.GEOTIFF),
                 )
 
             label_item = Item(
                 id="Labels",
                 geometry=ARBITRARY_GEOM,
                 bbox=ARBITRARY_BBOX,
-                datetime=datetime.utcnow(),
+                datetime=datetime.now(timezone.utc),
                 properties={},
             )
-            LabelExtension.add_to(label_item)
-            label_ext = LabelExtension.ext(label_item)
-            label_ext.apply(
-                label_description="labels",
-                label_type=LabelType.VECTOR,
-                label_properties=["label"],
-                label_classes=[
-                    LabelClasses.create(classes=["one", "two"], name="label")
-                ],
-                label_tasks=["classification"],
-            )
-            label_ext.add_source(image_item, assets=["ortho"])
-
             cat.add_items([image_item, label_item])
 
             cat.normalize_hrefs(os.path.join(tmp_dir, "catalog-full-copy-2-source"))
@@ -1565,7 +1540,7 @@ class FullCopyTest(unittest.TestCase):
             assert os.path.exists(href)
 
 
-class CatalogSubClassTest(unittest.TestCase):
+class TestCatalogSubClass:
     """This tests cases related to creating classes inheriting from pystac.Catalog to
     ensure that inheritance, class methods, etc. function as expected."""
 
@@ -1578,25 +1553,20 @@ class CatalogSubClassTest(unittest.TestCase):
             # backwards compatibility of inherited classes
             return super().get_items()
 
-    def setUp(self) -> None:
-        self.stac_io = pystac.StacIO.default()
-
     def test_from_dict_returns_subclass(self) -> None:
+        self.stac_io = pystac.StacIO.default()
         catalog_dict = self.stac_io.read_json(self.case_1)
         custom_catalog = self.BasicCustomCatalog.from_dict(catalog_dict)
-
-        self.assertIsInstance(custom_catalog, self.BasicCustomCatalog)
+        assert isinstance(custom_catalog, self.BasicCustomCatalog)
 
     def test_from_file_returns_subclass(self) -> None:
         custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
-
-        self.assertIsInstance(custom_catalog, self.BasicCustomCatalog)
+        assert isinstance(custom_catalog, self.BasicCustomCatalog)
 
     def test_clone(self) -> None:
         custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
         cloned_catalog = custom_catalog.clone()
-
-        self.assertIsInstance(cloned_catalog, self.BasicCustomCatalog)
+        assert isinstance(cloned_catalog, self.BasicCustomCatalog)
 
     def test_get_all_items_works(self) -> None:
         custom_catalog = self.BasicCustomCatalog.from_file(self.case_1)
@@ -1617,10 +1587,10 @@ def test_custom_catalog_from_dict(catalog: Catalog) -> None:
         @classmethod
         def from_dict(
             cls,
-            d: Dict[str, Any],
-            href: Optional[str] = None,
-            root: Optional[Catalog] = None,
-            migrate: bool = False,
+            d: dict[str, Any],
+            href: str | None = None,
+            root: Catalog | None = None,
+            migrate: bool = True,
             preserve_dict: bool = True,
         ) -> CustomCatalog:
             return super().from_dict(d)
@@ -1680,7 +1650,9 @@ def nested_catalog() -> pystac.Catalog:
     └── variables
         ├── catalog.json
         └── variable_a
-            ├── catalog.json
+            └── catalog.json
+                └── variable_a_1
+                    └── collection.json
     """
     root = pystac.Catalog("root", "root")
     variables = pystac.Catalog("variables", "variables")
@@ -1695,7 +1667,20 @@ def nested_catalog() -> pystac.Catalog:
     variables.add_child(variable_a)
     products.add_child(product_a)
 
+    variable_a_1 = pystac.Collection(
+        "variable_a_1", "variable_a_1", extent=ARBITRARY_EXTENT
+    )
+    variable_a.add_child(variable_a_1)
+
     return root
+
+
+def test_get_all_collections_deeply_nested(nested_catalog: pystac.Catalog) -> None:
+    catalog = nested_catalog
+    all_collections = list(catalog.get_all_collections())
+
+    assert len(all_collections) == 1
+    assert all(isinstance(c, pystac.Collection) for c in all_collections)
 
 
 def test_set_parent_false_stores_in_proper_place_on_normalize_and_save(
@@ -1730,3 +1715,325 @@ def test_set_parent_false_stores_in_proper_place_on_save(
 
     assert (tmp_path / "products" / "product_a").exists()
     assert not (tmp_path / "variables" / "variable_a" / "product_a").exists()
+
+
+BEST_PRACTICE_CATALOG_TEMPLATE = "{id}"
+BEST_PRACTICE_ITEM_TEMPLATE = "{id}"
+TEST_CATALOG_TEMPLATE = "cat/${id}/${description}"
+TEST_ITEM_TEMPLATE = "cat/items/${id}"
+STRATEGY = TemplateLayoutStrategy(
+    catalog_template=TEST_CATALOG_TEMPLATE, item_template=TEST_ITEM_TEMPLATE
+)
+
+
+@pytest.mark.parametrize(
+    "root_strategy,sub_strategy,provided_root_strategy,provided_sub_strategy,root_template,sub_template",
+    [
+        (
+            None,
+            None,
+            None,
+            None,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+        ),
+        (STRATEGY, None, None, None, TEST_CATALOG_TEMPLATE, TEST_CATALOG_TEMPLATE),
+        (
+            STRATEGY,
+            BestPracticesLayoutStrategy(),
+            None,
+            None,
+            TEST_CATALOG_TEMPLATE,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+        ),
+        (
+            STRATEGY,
+            None,
+            BestPracticesLayoutStrategy(),
+            None,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+            TEST_CATALOG_TEMPLATE,
+        ),
+        (
+            STRATEGY,
+            None,
+            None,
+            BestPracticesLayoutStrategy(),
+            TEST_CATALOG_TEMPLATE,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+        ),
+    ],
+)
+def test_add_child_layout_strategy(
+    root_strategy: HrefLayoutStrategy,
+    sub_strategy: HrefLayoutStrategy,
+    provided_root_strategy: HrefLayoutStrategy,
+    provided_sub_strategy: HrefLayoutStrategy,
+    root_template: str,
+    sub_template: str,
+) -> None:
+    """Test for layout strategy when adding a child.
+
+    If no layout strategy is specified, children HREF should
+    always follow BestPracticesLayoutStrategy.
+    If only root strategy is set, all children HREFs should
+    follow than strategy.
+    If root and child strategy are set, root and child children
+    may follow different strategies.
+    Strategy provided to `add_child` always overrides other settings.
+    """
+
+    base_url = "http://example.com"
+    catalog = Catalog(
+        id="test",
+        description="test desc",
+        href=f"{base_url}/catalog.json",
+        strategy=root_strategy,
+    )
+    subcat = Catalog(id="subcat", description="subcat desc", strategy=sub_strategy)
+    subsubcat = Catalog(id="subsubcat", description="subsubcat desc")
+
+    catalog.add_child(subcat, strategy=provided_root_strategy)
+    subcat.add_child(subsubcat, strategy=provided_sub_strategy)
+
+    root_template = root_template.format(
+        id=subcat.id, description=subcat.description
+    ).replace("$", "")
+    sub_template = sub_template.format(
+        id=subsubcat.id, description=subsubcat.description
+    ).replace("$", "")
+
+    assert subcat.self_href == f"{base_url}/{root_template}/catalog.json"
+    assert (
+        subsubcat.self_href == f"{base_url}/{root_template}/{sub_template}/catalog.json"
+    )
+
+
+@pytest.mark.parametrize(
+    "root_strategy,sub_strategy,provided_root_strategy,"
+    "root_template,sub_template,norm_template",
+    [
+        (
+            None,
+            None,
+            None,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+        ),
+        (
+            STRATEGY,
+            None,
+            None,
+            TEST_CATALOG_TEMPLATE,
+            TEST_CATALOG_TEMPLATE,
+            TEST_CATALOG_TEMPLATE,
+        ),
+        (
+            STRATEGY,
+            BestPracticesLayoutStrategy(),
+            None,
+            TEST_CATALOG_TEMPLATE,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+            TEST_CATALOG_TEMPLATE,
+        ),
+        (
+            STRATEGY,
+            None,
+            BestPracticesLayoutStrategy(),
+            TEST_CATALOG_TEMPLATE,
+            TEST_CATALOG_TEMPLATE,
+            BEST_PRACTICE_CATALOG_TEMPLATE,
+        ),
+    ],
+)
+def test_add_child_layout_strategy_normalize(
+    root_strategy: HrefLayoutStrategy,
+    sub_strategy: HrefLayoutStrategy,
+    provided_root_strategy: HrefLayoutStrategy,
+    root_template: str,
+    sub_template: str,
+    norm_template: str,
+) -> None:
+    """Test for layout strategy when adding a child and normalizing HREFs.
+
+    If no layout strategy is specified, children HREF
+    should always follow BestPracticesLayoutStrategy.
+    If only root strategy is set, all children HREFs
+    should follow than strategy.
+    If root and child strategy are set, root strategy
+    overrides child strategy.
+    Strategy provided to `normalize_href` always
+    overrides other settings.
+    """
+
+    base_url = "http://example.com"
+    catalog = Catalog(
+        id="test",
+        description="test desc",
+        href=f"{base_url}/catalog.json",
+        strategy=root_strategy,
+    )
+    subcat = Catalog(id="subcat", description="subcat desc", strategy=sub_strategy)
+    subsubcat = Catalog(id="subsubcat", description="subsubcat desc")
+    catalog.add_child(subcat)
+    subcat.add_child(subsubcat)
+
+    _root_template = root_template.format(
+        id=subcat.id, description=subcat.description
+    ).replace("$", "")
+    _sub_template = sub_template.format(
+        id=subsubcat.id, description=subsubcat.description
+    ).replace("$", "")
+
+    assert subcat.self_href == f"{base_url}/{_root_template}/catalog.json"
+    assert (
+        subsubcat.self_href
+        == f"{base_url}/{_root_template}/{_sub_template}/catalog.json"
+    )
+
+    catalog.normalize_hrefs(base_url, strategy=provided_root_strategy)
+
+    _root_template = norm_template.format(
+        id=subcat.id, description=subcat.description
+    ).replace("$", "")
+    _sub_template = norm_template.format(
+        id=subsubcat.id, description=subsubcat.description
+    ).replace("$", "")
+
+    assert subcat.self_href == f"{base_url}/{_root_template}/catalog.json"
+    assert (
+        subsubcat.self_href
+        == f"{base_url}/{_root_template}/{_sub_template}/catalog.json"
+    )
+
+
+@pytest.mark.parametrize(
+    "root_strategy,provided_strategy,template",
+    [
+        (None, None, BEST_PRACTICE_ITEM_TEMPLATE),
+        (STRATEGY, None, TEST_ITEM_TEMPLATE),
+        (STRATEGY, BestPracticesLayoutStrategy(), BEST_PRACTICE_ITEM_TEMPLATE),
+    ],
+)
+def test_add_item_layout_strategy(
+    root_strategy: HrefLayoutStrategy,
+    provided_strategy: HrefLayoutStrategy,
+    template: str,
+) -> None:
+    """Test for layout strategy when adding an item.
+
+    If no layout strategy is specified, item HREF
+    should always follow BestPracticesLayoutStrategy.
+    If only root strategy is set, all item HREFs
+    should follow than strategy.
+    Strategy provided to `add_item` always overrides other settings.
+    """
+
+    base_url = "http://example.com"
+    item_id = "item_id"
+    catalog = Catalog(
+        id="test",
+        description="test desc",
+        href=f"{base_url}/catalog.json",
+        strategy=root_strategy,
+    )
+    item = Item(
+        id=item_id,
+        geometry={
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [180.0, -90.0],
+                    [180.0, 90.0],
+                    [-180.0, 90.0],
+                    [-180.0, -90.0],
+                    [180.0, -90.0],
+                ]
+            ],
+        },
+        bbox=[-180, -90, 180, 90],
+        datetime=datetime(2023, 1, 1),
+        properties={},
+        assets={
+            "data": Asset(
+                href="http://example.com/assets/data.tif",
+                roles=["data"],
+                title="DATA",
+            )
+        },
+    )
+
+    catalog.add_item(item, strategy=provided_strategy)
+
+    template = template.format(id=item.id).replace("$", "")
+
+    assert item.self_href == f"{base_url}/{template}/{item_id}.json"
+
+
+def test_APILayoutStrategy_requires_root_to_be_url(
+    catalog: Catalog, collection: Collection, item: Item
+) -> None:
+    collection.add_item(item)
+    catalog.add_child(collection)
+    with pytest.raises(
+        pystac.errors.STACError,
+        match="When using APILayoutStrategy the root_href must be a URL",
+    ):
+        catalog.normalize_hrefs(root_href="issues-1486", strategy=APILayoutStrategy())
+
+
+def test_get_child_links_cares_about_media_type(catalog: pystac.Catalog) -> None:
+    catalog.links.extend(
+        [
+            pystac.Link(
+                rel="child", target="./child-1.json", media_type="application/json"
+            ),
+            pystac.Link(
+                rel="child", target="./child-2.json", media_type="application/geo+json"
+            ),
+            pystac.Link(rel="child", target="./child-3.json"),
+            # this one won't get counted since it's the wrong media_type
+            pystac.Link(rel="child", target="./child.html", media_type="text/html"),
+        ]
+    )
+
+    assert len(catalog.get_child_links()) == 3
+
+
+def test_get_item_links_cares_about_media_type(catalog: pystac.Catalog) -> None:
+    catalog.links.extend(
+        [
+            pystac.Link(
+                rel="item", target="./item-1.json", media_type="application/json"
+            ),
+            pystac.Link(
+                rel="item", target="./item-2.json", media_type="application/geo+json"
+            ),
+            pystac.Link(rel="item", target="./item-3.json"),
+            # this one won't get counted since it's the wrong media_type
+            pystac.Link(rel="item", target="./item.html", media_type="text/html"),
+        ]
+    )
+
+    assert len(catalog.get_item_links()) == 3
+
+
+def test_get_root_link_cares_about_media_type(catalog: pystac.Catalog) -> None:
+    catalog.links.insert(
+        0, pystac.Link(rel="root", target="./self.json", media_type="text/html")
+    )
+    root_link = catalog.get_root_link()
+    assert root_link and root_link.target != "./self.json"
+
+
+def test_clone_extra_fields(catalog: Catalog) -> None:
+    catalog.extra_fields["foo"] = "bar"
+    cloned = catalog.clone()
+    assert cloned.extra_fields["foo"] == "bar"
+
+
+def test_warn_if_next_link_present(catalog: Catalog) -> None:
+    catalog.links.append(Link(rel="next", target="./next.json"))
+    with pytest.warns(UserWarning):
+        _ = list(catalog.get_children())

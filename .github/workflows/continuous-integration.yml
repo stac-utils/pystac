@@ -13,160 +13,118 @@ on:
   merge_group:
 
 concurrency:
-  # Cancel running job if another commit is pushed to the branch
   group: ${{ github.ref }}
   cancel-in-progress: true
+
+permissions: {}
 
 jobs:
   test:
     name: test
     runs-on: ${{ matrix.os }}
     strategy:
-      # Allow other matrix jobs to complete if 1 fails
-      fail-fast: false
       matrix:
         python-version:
-          - "3.8"
-          - "3.9"
           - "3.10"
           - "3.11"
+          - "3.12"
+          - "3.13"
         os:
           - ubuntu-latest
           - windows-latest
           - macos-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
         with:
           python-version: ${{ matrix.python-version }}
-          cache: "pip"
-
-      - name: Install dependencies
-        run: pip install .[validation,test]
-
-      - name: Execute test suite
-        run: ./scripts/test
+      - name: Sync
+        run: uv sync --all-extras
+      - name: Lint
+        if: runner.os != 'Windows'
+        run: uv run pre-commit run --all-files
+      - name: Test on windows
+        if: runner.os == 'Windows'
         shell: bash
         env:
-          TMPDIR: "${{ matrix.os == 'windows-latest' && 'D:\\a\\_temp' || '' }}"
+          TMPDIR: 'D:\\a\\_temp'
+        run: uv run pytest tests
+      - name: Test
+        if: runner.os != 'Windows'
+        run: uv run pytest tests --block-network --record-mode=none
 
   coverage:
     name: coverage
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.8"
-          cache: "pip"
-
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
       - name: Install with dependencies
-        run: pip install .[validation,test]
-
+        run: uv sync --all-extras
       - name: Run coverage with orjson
-        run: pytest tests --cov
-
+        run: uv run pytest tests --cov
       - name: Uninstall orjson
-        run: pip uninstall -y orjson
-
+        run: uv pip uninstall orjson
       - name: Run coverage without orjson, appending results
-        run: pytest tests --cov --cov-append
-
+        run: uv run pytest tests --cov --cov-append
       - name: Prepare ./coverage.xml
         # Ignore the configured fail-under to ensure we upload the coverage report. We
         # will trigger a failure for coverage drops in a later job
-        run: coverage xml --fail-under 0
-
+        run: uv run coverage xml --fail-under 0
       - name: Upload All coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: ${{ env.GITHUB_REPOSITORY }} == 'stac-utils/pystac'
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        if: ${{ env.GITHUB_REPOSITORY == 'stac-utils/pystac' }}
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
+          files: ./coverage.xml
           fail_ci_if_error: false
-
+          use_oidc: true
       - name: Check for coverage drop
         # This will use the configured fail-under, causing this job to fail if the
         # coverage drops.
-        run: coverage report
-
-  lint:
-    runs-on: ubuntu-latest
-    strategy:
-      # Allow other matrix jobs to complete if 1 fails
-      fail-fast: false
-      matrix:
-        python-version:
-          - "3.8"
-          - "3.9"
-          - "3.10"
-          - "3.11"
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: "pip"
-
-      - name: Install with test dependencies
-        run: pip install .[test]
-
-      - name: Execute linters & type checkers
-        run: pre-commit run --all-files
+        run: uv run coverage report
 
   without-orjson:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.8"
-
-      - name: Install
-        run: pip install .[validation,test]
-
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+      - name: Sync
+        run: uv sync
       - name: Uninstall orjson
-        run: pip uninstall -y orjson
-
+        run: uv pip uninstall orjson
       - name: Run tests
-        run: pytest tests
-
-  check-all-dependencies:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.8"
-          cache: "pip"
-
-      - name: Install all dependencies
-        run: pip install .[bench,docs,orjson,test,urllib3,validation]
+        run: uv run pytest tests
 
   check-benchmarks:
     # This checks to make sure any API changes haven't broken any of the
     # benchmarks. It doesn't do any actual benchmarking, since (IMO) that's not
-    # appropriate for CI on Github actions.
+    # appropriate for CI on GitHub actions.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
-          python-version: "3.8"
-          cache: "pip"
-      - name: Install pystac
-        run: pip install .[bench]
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          enable-cache: true
+      - name: Sync
+        run: uv sync
       - name: Set asv machine
-        run: asv machine --yes
+        run: uv run asv machine --yes
       - name: Check benchmarks
-        run: asv run -a repeat=1 -a rounds=1 HEAD
+        run: uv run asv run -a repeat=1 -a rounds=1 HEAD
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+      - name: Install pandoc
+        run: sudo apt-get install pandoc
+      - name: Sync
+        run: uv sync --group docs
+      - name: Check docs
+        run: uv run make -C docs html SPHINXOPTS="-W --keep-going -n"

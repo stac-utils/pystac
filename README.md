@@ -1,6 +1,6 @@
 # PySTAC
 
-[![Build Status](https://github.com/stac-utils/pystac/workflows/CI/badge.svg?branch=main)](https://github.com/stac-utils/pystac/actions/workflows/continuous-integration.yml)
+[![Build Status](https://github.com/stac-utils/pystac/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/stac-utils/pystac/actions/workflows/continuous-integration.yml)
 [![PyPI version](https://badge.fury.io/py/pystac.svg)](https://badge.fury.io/py/pystac)
 [![Conda (channel only)](https://img.shields.io/conda/vn/conda-forge/pystac)](https://anaconda.org/conda-forge/pystac)
 [![Documentation](https://readthedocs.org/projects/pystac/badge/?version=latest)](https://pystac.readthedocs.io/en/latest/)
@@ -15,7 +15,7 @@ PySTAC is a library for working with the [SpatioTemporal Asset Catalog](https://
 ### Install from PyPi (recommended)
 
 ```shell
-pip install pystac
+python -m pip install pystac
 ```
 
 If you would like to enable the validation feature utilizing the
@@ -23,7 +23,7 @@ If you would like to enable the validation feature utilizing the
 `validation` requirements:
 
 ```shell
-pip install 'pystac[validation]'
+python -m pip install 'pystac[validation]'
 ```
 
 If you would like to use the [`orjson`](https://pypi.org/project/orjson/) instead of the
@@ -31,21 +31,23 @@ standard `json` library for JSON serialization/deserialization, install with the
 optional `orjson` requirements:
 
 ```shell
-pip install 'pystac[orjson]'
+python -m pip install 'pystac[orjson]'
 ```
 
 If you would like to use a custom `RetryStacIO` class for automatically retrying
-network requests when reading with PySTAC, you'll need
+network requests when reading with PySTAC, or if you have non-ASCII characters in
+your urls you'll need
 [`urllib3`](https://urllib3.readthedocs.io/en/stable/):
 
 ```shell
-pip install 'pystac[urllib3]'
+python -m pip install 'pystac[urllib3]'
 ```
 
-If you are using jupyter notebooks and want to enable pretty display of pystac objects you'll need [`jinja2`](https://pypi.org/project/Jinja2/)
+If you are using jupyter notebooks and want to enable pretty display of pystac
+objects you'll need [`jinja2`](https://pypi.org/project/Jinja2/)
 
 ```shell
-pip install 'pystac[jinja2]'
+python -m pip install 'pystac[jinja2]'
 ```
 
 ### Install from source
@@ -53,11 +55,20 @@ pip install 'pystac[jinja2]'
 ```shell
 git clone https://github.com/stac-utils/pystac.git
 cd pystac
-pip install .
+python -m pip install .
 ```
 
 See the [installation page](https://pystac.readthedocs.io/en/latest/installation.html)
 for more options.
+
+## Versioning
+
+The core PySTAC API follows [Semantic Versioning](https://semver.org/).
+As of [Spring 2026](https://github.com/stac-utils/pystac/pull/1650), our [extension](https://stac-extensions.github.io/) implementations have moved to their own Python packages, so they can be versioned independently of the core PySTAC API.
+Breaking changes to the API of extension packages are _not_ considered breaking changes for the purposes of PySTAC versioning.
+
+The STAC extension packages' version will match the version extension itself, e.g. **pystac-ext-projection** v2.0.0 corresponds to the [v2.0.0](https://github.com/stac-extensions/projection/releases/tag/v2.0.0) release of the **projection** extension.
+Any changes to the software (not the extension) will be released via [post releases](https://packaging.python.org/en/latest/discussions/versioning/#valid-version-numbers).
 
 ## Documentation
 
