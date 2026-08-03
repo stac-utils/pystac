@@ -25,6 +25,7 @@ from pystac.extensions.mlm import (
     MLMExtension,
 )
 from pystac.extensions.pointcloud import PointcloudExtension
+from pystac.extensions.product import ProductExtension
 from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.raster import RasterExtension
 from pystac.extensions.render import Render, RenderExtension
@@ -55,6 +56,7 @@ EXTENSION_NAMES = Literal[
     "mgrs",
     "mlm",
     "pc",
+    "product",
     "proj",
     "raster",
     "render",
@@ -79,6 +81,7 @@ EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     MgrsExtension.name: MgrsExtension,
     MLMExtension.name: MLMExtension,
     PointcloudExtension.name: PointcloudExtension,
+    ProductExtension.name: ProductExtension,
     ProjectionExtension.name: ProjectionExtension,
     RasterExtension.name: RasterExtension,
     RenderExtension.name: RenderExtension,
@@ -155,6 +158,10 @@ class CollectionExt(CatalogExt):
     @property
     def cube(self) -> DatacubeExtension[Collection]:
         return DatacubeExtension.ext(self.stac_object)
+
+    @property
+    def product(self) -> ProductExtension[Collection]:
+        return ProductExtension.ext(self.stac_object)
 
     @property
     def item_assets(self) -> dict[str, ItemAssetDefinition]:
@@ -247,6 +254,10 @@ class ItemExt:
     @property
     def pc(self) -> PointcloudExtension[Item]:
         return PointcloudExtension.ext(self.stac_object)
+
+    @property
+    def product(self) -> ProductExtension[Item]:
+        return ProductExtension.ext(self.stac_object)
 
     @property
     def proj(self) -> ProjectionExtension[Item]:
@@ -364,6 +375,10 @@ class _AssetExt(_AssetsExt[U]):
         return PointcloudExtension.ext(self.stac_object)
 
     @property
+    def product(self) -> ProductExtension[U]:
+        return ProductExtension.ext(self.stac_object)
+
+    @property
     def proj(self) -> ProjectionExtension[U]:
         return ProjectionExtension.ext(self.stac_object)
 
@@ -435,6 +450,10 @@ class ItemAssetExt(_AssetExt[ItemAssetDefinition]):
     @property
     def mlm(self) -> MLMExtension[ItemAssetDefinition]:
         return MLMExtension.ext(self.stac_object)
+
+    @property
+    def product(self) -> ProductExtension[ItemAssetDefinition]:
+        return ProductExtension.ext(self.stac_object)
 
     @property
     def storage(self) -> StorageExtension[ItemAssetDefinition]:

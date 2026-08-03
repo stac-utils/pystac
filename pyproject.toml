@@ -34,6 +34,7 @@ dependencies = [
     "pystac-ext-mgrs",
     "pystac-ext-mlm",
     "pystac-ext-pointcloud",
+    "pystac-ext-product",
     "pystac-ext-projection",
     "pystac-ext-raster",
     "pystac-ext-render",
@@ -145,6 +146,7 @@ mypy_path = [
     "extensions/mgrs",
     "extensions/mlm",
     "extensions/pointcloud",
+    "extensions/product",
     "extensions/projection",
     "extensions/raster",
     "extensions/render",
@@ -191,6 +193,7 @@ pystac-ext-label = { workspace = true }
 pystac-ext-mgrs = { workspace = true }
 pystac-ext-mlm = { workspace = true }
 pystac-ext-pointcloud = { workspace = true }
+pystac-ext-product = { workspace = true }
 pystac-ext-projection = { workspace = true }
 pystac-ext-raster = { workspace = true }
 pystac-ext-render = { workspace = true }
