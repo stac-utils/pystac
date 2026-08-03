@@ -42,6 +42,7 @@ dependencies = [
     "pystac-ext-scientific",
     "pystac-ext-storage",
     "pystac-ext-table",
+    "pystac-ext-themes",
     "pystac-ext-timestamps",
     "pystac-ext-version",
     "pystac-ext-view",
@@ -153,6 +154,7 @@ mypy_path = [
     "extensions/scientific",
     "extensions/storage",
     "extensions/table",
+    "extensions/themes",
     "extensions/timestamps",
     "extensions/version",
     "extensions/view",
@@ -199,6 +201,7 @@ pystac-ext-sat = { workspace = true }
 pystac-ext-scientific = { workspace = true }
 pystac-ext-storage = { workspace = true }
 pystac-ext-table = { workspace = true }
+pystac-ext-themes = { workspace = true }
 pystac-ext-timestamps = { workspace = true }
 pystac-ext-version = { workspace = true }
 pystac-ext-view = { workspace = true }

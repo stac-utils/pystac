@@ -33,6 +33,7 @@ from pystac.extensions.sat import SatExtension
 from pystac.extensions.scientific import ScientificExtension
 from pystac.extensions.storage import StorageExtension
 from pystac.extensions.table import TableExtension
+from pystac.extensions.themes import ThemesExtension
 from pystac.extensions.timestamps import TimestampsExtension
 from pystac.extensions.version import BaseVersionExtension, VersionExtension
 from pystac.extensions.view import ViewExtension
@@ -63,6 +64,7 @@ EXTENSION_NAMES = Literal[
     "sci",
     "storage",
     "table",
+    "themes",
     "timestamps",
     "version",
     "view",
@@ -87,6 +89,7 @@ EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     ScientificExtension.name: ScientificExtension,
     StorageExtension.name: StorageExtension,
     TableExtension.name: TableExtension,
+    ThemesExtension.name: ThemesExtension,
     TimestampsExtension.name: TimestampsExtension,
     VersionExtension.name: VersionExtension,
     ViewExtension.name: ViewExtension,
@@ -138,6 +141,10 @@ class CatalogExt:
             name : Extension identifier (eg: 'eo')
         """
         _get_class_by_name(name).remove_from(self.stac_object)
+
+    @property
+    def themes(self) -> ThemesExtension[Catalog]:
+        return ThemesExtension.ext(self.stac_object)
 
     @property
     def version(self) -> VersionExtension[Catalog]:
@@ -275,6 +282,10 @@ class ItemExt:
     @property
     def table(self) -> TableExtension[Item]:
         return TableExtension.ext(self.stac_object)
+
+    @property
+    def themes(self) -> ThemesExtension[Item]:
+        return ThemesExtension.ext(self.stac_object)
 
     @property
     def timestamps(self) -> TimestampsExtension[Item]:

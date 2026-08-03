@@ -32,6 +32,7 @@ pystac.extensions
     scientific.ScientificExtension
     storage.StorageExtension
     table.TableExtension
+    themes.ThemesExtension
     timestamps.TimestampsExtension
     version.VersionExtension
     view.ViewExtension
