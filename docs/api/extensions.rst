@@ -18,6 +18,7 @@ pystac.extensions
     eo.EOExtension
     file.FileExtension
     grid.GridExtension
+    insar.InsarExtension
     item_assets.ItemAssetsExtension
     mgrs.MgrsExtension
     mlm.MLMExtension

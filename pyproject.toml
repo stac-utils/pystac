@@ -29,6 +29,7 @@ dependencies = [
     "pystac-ext-eo",
     "pystac-ext-file",
     "pystac-ext-grid",
+    "pystac-ext-insar",
     "pystac-ext-item-assets",
     "pystac-ext-label",
     "pystac-ext-mgrs",
@@ -140,6 +141,7 @@ mypy_path = [
     "extensions/eo",
     "extensions/file",
     "extensions/grid",
+    "extensions/insar",
     "extensions/item_assets",
     "extensions/label",
     "extensions/mgrs",
@@ -186,6 +188,7 @@ pystac-ext-datacube = { workspace = true }
 pystac-ext-eo = { workspace = true }
 pystac-ext-file = { workspace = true }
 pystac-ext-grid = { workspace = true }
+pystac-ext-insar = { workspace = true }
 pystac-ext-item-assets = { workspace = true }
 pystac-ext-label = { workspace = true }
 pystac-ext-mgrs = { workspace = true }
