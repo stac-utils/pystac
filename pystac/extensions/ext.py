@@ -31,6 +31,7 @@ from pystac.extensions.render import Render, RenderExtension
 from pystac.extensions.sar import SarExtension
 from pystac.extensions.sat import SatExtension
 from pystac.extensions.scientific import ScientificExtension
+from pystac.extensions.sentinel3 import Sentinel3Extension
 from pystac.extensions.storage import StorageExtension
 from pystac.extensions.table import TableExtension
 from pystac.extensions.timestamps import TimestampsExtension
@@ -58,6 +59,7 @@ EXTENSION_NAMES = Literal[
     "proj",
     "raster",
     "render",
+    "s3",
     "sar",
     "sat",
     "sci",
@@ -82,6 +84,7 @@ EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     ProjectionExtension.name: ProjectionExtension,
     RasterExtension.name: RasterExtension,
     RenderExtension.name: RenderExtension,
+    Sentinel3Extension.name: Sentinel3Extension,
     SarExtension.name: SarExtension,
     SatExtension.name: SatExtension,
     ScientificExtension.name: ScientificExtension,
@@ -257,6 +260,10 @@ class ItemExt:
         return RenderExtension.ext(self.stac_object)
 
     @property
+    def s3(self) -> Sentinel3Extension[Item]:
+        return Sentinel3Extension.ext(self.stac_object)
+
+    @property
     def sar(self) -> SarExtension[Item]:
         return SarExtension.ext(self.stac_object)
 
@@ -372,6 +379,10 @@ class _AssetExt(_AssetsExt[U]):
         return RasterExtension.ext(self.stac_object)
 
     @property
+    def s3(self) -> Sentinel3Extension[U]:
+        return Sentinel3Extension.ext(self.stac_object)
+
+    @property
     def sar(self) -> SarExtension[U]:
         return SarExtension.ext(self.stac_object)
 
@@ -435,6 +446,10 @@ class ItemAssetExt(_AssetExt[ItemAssetDefinition]):
     @property
     def mlm(self) -> MLMExtension[ItemAssetDefinition]:
         return MLMExtension.ext(self.stac_object)
+
+    @property
+    def s3(self) -> Sentinel3Extension[ItemAssetDefinition]:
+        return Sentinel3Extension.ext(self.stac_object)
 
     @property
     def storage(self) -> StorageExtension[ItemAssetDefinition]:
