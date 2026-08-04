@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.3](https://github.com/stac-utils/pystac/compare/v1.15.2...v1.15.3) (2026-08-04)
+
+
+### Documentation
+
+* tweak how we version extension packages ([#1796](https://github.com/stac-utils/pystac/issues/1796)) ([e064109](https://github.com/stac-utils/pystac/commit/e064109398b0c3f29d2c3801561624a9c2061fc8))
+
 ## [1.15.2](https://github.com/stac-utils/pystac/compare/v1.15.1...v1.15.2) (2026-07-27)
 
 
