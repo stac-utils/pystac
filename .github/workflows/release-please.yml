@@ -25,7 +25,6 @@ jobs:
         id: release-please
         with:
           token: ${{ steps.generate-token.outputs.token }}
-          release-type: python
 
   update-static-files:
     runs-on: ubuntu-latest
