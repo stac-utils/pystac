@@ -26,6 +26,7 @@ dependencies = [
     "pystac-core>=1.15.0,<2",
     "pystac-ext-classification",
     "pystac-ext-datacube",
+    "pystac-ext-earthquake",
     "pystac-ext-eo",
     "pystac-ext-file",
     "pystac-ext-grid",
@@ -137,6 +138,7 @@ mypy_path = [
     "core",
     "extensions/classification",
     "extensions/datacube",
+    "extensions/earthquake",
     "extensions/eo",
     "extensions/file",
     "extensions/grid",
@@ -183,6 +185,7 @@ packages = ["pystac"]
 pystac-core = { workspace = true }
 pystac-ext-classification = { workspace = true }
 pystac-ext-datacube = { workspace = true }
+pystac-ext-earthquake = { workspace = true }
 pystac-ext-eo = { workspace = true }
 pystac-ext-file = { workspace = true }
 pystac-ext-grid = { workspace = true }

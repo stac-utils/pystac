@@ -15,6 +15,7 @@ pystac.extensions
 
     classification.ClassificationExtension
     datacube.DatacubeExtension
+    earthquake.EarthquakeExtension
     eo.EOExtension
     file.FileExtension
     grid.GridExtension

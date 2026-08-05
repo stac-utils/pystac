@@ -27,6 +27,7 @@ members = [
     "pystac-core",
     "pystac-ext-classification",
     "pystac-ext-datacube",
+    "pystac-ext-earthquake",
     "pystac-ext-eo",
     "pystac-ext-file",
     "pystac-ext-grid",
@@ -3798,6 +3799,7 @@ dependencies = [
     { name = "pystac-core" },
     { name = "pystac-ext-classification" },
     { name = "pystac-ext-datacube" },
+    { name = "pystac-ext-earthquake" },
     { name = "pystac-ext-eo" },
     { name = "pystac-ext-file" },
     { name = "pystac-ext-grid" },
@@ -3906,6 +3908,7 @@ requires-dist = [
     { name = "pystac-core", editable = "core" },
     { name = "pystac-ext-classification", editable = "extensions/classification" },
     { name = "pystac-ext-datacube", editable = "extensions/datacube" },
+    { name = "pystac-ext-earthquake", editable = "extensions/earthquake" },
     { name = "pystac-ext-eo", editable = "extensions/eo" },
     { name = "pystac-ext-file", editable = "extensions/file" },
     { name = "pystac-ext-grid", editable = "extensions/grid" },
@@ -4026,6 +4029,17 @@ requires-dist = [
 name = "pystac-ext-datacube"
 version = "2.2.0"
 source = { editable = "extensions/datacube" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-earthquake"
+version = "1.0.0"
+source = { editable = "extensions/earthquake" }
 dependencies = [
     { name = "pystac-core" },
 ]
