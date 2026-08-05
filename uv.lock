@@ -41,6 +41,7 @@ members = [
     "pystac-ext-sar",
     "pystac-ext-sat",
     "pystac-ext-scientific",
+    "pystac-ext-sentinel-1",
     "pystac-ext-storage",
     "pystac-ext-table",
     "pystac-ext-timestamps",
@@ -3812,6 +3813,7 @@ dependencies = [
     { name = "pystac-ext-sar" },
     { name = "pystac-ext-sat" },
     { name = "pystac-ext-scientific" },
+    { name = "pystac-ext-sentinel-1" },
     { name = "pystac-ext-storage" },
     { name = "pystac-ext-table" },
     { name = "pystac-ext-timestamps" },
@@ -3920,6 +3922,7 @@ requires-dist = [
     { name = "pystac-ext-sar", editable = "extensions/sar" },
     { name = "pystac-ext-sat", editable = "extensions/sat" },
     { name = "pystac-ext-scientific", editable = "extensions/scientific" },
+    { name = "pystac-ext-sentinel-1", editable = "extensions/sentinel1" },
     { name = "pystac-ext-storage", editable = "extensions/storage" },
     { name = "pystac-ext-table", editable = "extensions/table" },
     { name = "pystac-ext-timestamps", editable = "extensions/timestamps" },
@@ -4192,6 +4195,17 @@ requires-dist = [{ name = "pystac-core", editable = "core" }]
 name = "pystac-ext-scientific"
 version = "1.0.0"
 source = { editable = "extensions/scientific" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-sentinel-1"
+version = "0.2.0"
+source = { editable = "extensions/sentinel1" }
 dependencies = [
     { name = "pystac-core" },
 ]
