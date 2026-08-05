@@ -24,6 +24,7 @@ from pystac.extensions.mlm import (
     AssetGeneralMLMExtension,
     MLMExtension,
 )
+from pystac.extensions.osc import OscExtension
 from pystac.extensions.pointcloud import PointcloudExtension
 from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.raster import RasterExtension
@@ -54,6 +55,7 @@ EXTENSION_NAMES = Literal[
     "item_assets",
     "mgrs",
     "mlm",
+    "osc",
     "pc",
     "proj",
     "raster",
@@ -78,6 +80,7 @@ EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     ItemAssetsExtension.name: ItemAssetsExtension,
     MgrsExtension.name: MgrsExtension,
     MLMExtension.name: MLMExtension,
+    OscExtension.name: OscExtension,
     PointcloudExtension.name: PointcloudExtension,
     ProjectionExtension.name: ProjectionExtension,
     RasterExtension.name: RasterExtension,
@@ -138,6 +141,10 @@ class CatalogExt:
             name : Extension identifier (eg: 'eo')
         """
         _get_class_by_name(name).remove_from(self.stac_object)
+
+    @property
+    def osc(self) -> OscExtension[Catalog]:
+        return OscExtension.ext(self.stac_object)
 
     @property
     def version(self) -> VersionExtension[Catalog]:
@@ -243,6 +250,10 @@ class ItemExt:
     @property
     def mlm(self) -> MLMExtension[Item]:
         return MLMExtension.ext(self.stac_object)
+
+    @property
+    def osc(self) -> OscExtension[Item]:
+        return OscExtension.ext(self.stac_object)
 
     @property
     def pc(self) -> PointcloudExtension[Item]:
