@@ -43,6 +43,7 @@ members = [
     "pystac-ext-scientific",
     "pystac-ext-storage",
     "pystac-ext-table",
+    "pystac-ext-themes",
     "pystac-ext-timestamps",
     "pystac-ext-version",
     "pystac-ext-view",
@@ -3814,6 +3815,7 @@ dependencies = [
     { name = "pystac-ext-scientific" },
     { name = "pystac-ext-storage" },
     { name = "pystac-ext-table" },
+    { name = "pystac-ext-themes" },
     { name = "pystac-ext-timestamps" },
     { name = "pystac-ext-version" },
     { name = "pystac-ext-view" },
@@ -3922,6 +3924,7 @@ requires-dist = [
     { name = "pystac-ext-scientific", editable = "extensions/scientific" },
     { name = "pystac-ext-storage", editable = "extensions/storage" },
     { name = "pystac-ext-table", editable = "extensions/table" },
+    { name = "pystac-ext-themes", editable = "extensions/themes" },
     { name = "pystac-ext-timestamps", editable = "extensions/timestamps" },
     { name = "pystac-ext-version", editable = "extensions/version" },
     { name = "pystac-ext-view", editable = "extensions/view" },
@@ -4214,6 +4217,17 @@ requires-dist = [{ name = "pystac-core", editable = "core" }]
 name = "pystac-ext-table"
 version = "1.2.0"
 source = { editable = "extensions/table" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-themes"
+version = "1.0.0"
+source = { editable = "extensions/themes" }
 dependencies = [
     { name = "pystac-core" },
 ]
