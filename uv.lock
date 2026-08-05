@@ -35,6 +35,7 @@ members = [
     "pystac-ext-mgrs",
     "pystac-ext-mlm",
     "pystac-ext-pointcloud",
+    "pystac-ext-processing",
     "pystac-ext-projection",
     "pystac-ext-raster",
     "pystac-ext-render",
@@ -3806,6 +3807,7 @@ dependencies = [
     { name = "pystac-ext-mgrs" },
     { name = "pystac-ext-mlm" },
     { name = "pystac-ext-pointcloud" },
+    { name = "pystac-ext-processing" },
     { name = "pystac-ext-projection" },
     { name = "pystac-ext-raster" },
     { name = "pystac-ext-render" },
@@ -3914,6 +3916,7 @@ requires-dist = [
     { name = "pystac-ext-mgrs", editable = "extensions/mgrs" },
     { name = "pystac-ext-mlm", editable = "extensions/mlm" },
     { name = "pystac-ext-pointcloud", editable = "extensions/pointcloud" },
+    { name = "pystac-ext-processing", editable = "extensions/processing" },
     { name = "pystac-ext-projection", editable = "extensions/projection" },
     { name = "pystac-ext-raster", editable = "extensions/raster" },
     { name = "pystac-ext-render", editable = "extensions/render" },
@@ -4126,6 +4129,17 @@ requires-dist = [
 name = "pystac-ext-pointcloud"
 version = "1.0.0"
 source = { editable = "extensions/pointcloud" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-processing"
+version = "1.2.0"
+source = { editable = "extensions/processing" }
 dependencies = [
     { name = "pystac-core" },
 ]
