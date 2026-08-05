@@ -30,6 +30,7 @@ members = [
     "pystac-ext-eo",
     "pystac-ext-file",
     "pystac-ext-grid",
+    "pystac-ext-insar",
     "pystac-ext-item-assets",
     "pystac-ext-label",
     "pystac-ext-mgrs",
@@ -3801,6 +3802,7 @@ dependencies = [
     { name = "pystac-ext-eo" },
     { name = "pystac-ext-file" },
     { name = "pystac-ext-grid" },
+    { name = "pystac-ext-insar" },
     { name = "pystac-ext-item-assets" },
     { name = "pystac-ext-label" },
     { name = "pystac-ext-mgrs" },
@@ -3909,6 +3911,7 @@ requires-dist = [
     { name = "pystac-ext-eo", editable = "extensions/eo" },
     { name = "pystac-ext-file", editable = "extensions/file" },
     { name = "pystac-ext-grid", editable = "extensions/grid" },
+    { name = "pystac-ext-insar", editable = "extensions/insar" },
     { name = "pystac-ext-item-assets", editable = "extensions/item_assets" },
     { name = "pystac-ext-label", editable = "extensions/label" },
     { name = "pystac-ext-mgrs", editable = "extensions/mgrs" },
@@ -4065,6 +4068,17 @@ requires-dist = [{ name = "pystac-core", editable = "core" }]
 name = "pystac-ext-grid"
 version = "1.1.0"
 source = { editable = "extensions/grid" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
+
+[[package]]
+name = "pystac-ext-insar"
+version = "1.0.0"
+source = { editable = "extensions/insar" }
 dependencies = [
     { name = "pystac-core" },
 ]

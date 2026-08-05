@@ -17,6 +17,7 @@ from pystac.extensions.datacube import DatacubeExtension
 from pystac.extensions.eo import EOExtension
 from pystac.extensions.file import FileExtension
 from pystac.extensions.grid import GridExtension
+from pystac.extensions.insar import InsarExtension
 from pystac.extensions.item_assets import ItemAssetsExtension
 from pystac.extensions.mgrs import MgrsExtension
 from pystac.extensions.mlm import (
@@ -51,6 +52,7 @@ EXTENSION_NAMES = Literal[
     "eo",
     "file",
     "grid",
+    "insar",
     "item_assets",
     "mgrs",
     "mlm",
@@ -75,6 +77,7 @@ EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     EOExtension.name: EOExtension,
     FileExtension.name: FileExtension,
     GridExtension.name: GridExtension,
+    InsarExtension.name: InsarExtension,
     ItemAssetsExtension.name: ItemAssetsExtension,
     MgrsExtension.name: MgrsExtension,
     MLMExtension.name: MLMExtension,
@@ -237,6 +240,10 @@ class ItemExt:
         return GridExtension.ext(self.stac_object)
 
     @property
+    def insar(self) -> InsarExtension[Item]:
+        return InsarExtension.ext(self.stac_object)
+
+    @property
     def mgrs(self) -> MgrsExtension:
         return MgrsExtension.ext(self.stac_object)
 
@@ -358,6 +365,10 @@ class _AssetExt(_AssetsExt[U]):
     @property
     def eo(self) -> EOExtension[U]:
         return EOExtension.ext(self.stac_object)
+
+    @property
+    def insar(self) -> InsarExtension[U]:
+        return InsarExtension.ext(self.stac_object)
 
     @property
     def pc(self) -> PointcloudExtension[U]:
