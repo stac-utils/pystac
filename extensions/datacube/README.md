@@ -5,9 +5,10 @@ This extension describes datasets that are organized as multi-dimensional datacu
 
 ## Supported versions
 
+- [v2.3.0](https://stac-extensions.github.io/datacube/v2.3.0/schema.json)
 - [v2.2.0](https://stac-extensions.github.io/datacube/v2.2.0/schema.json)
 
 ## Versioning
 
 This package's version corresponds to the version of the extension specification it targets.
-When we release updates to the package code without changing the target extension version, we use [post releases](https://packaging.python.org/en/latest/discussions/versioning/#post-releases), e.g. `2.2.0.post1`.
+When we release updates to the package code without changing the target extension version, we use [post releases](https://packaging.python.org/en/latest/discussions/versioning/#post-releases), e.g. `2.3.0.post1`.

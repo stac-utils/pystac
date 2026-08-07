@@ -17,7 +17,14 @@ T = TypeVar(
     "T", pystac.Collection, pystac.Item, pystac.Asset, pystac.ItemAssetDefinition
 )
 
-SCHEMA_URI = "https://stac-extensions.github.io/datacube/v2.2.0/schema.json"
+SCHEMA_URI = "https://stac-extensions.github.io/datacube/v2.3.0/schema.json"
+SCHEMA_URIS = [
+    "https://stac-extensions.github.io/datacube/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/datacube/v2.0.0/schema.json",
+    "https://stac-extensions.github.io/datacube/v2.1.0/schema.json",
+    "https://stac-extensions.github.io/datacube/v2.2.0/schema.json",
+    SCHEMA_URI,
+]
 
 PREFIX: str = "cube:"
 DIMENSIONS_PROP = PREFIX + "dimensions"
@@ -33,6 +40,7 @@ DIM_STEP_PROP = "step"
 DIM_REF_SYS_PROP = "reference_system"
 DIM_UNIT_PROP = "unit"
 
+
 # Variable properties
 VAR_TYPE_PROP = "type"
 VAR_DESC_PROP = "description"
@@ -40,6 +48,8 @@ VAR_EXTENT_PROP = "extent"
 VAR_VALUES_PROP = "values"
 VAR_DIMENSIONS_PROP = "dimensions"
 VAR_UNIT_PROP = "unit"
+VAR_NODATA_PROP = "nodata"
+VAR_DATA_TYPE_PROP = "data_type"
 
 
 class DimensionType(StringEnum):
@@ -543,6 +553,35 @@ class Variable:
         else:
             self.properties[VAR_UNIT_PROP] = v
 
+    @property
+    def nodata(self) -> pystac.NoDataStrings | float | None:
+        """Value used to identify no-data,
+        see `common metadata
+        <https://github.com/radiantearth/stac-spec/blob/v1.1.0/commons/common-metadata.md#no-data>`__
+        for more details."""
+        return self.properties.get(VAR_NODATA_PROP)
+
+    @nodata.setter
+    def nodata(self, v: pystac.NoDataStrings | float | None) -> None:
+        if v is None:
+            self.properties.pop(VAR_NODATA_PROP, None)
+        else:
+            self.properties[VAR_NODATA_PROP] = v
+
+    @property
+    def data_type(self) -> pystac.DataType | None:
+        """The data type of the values in the datacube, see `common metadata
+        <https://github.com/radiantearth/stac-spec/blob/v1.1.0/commons/common-metadata.md#data-types>`__
+        for more details."""
+        return self.properties.get(VAR_DATA_TYPE_PROP)
+
+    @data_type.setter
+    def data_type(self, v: pystac.DataType | None) -> None:
+        if v is None:
+            self.properties.pop(VAR_DATA_TYPE_PROP, None)
+        else:
+            self.properties[VAR_DATA_TYPE_PROP] = v
+
     @staticmethod
     def from_dict(d: dict[str, Any]) -> Variable:
         return Variable(d)
@@ -734,9 +773,7 @@ class DatacubeExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids = {
         "datacube",
-        "https://stac-extensions.github.io/datacube/v1.0.0/schema.json",
-        "https://stac-extensions.github.io/datacube/v2.0.0/schema.json",
-        "https://stac-extensions.github.io/datacube/v2.1.0/schema.json",
+        *[uri for uri in SCHEMA_URIS if uri != SCHEMA_URI],
     }
     stac_object_types = {
         pystac.STACObjectType.COLLECTION,

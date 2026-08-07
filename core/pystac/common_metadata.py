@@ -16,6 +16,31 @@ if TYPE_CHECKING:
 P = TypeVar("P")
 
 
+class DataType(utils.StringEnum):
+    INT8 = "int8"
+    INT16 = "int16"
+    INT32 = "int32"
+    INT64 = "int64"
+    UINT8 = "uint8"
+    UINT16 = "uint16"
+    UINT32 = "uint32"
+    UINT64 = "uint64"
+    FLOAT16 = "float16"
+    FLOAT32 = "float32"
+    FLOAT64 = "float64"
+    CINT16 = "cint16"
+    CINT32 = "cint32"
+    CFLOAT32 = "cfloat32"
+    CFLOAT64 = "cfloat64"
+    OTHER = "other"
+
+
+class NoDataStrings(utils.StringEnum):
+    INF = "inf"
+    NINF = "-inf"
+    NAN = "nan"
+
+
 class CommonMetadata:
     """Object containing fields that are not included in core item schema but
     are still commonly used. All attributes are defined within the properties of
