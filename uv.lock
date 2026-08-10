@@ -3792,7 +3792,7 @@ wheels = [
 
 [[package]]
 name = "pystac"
-version = "1.15.3"
+version = "1.15.2"
 source = { editable = "." }
 dependencies = [
     { name = "pystac-core" },
