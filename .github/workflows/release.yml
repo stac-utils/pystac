@@ -39,14 +39,14 @@ jobs:
       - name: Build
         working-directory: ${{ steps.package.outputs.path }}
         run: uv build -o dist
-      - uses: pypa/gh-action-pypi-publish@ba38be9e461d3875417946c167d0b5f3d385a247 # v1.14.1
+      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
         with:
           packages-dir: ${{ steps.package.outputs.path }}/dist
       - name: Build pystac-core
         if: steps.package.outputs.path == '.'
         working-directory: core
         run: uv build -o dist
-      - uses: pypa/gh-action-pypi-publish@ba38be9e461d3875417946c167d0b5f3d385a247 # v1.14.1
+      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
         if: steps.package.outputs.path == '.'
         with:
           packages-dir: core/dist
