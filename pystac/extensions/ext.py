@@ -31,6 +31,7 @@ from pystac.extensions.render import Render, RenderExtension
 from pystac.extensions.sar import SarExtension
 from pystac.extensions.sat import SatExtension
 from pystac.extensions.scientific import ScientificExtension
+from pystac.extensions.sentinel2 import Sentinel2Extension
 from pystac.extensions.storage import StorageExtension
 from pystac.extensions.table import TableExtension
 from pystac.extensions.timestamps import TimestampsExtension
@@ -58,6 +59,7 @@ EXTENSION_NAMES = Literal[
     "proj",
     "raster",
     "render",
+    "s2",
     "sar",
     "sat",
     "sci",
@@ -82,6 +84,7 @@ EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     ProjectionExtension.name: ProjectionExtension,
     RasterExtension.name: RasterExtension,
     RenderExtension.name: RenderExtension,
+    Sentinel2Extension.name: Sentinel2Extension,
     SarExtension.name: SarExtension,
     SatExtension.name: SatExtension,
     ScientificExtension.name: ScientificExtension,
@@ -255,6 +258,10 @@ class ItemExt:
     @property
     def render(self) -> RenderExtension[Item]:
         return RenderExtension.ext(self.stac_object)
+
+    @property
+    def s2(self) -> Sentinel2Extension[Item]:
+        return Sentinel2Extension.ext(self.stac_object)
 
     @property
     def sar(self) -> SarExtension[Item]:
