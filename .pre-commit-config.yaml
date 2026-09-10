@@ -2,6 +2,12 @@
 # Please run `pre-commit run --all-files` when adding or changing entries.
 
 repos:
+  # Keeps the `rev`s below, and the pins tagged with its pragma comment, in step with uv.lock.
+  - repo: https://github.com/tsvikas/sync-with-uv
+    rev: v0.6.0
+    hooks:
+      - id: sync-with-uv
+
   - repo: https://github.com/asottile/pyupgrade
     rev: 75992aaa40730136014f34227e0135f63fc951b4
     hooks:
@@ -9,43 +15,45 @@ repos:
         args:
           - "--py310-plus"
 
-  - repo: local
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.22
     hooks:
-      - id: ruff
-        name: ruff
-        entry: ruff check --force-exclude --fix --exit-non-zero-on-fix
-        language: system
-        types_or: [python, pyi, jupyter]
-        require_serial: true
-
+      - id: ruff-check
+        args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
-        name: ruff-format
-        entry: ruff format --force-exclude
-        language: system
         stages: [pre-commit]
-        types_or: [python, pyi, jupyter]
-        require_serial: true
 
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.3
+    hooks:
       - id: codespell
-        name: codespell
-        entry: codespell
-        language: system
         stages: [pre-commit]
         types_or: [jupyter, markdown, python, shell]
 
+  - repo: https://github.com/PyCQA/doc8
+    rev: v2.0.0
+    hooks:
       - id: doc8
-        name: doc8
-        entry: doc8
-        language: system
-        files: \.rst$
-        require_serial: true
 
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v2.3.0
+    hooks:
       - id: mypy
-        name: mypy
-        entry: mypy
         args: [--no-incremental]
-        language: system
         stages: [pre-commit]
-        types: [python]
         exclude: conftest\.py$
-        require_serial: true
+        additional_dependencies:
+          - html5lib==1.1  # sync-with-uv
+          - jsonschema==4.26.0  # sync-with-uv
+          - orjson==3.11.9  # sync-with-uv
+          - pytest==9.1.1  # sync-with-uv
+          - pytest-mock==3.15.1  # sync-with-uv
+          - python-dateutil==2.9.0.post0  # sync-with-uv
+          - referencing==0.37.0  # sync-with-uv
+          - requests-mock==1.12.1  # sync-with-uv
+          - types-html5lib==1.1.11.20260518  # sync-with-uv
+          - types-jsonschema==4.26.0.20260518  # sync-with-uv
+          - types-orjson==3.6.2  # sync-with-uv
+          - types-python-dateutil==2.9.0.20260716  # sync-with-uv
+          - types-urllib3==1.26.25.14  # sync-with-uv
+          - urllib3==2.7.0  # sync-with-uv
