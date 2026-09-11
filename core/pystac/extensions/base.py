@@ -45,6 +45,22 @@ class SummariesExtension:
 P = TypeVar("P")
 
 
+def _to_dict_recursive(v: Any) -> Any:
+    """Replaces any object that has a ``to_dict`` method with the result of calling
+    it, including objects nested at any depth inside lists, tuples and dicts."""
+    to_dict = getattr(v, "to_dict", None)
+    if callable(to_dict):
+        v = to_dict()
+    if isinstance(v, dict):
+        return {key: _to_dict_recursive(value) for key, value in v.items()}
+    elif isinstance(v, list):
+        return [_to_dict_recursive(x) for x in v]
+    elif isinstance(v, tuple):
+        return tuple(_to_dict_recursive(x) for x in v)
+    else:
+        return v
+
+
 class PropertiesExtension(ABC):
     """Abstract base class for extending the properties of an :class:`~pystac.Item`
     to include properties defined by a STAC Extension.
@@ -86,12 +102,8 @@ class PropertiesExtension(ABC):
     ) -> None:
         if v is None and pop_if_none:
             self.properties.pop(prop_name, None)
-        elif isinstance(v, list):
-            self.properties[prop_name] = [
-                x.to_dict() if hasattr(x, "to_dict") else x for x in v
-            ]
         else:
-            self.properties[prop_name] = v
+            self.properties[prop_name] = _to_dict_recursive(v)
 
 
 class ExtensionManagementMixin(Generic[S], ABC):
