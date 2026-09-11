@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.15.3](https://github.com/stac-utils/pystac/compare/v1.15.2...v1.15.3) (2026-09-11)
+
+
+### Bug Fixes
+
+* recursively convert values in PropertiesExtension._set_property ([#1804](https://github.com/stac-utils/pystac/issues/1804)) ([68f12fd](https://github.com/stac-utils/pystac/commit/68f12fdeee1fc76465fef15ddb449370a0014ae8)), closes [#1802](https://github.com/stac-utils/pystac/issues/1802)
+
+
+### Documentation
+
+* tweak how we version extension packages ([#1796](https://github.com/stac-utils/pystac/issues/1796)) ([e064109](https://github.com/stac-utils/pystac/commit/e064109398b0c3f29d2c3801561624a9c2061fc8))
+
 ## [1.15.2](https://github.com/stac-utils/pystac/compare/v1.15.1...v1.15.2) (2026-07-27)
 
 
