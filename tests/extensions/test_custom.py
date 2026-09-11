@@ -1,5 +1,6 @@
 """Tests creating a custom extension"""
 
+import json
 from collections.abc import Generator
 from datetime import datetime
 from typing import Any, Generic, TypeVar, cast
@@ -201,3 +202,24 @@ def test_migrates(add_extension_hooks: None) -> None:
     item = Item.from_dict(item_as_dict, migrate=True)
     custom = CustomExtension.ext(item)
     assert custom.test_prop == "foo"
+
+
+class Nested:
+    def __init__(self, value: Any) -> None:
+        self.value = value
+
+    def to_dict(self) -> dict[str, Any]:
+        return {"value": self.value}
+
+
+def test_set_property_converts_nested_objects(add_extension_hooks: None) -> None:
+    item = Item("an-id", None, None, datetime.now(), {})
+    custom = CustomExtension.ext(item, add_if_missing=True)
+    custom._set_property(
+        TEST_PROP, {"list": [Nested(1), (Nested(2),)], "obj": Nested(Nested(3))}
+    )
+    assert item.properties[TEST_PROP] == {
+        "list": [{"value": 1}, ({"value": 2},)],
+        "obj": {"value": {"value": 3}},
+    }
+    json.dumps(item.to_dict())
