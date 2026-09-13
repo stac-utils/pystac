@@ -1,9 +1,45 @@
 import os
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
 
 import pystac
+
+
+def test_copied_asset_is_independent_of_its_owner(item: pystac.Item) -> None:
+    """Modifying an asset from ``get_assets`` does not touch the owning item."""
+    item.add_asset(
+        "data",
+        pystac.Asset("data.tif", roles=["data"], extra_fields={"nested": {"k": [1]}}),
+    )
+
+    copied = item.get_assets()["data"]
+    assert copied.roles is not None
+    copied.href = "other.tif"
+    copied.roles.append("overview")
+    copied.extra_fields["nested"]["k"].append(2)
+
+    assert item.assets["data"].href == "data.tif"
+    assert item.assets["data"].roles == ["data"]
+    assert item.assets["data"].extra_fields["nested"]["k"] == [1]
+    assert copied.owner is item
+
+
+def test_deepcopy_of_an_item_reattaches_its_assets(item: pystac.Item) -> None:
+    """The assets of a copied item belong to the copy, not to the original."""
+    item.add_asset("data", pystac.Asset("data.tif"))
+
+    copied = deepcopy(item)
+    copied.assets["data"].href = "other.tif"
+
+    assert copied.assets["data"].owner is copied
+    assert item.assets["data"].href == "data.tif"
+
+
+def test_deepcopy_of_an_asset_keeps_its_owner(asset: pystac.Asset) -> None:
+    """An asset copied on its own still points at the object it came from."""
+    assert deepcopy(asset).owner is asset.owner
 
 
 @pytest.mark.parametrize("action", ["copy", "move"])
