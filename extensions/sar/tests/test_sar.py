@@ -387,3 +387,134 @@ def test_summaries_observation_direction(collection: pystac.Collection) -> None:
     summaries_dict = collection.to_dict()["summaries"]
 
     assert summaries_dict["sar:observation_direction"] == observation_direction_list
+
+
+@pytest.mark.parametrize(
+    "field", ["instrument_mode", "frequency_band", "polarizations", "product_type"]
+)
+def test_optional_fields(item: pystac.Item, field: str) -> None:
+    extension = SarExtension.ext(item)
+    assert getattr(extension, field) is None
+    extension.apply("IW", FrequencyBand.C, [Polarization.VV], "GRD")
+    setattr(extension, field, None)
+    assert "sar:" + field not in item.properties
+
+
+@pytest.mark.vcr()
+def test_new_fields(item: pystac.Item) -> None:
+    extension = SarExtension.ext(item)
+    extension.apply(
+        bandwidth=0.05,
+        relative_burst=1,
+        beam_ids=["IW1"],
+        polarizations=list(Polarization),
+        resolution_range=0,
+        looks_range=0,
+    )
+    assert extension.bandwidth == 0.05
+    assert extension.relative_burst == 1
+    assert extension.beam_ids == ["IW1"]
+    assert extension.polarizations == list(Polarization)
+    assert extension.resolution_range == 0
+    assert extension.looks_range == 0
+    item.validate()
+    for field in ("bandwidth", "relative_burst", "beam_ids"):
+        setattr(extension, field, None)
+        assert "sar:" + field not in item.properties
+
+
+@pytest.mark.vcr()
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("bandwidth", 0),
+        ("center_frequency", 0),
+        ("relative_burst", 0),
+        ("relative_burst", 1.5),
+        ("beam_ids", [1]),
+        ("polarizations", ["LH", "LH"]),
+    ],
+)
+def test_invalid_new_fields(item: pystac.Item, field: str, value: object) -> None:
+    item.properties["sar:" + field] = value
+    with pytest.raises(pystac.STACValidationError):
+        item.validate()
+
+
+@pytest.mark.vcr()
+def test_collection_fields(collection: pystac.Collection) -> None:
+    extension = SarExtension.ext(collection, add_if_missing=True)
+    extension.apply(bandwidth=0.05, beam_ids=["IW1"], relative_burst=1)
+    assert collection.extra_fields["sar:bandwidth"] == 0.05
+    assert extension.beam_ids == ["IW1"]
+    collection.validate()
+    asset = pystac.Asset("measurement.tif")
+    collection.add_asset("measurement", asset)
+    SarExtension.ext(asset).apply(polarizations=[Polarization.RH], bandwidth=0.03)
+    assert SarExtension.ext(asset).bandwidth == 0.03
+    collection.validate()
+
+
+def test_asset_inheritance_and_item_assets(
+    item: pystac.Item, collection: pystac.Collection
+) -> None:
+    SarExtension.ext(item).apply(bandwidth=0.05, relative_burst=1, beam_ids=["IW1"])
+    asset = pystac.Asset("measurement.tif")
+    item.add_asset("measurement", asset)
+    extension = SarExtension.ext(asset)
+    assert extension.bandwidth == 0.05
+    assert extension.relative_burst == 1
+    assert extension.beam_ids == ["IW1"]
+    extension.bandwidth = 0.03
+    assert SarExtension.ext(item).bandwidth == 0.05
+    definition = pystac.ItemAssetDefinition({"type": "image/tiff"})
+    definition.set_owner(collection)
+    SarExtension.ext(definition, add_if_missing=True).apply(bandwidth=0.02)
+    assert definition.properties["sar:bandwidth"] == 0.02
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("bandwidth", RangeSummary(0.01, 0.05)),
+        ("relative_burst", RangeSummary(1, 10)),
+        ("beam_ids", ["IW1", "IW2"]),
+    ],
+)
+def test_new_summaries(
+    collection: pystac.Collection, field: str, value: object
+) -> None:
+    extension = SarExtension.summaries(collection, add_if_missing=True)
+    assert getattr(extension, field) is None
+    setattr(extension, field, value)
+    assert getattr(extension, field) == value
+    setattr(extension, field, None)
+    assert "sar:" + field not in collection.summaries.to_dict()
+
+
+@pytest.mark.parametrize("version", ["1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.3.1"])
+def test_migrate_schema(
+    item: pystac.Item, collection: pystac.Collection, version: str
+) -> None:
+    for obj in (item, collection):
+        obj.stac_extensions = [
+            f"https://stac-extensions.github.io/sar/v{version}/schema.json"
+        ]
+        migrated = type(obj).from_dict(obj.to_dict())
+        assert migrated.stac_extensions == [SarExtension.get_schema_uri()]
+
+
+@pytest.mark.vcr()
+def test_empty_item(item: pystac.Item) -> None:
+    SarExtension.ext(item).apply()
+    item.validate()
+
+
+@pytest.mark.vcr()
+def test_asset_duplicate_polarizations(item: pystac.Item) -> None:
+    asset = pystac.Asset("measurement.tif")
+    item.add_asset("measurement", asset)
+    extension = SarExtension.ext(asset)
+    extension.apply(polarizations=[Polarization.CH, Polarization.CH])
+    assert extension.polarizations == [Polarization.CH, Polarization.CH]
+    item.validate()
