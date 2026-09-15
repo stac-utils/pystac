@@ -29,6 +29,9 @@ repos:
       - id: codespell
         stages: [pre-commit]
         types_or: [jupyter, markdown, python, shell]
+        # Python < 3.11 needs tomli to read [tool.codespell] from pyproject.toml.
+        additional_dependencies:
+          - tomli==2.4.1  # sync-with-uv
 
   - repo: https://github.com/PyCQA/doc8
     rev: v2.0.0
