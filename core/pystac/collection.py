@@ -48,7 +48,7 @@ TemporalIntervalsLike = TemporalIntervals | list[datetime] | list[Optional[datet
 # missing or null ``extent``; they are reused here so that pystac has a single
 # default extent no matter which part of the object was left out.
 _DEFAULT_BBOXES: Bboxes = [[-90, -180, 90, 180]]
-_DEFAULT_INTERVALS: list[list[Optional[datetime]]] = [[None, None]]
+_DEFAULT_INTERVALS: list[list[datetime | None]] = [[None, None]]
 
 
 class SpatialExtent:
