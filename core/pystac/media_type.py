@@ -15,12 +15,14 @@ class MediaType(StringEnum):
     JPEG = "image/jpeg"
     JPEG2000 = "image/jp2"
     JSON = "application/json"
+    OCTET_STREAM = "application/octet-stream"  # Arbitrary binary data
     PNG = "image/png"
     TEXT = "text/plain"
     TIFF = "image/tiff"
     KML = "application/vnd.google-earth.kml+xml"
     XML = "application/xml"
     PDF = "application/pdf"
+    ZIP = "application/zip"
 
     # https://github.com/Unidata/netcdf/issues/42#issuecomment-1007618822
     NETCDF = "application/netcdf"
