@@ -34,6 +34,7 @@ members = [
     "pystac-ext-label",
     "pystac-ext-mgrs",
     "pystac-ext-mlm",
+    "pystac-ext-order",
     "pystac-ext-pointcloud",
     "pystac-ext-projection",
     "pystac-ext-raster",
@@ -3805,6 +3806,7 @@ dependencies = [
     { name = "pystac-ext-label" },
     { name = "pystac-ext-mgrs" },
     { name = "pystac-ext-mlm" },
+    { name = "pystac-ext-order" },
     { name = "pystac-ext-pointcloud" },
     { name = "pystac-ext-projection" },
     { name = "pystac-ext-raster" },
@@ -3913,6 +3915,7 @@ requires-dist = [
     { name = "pystac-ext-label", editable = "extensions/label" },
     { name = "pystac-ext-mgrs", editable = "extensions/mgrs" },
     { name = "pystac-ext-mlm", editable = "extensions/mlm" },
+    { name = "pystac-ext-order", editable = "extensions/order" },
     { name = "pystac-ext-pointcloud", editable = "extensions/pointcloud" },
     { name = "pystac-ext-projection", editable = "extensions/projection" },
     { name = "pystac-ext-raster", editable = "extensions/raster" },
@@ -4121,6 +4124,17 @@ requires-dist = [
     { name = "pystac-ext-classification", editable = "extensions/classification" },
     { name = "pystac-ext-raster", editable = "extensions/raster" },
 ]
+
+[[package]]
+name = "pystac-ext-order"
+version = "1.1.0"
+source = { editable = "extensions/order" }
+dependencies = [
+    { name = "pystac-core" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pystac-core", editable = "core" }]
 
 [[package]]
 name = "pystac-ext-pointcloud"

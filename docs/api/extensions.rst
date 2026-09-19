@@ -23,6 +23,7 @@ pystac.extensions
     mlm.MLMExtension
     mlm.AssetGeneralMLMExtension
     mlm.AssetDetailedMLMExtension
+    order.OrderExtension
     pointcloud.PointcloudExtension
     projection.ProjectionExtension
     raster.RasterExtension
