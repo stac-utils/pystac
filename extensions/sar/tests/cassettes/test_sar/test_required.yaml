@@ -3,77 +3,120 @@ interactions:
     body: null
     headers: {}
     method: GET
-    uri: https://stac-extensions.github.io/sar/v1.0.0/schema.json
+    uri: https://stac-extensions.github.io/sar/v1.3.2/schema.json
   response:
     body:
       string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
-        \"https://stac-extensions.github.io/sar/v1.0.0/schema.json\",\n  \"title\":
-        \"SAR Extension\",\n  \"description\": \"STAC SAR Extension to a STAC Item\",\n
-        \ \"oneOf\": [\n    {\n      \"$comment\": \"This is the schema for STAC Items.\",\n
-        \     \"allOf\": [\n        {\n          \"type\": \"object\",\n          \"required\":
-        [\n            \"type\",\n            \"properties\",\n            \"assets\"\n
-        \         ],\n          \"properties\": {\n            \"type\": {\n              \"const\":
-        \"Feature\"\n            },\n            \"properties\": {\n              \"allOf\":
-        [\n                {\n                  \"required\": [\n                    \"sar:instrument_mode\",\n
-        \                   \"sar:frequency_band\",\n                    \"sar:polarizations\",\n
-        \                   \"sar:product_type\"\n                  ],\n                  \"properties\":
-        {\n                    \"sar:polarizations\": {\n                      \"type\":
-        \"array\",\n                      \"maxItems\": 4,\n                      \"uniqueItems\":
-        true\n                    }\n                  }\n                },\n                {\n
-        \                 \"$ref\": \"#/definitions/fields\"\n                }\n
-        \             ]\n            },\n            \"assets\": {\n              \"type\":
-        \"object\",\n              \"additionalProperties\": {\n                \"$ref\":
-        \"#/definitions/fields\"\n              }\n            }\n          }\n        },\n
-        \       {\n          \"$ref\": \"#/definitions/stac_extensions\"\n        }\n
-        \     ]\n    },\n    {\n      \"$comment\": \"This is the schema for STAC
-        Collections.\",\n      \"allOf\": [\n        {\n          \"type\": \"object\",\n
-        \         \"required\": [\n            \"type\"\n          ],\n          \"properties\":
-        {\n            \"type\": {\n              \"const\": \"Collection\"\n            },\n
-        \           \"assets\": {\n              \"type\": \"object\",\n              \"additionalProperties\":
-        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            },\n
-        \           \"item_assets\": {\n              \"type\": \"object\",\n              \"additionalProperties\":
-        {\n                \"$ref\": \"#/definitions/fields\"\n              }\n            }\n
-        \         }\n        }\n      ]\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
-        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
-        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
-        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/sar/v1.0.0/schema.json\"\n
-        \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"$comment\":
-        \"Add your new fields here. Don't require them here, do that above in the
-        item schema.\",\n      \"type\": \"object\",\n      \"properties\": {\n        \"sar:instrument_mode\":
-        {\n          \"title\": \"Instrument Mode\",\n          \"type\": \"string\",\n
-        \         \"example\": \"WV\"\n        },\n        \"sar:frequency_band\":
+        \"https://stac-extensions.github.io/sar/v1.3.2/schema.json\",\n  \"title\":
+        \"SAR Extension\",\n  \"description\": \"STAC SAR Extension for STAC Items
+        and STAC Collections.\",\n  \"type\": \"object\",\n  \"required\": [\n    \"stac_extensions\"\n
+        \ ],\n  \"properties\": {\n    \"stac_extensions\": {\n      \"type\": \"array\",\n
+        \     \"contains\": {\n        \"const\": \"https://stac-extensions.github.io/sar/v1.3.2/schema.json\"\n
+        \     }\n    }\n  },\n  \"oneOf\": [\n    {\n      \"$comment\": \"This is
+        the schema for STAC Items. Remove this object if this extension only applies
+        to Collections.\",\n      \"type\": \"object\",\n      \"required\": [\n        \"type\",\n
+        \       \"properties\",\n        \"assets\"\n      ],\n      \"properties\":
+        {\n        \"type\": {\n          \"const\": \"Feature\"\n        },\n        \"properties\":
+        {\n          \"allOf\": [\n            {\n              \"$ref\": \"#/definitions/fields\"\n
+        \           },\n            {\n              \"$ref\": \"#/definitions/sar_polarizations_unique_in_props\"\n
+        \           }\n          ]\n        },\n        \"assets\": {\n          \"$comment\":
+        \"This validates the fields in Item Assets, but does not require them.\",\n
+        \         \"type\": \"object\",\n          \"additionalProperties\": {\n            \"$ref\":
+        \"#/definitions/fields\"\n          }\n        }\n      }\n    },\n    {\n
+        \     \"$comment\": \"This is the schema for STAC Collections.\",\n      \"type\":
+        \"object\",\n      \"required\": [\n        \"type\"\n      ],\n      \"properties\":
+        {\n        \"type\": {\n          \"const\": \"Collection\"\n        }\n      },\n
+        \     \"anyOf\": [\n        {\n          \"$comment\": \"This is the schema
+        for the top-level fields in a Collection. Remove this if this extension does
+        not define top-level fields for Collections.\",\n          \"allOf\": [\n
+        \           {\n              \"$ref\": \"#/definitions/fields\"\n            },\n
+        \           {\n              \"$ref\": \"#/definitions/sar_polarizations_unique_in_props\"\n
+        \           }\n          ]\n        },\n        {\n          \"$comment\":
+        \"This validates the fields in Collection Assets, but does not require them.\",\n
+        \         \"required\": [\n            \"assets\"\n          ],\n          \"properties\":
+        {\n            \"assets\": {\n              \"type\": \"object\",\n              \"not\":
+        {\n                \"additionalProperties\": {\n                  \"not\":
+        {\n                    \"allOf\": [\n                      {\n                        \"$ref\":
+        \"#/definitions/require_any_field\"\n                      },\n                      {\n
+        \                       \"$ref\": \"#/definitions/fields\"\n                      }\n
+        \                   ]\n                  }\n                }\n              }\n
+        \           }\n          }\n        },\n        {\n          \"$comment\":
+        \"This is the schema for the fields in Item Asset Definitions. It doesn't
+        require any fields.\",\n          \"required\": [\n            \"item_assets\"\n
+        \         ],\n          \"properties\": {\n            \"item_assets\": {\n
+        \             \"type\": \"object\",\n              \"not\": {\n                \"additionalProperties\":
+        {\n                  \"not\": {\n                    \"allOf\": [\n                      {\n
+        \                       \"$ref\": \"#/definitions/require_any_field\"\n                      },\n
+        \                     {\n                        \"$ref\": \"#/definitions/fields\"\n
+        \                     }\n                    ]\n                  }\n                }\n
+        \             }\n            }\n          }\n        },\n        {\n          \"$comment\":
+        \"This is the schema for the fields in Summaries. By default, only checks
+        the existence of the properties, but not the schema of the summaries.\",\n
+        \         \"required\": [\n            \"summaries\"\n          ],\n          \"properties\":
+        {\n            \"summaries\": {\n              \"$ref\": \"#/definitions/require_any_field\"\n
+        \           }\n          }\n        }\n      ]\n    }\n  ],\n  \"definitions\":
+        {\n    \"require_any_field\": {\n      \"$comment\": \"Please list all fields
+        here so that we can force the existence of one of them in other parts of the
+        schemas.\",\n      \"anyOf\": [\n        {\"required\": [\"sar:instrument_mode\"]},\n
+        \       {\"required\": [\"sar:frequency_band\"]},\n        {\"required\":
+        [\"sar:center_frequency\"]},\n        {\"required\": [\"sar:bandwidth\"]},\n
+        \       {\"required\": [\"sar:polarizations\"]},\n        {\"required\": [\"sar:product_type\"]},\n
+        \       {\"required\": [\"sar:resolution_range\"]},\n        {\"required\":
+        [\"sar:resolution_azimuth\"]},\n        {\"required\": [\"sar:pixel_spacing_range\"]},\n
+        \       {\"required\": [\"sar:pixel_spacing_azimuth\"]},\n        {\"required\":
+        [\"sar:looks_range\"]},\n        {\"required\": [\"sar:looks_azimuth\"]},\n
+        \       {\"required\": [\"sar:looks_equivalent_number\"]},\n        {\"required\":
+        [\"sar:observation_direction\"]},\n        {\"required\": [\"sar:relative_burst\"]},\n
+        \       {\"required\": [\"sar:beam_ids\"]}\n      ]\n    },\n    \"fields\":
+        {\n      \"$comment\": \"Add your new fields here. Don't require them here,
+        do that above in the item schema.\",\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"sar:instrument_mode\": {\n          \"title\": \"Instrument Mode\",\n
+        \         \"type\": \"string\",\n          \"examples\": [\n            \"WV\"\n
+        \         ],\n          \"minLength\": 1\n        },\n        \"sar:frequency_band\":
         {\n          \"title\": \"Frequency Band\",\n          \"type\": \"string\",\n
         \         \"enum\": [\n            \"P\",\n            \"L\",\n            \"S\",\n
         \           \"C\",\n            \"X\",\n            \"Ku\",\n            \"K\",\n
         \           \"Ka\"\n          ]\n        },\n        \"sar:center_frequency\":
-        {\n          \"title\": \"Center Frequency (GHz)\",\n          \"type\": \"number\"\n
-        \       },\n        \"sar:polarizations\": {\n          \"title\": \"Polarizations\",\n
-        \         \"type\": \"array\",\n          \"minItems\": 1,\n          \"items\":
-        {\n            \"type\": \"string\",\n            \"enum\": [\n              \"HH\",\n
-        \             \"VV\",\n              \"HV\",\n              \"VH\"\n            ]\n
-        \         }\n        },\n        \"sar:product_type\": {\n          \"title\":
-        \"Product type\",\n          \"type\": \"string\",\n          \"examples\":
-        [\n            \"SSC\",\n            \"MGD\",\n            \"SGC\"\n          ]\n
-        \       },\n        \"sar:resolution_range\": {\n          \"title\": \"Resolution
-        range (m)\",\n          \"type\": \"number\",\n          \"minimum\": 0\n
-        \       },\n        \"sar:resolution_azimuth\": {\n          \"title\": \"Resolution
-        azimuth (m)\",\n          \"type\": \"number\",\n          \"minimum\": 0\n
-        \       },\n        \"sar:pixel_spacing_range\": {\n          \"title\": \"Pixel
-        spacing range (m)\",\n          \"type\": \"number\",\n          \"minimum\":
-        0\n        },\n        \"sar:pixel_spacing_azimuth\": {\n          \"title\":
-        \"Pixel spacing azimuth (m)\",\n          \"type\": \"number\",\n          \"minimum\":
-        0\n        },\n        \"sar:looks_range\": {\n          \"title\": \"Looks
-        range\",\n          \"type\": \"integer\",\n          \"minimum\": 0\n        },\n
-        \       \"sar:looks_azimuth\": {\n          \"title\": \"Looks azimuth\",\n
-        \         \"type\": \"integer\",\n          \"minimum\": 0\n        },\n        \"sar:looks_equivalent_number\":
-        {\n          \"title\": \"Equivalent number of looks (ENL)\",\n          \"type\":
-        \"number\",\n          \"minimum\": 0\n        },\n        \"sar:observation_direction\":
-        {\n          \"title\": \"Antenna pointing direction\",\n          \"type\":
-        \"string\",\n          \"enum\": [\n            \"left\",\n            \"right\"\n
-        \         ]\n        }\n      },\n      \"patternProperties\": {\n        \"^(?!sar:)\":
-        {\n          \"$comment\": \"Do not allow unspecified fields prefixed with
-        sar:\"\n        }\n      },\n      \"additionalProperties\": false\n    }\n
-        \ }\n}\n"
+        {\n          \"title\": \"Center Frequency (GHz)\",\n          \"type\": \"number\",\n
+        \         \"exclusiveMinimum\": 0\n        },\n        \"sar:bandwidth\":
+        {\n          \"title\": \"Range Bandwidth (GHz)\",\n          \"type\": \"number\",\n
+        \         \"exclusiveMinimum\": 0\n        },\n        \"sar:polarizations\":
+        {\n          \"$ref\": \"#/definitions/sar_polarizations\"\n        },\n        \"sar:product_type\":
+        {\n          \"title\": \"Product type\",\n          \"type\": \"string\",\n
+        \         \"minLength\": 1,\n          \"examples\": [\n            \"SSC\",\n
+        \           \"MGD\",\n            \"SGC\"\n          ]\n        },\n        \"sar:resolution_range\":
+        {\n          \"title\": \"Resolution range (m)\",\n          \"type\": \"number\",\n
+        \         \"minimum\": 0\n        },\n        \"sar:resolution_azimuth\":
+        {\n          \"title\": \"Resolution azimuth (m)\",\n          \"type\": \"number\",\n
+        \         \"minimum\": 0\n        },\n        \"sar:pixel_spacing_range\":
+        {\n          \"title\": \"Pixel spacing range (m)\",\n          \"type\":
+        \"number\",\n          \"minimum\": 0\n        },\n        \"sar:pixel_spacing_azimuth\":
+        {\n          \"title\": \"Pixel spacing azimuth (m)\",\n          \"type\":
+        \"number\",\n          \"minimum\": 0\n        },\n        \"sar:looks_range\":
+        {\n          \"title\": \"Looks range\",\n          \"type\": \"integer\",\n
+        \         \"minimum\": 0\n        },\n        \"sar:looks_azimuth\": {\n          \"title\":
+        \"Looks azimuth\",\n          \"type\": \"integer\",\n          \"minimum\":
+        0\n        },\n        \"sar:looks_equivalent_number\": {\n          \"title\":
+        \"Equivalent number of looks (ENL)\",\n          \"type\": \"number\",\n          \"minimum\":
+        0\n        },\n        \"sar:observation_direction\": {\n          \"title\":
+        \"Antenna pointing direction\",\n          \"type\": \"string\",\n          \"enum\":
+        [\n            \"left\",\n            \"right\"\n          ]\n        },\n
+        \       \"sar:relative_burst\": {\n          \"title\": \"Relative burst number\",\n
+        \         \"type\": \"integer\",\n          \"minimum\": 1\n        },\n        \"sar:beam_ids\":
+        {\n          \"title\": \"Beam identifiers\",\n          \"type\": \"array\",\n
+        \         \"items\": {\n            \"type\": \"string\"\n          }\n        }\n
+        \     },\n      \"patternProperties\": {\n        \"^(?!sar:)\": {\n          \"$comment\":
+        \"Do not allow unspecified fields prefixed with sar:\"\n        }\n      },\n
+        \     \"additionalProperties\": false\n    },\n    \"sar_polarizations\":
+        {\n      \"title\": \"Polarizations\",\n      \"type\": \"array\",\n      \"minItems\":
+        1,\n      \"items\": {\n        \"type\": \"string\",\n        \"enum\": [\n
+        \         \"HH\",\n          \"VV\",\n          \"HV\",\n          \"VH\",\n
+        \         \"LH\",\n          \"LV\",\n          \"RH\",\n          \"RV\",\n
+        \         \"CH\",\n          \"CV\"\n        ]\n      }\n    },\n    \"sar_polarizations_unique_in_props\":
+        {\n      \"type\": \"object\",\n      \"properties\": {\n        \"sar:polarizations\":
+        {\n          \"allOf\": [\n            {\n              \"$ref\": \"#/definitions/sar_polarizations\"\n
+        \           },\n            {\n              \"type\": \"array\",\n              \"uniqueItems\":
+        true\n            }\n          ]\n        }\n      }\n    }\n  }\n}\n"
     headers: {}
     status:
       code: 200
