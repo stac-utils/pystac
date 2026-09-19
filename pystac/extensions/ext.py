@@ -25,6 +25,7 @@ from pystac.extensions.mlm import (
     MLMExtension,
 )
 from pystac.extensions.pointcloud import PointcloudExtension
+from pystac.extensions.processing import ProcessingExtension
 from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.raster import RasterExtension
 from pystac.extensions.render import Render, RenderExtension
@@ -55,6 +56,7 @@ EXTENSION_NAMES = Literal[
     "mgrs",
     "mlm",
     "pc",
+    "processing",
     "proj",
     "raster",
     "render",
@@ -79,6 +81,7 @@ EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
     MgrsExtension.name: MgrsExtension,
     MLMExtension.name: MLMExtension,
     PointcloudExtension.name: PointcloudExtension,
+    ProcessingExtension.name: ProcessingExtension,
     ProjectionExtension.name: ProjectionExtension,
     RasterExtension.name: RasterExtension,
     RenderExtension.name: RenderExtension,
@@ -249,6 +252,10 @@ class ItemExt:
         return PointcloudExtension.ext(self.stac_object)
 
     @property
+    def processing(self) -> ProcessingExtension[Item]:
+        return ProcessingExtension.ext(self.stac_object)
+
+    @property
     def proj(self) -> ProjectionExtension[Item]:
         return ProjectionExtension.ext(self.stac_object)
 
@@ -364,6 +371,10 @@ class _AssetExt(_AssetsExt[U]):
         return PointcloudExtension.ext(self.stac_object)
 
     @property
+    def processing(self) -> ProcessingExtension[U]:
+        return ProcessingExtension.ext(self.stac_object)
+
+    @property
     def proj(self) -> ProjectionExtension[U]:
         return ProjectionExtension.ext(self.stac_object)
 
@@ -435,6 +446,10 @@ class ItemAssetExt(_AssetExt[ItemAssetDefinition]):
     @property
     def mlm(self) -> MLMExtension[ItemAssetDefinition]:
         return MLMExtension.ext(self.stac_object)
+
+    @property
+    def processing(self) -> ProcessingExtension[ItemAssetDefinition]:
+        return ProcessingExtension.ext(self.stac_object)
 
     @property
     def storage(self) -> StorageExtension[ItemAssetDefinition]:
