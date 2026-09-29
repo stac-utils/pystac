@@ -41,7 +41,7 @@ jobs:
         with:
           token: ${{ steps.generate-token.outputs.token }}
           ref: ${{ fromJSON(needs.release-please.outputs.prs)[0].headBranchName }}
-      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
       - name: Run pull-static script
         run: uv run scripts/pull-static
       - name: Run pytest with rewrite mode
