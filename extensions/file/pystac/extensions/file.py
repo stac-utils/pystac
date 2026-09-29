@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from pathlib import Path
 from typing import Any, Generic, Literal, TypeVar, cast
 
 from pystac import (
@@ -312,7 +311,7 @@ class LinkFileExtension(FileExtension[Link]):
 
 class FileExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    schema_path: str = str(Path(__file__).resolve().parent / "schema.json")
+    schema_filename: str = "v2.1.0.json"
     prev_extension_ids = {
         "file",
         "https://stac-extensions.github.io/file/v1.0.0/schema.json",

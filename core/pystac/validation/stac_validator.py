@@ -2,7 +2,7 @@ import json
 import logging
 import warnings
 from abc import ABC, abstractmethod
-from typing import Any, cast
+from typing import Any
 
 import pystac
 import pystac.utils
@@ -304,11 +304,8 @@ class JsonSchemaSTACValidator(STACValidator):
         if schema_uri not in self.schema_cache:
             if schema_uri in pystac.EXTENSION_HOOKS.hooks:
                 hook = pystac.EXTENSION_HOOKS.hooks[schema_uri]
-                if hook.schema_path:
-                    with open(hook.schema_path) as f:
-                        self.schema_cache[schema_uri] = cast(
-                            dict[str, Any], json.load(f)
-                        )
+                if hook.schema_filename:
+                    self.schema_cache[schema_uri] = hook.read_schema()
 
         self._validate_from_uri(stac_dict, stac_object_type, schema_uri, href)
 

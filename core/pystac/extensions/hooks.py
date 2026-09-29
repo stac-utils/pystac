@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import json
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import pystac
 from pystac.extensions.base import VERSION_REGEX
@@ -21,8 +22,8 @@ class ExtensionHooks(ABC):
         raise NotImplementedError
 
     @property
-    def schema_path(self) -> str | None:
-        """The local path to the schema file for this extension"""
+    def schema_filename(self) -> str | None:
+        """The filename of the local schema file for this extension"""
         return None
 
     @property
@@ -83,6 +84,26 @@ class ExtensionHooks(ABC):
                 except ValueError:
                     obj["stac_extensions"].append(self.schema_uri)
                 break
+
+    def read_schema(self) -> dict[str, Any]:
+        """Read the schema as a dictionary from the local file"""
+        import importlib.resources
+
+        if not self.schema_filename:
+            raise KeyError("Local version of the schema is not available")
+
+        with (
+            importlib.resources.files("pystac.extensions.json-schema")
+            .joinpath(self.schema_filename)
+            .open("r") as f
+        ):
+            schema = cast(dict[str, Any], json.load(f))
+            if schema["$id"] not in {self.schema_uri, f"{self.schema_uri}#"}:
+                raise ValueError(
+                    f"Local version of extension schema is invalid"
+                    f"Expected {self.schema_uri} for {schema['$id']}"
+                )
+            return schema
 
 
 class RegisteredExtensionHooks:
