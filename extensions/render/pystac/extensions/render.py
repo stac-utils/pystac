@@ -408,4 +408,5 @@ class ItemRenderExtension(RenderExtension[pystac.Item]):
 
 class RenderExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
+    schema_filename: str = "v2.0.0.json"
     stac_object_types = {pystac.STACObjectType.COLLECTION, pystac.STACObjectType.ITEM}

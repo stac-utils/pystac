@@ -307,6 +307,7 @@ class SummariesViewExtension(SummariesExtension):
 
 class ViewExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
+    schema_filename: str = "v1.0.0.json"
     prev_extension_ids = {"view"}
     stac_object_types = {pystac.STACObjectType.ITEM}
 

@@ -407,6 +407,7 @@ class ItemAssetsViewExtension(BaseVersionExtension[ItemAssetDefinition]):
 
 class VersionExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
+    schema_filename: str = "v1.2.0.json"
     prev_extension_ids = {
         "version",
         "https://stac-extensions.github.io/version/v1.0.0/schema.json",

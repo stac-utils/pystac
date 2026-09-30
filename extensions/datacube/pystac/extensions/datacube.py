@@ -732,6 +732,7 @@ class ItemAssetsDatacubeExtension(DatacubeExtension[pystac.ItemAssetDefinition])
 
 class DatacubeExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
+    schema_filename: str = "v2.2.0.json"
     prev_extension_ids = {
         "datacube",
         "https://stac-extensions.github.io/datacube/v1.0.0/schema.json",

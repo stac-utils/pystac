@@ -814,6 +814,7 @@ class SummariesRasterExtension(SummariesExtension):
 
 class RasterExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
+    schema_filename: str = "v1.1.0.json"
     prev_extension_ids: set[str] = {*[uri for uri in SCHEMA_URIS if uri != SCHEMA_URI]}
     stac_object_types = {pystac.STACObjectType.ITEM, pystac.STACObjectType.COLLECTION}
 
