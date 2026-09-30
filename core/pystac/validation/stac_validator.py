@@ -299,14 +299,6 @@ class JsonSchemaSTACValidator(STACValidator):
 
         schema_uri = pystac.utils.make_absolute_href(schema_uri, href)
 
-        # if the extension class is installed and has a local schema file, try to
-        # read and cache that.
-        if schema_uri not in self.schema_cache:
-            if schema_uri in pystac.EXTENSION_HOOKS.hooks:
-                hook = pystac.EXTENSION_HOOKS.hooks[schema_uri]
-                if hook.schema_filename:
-                    self.schema_cache[schema_uri] = hook.read_schema()
-
         self._validate_from_uri(stac_dict, stac_object_type, schema_uri, href)
 
         return schema_uri

@@ -85,26 +85,6 @@ class ExtensionHooks(ABC):
                     obj["stac_extensions"].append(self.schema_uri)
                 break
 
-    def read_schema(self) -> dict[str, Any]:
-        """Read the schema as a dictionary from the local file"""
-        import importlib.resources
-
-        if not self.schema_filename:
-            raise KeyError("Local version of the schema is not available")
-
-        with (
-            importlib.resources.files("pystac.extensions.json-schema")
-            .joinpath(self.schema_filename)
-            .open("r") as f
-        ):
-            schema = cast(dict[str, Any], json.load(f))
-            if schema["$id"] not in {self.schema_uri, f"{self.schema_uri}#"}:
-                raise ValueError(
-                    f"Local version of extension schema is invalid"
-                    f"Expected {self.schema_uri} for {schema['$id']}"
-                )
-            return schema
-
 
 class RegisteredExtensionHooks:
     hooks: dict[str, ExtensionHooks]
@@ -112,6 +92,25 @@ class RegisteredExtensionHooks:
     def __init__(self, hooks: Iterable[ExtensionHooks] = ()):
         self.hooks = {e.schema_uri: e for e in hooks}
         self._discovered = False
+
+    def _read_schemas(self) -> dict[str, dict[str, Any]]:
+        """Read the extension schemas from local files.
+        
+        Extension packages can optionally contain local versions of the 
+        json schema files. This method reads all those in and maps them to
+        the correct ``schema_uri``
+        """
+        import importlib.resources
+
+        schema_cache: dict[str, dict[str, Any]] = dict()
+        for schema_filepath in importlib.resources.files("pystac.extensions.json-schema").iterdir():
+            with schema_filepath.open("r") as f:
+                schema = cast(dict[str, Any], json.load(f))
+                schema_uri = schema["$id"]
+                if schema_uri.endswith("#"):
+                    schema_uri = schema_uri[:-1]
+                schema_cache[schema_uri] = schema
+        return schema_cache
 
     def _discover(self) -> None:
         """Register hooks advertised via the ``pystac.extensions`` entry point group.

@@ -3,6 +3,7 @@ from typing import Any, cast
 
 from jsonschema import Draft7Validator, ValidationError
 
+from pystac import EXTENSION_HOOKS
 from pystac.errors import STACLocalValidationError
 from pystac.version import STACVersion
 
@@ -51,6 +52,7 @@ def get_local_schema_cache() -> dict[str, dict[str, Any]]:
                 "provider",
             )
         },
+        **EXTENSION_HOOKS._read_schemas()
     }
 
 
