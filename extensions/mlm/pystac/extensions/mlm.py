@@ -2045,7 +2045,6 @@ class ItemAssetMLMExtension(MLMExtension[pystac.ItemAssetDefinition]):
 
 class MLMExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
-    schema_filename: str = "v1.4.0.json"
     prev_extension_ids = {
         SCHEMA_URI_PATTERN.format(version=v)
         for v in SUPPORTED_VERSIONS

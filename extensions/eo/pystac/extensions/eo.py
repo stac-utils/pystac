@@ -603,7 +603,6 @@ class SummariesEOExtension(SummariesExtension):
 
 class EOExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    schema_filename: str = "v1.1.0.json"
     prev_extension_ids = {
         "eo",
         *[uri for uri in SCHEMA_URIS if uri != SCHEMA_URI],

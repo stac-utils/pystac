@@ -103,7 +103,6 @@ class ItemAssetsExtension(ExtensionManagementMixin[pystac.Collection]):
 
 class ItemAssetsExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    schema_filename: str = "v1.0.0.json"
     prev_extension_ids = {"asset", "item-assets"}
     stac_object_types = {pystac.STACObjectType.COLLECTION}
 

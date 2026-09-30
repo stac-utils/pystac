@@ -737,7 +737,6 @@ class SummariesClassificationExtension(SummariesExtension):
 
 class ClassificationExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI_PATTERN.format(version=DEFAULT_VERSION)
-    schema_filename: str = "v2.0.0.json"
     prev_extension_ids = {
         SCHEMA_URI_PATTERN.format(version=v)
         for v in SUPPORTED_VERSIONS

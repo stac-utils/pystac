@@ -312,7 +312,6 @@ class ItemAssetsTableExtension(TableExtension[pystac.ItemAssetDefinition]):
 
 class TableExtensinoHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    schema_filename: str = "v1.2.0.json"
     prev_extension_ids = {
         "table",
         "https://stac-extensions.github.io/table/v1.0.0/schema.json",

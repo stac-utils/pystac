@@ -460,7 +460,6 @@ class SummariesProjectionExtension(SummariesExtension):
 
 class ProjectionExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    schema_filename: str = "v2.0.0.json"
     prev_extension_ids = {
         "proj",
         "projection",

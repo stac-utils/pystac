@@ -286,7 +286,6 @@ class SummariesTimestampsExtension(SummariesExtension):
 
 class TimestampsExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    schema_filename: str = "v1.1.0.json"
     prev_extension_ids = {
         "timestamps",
         "https://stac-extensions.github.io/timestamps/v1.0.0/schema.json",

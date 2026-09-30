@@ -809,7 +809,6 @@ class SummariesLabelExtension(SummariesExtension):
 
 class LabelExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
-    schema_filename: str = "v1.0.1.json"
     prev_extension_ids = {
         "label",
         *[uri for uri in SCHEMA_URIS if uri != SCHEMA_URI],
