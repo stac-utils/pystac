@@ -6,8 +6,16 @@ import argparse
 import inspect
 import shutil
 from importlib.metadata import entry_points
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+from urllib.parse import urlparse
 from urllib.request import urlopen
+
+
+def schema_filename(schema_uri: str) -> str:
+    uri_path = PurePosixPath(urlparse(schema_uri).path)
+    if uri_path.name == "schema.json" and uri_path.parent != PurePosixPath("."):
+        return f"{uri_path.parent.name}.json"
+    return uri_path.name
 
 
 def main() -> None:
@@ -36,7 +44,7 @@ def main() -> None:
             / "pystac"
             / "extensions"
             / "json-schema"
-            / extension.schema_filename
+            / schema_filename(extension.schema_uri)
         )
         print(f"Pulling {extension.schema_uri} to {destination}")
         if args.dry_run:

@@ -22,11 +22,6 @@ class ExtensionHooks(ABC):
         raise NotImplementedError
 
     @property
-    def schema_filename(self) -> str | None:
-        """The filename of the local schema file for this extension"""
-        return None
-
-    @property
     @abstractmethod
     def prev_extension_ids(self) -> set[str]:
         """A set of previous extension IDs (schema URIs or old short ids)
