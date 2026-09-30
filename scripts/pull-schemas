@@ -39,20 +39,22 @@ def main() -> None:
             continue
 
         package_dir = module_file.parents[2]
-        destination = (
-            package_dir
-            / "pystac"
-            / "extensions"
-            / "json-schema"
-            / schema_filename(extension.schema_uri)
-        )
-        print(f"Pulling {extension.schema_uri} to {destination}")
-        if args.dry_run:
-            continue
+        for schema_uri in {extension.schema_uri, *[id for id in extension.prev_extension_ids if id.startswith("http")]}:
+            destination = (
+                package_dir
+                / "pystac"
+                / "extensions"
+                / "json-schema"
+                / entry_point.name
+                / schema_filename(schema_uri)
+            )
+            print(f"Pulling {schema_uri} to {destination}")
+            if args.dry_run:
+                continue
 
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        with urlopen(extension.schema_uri) as response, destination.open("wb") as output:
-            shutil.copyfileobj(response, output)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            with urlopen(schema_uri) as response, destination.open("wb") as output:
+                shutil.copyfileobj(response, output)
 
 
 if __name__ == "__main__":

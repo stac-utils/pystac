@@ -98,13 +98,14 @@ class RegisteredExtensionHooks:
         import importlib.resources
 
         schema_cache: dict[str, dict[str, Any]] = dict()
-        for schema_filepath in importlib.resources.files("pystac.extensions.json-schema").iterdir():
-            with schema_filepath.open("r") as f:
-                schema = cast(dict[str, Any], json.load(f))
-                schema_uri = schema["$id"]
-                if schema_uri.endswith("#"):
-                    schema_uri = schema_uri[:-1]
-                schema_cache[schema_uri] = schema
+        for schema_dir in importlib.resources.files("pystac.extensions.json-schema").iterdir():
+            for schema_filepath in schema_dir.iterdir():
+                with schema_filepath.open("r") as f:
+                    schema = cast(dict[str, Any], json.load(f))
+                    schema_uri = schema["$id"]
+                    if schema_uri.endswith("#"):
+                        schema_uri = schema_uri[:-1]
+                    schema_cache[schema_uri] = schema
         return schema_cache
 
     def _discover(self) -> None:
