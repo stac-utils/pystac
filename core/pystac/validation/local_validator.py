@@ -52,7 +52,7 @@ def get_local_schema_cache() -> dict[str, dict[str, Any]]:
                 "provider",
             )
         },
-        **EXTENSION_HOOKS._read_schemas()
+        **EXTENSION_HOOKS._read_schemas(),
     }
 
 

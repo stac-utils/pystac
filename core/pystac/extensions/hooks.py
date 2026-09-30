@@ -90,15 +90,17 @@ class RegisteredExtensionHooks:
 
     def _read_schemas(self) -> dict[str, dict[str, Any]]:
         """Read the extension schemas from local files.
-        
-        Extension packages can optionally contain local versions of the 
+
+        Extension packages can optionally contain local versions of the
         json schema files. This method reads all those in and maps them to
         the correct ``schema_uri``
         """
         import importlib.resources
 
         schema_cache: dict[str, dict[str, Any]] = dict()
-        for schema_dir in importlib.resources.files("pystac.extensions.json-schema").iterdir():
+        for schema_dir in importlib.resources.files(
+            "pystac.extensions.json-schema"
+        ).iterdir():
             for schema_filepath in schema_dir.iterdir():
                 with schema_filepath.open("r") as f:
                     schema = cast(dict[str, Any], json.load(f))
