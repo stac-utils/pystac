@@ -238,7 +238,6 @@ def test_schemes_apply(naip_item: Item) -> None:
     assert applied_schemes[new_key].requester_pays == new_requestor_pays
 
 
-@pytest.mark.vcr()
 def test_refs_apply(naip_asset: pystac.Asset) -> None:
     test_refs = ["a_ref", "b_ref"]
 

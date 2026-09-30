@@ -669,7 +669,6 @@ def test_add_to_item(plain_item: Item) -> None:
     assert len(mlm_uris) == 1
 
 
-@pytest.mark.vcr()
 def test_validate_mlm(basic_mlm_item: Item) -> None:
     basic_mlm_item.validate()
 
