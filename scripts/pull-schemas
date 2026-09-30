@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+
+from __future__ import annotations
+
+import argparse
+import inspect
+import shutil
+from importlib.metadata import entry_points
+from pathlib import Path
+from urllib.request import urlopen
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Download extension schemas into their package directories."
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show destinations without downloading.",
+    )
+    args = parser.parse_args()
+
+    repo_root = Path(__file__).resolve().parent.parent
+    extensions_dir = repo_root / "extensions"
+
+    for entry_point in entry_points(group="pystac.extensions"):
+        extension = entry_point.load()
+        module_file = Path(inspect.getfile(type(extension))).resolve()
+        if not module_file.is_relative_to(extensions_dir):
+            continue
+
+        package_dir = module_file.parents[2]
+        destination = (
+            package_dir
+            / "pystac"
+            / "extensions"
+            / "json-schema"
+            / extension.schema_filename
+        )
+        print(f"Pulling {extension.schema_uri} to {destination}")
+        if args.dry_run:
+            continue
+
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        with urlopen(extension.schema_uri) as response, destination.open("wb") as output:
+            shutil.copyfileobj(response, output)
+
+
+if __name__ == "__main__":
+    main()
