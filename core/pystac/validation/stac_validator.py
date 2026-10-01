@@ -2,7 +2,7 @@ import json
 import logging
 import warnings
 from abc import ABC, abstractmethod
-from pathlib import PurePosixPath
+from pathlib import Path, PurePosixPath
 from typing import Any, cast
 from urllib.parse import urlparse
 
@@ -318,7 +318,12 @@ class JsonSchemaSTACValidator(STACValidator):
                     uri_path = PurePosixPath(urlparse(schema_uri).path)
                     version = uri_path.parent.name
                     name = uri_path.parent.parent.name
-                    if str(schema_filepath).endswith(f"{name}/{version}.json"):
+                    if (
+                        schema_filepath.is_file()
+                        and isinstance(schema_filepath, Path)
+                        and schema_filepath.parent.name == name
+                        and schema_filepath.name == f"{version}.json"
+                    ):
                         with schema_filepath.open("r") as f:
                             schema = cast(dict[str, Any], json.load(f))
                             if schema["$id"] not in {schema_uri, f"{schema_uri}#"}:
