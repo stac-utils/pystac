@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import json
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 import pystac
 from pystac.extensions.base import VERSION_REGEX
@@ -87,28 +86,6 @@ class RegisteredExtensionHooks:
     def __init__(self, hooks: Iterable[ExtensionHooks] = ()):
         self.hooks = {e.schema_uri: e for e in hooks}
         self._discovered = False
-
-    def _read_schemas(self) -> dict[str, dict[str, Any]]:
-        """Read the extension schemas from local files.
-
-        Extension packages can optionally contain local versions of the
-        json schema files. This method reads all those in and maps them to
-        the correct ``schema_uri``
-        """
-        import importlib.resources
-
-        schema_cache: dict[str, dict[str, Any]] = dict()
-        for schema_dir in importlib.resources.files(
-            "pystac.extensions.json-schema"
-        ).iterdir():
-            for schema_filepath in schema_dir.iterdir():
-                with schema_filepath.open("r") as f:
-                    schema = cast(dict[str, Any], json.load(f))
-                    schema_uri = schema["$id"]
-                    if schema_uri.endswith("#"):
-                        schema_uri = schema_uri[:-1]
-                    schema_cache[schema_uri] = schema
-        return schema_cache
 
     def _discover(self) -> None:
         """Register hooks advertised via the ``pystac.extensions`` entry point group.
