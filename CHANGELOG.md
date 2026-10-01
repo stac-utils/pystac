@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.16.0](https://github.com/stac-utils/pystac/compare/v1.15.2...v1.16.0) (2026-10-01)
+
+
+### Features
+
+* add octet-stream and zip media types ([#1805](https://github.com/stac-utils/pystac/issues/1805)) ([0be1933](https://github.com/stac-utils/pystac/commit/0be193371c045c89bcc51733341b767aac74eceb))
+
+
+### Bug Fixes
+
+* recursively convert values in PropertiesExtension._set_property ([#1804](https://github.com/stac-utils/pystac/issues/1804)) ([68f12fd](https://github.com/stac-utils/pystac/commit/68f12fdeee1fc76465fef15ddb449370a0014ae8)), closes [#1802](https://github.com/stac-utils/pystac/issues/1802)
+
+
+### Documentation
+
+* reflect that PySTAC writes STAC v1.1.0 by default ([#1803](https://github.com/stac-utils/pystac/issues/1803)) ([b02ceba](https://github.com/stac-utils/pystac/commit/b02ceba07834411aa61e4d5e9c8efdd1bd6a51f3)), closes [#1513](https://github.com/stac-utils/pystac/issues/1513)
+* tweak how we version extension packages ([#1796](https://github.com/stac-utils/pystac/issues/1796)) ([e064109](https://github.com/stac-utils/pystac/commit/e064109398b0c3f29d2c3801561624a9c2061fc8))
+
 ## [1.15.2](https://github.com/stac-utils/pystac/compare/v1.15.1...v1.15.2) (2026-07-27)
 
 
