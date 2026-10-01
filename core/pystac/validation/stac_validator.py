@@ -301,10 +301,12 @@ class JsonSchemaSTACValidator(STACValidator):
 
         schema_uri = pystac.utils.make_absolute_href(schema_uri, href)
 
-        # if the extension class is installed and has a local schema file, try to
-        # read and cache that. Assumes that the schema_uri ends with name/version/schema.json
-        # for example: https://stac-extensions.github.io/eo/v1.1.0/schema.json
-        # and that the local extension files is at /pystac/extensions/json-schema/eo/v1.1.0.json
+        # if the extension class is installed and has a local schema file,
+        # try to read and cache that. Assumes that the schema_uri ends with
+        # name/version/schema.json for example:
+        # https://stac-extensions.github.io/eo/v1.1.0/schema.json
+        # and that the local schema file is at
+        # pystac/extensions/json-schema/eo/v1.1.0.json
 
         if schema_uri not in self.schema_cache:
             import importlib.resources
@@ -316,7 +318,7 @@ class JsonSchemaSTACValidator(STACValidator):
                     uri_path = PurePosixPath(urlparse(schema_uri).path)
                     version = uri_path.parent.name
                     name = uri_path.parent.parent.name
-                    if schema_filepath.parent.name == name and schema_filepath.name == f"{version}.json":
+                    if str(schema_filepath).endswith(f"{name}/{version}.json"):
                         with schema_filepath.open("r") as f:
                             schema = cast(dict[str, Any], json.load(f))
                             if schema["$id"] not in {schema_uri, f"{schema_uri}#"}:
