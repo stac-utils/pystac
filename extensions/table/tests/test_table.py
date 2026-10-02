@@ -14,7 +14,6 @@ def table_item() -> Item:
     return pystac.Item.from_file(str(DATA_FILES / "item.json"))
 
 
-@pytest.mark.vcr()
 def test_validate(table_item: Item) -> None:
     table_item.validate()
 

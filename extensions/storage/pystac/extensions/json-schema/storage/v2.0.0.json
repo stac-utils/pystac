@@ -1,0 +1,186 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://stac-extensions.github.io/storage/v2.0.0/schema.json",
+  "title": "STAC Storage Extension",
+  "type": "object",
+  "required": [
+    "stac_extensions"
+  ],
+  "properties": {
+    "stac_extensions": {
+      "type": "array",
+      "contains": {
+        "const": "https://stac-extensions.github.io/storage/v2.0.0/schema.json"
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "$comment": "This is the schema for STAC Items.",
+      "type": "object",
+      "required": [
+        "type",
+        "properties"
+      ],
+      "properties": {
+        "type": {
+          "const": "Feature"
+        },
+        "properties": {
+          "$ref": "#/definitions/schemes_field"
+        },
+        "assets": {
+          "$ref": "#/definitions/assets"
+        },
+        "links": {
+          "$ref": "#/definitions/links"
+        }
+      }
+    },
+    {
+      "$comment": "This is the schema for STAC Collections",
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "Collection"
+        },
+        "assets": {
+          "$ref": "#/definitions/assets"
+        },
+        "item_assets": {
+          "$ref": "#/definitions/assets"
+        },
+        "links": {
+          "$ref": "#/definitions/links"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/schemes_field"
+        }
+      ]
+    },
+    {
+      "$comment": "This is the schema for STAC Catalogs",
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "Catalog"
+        },
+        "links": {
+          "$ref": "#/definitions/links"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/schemes_field"
+        }
+      ]
+    }
+  ],  
+  "definitions": {
+    "schemes_field": {
+      "type": "object",
+      "required": [
+        "storage:schemes"
+      ],
+      "properties": {
+        "storage:schemes": {
+          "type": "object",
+          "patternProperties": {
+            "^.{1,}$": {
+              "required": [
+                "type",
+                "platform"
+              ],
+              "properties": {
+                "type": {
+                  "title": "Type identifier",
+                  "type": "string"
+                },
+                "platform": {
+                  "title": "Platform",
+                  "type": "string",
+                  "format": "uri-template",
+                  "pattern": "^[\\w\\+.-]+://"
+                },
+                "region": {
+                  "title": "Region",
+                  "type": "string"
+                },
+                "requester_pays": {
+                  "type": "boolean",
+                  "title": "Requester pays",
+                  "default": false
+                }
+              },
+              "allOf": [
+                {
+                  "$ref": "./platforms/aws-s3.json"
+                },
+                {
+                  "$ref": "./platforms/custom-s3.json"
+                },
+                {
+                  "$ref": "./platforms/ms-azure.json"
+                }
+              ],
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "patternProperties": {
+        "^(?!storage:)": {}
+      },
+      "additionalProperties": false
+    },
+    "refs_field": {
+      "type": "object",
+      "properties": {
+        "storage:refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "patternProperties": {
+        "^(?!storage:)": {}
+      },
+      "additionalProperties": false
+    },
+    "assets": {
+      "type": "object",
+      "additionalProperties": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/refs_field"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "alternate": {
+                "$ref": "#/definitions/refs_field"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/refs_field"
+      }
+    }
+  }
+}

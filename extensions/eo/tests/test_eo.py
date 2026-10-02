@@ -78,7 +78,6 @@ def test_add_to() -> None:
     assert len(eo_uris) == 1
 
 
-@pytest.mark.vcr()
 def test_validate_eo() -> None:
     item = pystac.Item.from_file(LANDSAT_EXAMPLE_URI)
     item2 = pystac.Item.from_file(BANDS_IN_ITEM_URI)
@@ -86,7 +85,6 @@ def test_validate_eo() -> None:
     item2.validate()
 
 
-@pytest.mark.vcr()
 def test_bands() -> None:
     item = pystac.Item.from_file(BANDS_IN_ITEM_URI)
 
@@ -118,7 +116,6 @@ def test_asset_bands_s2() -> None:
     assert EOExtension.ext(mtd_asset).bands is None
 
 
-@pytest.mark.vcr()
 def test_asset_bands() -> None:
     item = pystac.Item.from_file(LANDSAT_EXAMPLE_URI)
 
@@ -175,7 +172,6 @@ def test_asset_bands() -> None:
     assert len(item.assets["test"].extra_fields["eo:bands"]) == 3
 
 
-@pytest.mark.vcr()
 def test_cloud_cover() -> None:
     item = pystac.Item.from_file(LANDSAT_EXAMPLE_URI)
 
@@ -390,7 +386,6 @@ def test_get_field(ext_item: pystac.Item, field: str) -> None:
     assert attr == prop
 
 
-@pytest.mark.vcr()
 @pytest.mark.parametrize(
     "field,value",
     [

@@ -153,7 +153,6 @@ def test_datetime_ISO8601_format(sample_item: Item) -> None:
     assert "2016-05-03T13:22:30.040000Z" == formatted_time
 
 
-@pytest.mark.vcr()
 def test_null_datetime() -> None:
     item = pystac.Item.from_file(TestCases.get_path("data-files/item/sample-item.json"))
 
@@ -198,7 +197,6 @@ def test_get_assets() -> None:
     assert no_assets == {}
 
 
-@pytest.mark.vcr()
 def test_null_datetime_constructor() -> None:
     item = pystac.Item.from_file(TestCases.get_path("data-files/item/sample-item.json"))
     with pytest.raises(pystac.STACError):
@@ -330,7 +328,6 @@ def test_from_invalid_dict_raises_exception() -> None:
         _ = pystac.Item.from_dict(catalog_dict)
 
 
-@pytest.mark.vcr()
 def test_relative_extension_path() -> None:
     item = pystac.Item.from_file(
         TestCases.get_path(
