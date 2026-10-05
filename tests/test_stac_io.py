@@ -291,7 +291,8 @@ def redirecting_server() -> Iterator[str]:
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self) -> None:
             if self.path.startswith("/old/"):
-                self.send_response(308)
+                # 301, not 308: urllib only follows 308 from Python 3.11 on.
+                self.send_response(301)
                 self.send_header("Location", "/new/" + self.path[len("/old/") :])
                 self.end_headers()
             elif self.path in documents:
