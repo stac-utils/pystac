@@ -1,8 +1,12 @@
 import json
 import os
 import tempfile
+import threading
 import unittest
+from collections.abc import Iterator
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
+from typing import Any, cast
 
 import pytest
 from pytest import MonkeyPatch
@@ -264,3 +268,96 @@ def test_custom_stac_io() -> None:
     assert link
     link.get_href()
     assert stac_io.calls == 2
+
+
+@pytest.fixture
+def redirecting_server() -> Iterator[str]:
+    """Serves a catalog at /new/ and permanently redirects /old/ to it."""
+    catalog = pystac.Catalog("redirected", "a catalog behind a redirect").to_dict(
+        include_self_link=False
+    )
+    catalog["links"] = [
+        {"rel": "child", "href": "./child/catalog.json", "type": "application/json"}
+    ]
+    child = pystac.Catalog("child", "the child catalog").to_dict(
+        include_self_link=False
+    )
+    child["links"] = []
+    documents = {
+        "/new/catalog.json": json.dumps(catalog).encode("utf-8"),
+        "/new/child/catalog.json": json.dumps(child).encode("utf-8"),
+    }
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self) -> None:
+            if self.path.startswith("/old/"):
+                self.send_response(308)
+                self.send_header("Location", "/new/" + self.path[len("/old/") :])
+                self.end_headers()
+            elif self.path in documents:
+                body = documents[self.path]
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+            else:
+                self.send_error(404)
+
+        def log_message(self, *_: Any) -> None:
+            pass
+
+    server = HTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield f"http://127.0.0.1:{server.server_port}"
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def _stac_ios() -> list[Any]:
+    from pystac.stac_io import HAS_URLLIB3
+
+    params: list[Any] = [pytest.param(False, DefaultStacIO, id="urllib")]
+    if HAS_URLLIB3:
+        from pystac.stac_io import RetryStacIO
+
+        params.append(pytest.param(True, DefaultStacIO, id="urllib3"))
+        params.append(pytest.param(True, RetryStacIO, id="retry"))
+    return params
+
+
+@pytest.mark.block_network(allowed_hosts=["127.0.0.1"])
+@pytest.mark.parametrize("use_urllib3,stac_io_class", _stac_ios())
+@pytest.mark.parametrize("read", ["from_file", "read_file"])
+def test_relative_links_resolve_against_redirected_url(
+    redirecting_server: str,
+    monkeypatch: MonkeyPatch,
+    use_urllib3: bool,
+    stac_io_class: type[StacIO],
+    read: str,
+) -> None:
+    # https://github.com/stac-utils/pystac/issues/1816
+    monkeypatch.setattr("pystac.stac_io.HAS_URLLIB3", use_urllib3)
+    stac_io = stac_io_class()
+    href = f"{redirecting_server}/old/catalog.json"
+    if read == "from_file":
+        catalog = pystac.Catalog.from_file(href, stac_io=stac_io)
+    else:
+        catalog = cast(pystac.Catalog, pystac.read_file(href, stac_io=stac_io))
+
+    assert catalog.get_self_href() == f"{redirecting_server}/new/catalog.json"
+    child = next(iter(catalog.get_children()))
+    assert child.get_self_href() == f"{redirecting_server}/new/child/catalog.json"
+
+
+def test_final_href_is_forgotten_when_a_read_is_not_redirected() -> None:
+    stac_io = DefaultStacIO()
+    href = "https://example.com/catalog.json"
+    stac_io._set_final_href(href, "https://example.com/moved/catalog.json")
+    assert stac_io._get_final_href(href) == "https://example.com/moved/catalog.json"
+
+    stac_io._set_final_href(href, href)
+    assert stac_io._get_final_href(href) == href

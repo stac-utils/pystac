@@ -5,6 +5,7 @@ import os
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
+from urllib.parse import urljoin
 
 import pystac
 from pystac.serialization import (
@@ -32,6 +33,20 @@ else:
 if TYPE_CHECKING:
     from pystac.catalog import Catalog
     from pystac.stac_object import STACObject
+
+
+def _urllib3_final_url(href: str, response: Any) -> str:
+    """Returns the absolute URL a urllib3 response was served from.
+
+    ``response.url`` is the raw ``Location`` header of the last redirect, which may be
+    relative, so it is resolved against the URL of the request that was redirected.
+    """
+    history = getattr(getattr(response, "retries", None), "history", None)
+    if not isinstance(history, tuple) or not history:
+        return href
+    if not history[-1].redirect_location:  # retried, but not redirected
+        return href
+    return str(urljoin(history[-1].url, history[-1].redirect_location))
 
 
 class StacIO(ABC):
@@ -232,8 +247,30 @@ class StacIO(ABC):
         """
         d = self.read_json(source, *args, **kwargs)
         return self.stac_object_from_dict(
-            d, href=source, root=root, preserve_dict=False
+            d, href=self._get_final_href(source), root=root, preserve_dict=False
         )
+
+    def _get_final_href(self, source: HREF) -> str:
+        """Returns the URL that ``source`` was last read from after following HTTP
+        redirects, or ``source`` itself if the read was not redirected.
+
+        Per `RFC 3986, section 5.1.3
+        <https://datatracker.ietf.org/doc/html/rfc3986#section-5.1.3>`__, relative
+        links in a retrieved document resolve against this URL, not the requested one.
+        """
+        href = str(os.fspath(source))
+        final_hrefs: dict[str, str] = getattr(self, "_final_hrefs", {})
+        return final_hrefs.get(href, href)
+
+    def _set_final_href(self, href: str, final_href: str | None) -> None:
+        """Records the URL a read of ``href`` ended up at after redirects, for
+        :meth:`_get_final_href`. Implementations that follow redirects should call
+        this after every read so that a stale redirect is not reused."""
+        final_hrefs: dict[str, str] = self.__dict__.setdefault("_final_hrefs", {})
+        if isinstance(final_href, str) and final_href and final_href != href:
+            final_hrefs[href] = final_href
+        else:
+            final_hrefs.pop(href, None)
 
     def save_json(
         self,
@@ -315,6 +352,7 @@ class DefaultStacIO(StacIO):
                         if f.status >= 400:
                             raise HTTPError(href, f.status, f.reason, f.headers, None)
                         href_contents = f.read().decode("utf-8")
+                        self._set_final_href(href, _urllib3_final_url(href, f))
                 else:
                     req = Request(
                         href,
@@ -325,6 +363,7 @@ class DefaultStacIO(StacIO):
                     )
                     with urlopen(req) as f:
                         href_contents = f.read().decode("utf-8")
+                        self._set_final_href(href, f.geturl())
 
             except HTTPError as e:
                 raise Exception(f"Could not read uri {href}") from e
@@ -479,6 +518,7 @@ if HAS_URLLIB3:
                             response.headers,
                             None,
                         )
+                    self._set_final_href(href, _urllib3_final_url(href, response))
                     return cast(str, response.data.decode("utf-8"))
                 except HTTPError as e:
                     raise Exception(f"Could not read uri {href}") from e
