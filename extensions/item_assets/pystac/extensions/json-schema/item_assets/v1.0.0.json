@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json#",
+  "title": "Item Assets Definition Extension",
+  "description": "STAC Item Assets Definition Extension for STAC Collections.",
+  "type": "object",
+  "required": [
+    "stac_extensions",
+    "type",
+    "item_assets"
+  ],
+  "properties": {
+    "stac_extensions": {
+      "type": "array",
+      "contains": {
+        "const": "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json"
+      }
+    },
+    "type": {
+      "const": "Collection"
+    },
+    "item_assets": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "minProperties": 2,
+        "properties": {
+          "href": {
+            "title": "Disallow href",
+            "not": {}
+          },
+          "title": {
+            "title": "Asset title",
+            "type": "string"
+          },
+          "description": {
+            "title": "Asset description",
+            "type": "string"
+          },
+          "type": {
+            "title": "Asset type",
+            "type": "string"
+          },
+          "roles": {
+            "title": "Asset roles",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

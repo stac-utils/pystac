@@ -84,17 +84,14 @@ def test_to_from_dict() -> None:
     assert_to_from_dict(Item, item_dict)
 
 
-@pytest.mark.vcr()
 def test_validate_item(ext_item: Item) -> None:
     ext_item.validate()
 
 
-@pytest.mark.vcr()
 def test_validate_collection(ext_collection: Collection) -> None:
     ext_collection.validate()
 
 
-@pytest.mark.vcr()
 def test_validate_catalog(ext_catalog: Catalog) -> None:
     ext_catalog.validate()
 
@@ -129,7 +126,6 @@ def test_get_field_on_asset(
     assert attr == prop == value
 
 
-@pytest.mark.vcr()
 @pytest.mark.parametrize(
     "asset_name,field,value",
     [
@@ -172,7 +168,6 @@ def test_get_field_on_link(
     assert attr == prop == value
 
 
-@pytest.mark.vcr()
 @pytest.mark.parametrize(
     "link_rel,field,value",
     [
