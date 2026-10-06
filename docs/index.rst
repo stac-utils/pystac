@@ -5,8 +5,8 @@ PySTAC is a library for working with `SpatioTemporal Asset Catalogs (STAC)
 <https://stacspec.org/>`_ in `Python 3 <https://www.python.org/>`_. Some nice features
 of PySTAC are:
 
-* Reading and writing STAC version 1.0. Future versions will read older versions of
-  STAC, but always write the latest supported version. See :ref:`stac_version_support`
+* Reading and writing STAC version |stac_version|. PySTAC will read older versions of
+  STAC, but always writes the latest supported version. See :ref:`stac_version_support`
   for details.
 * In-memory manipulations of STAC catalogs.
 * Extend the I/O of STAC metadata to provide support for other platforms (e.g. cloud
