@@ -5,6 +5,7 @@ from copy import copy, deepcopy
 from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 
 from pystac import MediaType, STACError, common_metadata, utils
+from pystac.band import Band
 from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 
 if TYPE_CHECKING:
@@ -69,6 +70,7 @@ class Asset:
         description: str | None = None,
         media_type: str | None = None,
         roles: list[str] | None = None,
+        bands: list[Band] | None = None,
         extra_fields: dict[str, Any] | None = None,
     ) -> None:
         self.href = utils.make_posix_style(href)
@@ -76,6 +78,7 @@ class Asset:
         self.description = description
         self.media_type = media_type
         self.roles = roles
+        self._bands = bands
         self.extra_fields = extra_fields or {}
 
         # The Item which owns this Asset.
@@ -110,6 +113,16 @@ class Asset:
                 return utils.make_absolute_href(self.href, item_self)
             return None
 
+    @property
+    def bands(self) -> list[Band] | None:
+        if self._bands is None and self.owner is not None:
+            return self.owner.bands
+        return self._bands
+
+    @bands.setter
+    def bands(self, bands: list[Band] | None) -> None:
+        self._bands = bands
+
     def to_dict(self) -> dict[str, Any]:
         """Returns this Asset as a dictionary.
 
@@ -134,6 +147,9 @@ class Asset:
 
         if self.roles is not None:
             d["roles"] = self.roles
+
+        if self.bands is not None:
+            d["bands"] = [band.to_dict() for band in self.bands]
 
         return d
 
@@ -202,6 +218,11 @@ class Asset:
         title = d.pop("title", None)
         description = d.pop("description", None)
         roles = d.pop("roles", None)
+        bands = d.pop("bands", None)
+        if bands is None:
+            deserialized_bands = None
+        else:
+            deserialized_bands = [Band.from_dict(band) for band in bands]
         properties = None
         if any(d):
             properties = d
@@ -212,6 +233,7 @@ class Asset:
             title=title,
             description=description,
             roles=roles,
+            bands=deserialized_bands,
             extra_fields=properties,
         )
 
