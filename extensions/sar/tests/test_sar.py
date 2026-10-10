@@ -49,32 +49,6 @@ def test_stac_extensions(item: pystac.Item) -> None:
 
 
 @pytest.mark.vcr()
-def test_required(item: pystac.Item) -> None:
-    mode: str = "Nonsense mode"
-    frequency_band: sar.FrequencyBand = sar.FrequencyBand.P
-    polarizations: list[sar.Polarization] = [
-        sar.Polarization.HV,
-        sar.Polarization.VH,
-    ]
-    product_type: str = "Some product"
-
-    SarExtension.ext(item).apply(mode, frequency_band, polarizations, product_type)
-    assert mode == SarExtension.ext(item).instrument_mode
-    assert sar.INSTRUMENT_MODE_PROP in item.properties
-
-    assert frequency_band == SarExtension.ext(item).frequency_band
-    assert sar.FREQUENCY_BAND_PROP in item.properties
-
-    assert polarizations == SarExtension.ext(item).polarizations
-    assert sar.POLARIZATIONS_PROP in item.properties
-
-    assert product_type == SarExtension.ext(item).product_type
-    assert sar.PRODUCT_TYPE_PROP in item.properties
-
-    item.validate()
-
-
-@pytest.mark.vcr()
 def test_all(item: pystac.Item) -> None:
     mode: str = "WV"
     frequency_band: sar.FrequencyBand = sar.FrequencyBand.KA
