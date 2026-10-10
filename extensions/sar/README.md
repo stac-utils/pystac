@@ -5,7 +5,7 @@ This extension provides fields for describing Synthetic-Aperture Radar (SAR) dat
 
 ## Supported versions
 
-- [v1.0.0](https://stac-extensions.github.io/sar/v1.0.0/schema.json)
+- [v1.3.2](https://stac-extensions.github.io/sar/v1.3.2/schema.json)
 
 ## Versioning
 
