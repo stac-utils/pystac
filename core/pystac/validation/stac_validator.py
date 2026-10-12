@@ -152,7 +152,7 @@ class JsonSchemaSTACValidator(STACValidator):
 
     schema_uri_map: SchemaUriMap
     schema_cache: dict[str, dict[str, Any]]
-    allow_list: list[str] | None
+    allow_list: list[str] | None = None
 
     def __init__(
         self,
@@ -167,7 +167,7 @@ class JsonSchemaSTACValidator(STACValidator):
         else:
             self.schema_uri_map = DefaultSchemaUriMap()
 
-        self.allow_list = allow_list
+        self.allow_list = self.allow_list if allow_list is None else allow_list
         self.schema_cache = get_local_schema_cache()
 
     def _get_schema(self, schema_uri: str) -> dict[str, Any]:
@@ -317,3 +317,10 @@ class JsonSchemaSTACValidator(STACValidator):
         self._validate_from_uri(stac_dict, stac_object_type, schema_uri, href)
 
         return schema_uri
+
+
+class SecureJsonSchemaSTACValidator(JsonSchemaSTACValidator):
+    allow_list: list[str] = [
+        "https://schemas.stacspec.org/",
+        "https://stac-extensions.github.io/",
+    ]
