@@ -320,6 +320,10 @@ class JsonSchemaSTACValidator(STACValidator):
 
 
 class SecureJsonSchemaSTACValidator(JsonSchemaSTACValidator):
+    """Validate STAC, but only allow fetching schemas from domains that
+    are standard to the STAC organization.
+    """
+
     allow_list: list[str] = [
         "https://schemas.stacspec.org/",
         "https://stac-extensions.github.io/",
