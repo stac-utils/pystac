@@ -8,18 +8,46 @@ from __future__ import annotations
 from typing import Any, ClassVar, Literal
 
 import pystac
-from pystac.extensions.base import PropertiesExtension
+from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 
 SCHEMA_URI = "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json"
 
 
-class AssetAlternateAssetsExtension(
-    PropertiesExtension
+class _AssetLoc:
+    def __init__(self, ext: AlternateAssetsExtension):
+        self._ext = ext
+
+    def __contains__(self, key: str) -> bool:
+        return self._ext.has_asset(key)
+
+    def __getitem__(self, key: str) -> pystac.Asset:
+        return self._ext.get_asset(key)
+
+
+def _remove_alternate(mapping: dict[str, Any]) -> dict[str, Any]:
+    return {key: value for key, value in mapping.items() if key != "alternate"}
+
+
+def _deserialize_asset_with_owner(
+    mapping: dict[str, Any], owner: pystac.Item | pystac.Collection
+) -> pystac.Asset:
+    asset = pystac.Asset.from_dict(mapping)
+    asset.owner = owner
+
+    return asset
+
+
+class AlternateAssetsExtension(
+    PropertiesExtension, ExtensionManagementMixin[pystac.Asset]
 ):
-    name: ClassVar[Literal["alternate-assets"]] = "alternate-assets"
+    name: ClassVar[Literal["alternate"]] = "alternate"
 
     asset: pystac.Asset
-    alternate_assets: dict[str, Any]
+    properties: dict[str, Any]
+
+    def __init__(self, asset: pystac.Asset):
+        self.asset = asset
+        self.properties = asset.extra_fields
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -35,25 +63,34 @@ class AssetAlternateAssetsExtension(
 
         raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
-    def __init__(self, obj: pystac.Asset):
-        self.asset = obj
-        self.alternate_assets = obj.extra_fields.get("alternate", {})
+    @property
+    def assets(self) -> _AssetLoc:
+        return _AssetLoc(self)
 
     @property
     def alternate_name(self) -> str | None:
         return self.asset.extra_fields.get("alternate:name")
 
-    def get_asset(self, name: str) -> pystac.Asset:
-        if name == self.alternate_name:
-            return self.asset
+    def has_asset(self, key: str | None) -> bool:
+        if key is None:
+            return self.asset.href is not None
 
-        alternate_asset = self.alternate_assets.get(name)
+        return key in self.properties.get("alternate", {})
+
+    def get_asset(self, key: str | None) -> pystac.Asset:
+        if key is None:
+            serialized_asset = _remove_alternate(self.asset.to_dict())
+
+            return _deserialize_asset_with_owner(serialized_asset, self.asset.owner)
+
+        assets = self.properties.get("alternate")
+        if assets is None:
+            raise ValueError("no alternate assets defined")
+
+        alternate_asset = assets.get(key)
         if alternate_asset is None:
-            raise ValueError(f"unknown alternate asset: {name}")
+            raise ValueError(f"unknown alternate asset: {key}")
 
-        asset = pystac.Asset.from_dict(self.asset.to_dict() | alternate_asset)
-        asset.owner = self.asset.owner
+        serialized_asset = _remove_alternate(self.asset.to_dict() | alternate_asset)
 
-        return asset
-
-class ItemAlternateAssetsExtension(
+        return _deserialize_asset_with_owner(serialized_asset, self.asset.owner)
