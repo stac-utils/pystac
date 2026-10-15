@@ -24,6 +24,7 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = [
     "pystac-core>=1.15.0,<2",
+    "pystac-ext-alternate",
     "pystac-ext-classification",
     "pystac-ext-datacube",
     "pystac-ext-eo",
@@ -181,6 +182,7 @@ packages = ["pystac"]
 
 [tool.uv.sources]
 pystac-core = { workspace = true }
+pystac-ext-alternate = { workspace = true }
 pystac-ext-classification = { workspace = true }
 pystac-ext-datacube = { workspace = true }
 pystac-ext-eo = { workspace = true }
