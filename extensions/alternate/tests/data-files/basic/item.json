@@ -1,0 +1,73 @@
+{
+  "stac_version": "1.0.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json"
+  ],
+  "type": "Feature",
+  "id": "item",
+  "collection": "collection-1",
+  "bbox": [
+    172.9,
+    1.3,
+    173,
+    1.4
+  ],
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          172.9,
+          1.3
+        ],
+        [
+          173,
+          1.3
+        ],
+        [
+          173,
+          1.4
+        ],
+        [
+          172.9,
+          1.4
+        ],
+        [
+          172.9,
+          1.3
+        ]
+      ]
+    ]
+  },
+  "properties": {
+    "datetime": "2020-12-11T22:38:32Z"
+  },
+  "links": [
+    {
+      "href": "https://mycoolsat.com/examples/item.json",
+      "rel": "self"
+    },
+    {
+      "href": "./collection.json",
+      "rel": "collection",
+      "type": "application/json"
+    }
+  ],
+  "assets": {
+    "data": {
+      "href": "https://mycoolsat.com/examples/file.tif",
+      "type": "image/tiff; application=geotiff",
+      "roles": [
+        "data"
+      ],
+      "alternate:name": "HTTPS",
+      "alternate": {
+        "s3": {
+          "href": "s3://mycoolsat-bucket/examples/file.tif",
+          "alternate:name": "S3",
+          "description": "Access the files via regular Amazon AWS S3 tooling."
+        }
+      }
+    }
+  }
+}
