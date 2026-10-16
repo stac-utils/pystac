@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 import pystac
 from pystac import RelType, STACError, STACObjectType
 from pystac.asset import Asset, Assets
-from pystac.band import Band
+from pystac.band import Band, _read_bands, _write_bands
 from pystac.catalog import Catalog
 from pystac.collection import Collection
 from pystac.errors import DeprecatedWarning
@@ -66,6 +66,8 @@ class Item(STACObject, Assets):
         assets : A dictionary mapping string keys to :class:`~pystac.Asset` objects. All
             :class:`~pystac.Asset` values in the dictionary will have their
             :attr:`~pystac.Asset.owner` attribute set to the created Item.
+        bands : Optional list of :class:`~pystac.Band` objects. If not given, they
+            are read from ``properties["bands"]``.
     """
 
     assets: dict[str, Asset]
@@ -182,7 +184,7 @@ class Item(STACObject, Assets):
             for k, asset in assets.items():
                 self.add_asset(k, asset)
 
-        self._bands = bands
+        self._bands = bands if bands is not None else _read_bands(properties)
 
     def __repr__(self) -> str:
         return f"<Item id={self.id}>"
@@ -362,13 +364,16 @@ class Item(STACObject, Assets):
             ) from e
 
     @property
-    def bands(self) -> Optional[List[Band]]:
-        """Returns the bands set on this item."""
+    def bands(self) -> list[Band] | None:
+        """Gets or sets the bands of this item.
+
+        They are written to ``properties["bands"]`` by :meth:`to_dict` and
+        :meth:`clone`.
+        """
         return self._bands
 
     @bands.setter
-    def bands(self, bands: Optional[List[Band]]) -> None:
-        """Sets the bands on this item."""
+    def bands(self, bands: list[Band] | None) -> None:
         self._bands = bands
 
     def to_dict(
@@ -384,6 +389,7 @@ class Item(STACObject, Assets):
             self.properties["datetime"] = datetime_to_str(self.datetime)
         else:
             self.properties["datetime"] = None
+        _write_bands(self.properties, self._bands)
 
         d: dict[str, Any] = {
             "type": "Feature",
@@ -407,12 +413,10 @@ class Item(STACObject, Assets):
         if not self.geometry:
             d.pop("bbox")
 
-        if self.bands is not None:
-            d["properties"]["bands"] = [band.to_dict() for band in self.bands]
-
         return d
 
     def clone(self) -> Item:
+        _write_bands(self.properties, self._bands)
         cls = self.__class__
         clone = cls(
             id=self.id,
@@ -424,6 +428,7 @@ class Item(STACObject, Assets):
             collection=self.collection_id,
             assets={k: asset.clone() for k, asset in self.assets.items()},
             extra_fields=deepcopy(self.extra_fields),
+            bands=deepcopy(self._bands),
         )
         for link in self.links:
             clone.add_link(link.clone())
@@ -485,12 +490,6 @@ class Item(STACObject, Assets):
             if k not in [*pass_through_fields, *parse_fields, *exclude_fields]
         }
 
-        bands = properties.pop("bands", None)
-        if bands is not None:
-            deserialized_bands = [Band.from_dict(d) for d in bands]
-        else:
-            deserialized_bands = None
-
         item = cls(
             **{k: d.get(k) for k in pass_through_fields},  # type: ignore
             datetime=datetime,
@@ -498,7 +497,6 @@ class Item(STACObject, Assets):
             extra_fields=extra_fields,
             href=href,
             assets={k: Asset.from_dict(v) for k, v in assets.items()},
-            bands=deserialized_bands,
         )
 
         for link in links:

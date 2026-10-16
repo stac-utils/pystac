@@ -14,7 +14,7 @@ from typing import (
 import pystac
 from pystac import CatalogType, STACObjectType
 from pystac.asset import Asset, Assets
-from pystac.band import Band
+from pystac.band import Band, _read_bands, _write_bands
 from pystac.catalog import Catalog
 from pystac.errors import DeprecatedWarning, STACTypeError
 from pystac.item_assets import ItemAssetDefinition, _ItemAssets
@@ -479,6 +479,8 @@ class Collection(Catalog, Assets):
             HREFs of the catalog child objects and items.
             If not provided, it will default to strategy of the parent and fallback to
             :class:`~pystac.layout.BestPracticesLayoutStrategy`.
+        bands : Optional list of :class:`~pystac.Band` objects. If not given, they
+            are read from ``extra_fields["bands"]``.
     """
 
     description: str
@@ -520,7 +522,7 @@ class Collection(Catalog, Assets):
     """Default file name that will be given to this STAC object
     in a canonical format."""
 
-    _bands: Optional[List[Band]]
+    _bands: list[Band] | None
 
     def __init__(
         self,
@@ -564,10 +566,13 @@ class Collection(Catalog, Assets):
             for k, asset in assets.items():
                 self.add_asset(k, asset)
 
-        self._bands = bands
+        self._bands = bands if bands is not None else _read_bands(self.extra_fields)
 
     def __repr__(self) -> str:
         return f"<Collection id={self.id}>"
+
+    def _sync_bands(self) -> None:
+        _write_bands(self.extra_fields, self._bands)
 
     def add_item(
         self,
@@ -583,6 +588,7 @@ class Collection(Catalog, Assets):
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True
     ) -> dict[str, Any]:
+        self._sync_bands()
         d = super().to_dict(
             include_self_link=include_self_link, transform_hrefs=transform_hrefs
         )
@@ -599,12 +605,10 @@ class Collection(Catalog, Assets):
         if any(self.assets):
             d["assets"] = {k: v.to_dict() for k, v in self.assets.items()}
 
-        if self.bands is not None:
-            d["bands"] = [band.to_dict() for band in self.bands]
-
         return d
 
     def clone(self) -> Collection:
+        self._sync_bands()
         cls = self.__class__
         clone = cls(
             id=self.id,
@@ -619,6 +623,7 @@ class Collection(Catalog, Assets):
             providers=deepcopy(self.providers),
             summaries=self.summaries.clone(),
             assets={k: asset.clone() for k, asset in self.assets.items()},
+            bands=deepcopy(self._bands),
         )
 
         clone._resolved_objects.cache(clone)
@@ -688,12 +693,6 @@ class Collection(Catalog, Assets):
             assets = {k: Asset.from_dict(v) for k, v in assets.items()}
         links = d.pop("links")
 
-        bands = d.pop("bands", None)
-        if bands is not None:
-            deserialized_bands = [Band.from_dict(band) for band in bands]
-        else:
-            deserialized_bands = None
-
         d.pop("stac_version")
 
         collection = cls(
@@ -710,7 +709,6 @@ class Collection(Catalog, Assets):
             href=href,
             catalog_type=catalog_type,
             assets=assets,
-            bands=deserialized_bands,
         )
 
         for link in links:
@@ -912,10 +910,13 @@ class Collection(Catalog, Assets):
 
     @property
     def bands(self) -> list[Band] | None:
-        """Returns the bands set on this collection."""
+        """Gets or sets the bands of this collection.
+
+        They are written to ``extra_fields["bands"]`` by :meth:`to_dict` and
+        :meth:`clone`.
+        """
         return self._bands
 
     @bands.setter
     def bands(self, bands: list[Band] | None) -> None:
-        """Sets the bands on this collection."""
         self._bands = bands

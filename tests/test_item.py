@@ -687,7 +687,7 @@ def test_clone_extra_fields(item: Item) -> None:
 
 
 def test_bands_do_not_exist(sample_item: Item) -> None:
-    sample_item.assets["analytic"].bands is None
+    assert sample_item.assets["analytic"].bands is None
 
 
 def test_set_bands(sample_item: Item) -> None:
@@ -723,3 +723,98 @@ def test_bands_roundtrip_on_item(sample_item: Item) -> None:
     assert item.assets["analytic"].bands[0].name == "analytic"
     item_dict = item.to_dict(include_self_link=False, transform_hrefs=False)
     assert item_dict["properties"]["bands"][0]["name"] == "analytic"
+    assert "bands" not in item_dict["assets"]["analytic"]
+
+
+def test_bands_inherited_from_item_are_not_serialized_on_asset(
+    sample_item: Item,
+) -> None:
+    sample_item.bands = [Band(name="analytic")]
+    assert sample_item.assets["analytic"].bands
+    item_dict = sample_item.to_dict(include_self_link=False, transform_hrefs=False)
+    assert all("bands" not in asset for asset in item_dict["assets"].values())
+
+
+def test_asset_bands_override_item_bands(sample_item: Item) -> None:
+    sample_item.bands = [Band(name="item")]
+    sample_item.assets["analytic"].bands = [Band(name="asset")]
+    assert sample_item.assets["analytic"].bands[0].name == "asset"
+    assert sample_item.assets["thumbnail"].bands
+    assert sample_item.assets["thumbnail"].bands[0].name == "item"
+
+
+def test_clone_keeps_bands(sample_item: Item) -> None:
+    sample_item.bands = [Band(name="item")]
+    sample_item.assets["analytic"].bands = [Band(name="asset")]
+    cloned = sample_item.clone()
+    assert cloned.bands == [Band(name="item")]
+    assert cloned.assets["analytic"].bands == [Band(name="asset")]
+    assert cloned.bands is not sample_item.bands
+    assert cloned.assets["analytic"].bands is not sample_item.assets["analytic"].bands
+
+
+def test_from_dict_bands_without_name(sample_item_dict: dict[str, Any]) -> None:
+    sample_item_dict["properties"]["bands"] = [{"description": "unnamed"}]
+    item = Item.from_dict(sample_item_dict)
+    assert item.bands == [Band(description="unnamed")]
+
+
+def test_asset_from_dict_bands_does_not_modify_input() -> None:
+    asset_dict = {"href": "data.tif", "bands": [{"name": "red"}]}
+    Asset.from_dict(asset_dict)
+    assert asset_dict == {"href": "data.tif", "bands": [{"name": "red"}]}
+
+
+def test_asset_extra_fields_positional() -> None:
+    asset = Asset("data.tif", None, None, None, None, {"foo": "bar"})
+    assert asset.extra_fields == {"foo": "bar"}
+    assert asset.bands is None
+
+
+def test_bands_are_kept_in_properties(sample_item_dict: dict[str, Any]) -> None:
+    sample_item_dict["properties"]["bands"] = [{"name": "red"}]
+    item = Item.from_dict(sample_item_dict)
+    assert item.properties["bands"] == [{"name": "red"}]
+    get_opt(item.bands)[0].name = "green"
+    assert item.properties["bands"] == [{"name": "red"}]
+    assert item.to_dict()["properties"]["bands"] == [{"name": "green"}]
+    assert item.properties["bands"] == [{"name": "green"}]
+
+
+def test_bands_set_to_none_are_removed(sample_item: Item) -> None:
+    sample_item.bands = [Band(name="item")]
+    sample_item.to_dict()
+    sample_item.bands = None
+    assert "bands" not in sample_item.to_dict()["properties"]
+    assert "bands" not in sample_item.properties
+    assert sample_item.clone().bands is None
+
+
+def test_bands_read_from_properties(sample_item: Item) -> None:
+    item = Item(
+        id="item",
+        geometry=None,
+        bbox=None,
+        datetime=sample_item.datetime,
+        properties={"bands": [{"name": "red"}]},
+    )
+    assert item.bands == [Band(name="red")]
+
+
+def test_asset_bands_read_from_extra_fields() -> None:
+    asset = Asset("data.tif", extra_fields={"bands": [{"name": "red"}]})
+    assert asset.bands == [Band(name="red")]
+
+
+def test_asset_band_edits_are_serialized() -> None:
+    asset = Asset.from_dict({"href": "data.tif", "bands": [{"name": "red"}]})
+    get_opt(asset.bands)[0].name = "green"
+    assert asset.to_dict()["bands"] == [{"name": "green"}]
+    assert asset.clone().bands == [Band(name="green")]
+
+
+def test_asset_bands_set_to_none_are_removed() -> None:
+    asset = Asset.from_dict({"href": "data.tif", "bands": [{"name": "red"}]})
+    asset.bands = None
+    assert "bands" not in asset.to_dict()
+    assert asset.clone().bands is None
