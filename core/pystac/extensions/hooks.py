@@ -70,17 +70,24 @@ class ExtensionHooks(ABC):
         the old 'stac_extension' entries with the latest schema URI, which is listed
         once.
         """
+        self._replace_extension_ids(obj, info, self.schema_uri)
+
+    def _replace_extension_ids(
+        self, obj: dict[str, Any], info: STACJSONDescription, schema_uri: str
+    ) -> None:
+        """Replaces the previous extension IDs in ``stac_extensions`` with
+        ``schema_uri``, which is listed once."""
         if self.prev_extension_ids.isdisjoint(info.extensions):
             return
         uris = [
-            self.schema_uri if uri in self.prev_extension_ids else uri
+            schema_uri if uri in self.prev_extension_ids else uri
             for uri in obj["stac_extensions"]
         ]
-        if self.schema_uri not in uris:
-            uris.append(self.schema_uri)
-        first = uris.index(self.schema_uri)
+        if schema_uri not in uris:
+            uris.append(schema_uri)
+        first = uris.index(schema_uri)
         obj["stac_extensions"][:] = [
-            uri for i, uri in enumerate(uris) if uri != self.schema_uri or i == first
+            uri for i, uri in enumerate(uris) if uri != schema_uri or i == first
         ]
 
 

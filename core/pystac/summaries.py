@@ -173,7 +173,11 @@ class Summarizer:
         import numbers
 
         properties = dict(item.properties)
-        _write_bands(properties, item.bands)
+        bands = list(item.bands or [])
+        for asset in item.assets.values():
+            if asset.bands is not item.bands:
+                bands.extend(asset.bands or [])
+        _write_bands(properties, bands or None)
         for k, v in properties.items():
             if k in self.summaryfields:
                 strategy = self.summaryfields[k]
