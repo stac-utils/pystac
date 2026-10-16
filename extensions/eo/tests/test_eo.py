@@ -87,6 +87,7 @@ def test_validate_eo() -> None:
     item2.validate()
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 @pytest.mark.vcr()
 def test_bands() -> None:
     item = pystac.Item.from_file(BANDS_IN_ITEM_URI)
@@ -113,12 +114,14 @@ def test_bands() -> None:
     item.validate()
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_asset_bands_s2() -> None:
     item = pystac.Item.from_file(S2_ITEM_URI)
     mtd_asset = item.get_assets()["mtd"]
     assert EOExtension.ext(mtd_asset).bands is None
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 @pytest.mark.vcr()
 def test_asset_bands() -> None:
     item = pystac.Item.from_file(LANDSAT_EXAMPLE_URI)
@@ -204,6 +207,7 @@ def test_cloud_cover() -> None:
     item.validate()
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_summaries() -> None:
     col = pystac.Collection.from_file(EO_COLLECTION_URI)
     eo_summaries = EOExtension.summaries(col)
@@ -262,6 +266,7 @@ def test_read_pre_09_fields_into_common_metadata() -> None:
     assert eo_item.common_metadata.instruments == ["oli_tirs"]
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_reads_asset_bands_in_pre_1_0_version() -> None:
     item = pystac.Item.from_file(
         str(DATA_FILES / "examples/0.9.0/item-spec/examples/landsat8-sample.json")
@@ -281,6 +286,7 @@ def test_reads_gsd_in_pre_1_0_version() -> None:
     assert eo_item.common_metadata.gsd == 30.0
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_item_apply() -> None:
     item = pystac.Item.from_file(LANDSAT_EXAMPLE_URI)
     eo_ext = EOExtension.ext(item)
@@ -487,6 +493,7 @@ def test_exception_should_include_hint_if_obj_is_collection(
         EOExtension.ext(collection)  # type:ignore
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_ext_syntax(ext_item: pystac.Item) -> None:
     assert ext_item.ext.eo.cloud_cover == 78
     assert (bands := ext_item.assets["B1"].ext.eo.bands)
@@ -506,6 +513,7 @@ def test_ext_syntax_add(item: pystac.Item) -> None:
     assert isinstance(item.ext.eo, EOExtension)
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_required_property_missing(ext_item: pystac.Item) -> None:
     # https://github.com/stac-utils/pystac/issues/1402
     d = ext_item.to_dict(include_self_link=False, transform_hrefs=False)
@@ -550,6 +558,7 @@ def test_band_extension() -> None:
     assert "eo:common_name" not in band.extra_fields
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_asset_bands_inherited_from_item_are_ignored(ext_item: pystac.Item) -> None:
     ext_item.bands = [pystac.Band(name="B1", extra_fields={"eo:common_name": "x"})]
     asset = ext_item.assets["thumbnail"]
@@ -557,6 +566,7 @@ def test_asset_bands_inherited_from_item_are_ignored(ext_item: pystac.Item) -> N
     assert EOExtension.ext(asset).bands is None
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_set_bands_keeps_other_band_fields(ext_item: pystac.Item) -> None:
     asset = ext_item.assets["B1"]
     asset.bands = [
@@ -570,6 +580,7 @@ def test_set_bands_keeps_other_band_fields(ext_item: pystac.Item) -> None:
     }
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_set_bands_on_item_writes_common_bands(ext_item: pystac.Item) -> None:
     EOExtension.ext(ext_item).bands = [Band.create(name="B1", common_name="coastal")]
     assert "eo:bands" not in ext_item.properties
@@ -631,6 +642,7 @@ def test_migration_removes_uri_without_eo_fields() -> None:
     assert get_opt(item.assets["data"].bands)[0].to_dict() == {"name": "B1"}
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_migrates_v1_summaries() -> None:
     col = pystac.Collection.from_file(EO_COLLECTION_URI)
     assert EOExtension.get_schema_uri() in col.stac_extensions
@@ -644,6 +656,7 @@ def test_migrates_v1_summaries() -> None:
     assert get_opt(EOExtension.summaries(col).bands)[0].common_name == "coastal"
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_set_summaries_bands_keeps_other_band_fields() -> None:
     col = pystac.Collection.from_file(EO_COLLECTION_URI)
     col.summaries.add("bands", [{"name": "B1", "data_type": "uint8"}])
@@ -651,3 +664,21 @@ def test_set_summaries_bands_keeps_other_band_fields() -> None:
     assert col.summaries.get_list("bands") == [
         {"name": "B1", "data_type": "uint8", "eo:common_name": "coastal"}
     ]
+
+
+def test_v1_bands_accessors_are_deprecated(ext_item: pystac.Item) -> None:
+    asset = ext_item.assets["B1"]
+    with pytest.deprecated_call(match="EOExtension.bands is deprecated"):
+        EOExtension.ext(asset).bands
+    with pytest.deprecated_call(match="EOExtension.bands is deprecated"):
+        EOExtension.ext(asset).bands = [Band.create(name="B1")]
+    with pytest.deprecated_call(match="bands argument of EOExtension.apply"):
+        EOExtension.ext(asset).apply(bands=[Band.create(name="B1")])
+    col = pystac.Collection.from_file(EO_COLLECTION_URI)
+    with pytest.deprecated_call(match="SummariesEOExtension.bands is deprecated"):
+        EOExtension.summaries(col).bands
+
+
+def test_apply_without_bands_is_not_deprecated(ext_item: pystac.Item) -> None:
+    EOExtension.ext(ext_item).apply(cloud_cover=1.0)
+    assert EOExtension.ext(ext_item).cloud_cover == 1.0

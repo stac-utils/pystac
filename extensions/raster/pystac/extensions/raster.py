@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from collections.abc import Iterable
 from typing import (
     Any,
@@ -678,6 +679,21 @@ class RasterBand:
         return self.properties
 
 
+_BANDS_REPLACEMENT = (
+    "the bands of the Asset or ItemAssetDefinition with RasterExtension.ext(band)"
+)
+_SUMMARY_REPLACEMENT = "the bands summary with raster: prefixed fields"
+
+
+def _warn_v1_bands_deprecated(name: str, replacement: str) -> None:
+    warnings.warn(
+        f"{name} is deprecated and will be removed in a future version. "
+        f"Use {replacement} instead.",
+        DeprecationWarning,
+        stacklevel=3,
+    )
+
+
 def _own_bands(asset: pystac.Asset) -> list[pystac.Band] | None:
     bands = asset.bands
     if asset.owner is not None and bands is asset.owner.bands:
@@ -762,17 +778,26 @@ class RasterExtension(
         """Applies raster extension properties to the extended :class:`pystac.Item` or
         :class:`pystac.Asset`.
 
+        .. deprecated:: 2.0.0
+            See :attr:`bands`.
+
         Args:
             bands : a list of :class:`RasterBand` objects that represent
                 the available raster bands.
         """
-        self.bands = bands
+        _warn_v1_bands_deprecated("RasterExtension.apply", _BANDS_REPLACEMENT)
+        self._set_bands(bands)
 
     @property
     def bands(self) -> list[RasterBand] | None:
         """Gets or sets a list of available bands where each item is a
         :class:`~RasterBand` object (or ``None`` if no bands have been set). If not
         available the field should not be provided.
+
+        .. deprecated:: 2.0.0
+            raster v2.0.0 removed ``raster:bands``. Use the ``bands`` of the
+            :class:`~pystac.Asset` or :class:`~pystac.ItemAssetDefinition` with
+            ``RasterExtension.ext(band)``.
 
         Reads ``raster:bands`` (raster v1) if it is set. Otherwise, returns copies
         of the object's own common bands (e.g. :attr:`~pystac.Asset.bands`, not
@@ -785,10 +810,15 @@ class RasterExtension(
         there already are as many common bands, their non-raster fields are kept.
         Setting ``None`` only removes ``raster:bands``.
         """
+        _warn_v1_bands_deprecated("RasterExtension.bands", _BANDS_REPLACEMENT)
         return self._get_bands()
 
     @bands.setter
     def bands(self, v: list[RasterBand] | None) -> None:
+        _warn_v1_bands_deprecated("RasterExtension.bands", _BANDS_REPLACEMENT)
+        self._set_bands(v)
+
+    def _set_bands(self, v: list[RasterBand] | None) -> None:
         if v is None or not self._has_common_bands:
             self._set_property(
                 BANDS_PROP, map_opt(lambda bands: [b.to_dict() for b in bands], v)
@@ -1013,6 +1043,10 @@ class SummariesRasterExtension(SummariesExtension):
         """Get or sets a list of :class:`RasterBand` objects that represent
         the available bands.
 
+        .. deprecated:: 2.0.0
+            raster v2.0.0 removed ``raster:bands``. Use the ``bands`` summary with
+            ``raster:`` prefixed fields.
+
         Reads the ``raster:bands`` summary (raster v1) if it is set. Otherwise,
         returns copies of the ``bands`` summary if a band has fields other than
         ``name``, ``description`` and ``eo:`` fields (raster v2); changes to those
@@ -1023,6 +1057,9 @@ class SummariesRasterExtension(SummariesExtension):
         summary already has as many bands, their non-raster fields are kept. Setting
         ``None`` only removes the ``raster:bands`` summary.
         """
+        _warn_v1_bands_deprecated(
+            "SummariesRasterExtension.bands", _SUMMARY_REPLACEMENT
+        )
         bands = self.summaries.get_list(BANDS_PROP)
         if bands is not None:
             return [RasterBand(b) for b in bands]
@@ -1030,6 +1067,9 @@ class SummariesRasterExtension(SummariesExtension):
 
     @bands.setter
     def bands(self, v: list[RasterBand] | None) -> None:
+        _warn_v1_bands_deprecated(
+            "SummariesRasterExtension.bands", _SUMMARY_REPLACEMENT
+        )
         self._set_summary(BANDS_PROP, None)
         if v is not None:
             bands = _from_v1_bands(v, self._get_common_bands())

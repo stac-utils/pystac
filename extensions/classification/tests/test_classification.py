@@ -321,6 +321,7 @@ def test_add_asset_classes(plain_item: Item) -> None:
     assert asset.extra_fields[CLASSES_PROP] == [{"value": 0, "name": "dummy"}]
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_item_asset_raster_classes(classification_collection: Collection) -> None:
     assert classification_collection.item_assets
     item_asset = classification_collection.item_assets["cloud-mask-raster"]
