@@ -20,6 +20,7 @@ from pystac.extensions.classification import (
     ClassificationExtension,
 )
 from pystac.extensions.raster import RasterBand, RasterExtension
+from pystac.utils import get_opt
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger()
@@ -331,6 +332,39 @@ def test_item_asset_raster_classes(classification_collection: Collection) -> Non
     raster_bands_ext = ClassificationExtension.ext(raster_bands[0])
     raster_bands_ext.__repr__()
     assert raster_bands_ext.classes is not None
+
+
+def test_item_asset_band_classes(classification_collection: Collection) -> None:
+    assert classification_collection.item_assets
+    item_asset = classification_collection.item_assets["cloud-mask-raster"]
+    band = get_opt(item_asset.bands)[0]
+    band_ext = ClassificationExtension.ext(band)
+    assert repr(band_ext) == "<BandClassificationExtension Band name=BAND_CM>"
+    classes = get_opt(band_ext.classes)
+    assert classes[1].name == "clear"
+
+
+def test_band_classes() -> None:
+    band = pystac.Band(name="mask")
+    ClassificationExtension.ext(band).classes = [
+        Classification.create(value=1, description="clear", name="clear")
+    ]
+    assert band.to_dict() == {
+        "name": "mask",
+        "classification:classes": [
+            {"value": 1, "description": "clear", "name": "clear"}
+        ],
+    }
+    ClassificationExtension.ext(band).bitfields = [
+        Bitfield.create(
+            offset=0,
+            length=1,
+            classes=[Classification.create(value=1, name="cloud")],
+            name="cloud",
+        )
+    ]
+    assert "classification:classes" not in band.extra_fields
+    assert ClassificationExtension.ext(band).bitfields
 
 
 def test_item_assets_extension(classification_collection: Collection) -> None:
