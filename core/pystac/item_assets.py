@@ -6,9 +6,11 @@ for use as values in the :attr:`~pystac.Collection.item_assets` dict.
 
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING, Any
 
 import pystac
+from pystac.band import Band, _read_bands, _write_bands
 
 if TYPE_CHECKING:
     from pystac.extensions.ext import ItemAssetExt
@@ -18,6 +20,7 @@ ASSET_TITLE_PROP = "title"
 ASSET_DESC_PROP = "description"
 ASSET_TYPE_PROP = "type"
 ASSET_ROLES_PROP = "roles"
+ASSET_BANDS_PROP = "bands"
 
 
 class ItemAssetDefinition:
@@ -30,11 +33,14 @@ class ItemAssetDefinition:
 
     owner: pystac.Collection | None
 
+    _bands: list[Band] | None
+
     def __init__(
         self, properties: dict[str, Any], owner: pystac.Collection | None = None
     ) -> None:
         self.properties = properties
         self.owner = owner
+        self._bands = _read_bands(properties)
 
     def __eq__(self, o: object) -> bool:
         if not isinstance(o, ItemAssetDefinition):
@@ -49,6 +55,7 @@ class ItemAssetDefinition:
         media_type: str | None,
         roles: list[str] | None,
         extra_fields: dict[str, Any] | None = None,
+        bands: list[Band] | None = None,
     ) -> ItemAssetDefinition:
         """
         Creates a new asset definition.
@@ -67,6 +74,7 @@ class ItemAssetDefinition:
                 of the asset, similar to the use of rel in links.
             extra_fields : Additional fields on the asset definition, e.g. from
                 extensions.
+            bands : The bands of the asset.
         """
         asset_defn = cls({})
         asset_defn.apply(
@@ -75,6 +83,7 @@ class ItemAssetDefinition:
             media_type=media_type,
             roles=roles,
             extra_fields=extra_fields,
+            bands=bands,
         )
         return asset_defn
 
@@ -85,6 +94,7 @@ class ItemAssetDefinition:
         media_type: str | None,
         roles: list[str] | None,
         extra_fields: dict[str, Any] | None = None,
+        bands: list[Band] | None = None,
     ) -> None:
         """
         Sets the properties for this asset definition.
@@ -103,6 +113,8 @@ class ItemAssetDefinition:
                 of the asset, similar to the use of rel in links.
             extra_fields : Additional fields on the asset definition, e.g. from
                 extensions.
+            bands : The bands of the asset. If not given, they are read from
+                ``extra_fields["bands"]``.
         """
         if extra_fields:
             self.properties.update(extra_fields)
@@ -110,6 +122,7 @@ class ItemAssetDefinition:
         self.description = description
         self.media_type = media_type
         self.roles = roles
+        self.bands = bands if bands is not None else _read_bands(extra_fields or {})
         self.owner = None
 
     def set_owner(self, obj: pystac.Collection) -> None:
@@ -176,10 +189,25 @@ class ItemAssetDefinition:
         else:
             self.properties[ASSET_ROLES_PROP] = v
 
+    @property
+    def bands(self) -> list[Band] | None:
+        """Gets or sets the bands of the asset.
+
+        They are written to ``properties["bands"]`` by :meth:`to_dict` and when the
+        owning :class:`~pystac.Collection` is serialized or cloned.
+        """
+        return self._bands
+
+    @bands.setter
+    def bands(self, v: list[Band] | None) -> None:
+        self._bands = v
+
+    def _sync_bands(self) -> None:
+        _write_bands(self.properties, self._bands)
+
     def to_dict(self) -> dict[str, Any]:
         """Returns a dictionary representing this ``ItemAssetDefinition``."""
-        from copy import deepcopy
-
+        self._sync_bands()
         return deepcopy(self.properties)
 
     def create_asset(self, href: str) -> pystac.Asset:
@@ -191,6 +219,7 @@ class ItemAssetDefinition:
             description=self.description,
             media_type=self.media_type,
             roles=self.roles,
+            bands=deepcopy(self._bands),
             extra_fields={
                 k: v
                 for k, v in self.properties.items()
@@ -200,6 +229,7 @@ class ItemAssetDefinition:
                     ASSET_DESC_PROP,
                     ASSET_TYPE_PROP,
                     ASSET_ROLES_PROP,
+                    ASSET_BANDS_PROP,
                 }
             },
         )

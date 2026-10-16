@@ -538,6 +538,7 @@ class Collection(Catalog, Assets):
         bands: list[Band] | None = None,
     ):
         self._band_cache = _BandCache()
+        self._item_assets: _ItemAssets | None = None
         super().__init__(
             id,
             description,
@@ -555,7 +556,6 @@ class Collection(Catalog, Assets):
         self.keywords = keywords
         self.providers = providers
         self.summaries = summaries or Summaries.empty()
-        self._item_assets: _ItemAssets | None = None
 
         self.assets = {}
         if assets is not None:
@@ -908,6 +908,9 @@ class Collection(Catalog, Assets):
         written to ``extra_fields["bands"]`` whenever this dictionary is read.
         """
         self._band_cache.sync(self._extra_fields)
+        if self._item_assets is not None:
+            for item_asset in self._item_assets.values():
+                item_asset._sync_bands()
         return self._extra_fields
 
     @extra_fields.setter

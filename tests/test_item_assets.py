@@ -2,10 +2,12 @@ from pathlib import Path
 
 import pytest
 
-from pystac import Collection
+from pystac import Band, Collection
+from pystac.common_metadata import DataType
 from pystac.errors import DeprecatedWarning
 from pystac.extensions.item_assets import AssetDefinition, ItemAssetsExtension
 from pystac.item_assets import ItemAssetDefinition
+from pystac.utils import get_opt
 from tests.utils import TestCases
 
 HERE = Path(__file__).resolve().parent
@@ -122,6 +124,28 @@ class TestAssetDefinition:
 
         assert asset_defn.roles == asset_defn.to_dict()["roles"] == roles
 
+    def test_bands(self) -> None:
+        asset_defn = ItemAssetDefinition({})
+        assert asset_defn.bands is None
+
+        asset_defn.bands = [Band(name="red", data_type=DataType.UINT16)]
+
+        assert asset_defn.to_dict()["bands"] == [{"name": "red", "data_type": "uint16"}]
+        assert asset_defn.bands == [Band(name="red", data_type=DataType.UINT16)]
+
+        asset_defn.bands = None
+        assert "bands" not in asset_defn.to_dict()
+
+    def test_create_with_bands(self) -> None:
+        asset_defn = ItemAssetDefinition.create(
+            title=None,
+            description=None,
+            media_type=None,
+            roles=None,
+            bands=[Band(name="red")],
+        )
+        assert asset_defn.to_dict() == {"bands": [{"name": "red"}]}
+
     def test_set_owner(self, landsat8_collection: Collection) -> None:
         asset_definition = ItemAssetDefinition(
             {
@@ -165,6 +189,58 @@ def test_extra_fields(collection: Collection) -> None:
 
     assert collection.item_assets["data"].ext.has("raster")
     assert collection.ext.has("raster")
+
+
+def test_bands_roundtrip(collection: Collection) -> None:
+    collection.item_assets["data"] = ItemAssetDefinition(
+        {"bands": [{"name": "red", "nodata": 0, "unit": "m"}]}
+    )
+    collection_dict = collection.to_dict(include_self_link=False)
+    assert collection_dict["item_assets"]["data"]["bands"] == [
+        {"name": "red", "nodata": 0, "unit": "m"}
+    ]
+    collection = Collection.from_dict(collection_dict)
+    assert collection.item_assets["data"].bands == [
+        Band(name="red", nodata=0, unit="m")
+    ]
+
+
+def test_create_asset_copies_bands(collection: Collection) -> None:
+    collection.item_assets["data"] = ItemAssetDefinition(
+        {"bands": [{"name": "red"}], "foo": "bar"}
+    )
+    asset = collection.item_assets["data"].create_asset("asset.tif")
+    assert asset.bands == [Band(name="red")]
+    assert asset.extra_fields == {"foo": "bar"}
+    assert asset.to_dict()["bands"] == [{"name": "red"}]
+    get_opt(asset.bands)[0].name = "green"
+    assert collection.item_assets["data"].bands == [Band(name="red")]
+
+
+def test_band_edits_are_serialized_with_collection(collection: Collection) -> None:
+    collection.item_assets["data"] = ItemAssetDefinition({"bands": [{"name": "red"}]})
+    get_opt(collection.item_assets["data"].bands)[0].name = "green"
+    assert collection.to_dict()["item_assets"]["data"]["bands"] == [{"name": "green"}]
+    assert collection.clone().item_assets["data"].bands == [Band(name="green")]
+
+
+def test_bands_set_to_none_are_removed(collection: Collection) -> None:
+    collection.item_assets["data"] = ItemAssetDefinition({"bands": [{"name": "red"}]})
+    collection.item_assets["data"].bands = None
+    assert "bands" not in collection.to_dict()["item_assets"]["data"]
+    assert collection.clone().item_assets["data"].bands is None
+
+
+def test_create_reads_bands_from_extra_fields() -> None:
+    asset_defn = ItemAssetDefinition.create(
+        title=None,
+        description=None,
+        media_type=None,
+        roles=None,
+        extra_fields={"bands": [{"name": "red"}]},
+    )
+    assert asset_defn.bands == [Band(name="red")]
+    assert asset_defn.to_dict() == {"bands": [{"name": "red"}]}
 
 
 def test_set_item_asset(collection: Collection) -> None:

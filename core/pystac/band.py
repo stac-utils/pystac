@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Any
+
+from pystac.common_metadata import DataType, NoDataStrings, Statistics
 
 
 @dataclass
@@ -22,6 +25,20 @@ class Band:
     CommonMark 0.29 syntax MAY be used for rich text representation.
     """
 
+    data_type: DataType | str | None = None
+    """The data type of the values in the band."""
+
+    nodata: float | NoDataStrings | str | None = None
+    """Value used to identify no-data."""
+
+    statistics: Statistics | None = None
+    """Statistics of all the values in the band."""
+
+    unit: str | None = None
+    """Unit of measurement of the values in the band, preferably compliant to
+    `UCUM <https://ucum.org/ucum.html>`__ or
+    `UDUNITS-2 <https://docs.unidata.ucar.edu/udunits/current/>`__."""
+
     extra_fields: dict[str, Any] = field(default_factory=dict)
     """Other fields on the band."""
 
@@ -30,11 +47,24 @@ class Band:
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Band:
-        """Creates a new band object from a dictionary. Does not modify ``d``."""
+        """Creates a new band object from a dictionary. Does not modify ``d``.
+
+        ``data_type`` and string ``nodata`` values are converted to
+        :class:`~pystac.common_metadata.DataType` and
+        :class:`~pystac.common_metadata.NoDataStrings` when they match a known
+        value, and kept as plain strings otherwise.
+        """
         d = deepcopy(d)
-        name = d.pop("name", None)
-        description = d.pop("description", None)
-        return cls(name=name, description=description, extra_fields=d)
+        statistics = d.pop("statistics", None)
+        return cls(
+            name=d.pop("name", None),
+            description=d.pop("description", None),
+            data_type=_to_enum(DataType, d.pop("data_type", None)),
+            nodata=_to_enum(NoDataStrings, d.pop("nodata", None)),
+            statistics=None if statistics is None else Statistics.from_dict(statistics),
+            unit=d.pop("unit", None),
+            extra_fields=d,
+        )
 
     def to_dict(self) -> dict[str, Any]:
         """Creates a dictionary from this band object."""
@@ -43,8 +73,32 @@ class Band:
             d["name"] = self.name
         if self.description is not None:
             d["description"] = self.description
+        if self.data_type is not None:
+            d["data_type"] = self.data_type
+        if self.nodata is not None:
+            d["nodata"] = self.nodata
+        if self.statistics is not None:
+            d["statistics"] = self.statistics.to_dict()
+        if self.unit is not None:
+            d["unit"] = self.unit
         d.update(deepcopy(self.extra_fields))
         return d
+
+
+def _to_enum(enum: type[Enum], value: Any) -> Any:
+    if not isinstance(value, str):
+        return value
+    try:
+        return enum(value)
+    except ValueError:
+        return value
+
+
+def _read_bands(d: dict[str, Any]) -> list[Band] | None:
+    bands = d.get("bands")
+    if bands is None:
+        return None
+    return [Band.from_dict(band) for band in bands]
 
 
 def _write_bands(d: dict[str, Any], bands: list[Band] | None) -> None:
