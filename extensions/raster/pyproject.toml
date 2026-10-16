@@ -19,7 +19,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 requires-python = ">=3.10"
-dependencies = ["pystac-core"]
+dependencies = ["pystac-core>=1.16.0"]
 
 [project.entry-points."pystac.extensions"]
 raster = "pystac.extensions.raster:RASTER_EXTENSION_HOOKS"

@@ -18,19 +18,42 @@ from pystac.extensions.base import (
     SummariesExtension,
 )
 from pystac.extensions.hooks import ExtensionHooks
+from pystac.serialization.identify import STACJSONDescription, STACVersionID
+from pystac.serialization.migrate import (
+    has_extension_fields,
+    migrate_extension_bands,
+)
 from pystac.utils import StringEnum, get_opt, get_required, map_opt
 
-#: Generalized version of :class:`~pystac.Asset` or
-#: :class:`~pystac.ItemAssetDefinition`
-T = TypeVar("T", pystac.Asset, pystac.ItemAssetDefinition)
+#: Generalized version of :class:`~pystac.Asset`,
+#: :class:`~pystac.ItemAssetDefinition` or :class:`~pystac.Band`
+T = TypeVar("T", pystac.Asset, pystac.ItemAssetDefinition, pystac.Band)
 
-SCHEMA_URI = "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
+SCHEMA_URI = "https://stac-extensions.github.io/raster/v2.0.0/schema.json"
+V1_SCHEMA_URI = "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
 SCHEMA_URIS = [
     "https://stac-extensions.github.io/raster/v1.0.0/schema.json",
+    V1_SCHEMA_URI,
     SCHEMA_URI,
 ]
 SCHEMA_STARTWITH = "https://stac-extensions.github.io/raster/"
-BANDS_PROP = "raster:bands"
+PREFIX = "raster:"
+BANDS_PROP = PREFIX + "bands"
+SAMPLING_PROP = PREFIX + "sampling"
+BITS_PER_SAMPLE_PROP = PREFIX + "bits_per_sample"
+SPATIAL_RESOLUTION_PROP = PREFIX + "spatial_resolution"
+SCALE_PROP = PREFIX + "scale"
+OFFSET_PROP = PREFIX + "offset"
+HISTOGRAM_PROP = PREFIX + "histogram"
+V1_COMMON_BAND_FIELDS = {"nodata", "data_type", "statistics", "unit"}
+V1_BAND_FIELDS = {
+    "sampling",
+    "bits_per_sample",
+    "spatial_resolution",
+    "scale",
+    "offset",
+    "histogram",
+}
 
 
 class Sampling(StringEnum):
@@ -655,6 +678,62 @@ class RasterBand:
         return self.properties
 
 
+def _own_bands(asset: pystac.Asset) -> list[pystac.Band] | None:
+    bands = asset.bands
+    if asset.owner is not None and bands is asset.owner.bands:
+        return None
+    return bands
+
+
+def _to_v1_bands(bands: list[pystac.Band] | None) -> list[RasterBand] | None:
+    """Converts common bands to v1.1 :class:`RasterBand` copies, or returns
+    ``None`` if the bands only have ``name``, ``description`` and ``eo:`` fields.
+
+    Those fields are dropped; ``raster:`` fields lose their prefix.
+    """
+    band_dicts = [
+        {
+            k.removeprefix(PREFIX): v
+            for k, v in band.to_dict().items()
+            if k not in {"name", "description"} and not k.startswith("eo:")
+        }
+        for band in bands or []
+    ]
+    if not any(band_dicts):
+        return None
+    return [RasterBand(band) for band in band_dicts]
+
+
+def _from_v1_bands(
+    bands: list[RasterBand], existing: list[pystac.Band] | None
+) -> list[pystac.Band]:
+    """Converts v1.1 :class:`RasterBand` objects to common bands with raster fields.
+
+    If ``existing`` has as many bands, its fields other than raster fields are kept,
+    by index.
+    """
+    new = [
+        {
+            k if k in V1_COMMON_BAND_FIELDS or ":" in k else PREFIX + k: v
+            for k, v in band.to_dict().items()
+        }
+        for band in bands
+    ]
+    if existing is not None and len(existing) == len(new):
+        new = [
+            {
+                **{
+                    k: v
+                    for k, v in old.to_dict().items()
+                    if k not in V1_COMMON_BAND_FIELDS and not k.startswith(PREFIX)
+                },
+                **band,
+            }
+            for old, band in zip(existing, new)
+        ]
+    return [pystac.Band.from_dict(band) for band in new]
+
+
 class RasterExtension(
     Generic[T],
     PropertiesExtension,
@@ -694,20 +773,105 @@ class RasterExtension(
         """Gets or sets a list of available bands where each item is a
         :class:`~RasterBand` object (or ``None`` if no bands have been set). If not
         available the field should not be provided.
+
+        Reads ``raster:bands`` (raster v1) if it is set. Otherwise, returns copies
+        of the object's own common bands (e.g. :attr:`~pystac.Asset.bands`, not
+        inherited from its owner) if they have fields other than ``name``,
+        ``description`` and ``eo:`` fields (raster v2); changes to those copies are
+        not kept.
+
+        Setting this property on an Asset or Item Asset Definition writes the common
+        bands, with ``raster:`` prefixed fields, and removes ``raster:bands``. If
+        there already are as many common bands, their non-raster fields are kept.
+        Setting ``None`` only removes ``raster:bands``.
         """
         return self._get_bands()
 
     @bands.setter
     def bands(self, v: list[RasterBand] | None) -> None:
-        self._set_property(
-            BANDS_PROP, map_opt(lambda bands: [b.to_dict() for b in bands], v)
-        )
+        if v is None or not self._has_common_bands:
+            self._set_property(
+                BANDS_PROP, map_opt(lambda bands: [b.to_dict() for b in bands], v)
+            )
+            return
+        self._set_property(BANDS_PROP, None)
+        self._set_common_bands(_from_v1_bands(v, self._get_common_bands()))
+
+    _has_common_bands: bool = False
+
+    def _get_common_bands(self) -> list[pystac.Band] | None:
+        return None
+
+    def _set_common_bands(self, bands: list[pystac.Band]) -> None:
+        raise NotImplementedError
 
     def _get_bands(self) -> list[RasterBand] | None:
+        bands = self._get_property(BANDS_PROP, list[dict[str, Any]])
+        if bands is None:
+            return _to_v1_bands(self._get_common_bands())
+        return [RasterBand(b) for b in bands]
+
+    @property
+    def sampling(self) -> Sampling | None:
+        """Get or sets whether a value should be assumed to represent a sampling over
+        the region of the pixel or a point sample at the center of the pixel.
+        """
+        return map_opt(Sampling, self._get_property(SAMPLING_PROP, str))
+
+    @sampling.setter
+    def sampling(self, v: Sampling | None) -> None:
+        self._set_property(SAMPLING_PROP, v)
+
+    @property
+    def bits_per_sample(self) -> int | None:
+        """Get or sets the actual number of bits used for the values."""
+        return self._get_property(BITS_PER_SAMPLE_PROP, int)
+
+    @bits_per_sample.setter
+    def bits_per_sample(self, v: int | None) -> None:
+        self._set_property(BITS_PER_SAMPLE_PROP, v)
+
+    @property
+    def spatial_resolution(self) -> float | None:
+        """Get or sets the average spatial resolution (in meters) of the pixels."""
+        return self._get_property(SPATIAL_RESOLUTION_PROP, float)
+
+    @spatial_resolution.setter
+    def spatial_resolution(self, v: float | None) -> None:
+        self._set_property(SPATIAL_RESOLUTION_PROP, v)
+
+    @property
+    def scale(self) -> float | None:
+        """Get or sets the multiplicator factor of the pixel value to transform it
+        into the value (i.e. translate digital number to reflectance).
+        """
+        return self._get_property(SCALE_PROP, float)
+
+    @scale.setter
+    def scale(self, v: float | None) -> None:
+        self._set_property(SCALE_PROP, v)
+
+    @property
+    def offset(self) -> float | None:
+        """Get or sets the number to be added to the pixel value (after scaling) to
+        transform it into the value (i.e. translate digital number to reflectance).
+        """
+        return self._get_property(OFFSET_PROP, float)
+
+    @offset.setter
+    def offset(self, v: float | None) -> None:
+        self._set_property(OFFSET_PROP, v)
+
+    @property
+    def histogram(self) -> Histogram | None:
+        """Get or sets the histogram distribution information of the pixel values."""
         return map_opt(
-            lambda bands: [RasterBand(b) for b in bands],
-            self._get_property(BANDS_PROP, list[dict[str, Any]]),
+            Histogram.from_dict, self._get_property(HISTOGRAM_PROP, dict[str, Any])
         )
+
+    @histogram.setter
+    def histogram(self, v: Histogram | None) -> None:
+        self._set_property(HISTOGRAM_PROP, map_opt(lambda h: h.to_dict(), v))
 
     @classmethod
     def get_schema_uri(cls) -> str:
@@ -728,7 +892,9 @@ class RasterExtension(
         """Extends the given STAC Object with properties from the :stac-ext:`Raster
         Extension <raster>`.
 
-        This extension can be applied to instances of :class:`~pystac.Asset`.
+        This extension can be applied to instances of :class:`~pystac.Asset`,
+        :class:`~pystac.ItemAssetDefinition` or :class:`~pystac.Band`. A band has no
+        owner, so ``add_if_missing`` has no effect for it.
 
         Raises:
 
@@ -740,6 +906,8 @@ class RasterExtension(
         elif isinstance(obj, pystac.ItemAssetDefinition):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(RasterExtension[T], ItemAssetsRasterExtension(obj))
+        elif isinstance(obj, pystac.Band):
+            return cast(RasterExtension[T], BandRasterExtension(obj))
         else:
             raise pystac.ExtensionTypeError(cls._ext_error_message(obj))
 
@@ -752,6 +920,9 @@ class RasterExtension(
 
 
 class AssetRasterExtension(RasterExtension[pystac.Asset]):
+    asset: pystac.Asset
+    """The :class:`~pystac.Asset` being extended."""
+
     asset_href: str
     """The ``href`` value of the :class:`~pystac.Asset` being extended."""
 
@@ -763,10 +934,19 @@ class AssetRasterExtension(RasterExtension[pystac.Asset]):
     properties of the owning :class:`~pystac.Item`."""
 
     def __init__(self, asset: pystac.Asset):
+        self.asset = asset
         self.asset_href = asset.href
         self.properties = asset.extra_fields
         if asset.owner and isinstance(asset.owner, pystac.Item):
             self.additional_read_properties = [asset.owner.properties]
+
+    _has_common_bands = True
+
+    def _get_common_bands(self) -> list[pystac.Band] | None:
+        return _own_bands(self.asset)
+
+    def _set_common_bands(self, bands: list[pystac.Band]) -> None:
+        self.asset.bands = bands
 
     def __repr__(self) -> str:
         return f"<AssetRasterExtension Asset href={self.asset_href}>"
@@ -785,10 +965,41 @@ class ItemAssetsRasterExtension(RasterExtension[pystac.ItemAssetDefinition]):
         self.properties = item_asset.properties
         self.asset_definition = item_asset
 
+    _has_common_bands = True
+
+    def _get_common_bands(self) -> list[pystac.Band] | None:
+        return self.asset_definition.bands
+
+    def _set_common_bands(self, bands: list[pystac.Band]) -> None:
+        self.asset_definition.bands = bands
+
     def __repr__(self) -> str:
         return "<ItemAssetsRasterExtension AssetDefinition={}>".format(
             self.asset_definition
         )
+
+
+class BandRasterExtension(RasterExtension[pystac.Band]):
+    """A concrete implementation of :class:`RasterExtension` on a
+    :class:`~pystac.Band` that extends the band's fields to include properties
+    defined in the :stac-ext:`Raster Extension <raster>`.
+
+    ``nodata``, ``data_type``, ``statistics`` and ``unit`` are fields of
+    :class:`~pystac.Band` itself.
+    """
+
+    band: pystac.Band
+    """The :class:`~pystac.Band` being extended."""
+
+    properties: dict[str, Any]
+    """The :class:`~pystac.Band` extra fields, including extension properties."""
+
+    def __init__(self, band: pystac.Band):
+        self.band = band
+        self.properties = band.extra_fields
+
+    def __repr__(self) -> str:
+        return f"<BandRasterExtension Band name={self.band.name}>"
 
 
 class SummariesRasterExtension(SummariesExtension):
@@ -801,21 +1012,56 @@ class SummariesRasterExtension(SummariesExtension):
     def bands(self) -> list[RasterBand] | None:
         """Get or sets a list of :class:`RasterBand` objects that represent
         the available bands.
+
+        Reads the ``raster:bands`` summary (raster v1) if it is set. Otherwise,
+        returns copies of the ``bands`` summary if a band has fields other than
+        ``name``, ``description`` and ``eo:`` fields (raster v2); changes to those
+        copies are not kept.
+
+        Setting this property writes the ``bands`` summary, with ``raster:``
+        prefixed fields, and removes the ``raster:bands`` summary. If the ``bands``
+        summary already has as many bands, their non-raster fields are kept. Setting
+        ``None`` only removes the ``raster:bands`` summary.
         """
-        return map_opt(
-            lambda bands: [RasterBand(b) for b in bands],
-            self.summaries.get_list(BANDS_PROP),
-        )
+        bands = self.summaries.get_list(BANDS_PROP)
+        if bands is not None:
+            return [RasterBand(b) for b in bands]
+        return _to_v1_bands(self._get_common_bands())
 
     @bands.setter
     def bands(self, v: list[RasterBand] | None) -> None:
-        self._set_summary(BANDS_PROP, map_opt(lambda x: [b.to_dict() for b in x], v))
+        self._set_summary(BANDS_PROP, None)
+        if v is not None:
+            bands = _from_v1_bands(v, self._get_common_bands())
+            self._set_summary("bands", [b.to_dict() for b in bands])
+
+    def _get_common_bands(self) -> list[pystac.Band] | None:
+        return map_opt(
+            lambda bands: [pystac.Band.from_dict(b) for b in bands],
+            self.summaries.get_list("bands"),
+        )
 
 
 class RasterExtensionHooks(ExtensionHooks):
     schema_uri: str = SCHEMA_URI
     prev_extension_ids: set[str] = {*[uri for uri in SCHEMA_URIS if uri != SCHEMA_URI]}
     stac_object_types = {pystac.STACObjectType.ITEM, pystac.STACObjectType.COLLECTION}
+
+    def migrate(
+        self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
+    ) -> None:
+        if self.prev_extension_ids.intersection(info.extensions):
+            if not migrate_extension_bands(obj, BANDS_PROP, PREFIX, V1_BAND_FIELDS):
+                self._replace_extension_ids(obj, info, V1_SCHEMA_URI)
+                return
+            if not has_extension_fields(obj, PREFIX):
+                obj["stac_extensions"] = [
+                    uri
+                    for uri in obj["stac_extensions"]
+                    if uri not in self.prev_extension_ids
+                ]
+                return
+        super().migrate(obj, version, info)
 
 
 RASTER_EXTENSION_HOOKS: ExtensionHooks = RasterExtensionHooks()

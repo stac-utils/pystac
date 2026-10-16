@@ -35,12 +35,12 @@ def test_example(landsat8_collection: Collection) -> None:
     assert landsat8_collection.item_assets["B1"] == ItemAssetDefinition(
         {
             "type": "image/tiff; application=geotiff",
-            "eo:bands": [
+            "bands": [
                 {
                     "name": "B1",
-                    "common_name": "coastal",
-                    "center_wavelength": 0.44,
-                    "full_width_half_max": 0.02,
+                    "eo:common_name": "coastal",
+                    "eo:center_wavelength": 0.44,
+                    "eo:full_width_half_max": 0.02,
                 }
             ],
             "title": "Coastal Band (B1)",
@@ -54,12 +54,12 @@ def test_set_using_dict(landsat8_collection: Collection) -> None:
 
     landsat8_collection.item_assets["Bx"] = {
         "type": "image/tiff; application=geotiff",
-        "eo:bands": [
+        "bands": [
             {
                 "name": "B1",
-                "common_name": "coastal",
-                "center_wavelength": 0.44,
-                "full_width_half_max": 0.02,
+                "eo:common_name": "coastal",
+                "eo:center_wavelength": 0.44,
+                "eo:full_width_half_max": 0.02,
             }
         ],
         "title": "Coastal Band (B1)",

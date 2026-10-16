@@ -324,7 +324,9 @@ def test_add_asset_classes(plain_item: Item) -> None:
 def test_item_asset_raster_classes(classification_collection: Collection) -> None:
     assert classification_collection.item_assets
     item_asset = classification_collection.item_assets["cloud-mask-raster"]
-    raster_bands = cast(list[RasterBand], RasterExtension.ext(item_asset).bands)
+    raster_bands = cast(
+        list[RasterBand], RasterExtension.ext(item_asset, add_if_missing=True).bands
+    )
     raster_bands_ext = ClassificationExtension.ext(raster_bands[0])
     raster_bands_ext.__repr__()
     assert raster_bands_ext.classes is not None
