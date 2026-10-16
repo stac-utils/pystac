@@ -50,6 +50,7 @@ def test_validate_raster(ext_item: pystac.Item) -> None:
     item2.validate()
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 @pytest.mark.vcr()
 def test_asset_bands(ext_item: pystac.Item) -> None:
     item2 = pystac.Item.from_file(SENTINEL2_EXAMPLE_URI)
@@ -255,6 +256,7 @@ def test_summaries_adds_uri() -> None:
     assert RasterExtension.get_schema_uri() not in col.stac_extensions
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_collection_item_asset() -> None:
     coll = pystac.Collection.from_file(LANDSAT_COLLECTION_EXAMPLE_URI)
 
@@ -307,6 +309,7 @@ def test_band_extension() -> None:
     assert "raster:scale" not in band.extra_fields
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_set_bands_keeps_other_band_fields(ext_item: pystac.Item) -> None:
     asset = ext_item.assets["data"]
     asset.bands = [
@@ -324,6 +327,7 @@ def test_set_bands_keeps_other_band_fields(ext_item: pystac.Item) -> None:
     assert raster_bands[0].unit == "cm"
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_asset_bands_inherited_from_owner_are_ignored(ext_item: pystac.Item) -> None:
     ext_item.bands = [pystac.Band(extra_fields={"raster:scale": 2.0})]
     asset = ext_item.assets["data"]
@@ -369,6 +373,7 @@ def v1_summaries_collection_dict(collection: pystac.Collection) -> dict[str, Any
     return d
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_migrates_v1_summaries(v1_summaries_collection_dict: dict[str, Any]) -> None:
     col = pystac.Collection.from_dict(v1_summaries_collection_dict)
     assert RasterExtension.get_schema_uri() in col.stac_extensions
@@ -379,6 +384,7 @@ def test_migrates_v1_summaries(v1_summaries_collection_dict: dict[str, Any]) -> 
     assert get_opt(RasterExtension.summaries(col).bands)[0].scale == 0.0001
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_set_summaries_bands_keeps_other_band_fields(
     v1_summaries_collection_dict: dict[str, Any],
 ) -> None:
@@ -388,3 +394,18 @@ def test_set_summaries_bands_keeps_other_band_fields(
     assert col.summaries.get_list("bands") == [
         {"name": "B1", "eo:common_name": "blue", "raster:scale": 2.0}
     ]
+
+
+def test_v1_bands_accessors_are_deprecated(
+    ext_item: pystac.Item, v1_summaries_collection_dict: dict[str, Any]
+) -> None:
+    asset = ext_item.assets["data"]
+    with pytest.deprecated_call(match="RasterExtension.bands is deprecated"):
+        RasterExtension.ext(asset).bands
+    with pytest.deprecated_call(match="RasterExtension.bands is deprecated"):
+        RasterExtension.ext(asset).bands = [RasterBand.create(scale=2.0)]
+    with pytest.deprecated_call(match="RasterExtension.apply is deprecated"):
+        RasterExtension.ext(asset).apply([RasterBand.create(scale=2.0)])
+    col = pystac.Collection.from_dict(v1_summaries_collection_dict)
+    with pytest.deprecated_call(match="SummariesRasterExtension.bands is deprecated"):
+        RasterExtension.summaries(col).bands

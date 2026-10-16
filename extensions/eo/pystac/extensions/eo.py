@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from collections.abc import Iterable
 from typing import (
     Any,
@@ -302,6 +303,21 @@ class Band:
         return None
 
 
+_BANDS_REPLACEMENT = (
+    "the bands of the Item, Asset or ItemAssetDefinition with EOExtension.ext(band)"
+)
+_SUMMARY_REPLACEMENT = "the bands summary with eo: prefixed fields"
+
+
+def _warn_v1_bands_deprecated(name: str, replacement: str) -> None:
+    warnings.warn(
+        f"{name} is deprecated and will be removed in a future version. "
+        f"Use {replacement} instead.",
+        DeprecationWarning,
+        stacklevel=3,
+    )
+
+
 def _own_bands(asset: pystac.Asset) -> list[pystac.Band] | None:
     bands = asset.bands
     if asset.owner is not None and bands is asset.owner.bands:
@@ -396,8 +412,9 @@ class EOExtension(
         :class:`~pystac.Item` or :class:`~pystac.Asset`.
 
         Args:
-            bands : A list of available bands where each item is a :class:`~Band`
-                object. If given, requires at least one band.
+            bands : Deprecated, see :attr:`bands`. A list of available bands where
+                each item is a :class:`~Band` object. If given, requires at least one
+                band.
             cloud_cover : The estimate of cloud cover as a percentage
                 (0-100) of the entire scene. If not available the field should not
                 be provided.
@@ -405,7 +422,11 @@ class EOExtension(
                 (0-100) of the entire scene. If not available the field should not
                 be provided.
         """
-        self.bands = bands
+        if bands is not None:
+            _warn_v1_bands_deprecated(
+                "The bands argument of EOExtension.apply", _BANDS_REPLACEMENT
+            )
+        self._set_bands(bands)
         self.cloud_cover = validated_percentage(cloud_cover)
         self.snow_cover = validated_percentage(snow_cover)
 
@@ -414,6 +435,11 @@ class EOExtension(
         """Gets or sets a list of available bands where each item is a :class:`~Band`
         object (or ``None`` if no bands have been set). If not available the field
         should not be provided.
+
+        .. deprecated:: 2.0.0
+            eo v2.0.0 removed ``eo:bands``. Use the ``bands`` of the
+            :class:`~pystac.Item`, :class:`~pystac.Asset` or
+            :class:`~pystac.ItemAssetDefinition` with ``EOExtension.ext(band)``.
 
         Reads ``eo:bands`` (eo v1) if it is set. Otherwise, returns copies of the
         object's own common bands (e.g. :attr:`~pystac.Asset.bands`, not inherited
@@ -425,10 +451,15 @@ class EOExtension(
         there already are as many common bands, their non-eo fields are kept.
         Setting ``None`` only removes ``eo:bands``.
         """
+        _warn_v1_bands_deprecated("EOExtension.bands", _BANDS_REPLACEMENT)
         return self._get_bands()
 
     @bands.setter
     def bands(self, v: list[Band] | None) -> None:
+        _warn_v1_bands_deprecated("EOExtension.bands", _BANDS_REPLACEMENT)
+        self._set_bands(v)
+
+    def _set_bands(self, v: list[Band] | None) -> None:
         if v is None or not self._has_common_bands:
             self._set_property(
                 BANDS_PROP, map_opt(lambda bands: [b.to_dict() for b in bands], v)
@@ -748,6 +779,10 @@ class SummariesEOExtension(SummariesExtension):
         """Get or sets the summary of :attr:`EOExtension.bands` values
         for this Collection.
 
+        .. deprecated:: 2.0.0
+            eo v2.0.0 removed ``eo:bands``. Use the ``bands`` summary with
+            ``eo:`` prefixed fields.
+
         Reads the ``eo:bands`` summary (eo v1) if it is set. Otherwise, returns
         copies of the ``bands`` summary if a band has a ``name``, ``description`` or
         ``eo:`` field (eo v2); changes to those copies are not kept.
@@ -757,6 +792,7 @@ class SummariesEOExtension(SummariesExtension):
         already has as many bands, their non-eo fields are kept. Setting ``None``
         only removes the ``eo:bands`` summary.
         """
+        _warn_v1_bands_deprecated("SummariesEOExtension.bands", _SUMMARY_REPLACEMENT)
         bands = self.summaries.get_list(BANDS_PROP)
         if bands is not None:
             return [Band(b) for b in bands]
@@ -764,6 +800,7 @@ class SummariesEOExtension(SummariesExtension):
 
     @bands.setter
     def bands(self, v: list[Band] | None) -> None:
+        _warn_v1_bands_deprecated("SummariesEOExtension.bands", _SUMMARY_REPLACEMENT)
         self._set_summary(BANDS_PROP, None)
         if v is not None:
             bands = _from_v1_bands(v, self._get_common_bands())

@@ -166,6 +166,7 @@ class TestAssetDefinition:
         assert asset_definition.owner == landsat8_collection
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_extra_fields(collection: Collection) -> None:
     asset_definition = ItemAssetDefinition.create(
         title=None,
@@ -322,6 +323,7 @@ def test_item_assets_extension_is_deprecated() -> None:
     item_asset_ext.item_assets["thumbnail"] = asset_definition
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_item_assets_extension_asset_definition_is_deprecated() -> None:
     with pytest.warns(
         DeprecationWarning, match="Please use ``pystac.ItemAssetDefinition``"

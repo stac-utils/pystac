@@ -664,8 +664,8 @@ Extension <eo>`, you can access the fields associated with that extension using
 
    # As long as the Item implements the EO Extension you can access all the
    # EO properties directly
-   bands = item.ext.eo.bands
    cloud_cover = item.ext.eo.cloud_cover
+   snow_cover = item.ext.eo.snow_cover
    ...
 
 .. note:: ``ext`` will raise an :exc:`~pystac.ExtensionNotImplemented`
@@ -681,7 +681,7 @@ to first check if the extension is implemented on your pystac object:
 .. code-block:: python
 
    if item.ext.has("eo"):
-      bands = item.ext.eo.bands
+      cloud_cover = item.ext.eo.cloud_cover
 
 See the documentation for each extension implementation for details on the supported
 properties and other functionality.
