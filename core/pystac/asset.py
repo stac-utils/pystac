@@ -5,7 +5,7 @@ from copy import copy, deepcopy
 from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 
 from pystac import MediaType, STACError, common_metadata, utils
-from pystac.band import Band, _read_bands, _write_bands
+from pystac.band import Band, _BandCache
 from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 
 if TYPE_CHECKING:
@@ -81,7 +81,9 @@ class Asset:
         self.media_type = media_type
         self.roles = roles
         self.extra_fields = extra_fields or {}
-        self._bands = bands if bands is not None else _read_bands(self.extra_fields)
+        self._band_cache = _BandCache()
+        if bands is not None:
+            self.bands = bands
 
         # The Item which owns this Asset.
         self.owner = None
@@ -120,16 +122,18 @@ class Asset:
         """Gets or sets the bands of this asset.
 
         If this asset has no bands of its own, the bands of its owner are returned.
-        Only the asset's own bands are serialized. They are written to
-        ``extra_fields["bands"]`` by :meth:`to_dict` and :meth:`clone`.
+        The asset's own bands are read from and written to ``extra_fields["bands"]``.
+        Changes made to the returned bands are written by
+        :meth:`~pystac.Asset.to_dict` and :meth:`~pystac.Asset.clone`.
         """
-        if self._bands is None and self.owner is not None:
+        bands = self._band_cache.get(self.extra_fields)
+        if bands is None and self.owner is not None:
             return self.owner.bands
-        return self._bands
+        return bands
 
     @bands.setter
     def bands(self, bands: list[Band] | None) -> None:
-        self._bands = bands
+        self._band_cache.set(self.extra_fields, bands)
 
     def to_dict(self) -> dict[str, Any]:
         """Returns this Asset as a dictionary.
@@ -138,7 +142,7 @@ class Asset:
             dict: A serialization of the Asset.
         """
 
-        _write_bands(self.extra_fields, self._bands)
+        self._band_cache.sync(self.extra_fields)
         d: dict[str, Any] = {"href": self.href}
 
         if self.media_type is not None:
@@ -161,12 +165,12 @@ class Asset:
 
     def clone(self) -> Asset:
         """Clones this asset. Makes a ``deepcopy`` of the
-        :attr:`~pystac.Asset.extra_fields` and the asset's own bands.
+        :attr:`~pystac.Asset.extra_fields`, including the asset's own bands.
 
         Returns:
             Asset: The clone of this asset.
         """
-        _write_bands(self.extra_fields, self._bands)
+        self._band_cache.sync(self.extra_fields)
         cls = self.__class__
         return cls(
             href=self.href,
@@ -175,7 +179,6 @@ class Asset:
             media_type=self.media_type,
             roles=self.roles,
             extra_fields=deepcopy(self.extra_fields),
-            bands=deepcopy(self._bands),
         )
 
     def has_role(self, role: str) -> bool:

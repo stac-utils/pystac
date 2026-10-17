@@ -47,15 +47,43 @@ class Band:
         return d
 
 
-def _read_bands(d: dict[str, Any]) -> list[Band] | None:
-    bands = d.get("bands")
-    if bands is None:
-        return None
-    return [Band.from_dict(band) for band in bands]
-
-
 def _write_bands(d: dict[str, Any], bands: list[Band] | None) -> None:
     if bands is None:
         d.pop("bands", None)
     else:
         d["bands"] = [band.to_dict() for band in bands]
+
+
+class _BandCache:
+    """The :class:`Band` objects of the ``bands`` list in a dict.
+
+    The dict is the source of truth. The bands are parsed again when ``bands`` in the
+    dict was replaced or changed, and are only written back by :meth:`sync` when the
+    bands themselves were changed.
+    """
+
+    def __init__(self) -> None:
+        self._remember(None, None)
+
+    def get(self, d: dict[str, Any]) -> list[Band] | None:
+        raw = d.get("bands")
+        if raw is not self._raw or raw != self._raw_copy:
+            bands = None if raw is None else [Band.from_dict(band) for band in raw]
+            self._remember(raw, bands)
+        return self._bands
+
+    def set(self, d: dict[str, Any], bands: list[Band] | None) -> None:
+        _write_bands(d, bands)
+        self._remember(d.get("bands"), bands)
+
+    def sync(self, d: dict[str, Any]) -> None:
+        raw = d.get("bands")
+        dict_unchanged = raw is self._raw and raw == self._raw_copy
+        if dict_unchanged and self._bands != self._bands_copy:
+            self.set(d, self._bands)
+
+    def _remember(self, raw: Any, bands: list[Band] | None) -> None:
+        self._raw = raw
+        self._raw_copy = deepcopy(raw)
+        self._bands = bands
+        self._bands_copy = deepcopy(bands)

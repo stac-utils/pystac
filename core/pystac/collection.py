@@ -14,7 +14,7 @@ from typing import (
 import pystac
 from pystac import CatalogType, STACObjectType
 from pystac.asset import Asset, Assets
-from pystac.band import Band, _read_bands, _write_bands
+from pystac.band import Band, _BandCache
 from pystac.catalog import Catalog
 from pystac.errors import DeprecatedWarning, STACTypeError
 from pystac.item_assets import ItemAssetDefinition, _ItemAssets
@@ -522,8 +522,6 @@ class Collection(Catalog, Assets):
     """Default file name that will be given to this STAC object
     in a canonical format."""
 
-    _bands: list[Band] | None
-
     def __init__(
         self,
         id: str,
@@ -566,13 +564,15 @@ class Collection(Catalog, Assets):
             for k, asset in assets.items():
                 self.add_asset(k, asset)
 
-        self._bands = bands if bands is not None else _read_bands(self.extra_fields)
+        self._band_cache = _BandCache()
+        if bands is not None:
+            self.bands = bands
 
     def __repr__(self) -> str:
         return f"<Collection id={self.id}>"
 
     def _sync_bands(self) -> None:
-        _write_bands(self.extra_fields, self._bands)
+        self._band_cache.sync(self.extra_fields)
 
     def add_item(
         self,
@@ -623,7 +623,6 @@ class Collection(Catalog, Assets):
             providers=deepcopy(self.providers),
             summaries=self.summaries.clone(),
             assets={k: asset.clone() for k, asset in self.assets.items()},
-            bands=deepcopy(self._bands),
         )
 
         clone._resolved_objects.cache(clone)
@@ -912,11 +911,12 @@ class Collection(Catalog, Assets):
     def bands(self) -> list[Band] | None:
         """Gets or sets the bands of this collection.
 
-        They are written to ``extra_fields["bands"]`` by :meth:`to_dict` and
-        :meth:`clone`.
+        They are read from and written to ``extra_fields["bands"]``. Changes made to
+        the returned bands are written by :meth:`~pystac.Collection.to_dict` and
+        :meth:`~pystac.Collection.clone`.
         """
-        return self._bands
+        return self._band_cache.get(self.extra_fields)
 
     @bands.setter
     def bands(self, bands: list[Band] | None) -> None:
-        self._bands = bands
+        self._band_cache.set(self.extra_fields, bands)

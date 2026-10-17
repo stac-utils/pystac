@@ -900,3 +900,10 @@ def test_bands_set_to_none_are_removed(collection: Collection) -> None:
     assert "bands" not in collection.to_dict()
     assert "bands" not in collection.extra_fields
     assert collection.clone().bands is None
+
+
+def test_bands_written_to_extra_fields_are_kept(collection: Collection) -> None:
+    collection.extra_fields["bands"] = [{"name": "red"}]
+    assert collection.bands == [Band(name="red")]
+    assert collection.to_dict()["bands"] == [{"name": "red"}]
+    assert collection.clone().bands == [Band(name="red")]

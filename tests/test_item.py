@@ -818,3 +818,51 @@ def test_asset_bands_set_to_none_are_removed() -> None:
     asset.bands = None
     assert "bands" not in asset.to_dict()
     assert asset.clone().bands is None
+
+
+def test_bands_written_to_properties_are_kept(sample_item: Item) -> None:
+    sample_item.properties["bands"] = [{"name": "red"}]
+    assert sample_item.bands == [Band(name="red")]
+    assert sample_item.to_dict()["properties"]["bands"] == [{"name": "red"}]
+    assert sample_item.clone().bands == [Band(name="red")]
+
+
+def test_asset_bands_written_to_extra_fields_are_kept() -> None:
+    asset = Asset("data.tif")
+    asset.extra_fields["bands"] = [{"name": "red"}]
+    assert asset.to_dict()["bands"] == [{"name": "red"}]
+    assert asset.clone().bands == [Band(name="red")]
+
+
+def test_bands_replaced_in_properties_after_read_are_kept(
+    sample_item_dict: dict[str, Any],
+) -> None:
+    sample_item_dict["properties"]["bands"] = [{"name": "red"}]
+    item = Item.from_dict(sample_item_dict)
+    assert item.bands == [Band(name="red")]
+    item.properties["bands"] = [{"name": "green"}]
+    assert item.to_dict()["properties"]["bands"] == [{"name": "green"}]
+
+
+def test_bands_changed_in_place_in_properties_are_kept(
+    sample_item_dict: dict[str, Any],
+) -> None:
+    sample_item_dict["properties"]["bands"] = [{"name": "red"}]
+    item = Item.from_dict(sample_item_dict)
+    assert item.bands == [Band(name="red")]
+    item.properties["bands"][0]["name"] = "green"
+    assert item.bands == [Band(name="green")]
+    assert item.to_dict()["properties"]["bands"] == [{"name": "green"}]
+
+
+def test_setting_bands_writes_properties(sample_item: Item) -> None:
+    sample_item.bands = [Band(name="red")]
+    assert sample_item.properties["bands"] == [{"name": "red"}]
+
+
+def test_unchanged_bands_are_not_rewritten(sample_item_dict: dict[str, Any]) -> None:
+    bands = [{"description": None, "name": "red"}]
+    sample_item_dict["properties"]["bands"] = bands
+    item = Item.from_dict(sample_item_dict)
+    assert item.bands == [Band(name="red")]
+    assert item.to_dict()["properties"]["bands"] == bands

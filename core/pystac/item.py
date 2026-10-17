@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 import pystac
 from pystac import RelType, STACError, STACObjectType
 from pystac.asset import Asset, Assets
-from pystac.band import Band, _read_bands, _write_bands
+from pystac.band import Band, _BandCache
 from pystac.catalog import Catalog
 from pystac.collection import Collection
 from pystac.errors import DeprecatedWarning
@@ -116,10 +116,6 @@ class Item(STACObject, Assets):
     operations. This is set when an item is read by a StacIO instance.
     """
 
-    _bands: list[Band] | None = None
-    """Optional list of :class:`~pystac.Band` objects representing all the bands
-    associated with this Item."""
-
     STAC_OBJECT_TYPE = STACObjectType.ITEM
 
     def __init__(
@@ -136,7 +132,7 @@ class Item(STACObject, Assets):
         collection: str | Collection | None = None,
         extra_fields: dict[str, Any] | None = None,
         assets: dict[str, Asset] | None = None,
-        bands: list[Band] | None = None,
+        bands: list[pystac.Band] | None = None,
     ):
         super().__init__(stac_extensions or [])
 
@@ -184,7 +180,9 @@ class Item(STACObject, Assets):
             for k, asset in assets.items():
                 self.add_asset(k, asset)
 
-        self._bands = bands if bands is not None else _read_bands(properties)
+        self._band_cache = _BandCache()
+        if bands is not None:
+            self.bands = bands
 
     def __repr__(self) -> str:
         return f"<Item id={self.id}>"
@@ -367,14 +365,15 @@ class Item(STACObject, Assets):
     def bands(self) -> list[Band] | None:
         """Gets or sets the bands of this item.
 
-        They are written to ``properties["bands"]`` by :meth:`to_dict` and
-        :meth:`clone`.
+        They are read from and written to ``properties["bands"]``. Changes made to
+        the returned bands are written by :meth:`~pystac.Item.to_dict` and
+        :meth:`~pystac.Item.clone`.
         """
-        return self._bands
+        return self._band_cache.get(self.properties)
 
     @bands.setter
     def bands(self, bands: list[Band] | None) -> None:
-        self._bands = bands
+        self._band_cache.set(self.properties, bands)
 
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True
@@ -389,7 +388,7 @@ class Item(STACObject, Assets):
             self.properties["datetime"] = datetime_to_str(self.datetime)
         else:
             self.properties["datetime"] = None
-        _write_bands(self.properties, self._bands)
+        self._band_cache.sync(self.properties)
 
         d: dict[str, Any] = {
             "type": "Feature",
@@ -416,7 +415,7 @@ class Item(STACObject, Assets):
         return d
 
     def clone(self) -> Item:
-        _write_bands(self.properties, self._bands)
+        self._band_cache.sync(self.properties)
         cls = self.__class__
         clone = cls(
             id=self.id,
@@ -428,7 +427,6 @@ class Item(STACObject, Assets):
             collection=self.collection_id,
             assets={k: asset.clone() for k, asset in self.assets.items()},
             extra_fields=deepcopy(self.extra_fields),
-            bands=deepcopy(self._bands),
         )
         for link in self.links:
             clone.add_link(link.clone())
