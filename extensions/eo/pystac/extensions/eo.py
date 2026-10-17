@@ -359,10 +359,7 @@ def _from_v1_bands(
     ``description`` and ``eo:`` fields are kept, by index.
     """
     new = [
-        {
-            k if k in {"name", "description"} or ":" in k else PREFIX + k: v
-            for k, v in band.to_dict().items()
-        }
+        {PREFIX + k if k in V1_BAND_FIELDS else k: v for k, v in band.to_dict().items()}
         for band in bands
     ]
     if existing is not None and len(existing) == len(new):
