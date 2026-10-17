@@ -720,8 +720,8 @@ have a default value of ``None``:
 
 .. code-block:: python
 
-   # Can also omit cloud_cover entirely...
-   item.ext.eo.apply(0.5, bands, cloud_cover=None)
+   # Can also omit snow_cover entirely...
+   item.ext.eo.apply(cloud_cover=0.5, snow_cover=None)
 
 
 Adding an Extension
@@ -742,7 +742,7 @@ schema URI to the :attr:`~pystac.Item.stac_extensions` list for the STAC object.
    # Add the Electro-Optical extension
    item.ext.add("eo")
    print(item.stac_extensions)
-   # ['https://stac-extensions.github.io/eo/v1.1.0/schema.json']
+   # ['https://stac-extensions.github.io/eo/v2.0.0/schema.json']
 
 Extended Summaries
 ------------------
@@ -820,6 +820,65 @@ that asset:
      item.common_metadata.set_gsd(30, item.assets['band2']
      assert item.common_metadata.gsd == 10
      assert item.common_metadata.get_gsd(item.asset['band2']) == 30
+
+Bands
+=====
+
+STAC 1.1 describes the bands of an Item, Asset, Collection or Item Asset Definition with
+a list of :stac-spec:`Band Objects <commons/common-metadata.md#bands>` in the ``bands``
+field. PySTAC represents each of them as a :class:`~pystac.Band` with the common fields
+``name``, ``description``, ``data_type``, ``nodata``, ``statistics`` and ``unit``. All
+other fields of a band are in :attr:`Band.extra_fields <pystac.Band.extra_fields>`.
+
+The ``bands`` property of :class:`~pystac.Item`, :class:`~pystac.Asset`,
+:class:`~pystac.Collection` and :class:`~pystac.ItemAssetDefinition` reads from and
+writes to the ``bands`` list in the object's properties. Changes made to the returned
+bands are written back by ``to_dict()`` and ``clone()``. Bands of an Item apply to the
+assets that don't define their own, so :attr:`Asset.bands <pystac.Asset.bands>` returns
+the bands of the owning Item or Collection if the asset has none.
+
+Extensions add fields to bands with their prefix, e.g. ``eo:common_name`` or
+``raster:scale``. Use the ``ext`` method of the extension class on a band to access
+them. A band has no owner, so add the extension to the Item or Collection yourself:
+
+.. code-block:: python
+
+   import pystac
+   from pystac.extensions.eo import EOExtension
+   from pystac.extensions.raster import RasterExtension
+
+   band = pystac.Band(name="B04", data_type="uint16", nodata=0)
+   EOExtension.ext(band).common_name = "red"
+   RasterExtension.ext(band).scale = 0.0001
+
+   item.assets["B04"].bands = [band]
+   item.ext.add("eo")
+   item.ext.add("raster")
+
+   print(item.assets["B04"].to_dict()["bands"])
+   # [{'name': 'B04', 'data_type': 'uint16', 'nodata': 0,
+   #   'eo:common_name': 'red', 'raster:scale': 0.0001}]
+
+Bands of the eo and raster extensions v1
+----------------------------------------
+
+Version 1 of the :stac-ext:`Electro-Optical <eo>` and :stac-ext:`Raster <raster>`
+extensions stored bands in ``eo:bands`` and ``raster:bands``. When PySTAC reads an object
+that implements version 1, it moves these bands into ``bands``, adds the extension
+prefix to their fields and updates the extension to version 2, following the
+:stac-spec:`band migration best practice <best-practices.md#band-migration>`. This
+applies to Item properties and assets, and to Collection assets, item assets and
+summaries. If no field of the extension is left, its URI is removed from
+``stac_extensions``.
+
+If the bands can't be merged without changing their meaning, e.g. because ``eo:bands``
+and ``raster:bands`` have a different number of bands or different names, the object is
+left unchanged, declares version 1.1.0 of the extension, and a warning is emitted.
+
+The ``bands`` properties of the eo and raster extensions, their summaries and the
+``bands`` argument of :meth:`EOExtension.apply
+<pystac.extensions.eo.EOExtension.apply>` are deprecated. They still return and accept
+the version 1 band classes. Use ``bands`` and the ``ext`` method on each band instead.
 
 Manipulating STACs
 ==================
