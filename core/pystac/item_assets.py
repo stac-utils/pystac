@@ -10,7 +10,7 @@ from copy import deepcopy
 from typing import TYPE_CHECKING, Any
 
 import pystac
-from pystac.band import Band, _read_bands, _write_bands
+from pystac.band import Band, _BandCache
 
 if TYPE_CHECKING:
     from pystac.extensions.ext import ItemAssetExt
@@ -33,14 +33,12 @@ class ItemAssetDefinition:
 
     owner: pystac.Collection | None
 
-    _bands: list[Band] | None
-
     def __init__(
         self, properties: dict[str, Any], owner: pystac.Collection | None = None
     ) -> None:
         self.properties = properties
         self.owner = owner
-        self._bands = _read_bands(properties)
+        self._band_cache = _BandCache()
 
     def __eq__(self, o: object) -> bool:
         if not isinstance(o, ItemAssetDefinition):
@@ -122,7 +120,8 @@ class ItemAssetDefinition:
         self.description = description
         self.media_type = media_type
         self.roles = roles
-        self.bands = bands if bands is not None else _read_bands(extra_fields or {})
+        if bands is not None or ASSET_BANDS_PROP not in (extra_fields or {}):
+            self.bands = bands
         self.owner = None
 
     def set_owner(self, obj: pystac.Collection) -> None:
@@ -193,17 +192,19 @@ class ItemAssetDefinition:
     def bands(self) -> list[Band] | None:
         """Gets or sets the bands of the asset.
 
-        They are written to ``properties["bands"]`` by :meth:`to_dict` and when the
-        owning :class:`~pystac.Collection` is serialized or cloned.
+        They are read from and written to ``properties["bands"]``. Changes to the
+        returned bands are written back by
+        :meth:`~pystac.ItemAssetDefinition.to_dict` and when the owning
+        :class:`~pystac.Collection` is serialized or cloned.
         """
-        return self._bands
+        return self._band_cache.get(self.properties)
 
     @bands.setter
     def bands(self, v: list[Band] | None) -> None:
-        self._bands = v
+        self._band_cache.set(self.properties, v)
 
     def _sync_bands(self) -> None:
-        _write_bands(self.properties, self._bands)
+        self._band_cache.sync(self.properties)
 
     def to_dict(self) -> dict[str, Any]:
         """Returns a dictionary representing this ``ItemAssetDefinition``."""
@@ -213,25 +214,26 @@ class ItemAssetDefinition:
     def create_asset(self, href: str) -> pystac.Asset:
         """Creates a new :class:`~pystac.Asset` instance using the fields from this
         ``ItemAssetDefinition`` and the given ``href``."""
+        self._sync_bands()
         return pystac.Asset(
             href=href,
             title=self.title,
             description=self.description,
             media_type=self.media_type,
             roles=self.roles,
-            bands=deepcopy(self._bands),
-            extra_fields={
-                k: v
-                for k, v in self.properties.items()
-                if k
-                not in {
-                    ASSET_TITLE_PROP,
-                    ASSET_DESC_PROP,
-                    ASSET_TYPE_PROP,
-                    ASSET_ROLES_PROP,
-                    ASSET_BANDS_PROP,
+            extra_fields=deepcopy(
+                {
+                    k: v
+                    for k, v in self.properties.items()
+                    if k
+                    not in {
+                        ASSET_TITLE_PROP,
+                        ASSET_DESC_PROP,
+                        ASSET_TYPE_PROP,
+                        ASSET_ROLES_PROP,
+                    }
                 }
-            },
+            ),
         )
 
     @property

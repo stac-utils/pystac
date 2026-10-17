@@ -94,13 +94,6 @@ def _to_enum(enum: type[Enum], value: Any) -> Any:
         return value
 
 
-def _read_bands(d: dict[str, Any]) -> list[Band] | None:
-    bands = d.get("bands")
-    if bands is None:
-        return None
-    return [Band.from_dict(band) for band in bands]
-
-
 def _write_bands(d: dict[str, Any], bands: list[Band] | None) -> None:
     if bands is None:
         d.pop("bands", None)

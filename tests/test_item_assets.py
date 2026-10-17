@@ -211,10 +211,26 @@ def test_create_asset_copies_bands(collection: Collection) -> None:
     )
     asset = collection.item_assets["data"].create_asset("asset.tif")
     assert asset.bands == [Band(name="red")]
-    assert asset.extra_fields == {"foo": "bar"}
+    assert asset.extra_fields == {"foo": "bar", "bands": [{"name": "red"}]}
     assert asset.to_dict()["bands"] == [{"name": "red"}]
     get_opt(asset.bands)[0].name = "green"
+    asset.extra_fields["bands"][0]["description"] = "changed"
     assert collection.item_assets["data"].bands == [Band(name="red")]
+    assert collection.item_assets["data"].properties["bands"] == [{"name": "red"}]
+
+
+def test_bands_written_to_properties_are_kept(collection: Collection) -> None:
+    collection.item_assets["data"] = ItemAssetDefinition({})
+    collection.item_assets["data"].properties["bands"] = [{"name": "red"}]
+    assert collection.item_assets["data"].bands == [Band(name="red")]
+    assert collection.to_dict()["item_assets"]["data"]["bands"] == [{"name": "red"}]
+
+
+def test_unchanged_bands_are_not_rewritten(collection: Collection) -> None:
+    bands = [{"name": "red", "nodata": None}]
+    collection.item_assets["data"] = ItemAssetDefinition({"bands": bands})
+    assert collection.item_assets["data"].bands == [Band(name="red")]
+    assert collection.to_dict()["item_assets"]["data"]["bands"] == bands
 
 
 def test_band_edits_are_serialized_with_collection(collection: Collection) -> None:
