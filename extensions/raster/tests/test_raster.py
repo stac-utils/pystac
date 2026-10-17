@@ -25,10 +25,18 @@ PLANET_EXAMPLE_URI = str(DATA_FILES / "raster-planet-example.json")
 
 @pytest.fixture
 def ext_item() -> pystac.Item:
-    d = pystac.StacIO.default().read_json(PLANET_EXAMPLE_URI)
-    for band in d["assets"]["data"]["raster:bands"]:
-        del band["name"]
-    return pystac.Item.from_dict(d, href=PLANET_EXAMPLE_URI)
+    with pytest.warns(UserWarning, match="Dropping name of raster:bands"):
+        return pystac.Item.from_file(PLANET_EXAMPLE_URI)
+
+
+def test_band_names_different_from_eo_give_way(ext_item: pystac.Item) -> None:
+    bands = get_opt(ext_item.assets["data"].bands)
+    assert [band.name for band in bands] == ["band-1", "band-2", "band-3", "band-4"]
+    assert bands[0].extra_fields["raster:scale"] == 0.01
+    assert bands[0].extra_fields["eo:common_name"] == "red"
+    assert "raster:bands" not in ext_item.assets["data"].extra_fields
+    assert "eo:bands" not in ext_item.assets["data"].extra_fields
+    assert RasterExtension.get_schema_uri() in ext_item.stac_extensions
 
 
 SENTINEL2_EXAMPLE_URI = str(DATA_FILES / "raster-sentinel2-example.json")
@@ -165,7 +173,7 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
         s.mean = None
         s.stddev = None
         s.valid_percent = None
-        assert len(s.properties) == 0
+        assert s.to_dict() == {}
 
     for b in new_bands:
         b.bits_per_sample = None
@@ -180,9 +188,15 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
         b.offset = None
         assert len(b.properties) == 0
 
-    new_stats[2].apply(minimum=0, maximum=10000, mean=5000, stddev=10, valid_percent=88)
-    new_stats[1].apply(minimum=-1, maximum=1, mean=0, stddev=1, valid_percent=100)
-    new_stats[0].apply(minimum=1, maximum=255, mean=200, stddev=3, valid_percent=100)
+    new_stats[2] = Statistics(
+        minimum=0, maximum=10000, mean=5000, stddev=10, valid_percent=88
+    )
+    new_stats[1] = Statistics(
+        minimum=-1, maximum=1, mean=0, stddev=1, valid_percent=100
+    )
+    new_stats[0] = Statistics(
+        minimum=1, maximum=255, mean=200, stddev=3, valid_percent=100
+    )
     new_bands[2].apply(
         nodata=1,
         unit="test1",
@@ -409,3 +423,20 @@ def test_v1_bands_accessors_are_deprecated(
     col = pystac.Collection.from_dict(v1_summaries_collection_dict)
     with pytest.deprecated_call(match="SummariesRasterExtension.bands is deprecated"):
         RasterExtension.summaries(col).bands
+
+
+def test_item_ext(ext_item: pystac.Item) -> None:
+    ext = RasterExtension.ext(ext_item)
+    ext.scale = 2.0
+    ext.sampling = Sampling.POINT
+    assert ext_item.properties["raster:scale"] == 2.0
+    assert RasterExtension.ext(ext_item).sampling == Sampling.POINT
+
+
+def test_data_value_classes_are_from_core() -> None:
+    from pystac import common_metadata
+
+    assert DataType is common_metadata.DataType
+    assert NoDataStrings is common_metadata.NoDataStrings
+    assert Statistics is common_metadata.Statistics
+    assert Statistics.create(minimum=0, count=2) == Statistics(minimum=0, count=2)

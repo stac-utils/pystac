@@ -13,6 +13,9 @@ from typing import (
 )
 
 import pystac
+from pystac.common_metadata import DataType as DataType
+from pystac.common_metadata import NoDataStrings as NoDataStrings
+from pystac.common_metadata import Statistics as Statistics
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -26,9 +29,9 @@ from pystac.serialization.migrate import (
 )
 from pystac.utils import StringEnum, get_opt, get_required, map_opt
 
-#: Generalized version of :class:`~pystac.Asset`,
+#: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Asset`,
 #: :class:`~pystac.ItemAssetDefinition` or :class:`~pystac.Band`
-T = TypeVar("T", pystac.Asset, pystac.ItemAssetDefinition, pystac.Band)
+T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition, pystac.Band)
 
 SCHEMA_URI = "https://stac-extensions.github.io/raster/v2.0.0/schema.json"
 V1_SCHEMA_URI = "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
@@ -60,193 +63,6 @@ V1_BAND_FIELDS = {
 class Sampling(StringEnum):
     AREA = "area"
     POINT = "point"
-
-
-class DataType(StringEnum):
-    INT8 = "int8"
-    INT16 = "int16"
-    INT32 = "int32"
-    INT64 = "int64"
-    UINT8 = "uint8"
-    UINT16 = "uint16"
-    UINT32 = "uint32"
-    UINT64 = "uint64"
-    FLOAT16 = "float16"
-    FLOAT32 = "float32"
-    FLOAT64 = "float64"
-    CINT16 = "cint16"
-    CINT32 = "cint32"
-    CFLOAT32 = "cfloat32"
-    CFLOAT64 = "cfloat64"
-    OTHER = "other"
-
-
-class NoDataStrings(StringEnum):
-    INF = "inf"
-    NINF = "-inf"
-    NAN = "nan"
-
-
-class Statistics:
-    """Represents statistics information attached to a band in the raster extension.
-
-    Use Statistics.create to create a new Statistics instance.
-    """
-
-    properties: dict[str, Any]
-
-    def __init__(self, properties: dict[str, float | None]) -> None:
-        self.properties = properties
-
-    def apply(
-        self,
-        minimum: float | None = None,
-        maximum: float | None = None,
-        mean: float | None = None,
-        stddev: float | None = None,
-        valid_percent: float | None = None,
-    ) -> None:
-        """
-        Sets the properties for this raster Band.
-
-        Args:
-            minimum : Minimum value of all the pixels in the band.
-            maximum : Maximum value of all the pixels in the band.
-            mean : Mean value of all the pixels in the band.
-            stddev : Standard Deviation value of all the pixels in the band.
-            valid_percent : Percentage of valid (not nodata) pixel.
-        """
-        self.minimum = minimum
-        self.maximum = maximum
-        self.mean = mean
-        self.stddev = stddev
-        self.valid_percent = valid_percent
-
-    @classmethod
-    def create(
-        cls,
-        minimum: float | None = None,
-        maximum: float | None = None,
-        mean: float | None = None,
-        stddev: float | None = None,
-        valid_percent: float | None = None,
-    ) -> Statistics:
-        """
-        Creates a new band.
-
-        Args:
-            minimum : Minimum value of all the pixels in the band.
-            maximum : Maximum value of all the pixels in the band.
-            mean : Mean value of all the pixels in the band.
-            stddev : Standard Deviation value of all the pixels in the band.
-            valid_percent : Percentage of valid (not nodata) pixel.
-        """
-        b = cls({})
-        b.apply(
-            minimum=minimum,
-            maximum=maximum,
-            mean=mean,
-            stddev=stddev,
-            valid_percent=valid_percent,
-        )
-        return b
-
-    @property
-    def minimum(self) -> float | None:
-        """Get or sets the minimum pixel value
-
-        Returns:
-            Optional[float]
-        """
-        return self.properties.get("minimum")
-
-    @minimum.setter
-    def minimum(self, v: float | None) -> None:
-        if v is not None:
-            self.properties["minimum"] = v
-        else:
-            self.properties.pop("minimum", None)
-
-    @property
-    def maximum(self) -> float | None:
-        """Get or sets the maximum pixel value
-
-        Returns:
-            Optional[float]
-        """
-        return self.properties.get("maximum")
-
-    @maximum.setter
-    def maximum(self, v: float | None) -> None:
-        if v is not None:
-            self.properties["maximum"] = v
-        else:
-            self.properties.pop("maximum", None)
-
-    @property
-    def mean(self) -> float | None:
-        """Get or sets the mean pixel value
-
-        Returns:
-            Optional[float]
-        """
-        return self.properties.get("mean")
-
-    @mean.setter
-    def mean(self, v: float | None) -> None:
-        if v is not None:
-            self.properties["mean"] = v
-        else:
-            self.properties.pop("mean", None)
-
-    @property
-    def stddev(self) -> float | None:
-        """Get or sets the standard deviation pixel value
-
-        Returns:
-            Optional[float]
-        """
-        return self.properties.get("stddev")
-
-    @stddev.setter
-    def stddev(self, v: float | None) -> None:
-        if v is not None:
-            self.properties["stddev"] = v
-        else:
-            self.properties.pop("stddev", None)
-
-    @property
-    def valid_percent(self) -> float | None:
-        """Get or sets the Percentage of valid (not nodata) pixel
-
-        Returns:
-            Optional[float]
-        """
-        return self.properties.get("valid_percent")
-
-    @valid_percent.setter
-    def valid_percent(self, v: float | None) -> None:
-        if v is not None:
-            self.properties["valid_percent"] = v
-        else:
-            self.properties.pop("valid_percent", None)
-
-    def to_dict(self) -> dict[str, Any]:
-        """Returns these statistics as a dictionary.
-
-        Returns:
-            dict: The serialization of the Statistics.
-        """
-        return self.properties
-
-    @staticmethod
-    def from_dict(d: dict[str, Any]) -> Statistics:
-        """Constructs a Statistics from a dict.
-
-        Returns:
-            Statistics: The Statistics deserialized from the JSON dict.
-        """
-        return Statistics(properties=d)
 
 
 class Histogram:
@@ -585,13 +401,12 @@ class RasterBand:
 
     @property
     def statistics(self) -> Statistics | None:
-        """Get or sets the average spatial resolution (in meters) of the pixels in the
-        band.
+        """Get or sets the statistics of all the pixels in the band.
 
         Returns:
             [Statistics]
         """
-        return Statistics.from_dict(get_opt(self.properties.get("statistics")))
+        return map_opt(Statistics.from_dict, self.properties.get("statistics"))
 
     @statistics.setter
     def statistics(self, v: Statistics | None) -> None:
@@ -729,10 +544,7 @@ def _from_v1_bands(
     by index.
     """
     new = [
-        {
-            k if k in V1_COMMON_BAND_FIELDS or ":" in k else PREFIX + k: v
-            for k, v in band.to_dict().items()
-        }
+        {PREFIX + k if k in V1_BAND_FIELDS else k: v for k, v in band.to_dict().items()}
         for band in bands
     ]
     if existing is not None and len(existing) == len(new):
@@ -756,7 +568,7 @@ class RasterExtension(
     ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
     """An abstract class that can be used to extend the properties of an
-    :class:`~pystac.Asset`, or
+    :class:`~pystac.Item`, :class:`~pystac.Asset`, or
     :class:`~pystac.ItemAssetDefinition` with properties from
     the :stac-ext:`Raster Extension <raster>`. This class is generic over
     the type of STAC Object to be extended (e.g. :class:`~pystac.Item`,
@@ -922,15 +734,19 @@ class RasterExtension(
         """Extends the given STAC Object with properties from the :stac-ext:`Raster
         Extension <raster>`.
 
-        This extension can be applied to instances of :class:`~pystac.Asset`,
-        :class:`~pystac.ItemAssetDefinition` or :class:`~pystac.Band`. A band has no
-        owner, so ``add_if_missing`` has no effect for it.
+        This extension can be applied to instances of :class:`~pystac.Item`,
+        :class:`~pystac.Asset`, :class:`~pystac.ItemAssetDefinition` or
+        :class:`~pystac.Band`. A band has no owner, so ``add_if_missing`` has no
+        effect for it.
 
         Raises:
 
             pystac.ExtensionTypeError : If an invalid object type is passed.
         """
-        if isinstance(obj, pystac.Asset):
+        if isinstance(obj, pystac.Item):
+            cls.ensure_has_extension(obj, add_if_missing)
+            return cast(RasterExtension[T], ItemRasterExtension(obj))
+        elif isinstance(obj, pystac.Asset):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(RasterExtension[T], AssetRasterExtension(obj))
         elif isinstance(obj, pystac.ItemAssetDefinition):
@@ -947,6 +763,37 @@ class RasterExtension(
     ) -> SummariesRasterExtension:
         cls.ensure_has_extension(obj, add_if_missing)
         return SummariesRasterExtension(obj)
+
+
+class ItemRasterExtension(RasterExtension[pystac.Item]):
+    """A concrete implementation of :class:`RasterExtension` on an
+    :class:`~pystac.Item` that extends the properties of the Item to include
+    properties defined in the :stac-ext:`Raster Extension <raster>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`RasterExtension.ext` on an :class:`~pystac.Item` to extend it.
+    """
+
+    item: pystac.Item
+    """The :class:`~pystac.Item` being extended."""
+
+    properties: dict[str, Any]
+    """The :class:`~pystac.Item` properties, including extension properties."""
+
+    def __init__(self, item: pystac.Item):
+        self.item = item
+        self.properties = item.properties
+
+    _has_common_bands = True
+
+    def _get_common_bands(self) -> list[pystac.Band] | None:
+        return self.item.bands
+
+    def _set_common_bands(self, bands: list[pystac.Band]) -> None:
+        self.item.bands = bands
+
+    def __repr__(self) -> str:
+        return f"<ItemRasterExtension Item id={self.item.id}>"
 
 
 class AssetRasterExtension(RasterExtension[pystac.Asset]):

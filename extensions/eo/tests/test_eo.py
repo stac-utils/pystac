@@ -682,3 +682,15 @@ def test_v1_bands_accessors_are_deprecated(ext_item: pystac.Item) -> None:
 def test_apply_without_bands_is_not_deprecated(ext_item: pystac.Item) -> None:
     EOExtension.ext(ext_item).apply(cloud_cover=1.0)
     assert EOExtension.ext(ext_item).cloud_cover == 1.0
+
+
+@pytest.mark.filterwarnings("ignore:.*bands is deprecated:DeprecationWarning")
+def test_set_v1_bands_prefixes_only_eo_fields(ext_item: pystac.Item) -> None:
+    asset = ext_item.assets["B1"]
+    asset.bands = None
+    EOExtension.ext(asset).bands = [
+        Band({"name": "B1", "common_name": "coastal", "gsd": 30})
+    ]
+    assert asset.extra_fields["bands"] == [
+        {"name": "B1", "eo:common_name": "coastal", "gsd": 30}
+    ]
