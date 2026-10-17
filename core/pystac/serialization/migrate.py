@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import warnings
-from collections.abc import Callable
+from collections.abc import Callable, Iterable, Iterator
+from collections.abc import Set as AbstractSet
 from typing import TYPE_CHECKING, Any, TypeGuard
 
 import pystac
@@ -87,16 +88,29 @@ BAND_COMMON_FIELDS = {
     "unit",
 }
 
+YIELDING_BAND_FIELDS: dict[str, AbstractSet[str]] = {"raster:bands": {"name"}}
+"""Fields of an extension's v1 band list that are dropped, with a warning, where
+``bands`` or another extension's band list has a different value."""
 
-def _to_common_band(band: dict[str, Any], prefix: str) -> dict[str, Any]:
-    return {
-        k if k in BAND_COMMON_FIELDS or ":" in k else prefix + k: v
-        for k, v in band.items()
-    }
+
+def _to_common_band(
+    band: dict[str, Any], prefix: str, fields: AbstractSet[str]
+) -> dict[str, Any]:
+    return {prefix + k if k in fields else k: v for k, v in band.items()}
 
 
 def _is_band_list(value: Any) -> TypeGuard[list[dict[str, Any]]]:
     return isinstance(value, list) and all(isinstance(band, dict) for band in value)
+
+
+def _is_subset(band: dict[str, Any], other: dict[str, Any]) -> bool:
+    return all(k in other and other[k] == v for k, v in band.items())
+
+
+def _conflicts(
+    band: dict[str, Any], other: dict[str, Any], keys: Iterable[str]
+) -> list[str]:
+    return [k for k in keys if k in band and k in other and band[k] != other[k]]
 
 
 def _band_containers(obj: dict[str, Any]) -> list[dict[str, Any]]:
@@ -111,67 +125,153 @@ def _band_containers(obj: dict[str, Any]) -> list[dict[str, Any]]:
     return []
 
 
-def _band_length_mismatch(d: dict[str, Any], bands_prop: str) -> str | None:
+def _other_band_lists(
+    d: dict[str, Any], bands_prop: str
+) -> Iterator[tuple[str, list[dict[str, Any]]]]:
+    for k, v in d.items():
+        if k != bands_prop and (k == "bands" or k.endswith(":bands")):
+            if v and _is_band_list(v):
+                yield k, v
+
+
+def _band_list_problem(
+    d: dict[str, Any], bands_prop: str, prefix: str, fields: AbstractSet[str]
+) -> str | None:
     ext_bands = d.get(bands_prop)
-    bands = d.get("bands")
-    if not ext_bands or not _is_band_list(ext_bands) or bands is None:
+    if not ext_bands or not _is_band_list(ext_bands):
         return None
-    if len(bands) == len(ext_bands):
+    for other_prop, other in _other_band_lists(d, bands_prop):
+        if len(other) != len(ext_bands):
+            return f"it has {len(ext_bands)} bands but {other_prop} has {len(other)}"
+        yielding = {
+            *YIELDING_BAND_FIELDS.get(bands_prop, ()),
+            *YIELDING_BAND_FIELDS.get(other_prop, ()),
+        }
+        for ext_band, band in zip(ext_bands, other):
+            converted = _to_common_band(ext_band, prefix, fields)
+            keys: Iterable[str] = converted
+            if other_prop != "bands":
+                keys = [k for k in converted if k in BAND_COMMON_FIELDS or ":" in k]
+            keys = [k for k in keys if k not in yielding]
+            if conflicts := _conflicts(converted, band, keys):
+                return f"{other_prop} has different values for {', '.join(conflicts)}"
+    return None
+
+
+def _yielded_fields(
+    d: dict[str, Any], bands_prop: str, prefix: str, fields: AbstractSet[str]
+) -> dict[int, set[str]]:
+    yielding = YIELDING_BAND_FIELDS.get(bands_prop, set())
+    ext_bands = d.get(bands_prop)
+    yielded: dict[int, set[str]] = {}
+    if not yielding or not ext_bands or not _is_band_list(ext_bands):
+        return yielded
+    for other_prop, other in _other_band_lists(d, bands_prop):
+        for i, (ext_band, band) in enumerate(zip(ext_bands, other)):
+            converted = _to_common_band(ext_band, prefix, fields)
+            if conflicts := _conflicts(converted, band, yielding):
+                yielded.setdefault(i, set()).update(conflicts)
+                warnings.warn(
+                    f"Dropping {', '.join(conflicts)} of {bands_prop}: "
+                    f"{other_prop} has a different value"
+                )
+    return yielded
+
+
+def _item_bands_problem(
+    obj: dict[str, Any], bands_prop: str, prefix: str, fields: AbstractSet[str]
+) -> str | None:
+    properties = obj["properties"]
+    item_bands = properties.get(bands_prop)
+    if not item_bands or not _is_band_list(item_bands) or "bands" in properties:
         return None
-    return f"it has {len(ext_bands)} bands but bands has {len(bands)}"
+    asset_bands: list[dict[str, Any]] = []
+    for asset in obj.get("assets", {}).values():
+        if _is_band_list(ext_bands := asset.get(bands_prop)):
+            asset_bands.extend(_to_common_band(b, prefix, fields) for b in ext_bands)
+        if _is_band_list(bands := asset.get("bands")):
+            asset_bands.extend(bands)
+    for band in item_bands:
+        converted = _to_common_band(band, prefix, fields)
+        if not any(_is_subset(converted, asset_band) for asset_band in asset_bands):
+            return "the Item properties have bands that no asset has"
+    return None
 
 
 def _migrate_extension_bands_in(
-    d: dict[str, Any], bands_prop: str, prefix: str
+    d: dict[str, Any], bands_prop: str, prefix: str, fields: AbstractSet[str]
 ) -> None:
     ext_bands = d.get(bands_prop)
     if not _is_band_list(ext_bands):
         return
+    yielded = _yielded_fields(d, bands_prop, prefix, fields)
+    converted = [
+        {
+            k: v
+            for k, v in _to_common_band(band, prefix, fields).items()
+            if k not in yielded.get(i, ())
+        }
+        for i, band in enumerate(ext_bands)
+    ]
     bands = d.get("bands")
     if not ext_bands:
         pass
     elif bands is None:
-        d["bands"] = [_to_common_band(band, prefix) for band in ext_bands]
+        d["bands"] = converted
     else:
-        for band, ext_band in zip(bands, ext_bands):
-            for k, v in _to_common_band(ext_band, prefix).items():
-                band.setdefault(k, v)
+        for band, new_band in zip(bands, converted):
+            band.update(new_band)
     del d[bands_prop]
 
 
-def migrate_extension_bands(obj: dict[str, Any], bands_prop: str, prefix: str) -> bool:
+def migrate_extension_bands(
+    obj: dict[str, Any], bands_prop: str, prefix: str, fields: AbstractSet[str]
+) -> bool:
     """Moves an extension's v1 band list (e.g. ``eo:bands``) into the STAC 1.1
     ``bands`` field of an Item or Collection dict.
 
     Applies to Item properties and assets, and to Collection assets,
     ``item_assets`` and ``summaries``. If ``bands`` is not set, it is created from
-    the extension's bands; otherwise the two lists are merged by index, and fields
-    already on ``bands`` are kept. Fields of the common Band Object (``name``,
-    ``description``, ``nodata``, ``data_type``, ``statistics``, ``unit``) and fields
-    that already have a prefix are kept as they are; other fields get ``prefix``.
-    Empty band lists are removed.
+    the extension's bands; otherwise the two lists are merged by index. The
+    extension's own band fields (``fields``) get ``prefix``; all other fields are
+    kept as they are. Empty band lists are removed.
 
-    A band list is left unchanged if it contains anything other than band objects
-    (pre-0.9 assets list band indices). If any band list has a different number of
-    bands than the ``bands`` next to it, nothing is changed and a warning is
-    emitted.
+    In extension v1, bands in Item properties were the bands of all assets; in
+    STAC 1.1, they are the bands of assets that don't define their own. They are
+    removed if each of them is also a band of an asset.
+
+    Nothing is changed and a warning is emitted if a band list has a different
+    number of bands than, or values different from, ``bands`` or another
+    extension's band list next to it, or if bands in Item properties would be
+    removed that no asset has. Fields in :data:`YIELDING_BAND_FIELDS` (``name`` of
+    ``raster:bands``) are dropped with a warning instead. Band lists that contain
+    anything other than band objects (pre-0.9 assets list band indices) are left
+    unchanged.
 
     Args:
         obj : The Item or Collection dict to modify in place.
         bands_prop : The extension's band list field, e.g. ``"eo:bands"``.
         prefix : The extension's field prefix, e.g. ``"eo:"``.
+        fields : The extension's v1 band fields, e.g. ``{"common_name"}``.
 
     Returns:
-        bool: ``False`` if nothing was changed because of a band count mismatch.
+        bool: ``False`` if ``bands_prop`` is left anywhere in ``obj``.
     """
     containers = _band_containers(obj)
+    problems = [_band_list_problem(c, bands_prop, prefix, fields) for c in containers]
+    if obj.get("type") == pystac.STACObjectType.ITEM:
+        problems.append(_item_bands_problem(obj, bands_prop, prefix, fields))
+    if (problem := next((p for p in problems if p is not None), None)) is not None:
+        warnings.warn(f"Not migrating {bands_prop}: {problem}")
+        return False
+    if obj.get("type") == pystac.STACObjectType.ITEM:
+        properties = obj["properties"]
+        if properties.get(bands_prop) and "bands" not in properties:
+            if _is_band_list(properties[bands_prop]):
+                del properties[bands_prop]
     for container in containers:
-        if (mismatch := _band_length_mismatch(container, bands_prop)) is not None:
-            warnings.warn(f"Not migrating {bands_prop}: {mismatch}")
-            return False
-    for container in containers:
-        _migrate_extension_bands_in(container, bands_prop, prefix)
-    return True
+        _migrate_extension_bands_in(container, bands_prop, prefix, fields)
+    return not any(bands_prop in container for container in containers)
 
 
 def has_extension_fields(obj: dict[str, Any], prefix: str) -> bool:

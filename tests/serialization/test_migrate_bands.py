@@ -11,10 +11,33 @@ from pystac.serialization.migrate import (
 )
 from tests.utils import TestCases
 
+EO_FIELDS = {
+    "common_name",
+    "center_wavelength",
+    "full_width_half_max",
+    "solar_illumination",
+}
+RASTER_FIELDS = {
+    "sampling",
+    "bits_per_sample",
+    "spatial_resolution",
+    "scale",
+    "offset",
+    "histogram",
+}
+
+
+def migrate_eo(d: dict[str, Any]) -> bool:
+    return migrate_extension_bands(d, "eo:bands", "eo:", EO_FIELDS)
+
+
+def migrate_raster(d: dict[str, Any]) -> bool:
+    return migrate_extension_bands(d, "raster:bands", "raster:", RASTER_FIELDS)
+
 
 def migrate(d: dict[str, Any]) -> bool:
-    eo = migrate_extension_bands(d, "eo:bands", "eo:")
-    raster = migrate_extension_bands(d, "raster:bands", "raster:")
+    eo = migrate_eo(d)
+    raster = migrate_raster(d)
     return eo and raster
 
 
@@ -72,16 +95,47 @@ def test_merge_order_does_not_matter(sentinel2_dict: dict[str, Any]) -> None:
     eo_first = deepcopy(sentinel2_dict)
     migrate(eo_first)
     raster_first = sentinel2_dict
-    migrate_extension_bands(raster_first, "raster:bands", "raster:")
-    migrate_extension_bands(raster_first, "eo:bands", "eo:")
+    migrate_raster(raster_first)
+    migrate_eo(raster_first)
     assert eo_first == raster_first
 
 
-def test_item_properties(item_dict: dict[str, Any]) -> None:
-    item_dict["properties"]["eo:bands"] = [{"name": "red"}]
+def test_item_properties_bands_on_assets_are_removed(
+    item_dict: dict[str, Any],
+) -> None:
+    item_dict["properties"]["eo:bands"] = [
+        {"name": "red", "common_name": "red"},
+        {"name": "nir"},
+    ]
+    item_dict["assets"]["data"]["eo:bands"] = [{"name": "red", "common_name": "red"}]
+    item_dict["assets"]["nir"] = {"href": "nir.tif", "bands": [{"name": "nir"}]}
     assert migrate(item_dict)
-    assert item_dict["properties"]["bands"] == [{"name": "red"}]
     assert "eo:bands" not in item_dict["properties"]
+    assert "bands" not in item_dict["properties"]
+    assert item_dict["assets"]["data"]["bands"] == [
+        {"name": "red", "eo:common_name": "red"}
+    ]
+
+
+def test_item_properties_bands_not_on_assets_are_not_migrated(
+    item_dict: dict[str, Any],
+) -> None:
+    item_dict["properties"]["eo:bands"] = [{"name": "red"}, {"name": "nir"}]
+    item_dict["assets"]["data"]["eo:bands"] = [{"name": "red"}]
+    expected = deepcopy(item_dict)
+    with pytest.warns(UserWarning, match="Item properties have bands that no asset"):
+        assert not migrate(item_dict)
+    assert item_dict == expected
+
+
+def test_item_properties_next_to_bands_are_merged(item_dict: dict[str, Any]) -> None:
+    item_dict["properties"]["bands"] = [{"name": "red"}]
+    item_dict["properties"]["eo:bands"] = [{"name": "red", "common_name": "red"}]
+    assert migrate(item_dict)
+    assert item_dict["properties"] == {
+        "datetime": "2020-01-01T00:00:00Z",
+        "bands": [{"name": "red", "eo:common_name": "red"}],
+    }
 
 
 def test_raster_only(item_dict: dict[str, Any]) -> None:
@@ -98,12 +152,85 @@ def test_raster_only(item_dict: dict[str, Any]) -> None:
     ]
 
 
-def test_existing_fields_are_kept(item_dict: dict[str, Any]) -> None:
-    item_dict["assets"]["data"]["bands"] = [{"name": "common"}]
-    item_dict["assets"]["data"]["eo:bands"] = [{"name": "eo", "common_name": "red"}]
+def test_equal_fields_are_merged(item_dict: dict[str, Any]) -> None:
+    item_dict["assets"]["data"]["bands"] = [{"name": "red", "unit": "m"}]
+    item_dict["assets"]["data"]["eo:bands"] = [{"name": "red", "common_name": "red"}]
     assert migrate(item_dict)
     assert item_dict["assets"]["data"]["bands"] == [
-        {"name": "common", "eo:common_name": "red"}
+        {"name": "red", "unit": "m", "eo:common_name": "red"}
+    ]
+
+
+def test_different_values_than_bands_are_not_migrated(
+    item_dict: dict[str, Any],
+) -> None:
+    item_dict["assets"]["data"]["bands"] = [{"name": "common"}]
+    item_dict["assets"]["data"]["eo:bands"] = [{"name": "eo", "common_name": "red"}]
+    expected = deepcopy(item_dict)
+    with pytest.warns(UserWarning, match="bands has different values for name"):
+        assert not migrate(item_dict)
+    assert item_dict == expected
+
+
+@pytest.mark.parametrize("eo_first", [True, False])
+def test_different_values_than_other_band_list_are_not_migrated(
+    item_dict: dict[str, Any], eo_first: bool
+) -> None:
+    asset = item_dict["assets"]["data"]
+    asset["eo:bands"] = [{"name": "B1", "description": "Red"}]
+    asset["raster:bands"] = [{"description": "Reflectance", "scale": 2}]
+    expected = deepcopy(item_dict)
+    with pytest.warns(UserWarning, match="different values for description"):
+        if eo_first:
+            assert not migrate_eo(item_dict)
+            assert not migrate_raster(item_dict)
+        else:
+            assert not migrate_raster(item_dict)
+            assert not migrate_eo(item_dict)
+    assert item_dict == expected
+
+
+@pytest.mark.parametrize("eo_first", [True, False])
+def test_raster_band_names_give_way(item_dict: dict[str, Any], eo_first: bool) -> None:
+    asset = item_dict["assets"]["data"]
+    asset["eo:bands"] = [{"name": "B1"}, {"name": "B2", "common_name": "nir"}]
+    asset["raster:bands"] = [{"name": "band1", "scale": 2}, {"name": "B2"}]
+    with pytest.warns(UserWarning, match="Dropping name of raster:bands"):
+        if eo_first:
+            assert migrate_eo(item_dict)
+            assert migrate_raster(item_dict)
+        else:
+            assert migrate_raster(item_dict)
+            assert migrate_eo(item_dict)
+    assert asset["bands"] == [
+        {"name": "B1", "raster:scale": 2},
+        {"name": "B2", "eo:common_name": "nir"},
+    ]
+
+
+def test_raster_band_names_give_way_to_bands(item_dict: dict[str, Any]) -> None:
+    asset = item_dict["assets"]["data"]
+    asset["bands"] = [{"name": "B1"}]
+    asset["raster:bands"] = [{"name": "band1", "scale": 2}]
+    with pytest.warns(UserWarning, match="Dropping name of raster:bands"):
+        assert migrate(item_dict)
+    assert asset["bands"] == [{"name": "B1", "raster:scale": 2}]
+
+
+def test_only_extension_fields_get_prefix(item_dict: dict[str, Any]) -> None:
+    item_dict["assets"]["data"]["eo:bands"] = [
+        {"name": "B1", "common_name": "red", "gsd": 30, "title": "Red"}
+    ]
+    item_dict["assets"]["data"]["raster:bands"] = [{"scale": 2, "gsd": 30}]
+    assert migrate(item_dict)
+    assert item_dict["assets"]["data"]["bands"] == [
+        {
+            "name": "B1",
+            "eo:common_name": "red",
+            "gsd": 30,
+            "title": "Red",
+            "raster:scale": 2,
+        }
     ]
 
 
@@ -121,15 +248,10 @@ def test_different_lengths_are_not_migrated(item_dict: dict[str, Any]) -> None:
     asset = item_dict["assets"]["data"]
     asset["eo:bands"] = [{"name": "red"}, {"name": "green"}]
     asset["raster:bands"] = [{"nodata": 0}]
-    with pytest.warns(
-        UserWarning, match="raster:bands: it has 1 bands but bands has 2"
-    ):
+    expected = deepcopy(item_dict)
+    with pytest.warns(UserWarning, match=r"bands: it has \d bands but \w+:bands has"):
         assert not migrate(item_dict)
-    assert asset == {
-        "href": "data.tif",
-        "bands": [{"name": "red"}, {"name": "green"}],
-        "raster:bands": [{"nodata": 0}],
-    }
+    assert item_dict == expected
 
 
 def test_different_lengths_leave_other_containers_unchanged(
@@ -140,13 +262,13 @@ def test_different_lengths_leave_other_containers_unchanged(
     item_dict["assets"]["data"]["raster:bands"] = [{"nodata": 0}]
     expected = deepcopy(item_dict)
     with pytest.warns(UserWarning, match="raster:bands"):
-        assert not migrate_extension_bands(item_dict, "raster:bands", "raster:")
+        assert not migrate_raster(item_dict)
     assert item_dict == expected
 
 
 def test_band_indices_are_not_migrated(item_dict: dict[str, Any]) -> None:
     item_dict["assets"]["data"]["eo:bands"] = [0, 1]
-    assert migrate(item_dict)
+    assert not migrate(item_dict)
     assert item_dict["assets"]["data"] == {"href": "data.tif", "eo:bands": [0, 1]}
 
 
@@ -203,7 +325,7 @@ def test_collection_summaries(collection: Collection) -> None:
 def test_collection_summaries_schema_is_not_migrated(collection: Collection) -> None:
     d = collection.to_dict(include_self_link=False)
     d["summaries"] = {"eo:bands": {"type": "array"}}
-    assert migrate(d)
+    assert not migrate(d)
     assert d["summaries"] == {"eo:bands": {"type": "array"}}
 
 
