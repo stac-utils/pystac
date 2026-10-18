@@ -5,9 +5,10 @@ https://github.com/stac-extensions/alternate-assets
 
 from __future__ import annotations
 
-from typing import Any, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 import pystac
+from pystac.asset import Assets
 from pystac.extensions.base import ExtensionManagementMixin, PropertiesExtension
 
 SCHEMA_URI = "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json"
@@ -29,7 +30,7 @@ def _remove_alternate(mapping: dict[str, Any]) -> dict[str, Any]:
 
 
 def _deserialize_asset_with_owner(
-    mapping: dict[str, Any], owner: pystac.Item | pystac.Collection
+    mapping: dict[str, Any], owner: Assets | None
 ) -> pystac.Asset:
     asset = pystac.Asset.from_dict(mapping)
     asset.owner = owner
