@@ -70,7 +70,7 @@ class AlternateAssetsExtension(
 
     @property
     def alternate_name(self) -> str | None:
-        return self.asset.extra_fields.get("alternate:name")
+        return self.properties.get("alternate:name")
 
     def has_asset(self, key: str | None) -> bool:
         if key is None:
