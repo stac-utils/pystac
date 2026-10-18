@@ -95,3 +95,6 @@ class AlternateAssetsExtension(
         serialized_asset = _remove_alternate(self.asset.to_dict() | alternate_asset)
 
         return _deserialize_asset_with_owner(serialized_asset, self.asset.owner)
+
+    def __repr__(self) -> str:
+        return f"<AlternateAssetsExtension name={self.alternate_name}>"
