@@ -5,7 +5,7 @@ https://github.com/stac-extensions/alternate-assets
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar, Literal
+from typing import Any, ClassVar, Literal
 
 import pystac
 from pystac.asset import Assets
