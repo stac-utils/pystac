@@ -58,6 +58,14 @@ class AlternateAssetsExtension(
     def ext(
         cls, obj: pystac.Asset, add_if_missing: bool = False
     ) -> AlternateAssetsExtension:
+        """Extends the given STAC Object with properties from the :stac-ext:`Alternate
+        Assets Extension <alternate-assets>`.
+
+        This extension can be applied to instances of :class:`~pystac.Asset`.
+
+        Raises:
+            pystac.ExtensionTypeError : If an invalid object type is passed.
+        """
         if isinstance(obj, pystac.Asset):
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cls(obj)
@@ -66,6 +74,11 @@ class AlternateAssetsExtension(
 
     @property
     def assets(self) -> _AssetLoc:
+        """Access alternate assets through a getitem syntax.
+
+        Similar to :meth:`AlternateAssetsExtension.get_asset` and :meth:AlternateAssetsExtension.has_asset.
+        """
+
         return _AssetLoc(self)
 
     @property
@@ -73,12 +86,14 @@ class AlternateAssetsExtension(
         return self.properties.get("alternate:name")
 
     def has_asset(self, key: str | None) -> bool:
+        """Check if the given alternate asset key exists."""
         if key is None:
             return self.asset.href is not None
 
         return key in self.properties.get("alternate", {})
 
     def get_asset(self, key: str | None) -> pystac.Asset:
+        """Get a alternate asset from the asset."""
         if key is None:
             serialized_asset = _remove_alternate(self.asset.to_dict())
 
