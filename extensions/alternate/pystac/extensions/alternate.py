@@ -124,6 +124,12 @@ class _AssetLoc:
     def __setitem__(self, key: str, asset: AlternateAsset) -> None:
         self._ext.set_asset(key, asset)
 
+    def __delitem__(self, key: str) -> None:
+        self._ext.drop_asset(key)
+
+    def drop(self, key: str, error_if_missing: bool = True) -> None:
+        self._ext.drop_asset(key, error_if_missing=error_if_missing)
+
 
 class AlternateAssetsExtension(
     PropertiesExtension, ExtensionManagementMixin[Collection | Item]
@@ -228,6 +234,14 @@ class AlternateAssetsExtension(
     def set_asset(self, key: str, asset: AlternateAsset) -> None:
         alternate = self.properties.setdefault(ALTERNATE_PROP, {})
         alternate[key] = deduplicate(asset.to_dict(), against=self.asset.to_dict())
+
+    def drop_asset(self, key: str, error_if_missing: bool = True) -> None:
+        alternate = self.properties.setdefault(ALTERNATE_PROP, {})
+        if key not in alternate:
+            if error_if_missing:
+                raise KeyError(f"unknown alternate asset: {key}")
+        else:
+            del alternate[key]
 
     def __repr__(self) -> str:
         return f"<AlternateAssetsExtension asset={self.asset_name}>"

@@ -2,6 +2,7 @@ import datetime as dt
 import pathlib
 from collections import namedtuple
 from collections.abc import Iterable
+from contextlib import nullcontext
 
 import pytest
 
@@ -234,11 +235,11 @@ class TestExtensionFunctions:
     @pytest.mark.parametrize(
         ["key", "expected"], ((None, True), ("local", True), ("s3", False))
     )
-    def test_has_asset_item(self, asset: Asset, key: str, expected: bool) -> None:
+    def test_item_has_asset(self, asset: Asset, key: str, expected: bool) -> None:
         alternate_ext = AlternateAssetsExtension.ext(asset)
         assert alternate_ext.has_asset(key) == expected
 
-    def test_get_asset_item(self, items_alternate: AlternateAssetContainer) -> None:
+    def test_item_get_asset(self, items_alternate: AlternateAssetContainer) -> None:
         asset = items_alternate.asset
         alternate_key = items_alternate.alternate
 
@@ -250,14 +251,14 @@ class TestExtensionFunctions:
         assert actual.owner is asset.owner
         assert "alternate" not in actual.properties
 
-    def test_get_asset_item_no_alternate(self, asset: Asset) -> None:
+    def test_item_get_asset_no_alternate(self, asset: Asset) -> None:
         asset.extra_fields.pop("alternate", None)
 
         alternate_ext = AlternateAssetsExtension.ext(asset)
         with pytest.raises(ValueError):
             alternate_ext.get_asset("product")
 
-    def test_get_asset_item_unknown(self, asset: Asset) -> None:
+    def test_item_get_asset_unknown(self, asset: Asset) -> None:
         alternate_ext = AlternateAssetsExtension.ext(asset)
         with pytest.raises(ValueError):
             alternate_ext.get_asset("product2")
@@ -269,7 +270,7 @@ class TestExtensionFunctions:
             ("archive", "product2.png"),
         ),
     )
-    def test_set_asset_item(self, asset: Asset, key: str, href: str) -> None:
+    def test_item_set_asset(self, asset: Asset, key: str, href: str) -> None:
         alternate_asset = AlternateAsset(
             {"href": href, "alternate:name": "zipped"}, asset.owner, "product", key
         )
@@ -279,6 +280,22 @@ class TestExtensionFunctions:
 
         assert key in asset.extra_fields.get("alternate", {})
         assert asset.extra_fields["alternate"][key]["href"] == href
+
+    def test_item_drop_asset(self, asset: Asset) -> None:
+        alternate_ext = AlternateAssetsExtension.ext(asset)
+        alternate_ext.drop_asset("local")
+
+        assert "local" not in alternate_ext.properties.get("alternate", {})
+
+    @pytest.mark.parametrize("error_if_missing", [True, False])
+    def test_item_drop_asset_nonexistent(
+        self, asset: Asset, error_if_missing: bool
+    ) -> None:
+        alternate_ext = AlternateAssetsExtension.ext(asset)
+        context = pytest.raises(KeyError) if error_if_missing else nullcontext()
+
+        with context:
+            alternate_ext.drop_asset("unknown", error_if_missing=error_if_missing)
 
     def test_get_asset_collection(
         self, collections_alternate: AlternateAssetContainer
@@ -310,13 +327,13 @@ class TestAlternateGetitem:
             ("unknown", False),
         ),
     )
-    def test_contains_item(self, asset: Asset, key: str | None, expected: bool) -> None:
+    def test_item_contains(self, asset: Asset, key: str | None, expected: bool) -> None:
         alternate_ext = AlternateAssetsExtension.ext(asset)
 
         actual = key in alternate_ext.assets
         assert actual == expected
 
-    def test_getitem_item(self, items_alternate: AlternateAssetContainer) -> None:
+    def test_item_getitem(self, items_alternate: AlternateAssetContainer) -> None:
         asset = items_alternate.asset
         alternate_key = items_alternate.alternate
 
@@ -334,7 +351,7 @@ class TestAlternateGetitem:
             ("archive", "product2.png"),
         ),
     )
-    def test_setitem_item(self, asset: Asset, key: str, href: str) -> None:
+    def test_item_setitem(self, asset: Asset, key: str, href: str) -> None:
         alternate_asset = AlternateAsset(
             {"href": href, "alternate:name": "zipped"}, asset.owner, "product", key
         )
@@ -345,7 +362,33 @@ class TestAlternateGetitem:
         assert key in asset.extra_fields.get("alternate", {})
         assert asset.extra_fields["alternate"][key]["href"] == href
 
-    def test_getitem_collection(
+    def test_item_delitem(self, asset: Asset) -> None:
+        alternate_ext = AlternateAssetsExtension.ext(asset)
+        del alternate_ext.assets["local"]
+
+        assert "local" not in alternate_ext.properties.get("alternate", {})
+
+    def test_item_delitem_nonexistent(self, asset: Asset) -> None:
+        alternate_ext = AlternateAssetsExtension.ext(asset)
+
+        with pytest.raises(KeyError):
+            del alternate_ext.assets["unknown"]
+
+    def test_item_drop(self, asset: Asset) -> None:
+        alternate_ext = AlternateAssetsExtension.ext(asset)
+        alternate_ext.assets.drop("local")
+
+        assert "local" not in alternate_ext.properties.get("alternate", {})
+
+    @pytest.mark.parametrize("error_if_missing", [True, False])
+    def test_item_drop_nonexistent(self, asset: Asset, error_if_missing: bool) -> None:
+        alternate_ext = AlternateAssetsExtension.ext(asset)
+        context = pytest.raises(KeyError) if error_if_missing else nullcontext()
+
+        with context:
+            alternate_ext.assets.drop("unknown", error_if_missing=error_if_missing)
+
+    def test_collection_getitem(
         self, collections_alternate: AlternateAssetContainer
     ) -> None:
         asset = collections_alternate.asset
