@@ -136,6 +136,7 @@ strict = true
 exclude = ["conftest\\.py$"]
 mypy_path = [
     "core",
+    "extensions/alternate",
     "extensions/classification",
     "extensions/datacube",
     "extensions/eo",
