@@ -148,7 +148,7 @@ class Asset:
         memo[id(self)] = new
         for key, value in self.__dict__.items():
             if key == "owner":
-                new.owner = memo.get(id(value), value) if value is not None else None
+                new.owner = memo.get(id(value), value)
             else:
                 setattr(new, key, deepcopy(value, memo))
 
