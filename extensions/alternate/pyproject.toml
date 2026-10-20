@@ -34,3 +34,12 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["pystac"]
+
+[tool.coverage.run]
+branch = true
+source = ["pystac"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 65
+exclude_lines = ["if TYPE_CHECKING:"]

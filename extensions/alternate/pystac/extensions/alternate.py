@@ -5,7 +5,7 @@ https://github.com/stac-extensions/alternate-assets
 
 from __future__ import annotations
 
-from typing import Any, ClassVar, Literal, TypeVar
+from typing import Any, ClassVar, Literal, TypeVar, cast
 
 import pystac
 from pystac import Collection, Item
@@ -25,15 +25,6 @@ T = TypeVar("T")
 
 def _remove_alternate(mapping: dict[str, Any]) -> dict[str, Any]:
     return {key: value for key, value in mapping.items() if key != ALTERNATE_PROP}
-
-
-def _deserialize_asset_with_owner(
-    mapping: dict[str, Any], owner: Assets | None
-) -> pystac.Asset:
-    asset = pystac.Asset.from_dict(mapping)
-    asset.owner = owner
-
-    return asset
 
 
 def deduplicate(mapping: dict[str, Any], against: dict[str, Any]) -> dict[str, Any]:
@@ -72,8 +63,8 @@ class AlternateAsset:
     ) -> None:
         if new is None:
             self.properties.pop(property, None)
-
-        self.properties[property] = new
+        else:
+            self.properties[property] = new
 
     @property
     def name(self) -> str | None:
@@ -94,13 +85,13 @@ class AlternateAsset:
     def href(self) -> str:
         href = self._get_property("href", str)
         if href is None:
-            raise ValueError("inconsistent href found, must not be None")
+            raise ValueError("invalid href found, must not be None")
         return href
 
     @href.setter
     def href(self, new: str) -> None:
         if new is None:
-            raise ValueError("href cannot be None")
+            raise ValueError("invalid href, cannot be None")
         self._set_property("href", new)
 
     def to_dict(self) -> dict[str, Any]:
@@ -111,8 +102,8 @@ class AlternateAsset:
 
     def to_asset(self) -> pystac.Asset:
         asset = pystac.Asset.from_dict(self.to_dict())
-        if self.owner is not None:
-            asset.set_owner(self.owner)
+        # to_dict raises if self.owner is None
+        asset.set_owner(cast(Assets, self.owner))
 
         return asset
 
