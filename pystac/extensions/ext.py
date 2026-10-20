@@ -440,10 +440,6 @@ class ItemAssetExt(_AssetExt[ItemAssetDefinition]):
     stac_object: ItemAssetDefinition
 
     @property
-    def alternate(self) -> AlternateAssetsExtension:
-        return AlternateAssetsExtension.ext(self.stac_object)
-
-    @property
     def mlm(self) -> MLMExtension[ItemAssetDefinition]:
         return MLMExtension.ext(self.stac_object)
 
