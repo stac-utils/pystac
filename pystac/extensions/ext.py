@@ -12,6 +12,7 @@ from pystac import (
     Link,
     STACError,
 )
+from pystac.extensions.alternate import AlternateAssetsExtension
 from pystac.extensions.classification import ClassificationExtension
 from pystac.extensions.datacube import DatacubeExtension
 from pystac.extensions.eo import EOExtension
@@ -46,6 +47,7 @@ T = TypeVar("T", Asset, ItemAssetDefinition, Link)
 U = TypeVar("U", Asset, ItemAssetDefinition)
 
 EXTENSION_NAMES = Literal[
+    "alternate",
     "classification",
     "cube",
     "eo",
@@ -70,6 +72,7 @@ EXTENSION_NAMES = Literal[
 ]
 
 EXTENSION_NAME_MAPPING: dict[EXTENSION_NAMES, Any] = {
+    AlternateAssetsExtension.name: AlternateAssetsExtension,
     ClassificationExtension.name: ClassificationExtension,
     DatacubeExtension.name: DatacubeExtension,
     EOExtension.name: EOExtension,
@@ -403,6 +406,10 @@ class AssetExt(_AssetExt[Asset]):
     """
 
     stac_object: Asset
+
+    @property
+    def alternate(self) -> AlternateAssetsExtension:
+        return AlternateAssetsExtension.ext(self.stac_object)
 
     @property
     def file(self) -> FileExtension[Asset]:

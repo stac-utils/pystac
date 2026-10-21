@@ -1,0 +1,78 @@
+{
+  "stac_version": "1.0.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/item-assets/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/alternate-assets/v1.2.0/schema.json"
+  ],
+  "type": "Collection",
+  "id": "collection-1",
+  "title": "Ode to the Collection",
+  "description": "Mysterious",
+  "license": "Apache-2.0",
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          172.9,
+          1.3,
+          173,
+          1.4
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "2015-06-23T00:00:00Z",
+          null
+        ]
+      ]
+    }
+  },
+  "assets": {
+    "items": {
+      "href": "https://example.com/collection/items.zip",
+      "type": "application/zip",
+      "title": "A collection of all STAC Items as a ZIP file.",
+      "roles": [
+        "archive"
+      ],
+      "alternate:name": "Example Corp. HTTPS",
+      "alternate": {
+        "s3": {
+          "href": "s3://mycoolsat-bucket/collection/items.zip",
+          "alternate:name": "Amazon S3"
+        },
+        "source": {
+          "href": "https://source.coop/example/collection/items.zip",
+          "alternate:name": "Source.coop HTTPS"
+        }
+      }
+    }
+  },
+  "item_assets": {
+    "data": {
+      "type": "image/tiff; application=geotiff",
+      "roles": [
+        "data"
+      ],
+      "alternate:name": "HTTPS",
+      "alternate": {
+        "s3": {
+          "alternate:name": "S3",
+          "description": "Access the files via regular Amazon AWS S3 tooling."
+        }
+      }
+    }
+  },
+  "links": [
+    {
+      "href": "https://example.com/examples/collection.json",
+      "rel": "self"
+    },
+    {
+      "href": "https://example.com/examples/item.json",
+      "rel": "item"
+    }
+  ]
+}
