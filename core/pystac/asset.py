@@ -140,15 +140,15 @@ class Asset:
     def __deepcopy__(self, memo: dict[int, Any]) -> Asset:
         """Deep copies this asset, keeping (not copying) its owner reference.
 
-        Copying :attr:`~pystac.Asset.owner` would copy every asset it holds; the
-        reference is reattached to the owner's copy if one is already in ``memo``.
+        Copying :attr:`~pystac.Asset.owner` would copy every asset it holds. When
+        the owner itself is deep copied, its ``__setstate__`` reattaches the
+        copied assets to the copy.
         """
         cls = self.__class__
         new = cls.__new__(cls)
-        memo[id(self)] = new
         for key, value in self.__dict__.items():
             if key == "owner":
-                new.owner = memo.get(id(value), value)
+                new.owner = value
             else:
                 setattr(new, key, deepcopy(value, memo))
 

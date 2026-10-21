@@ -563,6 +563,13 @@ class Collection(Catalog, Assets):
     def __repr__(self) -> str:
         return f"<Collection id={self.id}>"
 
+    def __setstate__(self, state: dict[str, Any]) -> None:
+        """Reattaches the assets to this collection when it is unpickled or
+        deep copied, since deep copied assets keep the original owner."""
+        self.__dict__.update(state)
+        for asset in self.assets.values():
+            asset.owner = self
+
     def add_item(
         self,
         item: Item,

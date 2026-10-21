@@ -37,6 +37,20 @@ def test_deepcopy_of_an_item_reattaches_its_assets(item: pystac.Item) -> None:
     assert item.assets["data"].href == "data.tif"
 
 
+def test_deepcopy_of_a_collection_reattaches_its_assets(
+    collection: pystac.Collection,
+) -> None:
+    """The assets of a copied collection belong to the copy, not to the original."""
+    collection.add_asset("thumbnail", pystac.Asset("thumbnail.png"))
+
+    copied = deepcopy(collection)
+    copied.assets["thumbnail"].href = "other.png"
+
+    assert copied.assets["thumbnail"].owner is copied
+    assert collection.assets["thumbnail"].owner is collection
+    assert collection.assets["thumbnail"].href == "thumbnail.png"
+
+
 def test_deepcopy_of_an_asset_keeps_its_owner(asset: pystac.Asset) -> None:
     """An asset copied on its own still points at the object it came from."""
     assert deepcopy(asset).owner is asset.owner
