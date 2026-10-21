@@ -124,7 +124,7 @@ When developing new benchmarks, you can run a shortened version of the benchmark
 
 .. code-block:: bash
 
-    asv dev
+    asv run --python=same --quick --show-stderr --dry-run
 
 
 CHANGELOG
