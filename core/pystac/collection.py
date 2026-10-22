@@ -14,7 +14,7 @@ from typing import (
 import pystac
 from pystac import CatalogType, STACObjectType
 from pystac.asset import Asset, Assets
-from pystac.band import Band
+from pystac.band import Band, _BandCache
 from pystac.catalog import Catalog
 from pystac.errors import DeprecatedWarning, STACTypeError
 from pystac.item_assets import ItemAssetDefinition, _ItemAssets
@@ -479,6 +479,8 @@ class Collection(Catalog, Assets):
             HREFs of the catalog child objects and items.
             If not provided, it will default to strategy of the parent and fallback to
             :class:`~pystac.layout.BestPracticesLayoutStrategy`.
+        bands : Optional list of :class:`~pystac.Band` objects. If not given, they
+            are read from ``extra_fields["bands"]``.
     """
 
     description: str
@@ -511,16 +513,11 @@ class Collection(Catalog, Assets):
     """A list of :class:`~pystac.Link` objects representing all links associated with
     this Collection."""
 
-    extra_fields: dict[str, Any]
-    """Extra fields that are part of the top-level JSON properties of the Collection."""
-
     STAC_OBJECT_TYPE = STACObjectType.COLLECTION
 
     DEFAULT_FILE_NAME = "collection.json"
     """Default file name that will be given to this STAC object
     in a canonical format."""
-
-    _bands: Optional[List[Band]]
 
     def __init__(
         self,
@@ -540,6 +537,7 @@ class Collection(Catalog, Assets):
         strategy: HrefLayoutStrategy | None = None,
         bands: list[Band] | None = None,
     ):
+        self._band_cache = _BandCache()
         super().__init__(
             id,
             description,
@@ -564,7 +562,8 @@ class Collection(Catalog, Assets):
             for k, asset in assets.items():
                 self.add_asset(k, asset)
 
-        self._bands = bands
+        if bands is not None:
+            self.bands = bands
 
     def __repr__(self) -> str:
         return f"<Collection id={self.id}>"
@@ -598,9 +597,6 @@ class Collection(Catalog, Assets):
             d["summaries"] = self.summaries.to_dict()
         if any(self.assets):
             d["assets"] = {k: v.to_dict() for k, v in self.assets.items()}
-
-        if self.bands is not None:
-            d["bands"] = [band.to_dict() for band in self.bands]
 
         return d
 
@@ -688,12 +684,6 @@ class Collection(Catalog, Assets):
             assets = {k: Asset.from_dict(v) for k, v in assets.items()}
         links = d.pop("links")
 
-        bands = d.pop("bands", None)
-        if bands is not None:
-            deserialized_bands = [Band.from_dict(band) for band in bands]
-        else:
-            deserialized_bands = None
-
         d.pop("stac_version")
 
         collection = cls(
@@ -710,7 +700,6 @@ class Collection(Catalog, Assets):
             href=href,
             catalog_type=catalog_type,
             assets=assets,
-            bands=deserialized_bands,
         )
 
         for link in links:
@@ -911,11 +900,30 @@ class Collection(Catalog, Assets):
         return CollectionExt(stac_object=self)
 
     @property
+    def extra_fields(self) -> dict[str, Any]:
+        """Extra fields that are part of the top-level JSON properties of the
+        Collection.
+
+        Changes made to the bands returned by :attr:`~pystac.Collection.bands` are
+        written to ``extra_fields["bands"]`` whenever this dictionary is read.
+        """
+        self._band_cache.sync(self._extra_fields)
+        return self._extra_fields
+
+    @extra_fields.setter
+    def extra_fields(self, extra_fields: dict[str, Any]) -> None:
+        self._extra_fields = extra_fields
+
+    @property
     def bands(self) -> list[Band] | None:
-        """Returns the bands set on this collection."""
-        return self._bands
+        """Gets or sets the bands of this collection.
+
+        They are read from and written to ``extra_fields["bands"]``. Changes made to
+        the returned bands are written back whenever
+        :attr:`~pystac.Collection.extra_fields` is read.
+        """
+        return self._band_cache.get(self.extra_fields)
 
     @bands.setter
     def bands(self, bands: list[Band] | None) -> None:
-        """Sets the bands on this collection."""
-        self._bands = bands
+        self._band_cache.set(self.extra_fields, bands)
