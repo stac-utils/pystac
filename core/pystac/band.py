@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass, field
-from enum import Enum
 from typing import Any
 
 from pystac.common_metadata import DataType, NoDataStrings, Statistics
@@ -59,8 +58,8 @@ class Band:
         return cls(
             name=d.pop("name", None),
             description=d.pop("description", None),
-            data_type=_to_enum(DataType, d.pop("data_type", None)),
-            nodata=_to_enum(NoDataStrings, d.pop("nodata", None)),
+            data_type=DataType.coerce(d.pop("data_type", None)),
+            nodata=NoDataStrings.coerce(d.pop("nodata", None)),
             statistics=None if statistics is None else Statistics.from_dict(statistics),
             unit=d.pop("unit", None),
             extra_fields=d,
@@ -83,15 +82,6 @@ class Band:
             d["unit"] = self.unit
         d.update(deepcopy(self.extra_fields))
         return d
-
-
-def _to_enum(enum: type[Enum], value: Any) -> Any:
-    if not isinstance(value, str):
-        return value
-    try:
-        return enum(value)
-    except ValueError:
-        return value
 
 
 def _write_bands(d: dict[str, Any], bands: list[Band] | None) -> None:
