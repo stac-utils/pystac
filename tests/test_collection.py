@@ -910,3 +910,9 @@ def test_bands_written_to_extra_fields_are_kept(collection: Collection) -> None:
     assert collection.bands == [Band(name="red")]
     assert collection.to_dict()["bands"] == [{"name": "red"}]
     assert collection.clone().bands == [Band(name="red")]
+
+
+def test_band_edits_are_written_to_extra_fields(collection: Collection) -> None:
+    collection.bands = [Band(name="red")]
+    get_opt(collection.bands)[0].name = "green"
+    assert collection.extra_fields["bands"] == [{"name": "green"}]

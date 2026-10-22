@@ -764,9 +764,8 @@ def test_bands_are_kept_in_properties(sample_item_dict: dict[str, Any]) -> None:
     item = Item.from_dict(sample_item_dict)
     assert item.properties["bands"] == [{"name": "red"}]
     get_opt(item.bands)[0].name = "green"
-    assert item.properties["bands"] == [{"name": "red"}]
-    assert item.to_dict()["properties"]["bands"] == [{"name": "green"}]
     assert item.properties["bands"] == [{"name": "green"}]
+    assert item.to_dict()["properties"]["bands"] == [{"name": "green"}]
     item.properties["bands"] = [{"name": "blue"}]
     assert item.to_dict()["properties"]["bands"] == [{"name": "blue"}]
 
@@ -817,6 +816,12 @@ def test_bands_changed_in_place_in_properties_are_kept(
     item.properties["bands"][0]["name"] = "green"
     assert item.bands == [Band(name="green")]
     assert item.to_dict()["properties"]["bands"] == [{"name": "green"}]
+
+
+def test_band_edits_are_written_to_properties(sample_item: Item) -> None:
+    sample_item.bands = [Band(name="red")]
+    get_opt(sample_item.bands)[0].name = "green"
+    assert sample_item.properties["bands"] == [{"name": "green"}]
 
 
 def test_setting_bands_writes_properties(sample_item: Item) -> None:

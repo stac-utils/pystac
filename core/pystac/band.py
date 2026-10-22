@@ -57,9 +57,10 @@ def _write_bands(d: dict[str, Any], bands: list[Band] | None) -> None:
 class _BandCache:
     """The :class:`Band` objects of the ``bands`` list in a dict.
 
-    The dict is the source of truth. The bands are parsed again when ``bands`` in the
+    The dict is the source of truth. The bands are read again when ``bands`` in the
     dict was replaced or changed, and are only written back by :meth:`sync` when the
-    bands themselves were changed.
+    bands themselves were changed. Existing band objects are updated in place as
+    long as the number of bands stays the same.
     """
 
     def __init__(self) -> None:
@@ -68,8 +69,7 @@ class _BandCache:
     def get(self, d: dict[str, Any]) -> list[Band] | None:
         raw = d.get("bands")
         if raw is not self._raw or raw != self._raw_copy:
-            bands = None if raw is None else [Band.from_dict(band) for band in raw]
-            self._remember(raw, bands)
+            self._remember(raw, self._read(raw))
         return self._bands
 
     def set(self, d: dict[str, Any], bands: list[Band] | None) -> None:
@@ -77,10 +77,24 @@ class _BandCache:
         self._remember(d.get("bands"), bands)
 
     def sync(self, d: dict[str, Any]) -> None:
+        if self._bands is None or self._bands == self._bands_copy:
+            return
         raw = d.get("bands")
-        dict_unchanged = raw is self._raw and raw == self._raw_copy
-        if dict_unchanged and self._bands != self._bands_copy:
+        if raw is self._raw and raw == self._raw_copy:
             self.set(d, self._bands)
+
+    def _read(self, raw: list[dict[str, Any]] | None) -> list[Band] | None:
+        if raw is None:
+            return None
+        bands = [Band.from_dict(band) for band in raw]
+        if self._bands is None or len(self._bands) != len(bands):
+            return bands
+        for band, new in zip(self._bands, bands):
+            band.name = new.name
+            band.description = new.description
+            band.extra_fields.clear()
+            band.extra_fields.update(new.extra_fields)
+        return self._bands
 
     def _remember(self, raw: Any, bands: list[Band] | None) -> None:
         self._raw = raw

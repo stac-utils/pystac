@@ -61,10 +61,6 @@ class Asset:
     """The :class:`~pystac.Item` or :class:`~pystac.Collection` that this asset belongs
     to, or ``None`` if it has no owner."""
 
-    extra_fields: dict[str, Any]
-    """Optional, additional fields for this asset. This is used by extensions as a
-    way to serialize and deserialize properties on asset object JSON."""
-
     def __init__(
         self,
         href: str,
@@ -80,8 +76,8 @@ class Asset:
         self.description = description
         self.media_type = media_type
         self.roles = roles
-        self.extra_fields = extra_fields or {}
         self._band_cache = _BandCache()
+        self.extra_fields = extra_fields or {}
         if bands is not None:
             self.bands = bands
 
@@ -118,13 +114,28 @@ class Asset:
             return None
 
     @property
+    def extra_fields(self) -> dict[str, Any]:
+        """Optional, additional fields for this asset. This is used by extensions as a
+        way to serialize and deserialize properties on asset object JSON.
+
+        Changes made to the bands returned by :attr:`~pystac.Asset.bands` are written
+        to ``extra_fields["bands"]`` whenever this dictionary is read.
+        """
+        self._band_cache.sync(self._extra_fields)
+        return self._extra_fields
+
+    @extra_fields.setter
+    def extra_fields(self, extra_fields: dict[str, Any]) -> None:
+        self._extra_fields = extra_fields
+
+    @property
     def bands(self) -> list[Band] | None:
         """Gets or sets the bands of this asset.
 
         If this asset has no bands of its own, the bands of its owner are returned.
         The asset's own bands are read from and written to ``extra_fields["bands"]``.
-        Changes made to the returned bands are written by
-        :meth:`~pystac.Asset.to_dict` and :meth:`~pystac.Asset.clone`.
+        Changes made to the returned bands are written back whenever
+        :attr:`~pystac.Asset.extra_fields` is read.
         """
         bands = self._band_cache.get(self.extra_fields)
         if bands is None and self.owner is not None:
@@ -142,7 +153,6 @@ class Asset:
             dict: A serialization of the Asset.
         """
 
-        self._band_cache.sync(self.extra_fields)
         d: dict[str, Any] = {"href": self.href}
 
         if self.media_type is not None:
@@ -154,9 +164,9 @@ class Asset:
         if self.description is not None:
             d["description"] = self.description
 
-        if self.extra_fields is not None and len(self.extra_fields) > 0:
-            for k, v in self.extra_fields.items():
-                d[k] = v
+        extra_fields = self.extra_fields
+        if extra_fields:
+            d.update(extra_fields)
 
         if self.roles is not None:
             d["roles"] = self.roles
@@ -170,7 +180,6 @@ class Asset:
         Returns:
             Asset: The clone of this asset.
         """
-        self._band_cache.sync(self.extra_fields)
         cls = self.__class__
         return cls(
             href=self.href,

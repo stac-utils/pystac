@@ -250,3 +250,47 @@ def test_bands_written_to_extra_fields_are_kept() -> None:
     asset.extra_fields["bands"] = [{"name": "red"}]
     assert asset.to_dict()["bands"] == [{"name": "red"}]
     assert asset.clone().bands == [pystac.Band(name="red")]
+
+
+def test_band_edits_are_written_to_extra_fields() -> None:
+    asset = pystac.Asset("data.tif", extra_fields={"bands": [{"name": "red"}]})
+    get_opt(asset.bands)[0].name = "green"
+    assert asset.extra_fields["bands"] == [{"name": "green"}]
+
+
+def test_nested_band_edits_are_written_to_extra_fields() -> None:
+    asset = pystac.Asset("data.tif", extra_fields={"bands": [{"name": "red"}]})
+    get_opt(asset.bands)[0].extra_fields["eo:common_name"] = "red"
+    assert asset.extra_fields["bands"] == [{"name": "red", "eo:common_name": "red"}]
+
+
+def test_band_edits_are_kept_when_extra_fields_change() -> None:
+    asset = pystac.Asset("data.tif", extra_fields={"bands": [{"name": "red"}]})
+    get_opt(asset.bands)[0].name = "green"
+    asset.extra_fields["bands"][0]["description"] = "Green"
+    assert asset.bands == [pystac.Band(name="green", description="Green")]
+
+
+def test_last_band_edit_wins() -> None:
+    asset = pystac.Asset("data.tif", extra_fields={"bands": [{"name": "red"}]})
+    get_opt(asset.bands)[0].name = "green"
+    asset.extra_fields["bands"][0]["name"] = "blue"
+    assert asset.bands == [pystac.Band(name="blue")]
+
+
+def test_bands_are_updated_in_place() -> None:
+    asset = pystac.Asset("data.tif", extra_fields={"bands": [{"name": "red"}]})
+    band = get_opt(asset.bands)[0]
+    asset.extra_fields["bands"] = [{"name": "green"}]
+    assert band is get_opt(asset.bands)[0]
+    assert band.name == "green"
+    band.name = "blue"
+    assert asset.extra_fields["bands"] == [{"name": "blue"}]
+
+
+def test_bands_are_read_again_when_their_number_changes() -> None:
+    asset = pystac.Asset("data.tif", extra_fields={"bands": [{"name": "red"}]})
+    band = get_opt(asset.bands)[0]
+    asset.extra_fields["bands"].append({"name": "green"})
+    assert band is not get_opt(asset.bands)[0]
+    assert asset.bands == [pystac.Band(name="red"), pystac.Band(name="green")]

@@ -513,9 +513,6 @@ class Collection(Catalog, Assets):
     """A list of :class:`~pystac.Link` objects representing all links associated with
     this Collection."""
 
-    extra_fields: dict[str, Any]
-    """Extra fields that are part of the top-level JSON properties of the Collection."""
-
     STAC_OBJECT_TYPE = STACObjectType.COLLECTION
 
     DEFAULT_FILE_NAME = "collection.json"
@@ -540,6 +537,7 @@ class Collection(Catalog, Assets):
         strategy: HrefLayoutStrategy | None = None,
         bands: list[Band] | None = None,
     ):
+        self._band_cache = _BandCache()
         super().__init__(
             id,
             description,
@@ -564,15 +562,11 @@ class Collection(Catalog, Assets):
             for k, asset in assets.items():
                 self.add_asset(k, asset)
 
-        self._band_cache = _BandCache()
         if bands is not None:
             self.bands = bands
 
     def __repr__(self) -> str:
         return f"<Collection id={self.id}>"
-
-    def _sync_bands(self) -> None:
-        self._band_cache.sync(self.extra_fields)
 
     def add_item(
         self,
@@ -588,7 +582,6 @@ class Collection(Catalog, Assets):
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True
     ) -> dict[str, Any]:
-        self._sync_bands()
         d = super().to_dict(
             include_self_link=include_self_link, transform_hrefs=transform_hrefs
         )
@@ -608,7 +601,6 @@ class Collection(Catalog, Assets):
         return d
 
     def clone(self) -> Collection:
-        self._sync_bands()
         cls = self.__class__
         clone = cls(
             id=self.id,
@@ -908,12 +900,27 @@ class Collection(Catalog, Assets):
         return CollectionExt(stac_object=self)
 
     @property
+    def extra_fields(self) -> dict[str, Any]:
+        """Extra fields that are part of the top-level JSON properties of the
+        Collection.
+
+        Changes made to the bands returned by :attr:`~pystac.Collection.bands` are
+        written to ``extra_fields["bands"]`` whenever this dictionary is read.
+        """
+        self._band_cache.sync(self._extra_fields)
+        return self._extra_fields
+
+    @extra_fields.setter
+    def extra_fields(self, extra_fields: dict[str, Any]) -> None:
+        self._extra_fields = extra_fields
+
+    @property
     def bands(self) -> list[Band] | None:
         """Gets or sets the bands of this collection.
 
         They are read from and written to ``extra_fields["bands"]``. Changes made to
-        the returned bands are written by :meth:`~pystac.Collection.to_dict` and
-        :meth:`~pystac.Collection.clone`.
+        the returned bands are written back whenever
+        :attr:`~pystac.Collection.extra_fields` is read.
         """
         return self._band_cache.get(self.extra_fields)
 

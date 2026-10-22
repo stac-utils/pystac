@@ -105,9 +105,6 @@ class Item(STACObject, Assets):
     """A list of :class:`~pystac.Link` objects representing all links associated with
     this Item."""
 
-    properties: dict[str, Any]
-    """A dictionary of additional metadata for the Item."""
-
     stac_extensions: list[str]
     """List of extensions the Item implements."""
 
@@ -139,6 +136,7 @@ class Item(STACObject, Assets):
         self.id = id
         self.geometry = geometry
         self.bbox = bbox
+        self._band_cache = _BandCache()
         self.properties = properties
         if extra_fields is None:
             self.extra_fields = {}
@@ -180,7 +178,6 @@ class Item(STACObject, Assets):
             for k, asset in assets.items():
                 self.add_asset(k, asset)
 
-        self._band_cache = _BandCache()
         if bands is not None:
             self.bands = bands
 
@@ -362,12 +359,26 @@ class Item(STACObject, Assets):
             ) from e
 
     @property
+    def properties(self) -> dict[str, Any]:
+        """A dictionary of additional metadata for the Item.
+
+        Changes made to the bands returned by :attr:`~pystac.Item.bands` are written
+        to ``properties["bands"]`` whenever this dictionary is read.
+        """
+        self._band_cache.sync(self._properties)
+        return self._properties
+
+    @properties.setter
+    def properties(self, properties: dict[str, Any]) -> None:
+        self._properties = properties
+
+    @property
     def bands(self) -> list[Band] | None:
         """Gets or sets the bands of this item.
 
         They are read from and written to ``properties["bands"]``. Changes made to
-        the returned bands are written by :meth:`~pystac.Item.to_dict` and
-        :meth:`~pystac.Item.clone`.
+        the returned bands are written back whenever :attr:`~pystac.Item.properties`
+        is read.
         """
         return self._band_cache.get(self.properties)
 
@@ -388,7 +399,6 @@ class Item(STACObject, Assets):
             self.properties["datetime"] = datetime_to_str(self.datetime)
         else:
             self.properties["datetime"] = None
-        self._band_cache.sync(self.properties)
 
         d: dict[str, Any] = {
             "type": "Feature",
@@ -415,7 +425,6 @@ class Item(STACObject, Assets):
         return d
 
     def clone(self) -> Item:
-        self._band_cache.sync(self.properties)
         cls = self.__class__
         clone = cls(
             id=self.id,
