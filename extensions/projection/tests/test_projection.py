@@ -586,7 +586,6 @@ def test_set_both_code_and_epsg(item: Item) -> None:
         item.ext.proj.apply(epsg=32614, code="EPSG:32614")
 
 
-@pytest.mark.vcr()
 def test_get_set_code(projection_landsat8_item: Item) -> None:
     proj_item = projection_landsat8_item
     assert proj_item.ext.proj.code == proj_item.properties["proj:code"]

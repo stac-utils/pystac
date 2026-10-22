@@ -2,7 +2,9 @@ import json
 import logging
 import warnings
 from abc import ABC, abstractmethod
-from typing import Any
+from pathlib import Path, PurePosixPath
+from typing import Any, cast
+from urllib.parse import urlparse
 
 import pystac
 import pystac.utils
@@ -298,6 +300,38 @@ class JsonSchemaSTACValidator(STACValidator):
             return None
 
         schema_uri = pystac.utils.make_absolute_href(schema_uri, href)
+
+        # if the extension class is installed and has a local schema file,
+        # try to read and cache that. Assumes that the schema_uri ends with
+        # name/version/schema.json for example:
+        # https://stac-extensions.github.io/eo/v1.1.0/schema.json
+        # and that the local schema file is at
+        # pystac/extensions/json-schema/eo/v1.1.0.json
+
+        if schema_uri not in self.schema_cache:
+            import importlib.resources
+
+            for schema_dir in importlib.resources.files(
+                "pystac.extensions.json-schema"
+            ).iterdir():
+                for schema_filepath in schema_dir.iterdir():
+                    uri_path = PurePosixPath(urlparse(schema_uri).path)
+                    version = uri_path.parent.name
+                    name = uri_path.parent.parent.name
+                    if (
+                        schema_filepath.is_file()
+                        and isinstance(schema_filepath, Path)
+                        and schema_filepath.parent.name == name
+                        and schema_filepath.name == f"{version}.json"
+                    ):
+                        with schema_filepath.open("r") as f:
+                            schema = cast(dict[str, Any], json.load(f))
+                            if schema["$id"] not in {schema_uri, f"{schema_uri}#"}:
+                                raise ValueError(
+                                    f"Local version of extension schema is invalid. "
+                                    f"Expected {schema_uri}, found {schema['$id']}"
+                                )
+                            self.schema_cache[schema_uri] = schema
 
         self._validate_from_uri(stac_dict, stac_object_type, schema_uri, href)
 

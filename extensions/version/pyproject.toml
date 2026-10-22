@@ -37,3 +37,4 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["pystac"]
+include = ["pystac.extensions.json-schema/*.json"]
