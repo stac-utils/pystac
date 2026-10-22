@@ -29,16 +29,14 @@ class ItemAssetDefinition:
     for use as values in the :attr:`~pystac.Collection.item_assets` dict.
     """
 
-    properties: dict[str, Any]
-
     owner: pystac.Collection | None
 
     def __init__(
         self, properties: dict[str, Any], owner: pystac.Collection | None = None
     ) -> None:
+        self._band_cache = _BandCache()
         self.properties = properties
         self.owner = owner
-        self._band_cache = _BandCache()
 
     def __eq__(self, o: object) -> bool:
         if not isinstance(o, ItemAssetDefinition):
@@ -189,13 +187,26 @@ class ItemAssetDefinition:
             self.properties[ASSET_ROLES_PROP] = v
 
     @property
+    def properties(self) -> dict[str, Any]:
+        """The fields of this asset definition.
+
+        Changes made to the bands returned by :attr:`~pystac.ItemAssetDefinition.bands`
+        are written to ``properties["bands"]`` whenever this dictionary is read.
+        """
+        self._sync_bands()
+        return self._properties
+
+    @properties.setter
+    def properties(self, properties: dict[str, Any]) -> None:
+        self._properties = properties
+
+    @property
     def bands(self) -> list[Band] | None:
         """Gets or sets the bands of the asset.
 
         They are read from and written to ``properties["bands"]``. Changes to the
-        returned bands are written back by
-        :meth:`~pystac.ItemAssetDefinition.to_dict` and when the owning
-        :class:`~pystac.Collection` is serialized or cloned.
+        returned bands are written back whenever
+        :attr:`~pystac.ItemAssetDefinition.properties` is read.
         """
         return self._band_cache.get(self.properties)
 
@@ -204,17 +215,15 @@ class ItemAssetDefinition:
         self._band_cache.set(self.properties, v)
 
     def _sync_bands(self) -> None:
-        self._band_cache.sync(self.properties)
+        self._band_cache.sync(self._properties)
 
     def to_dict(self) -> dict[str, Any]:
         """Returns a dictionary representing this ``ItemAssetDefinition``."""
-        self._sync_bands()
         return deepcopy(self.properties)
 
     def create_asset(self, href: str) -> pystac.Asset:
         """Creates a new :class:`~pystac.Asset` instance using the fields from this
         ``ItemAssetDefinition`` and the given ``href``."""
-        self._sync_bands()
         return pystac.Asset(
             href=href,
             title=self.title,

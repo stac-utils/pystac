@@ -240,6 +240,21 @@ def test_band_edits_are_serialized_with_collection(collection: Collection) -> No
     assert collection.clone().item_assets["data"].bands == [Band(name="green")]
 
 
+def test_band_edits_are_written_to_properties() -> None:
+    asset_defn = ItemAssetDefinition({"bands": [{"name": "red"}]})
+    get_opt(asset_defn.bands)[0].name = "green"
+    assert asset_defn.properties["bands"] == [{"name": "green"}]
+
+
+def test_band_edits_are_written_to_collection_extra_fields(
+    collection: Collection,
+) -> None:
+    collection.item_assets["data"] = ItemAssetDefinition({"bands": [{"name": "red"}]})
+    get_opt(collection.item_assets["data"].bands)[0].name = "green"
+    item_assets = collection.extra_fields["item_assets"]
+    assert item_assets["data"]["bands"] == [{"name": "green"}]
+
+
 def test_bands_set_to_none_are_removed(collection: Collection) -> None:
     collection.item_assets["data"] = ItemAssetDefinition({"bands": [{"name": "red"}]})
     collection.item_assets["data"].bands = None

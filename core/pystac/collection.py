@@ -904,8 +904,9 @@ class Collection(Catalog, Assets):
         """Extra fields that are part of the top-level JSON properties of the
         Collection.
 
-        Changes made to the bands returned by :attr:`~pystac.Collection.bands` are
-        written to ``extra_fields["bands"]`` whenever this dictionary is read.
+        Changes made to the bands returned by :attr:`~pystac.Collection.bands` and by
+        the :attr:`~pystac.Collection.item_assets` definitions are written to this
+        dictionary whenever it is read.
         """
         self._band_cache.sync(self._extra_fields)
         if self._item_assets is not None:
