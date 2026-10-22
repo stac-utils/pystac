@@ -779,11 +779,13 @@ def test_bands_are_kept_in_properties(sample_item_dict: dict[str, Any]) -> None:
     assert item.properties["bands"] == [{"name": "red"}]
     assert item.to_dict()["properties"]["bands"] == [{"name": "green"}]
     assert item.properties["bands"] == [{"name": "green"}]
+    assert item.properties["bands"] = [{"name": "blue"}]
+    assert item.to_dict()["bands"] == [{"name": "blue"}]
 
 
 def test_bands_set_to_none_are_removed(sample_item: Item) -> None:
     sample_item.bands = [Band(name="item")]
-    sample_item.to_dict()
+    assert "bands" in sample_item.to_dict()
     sample_item.bands = None
     assert "bands" not in sample_item.to_dict()["properties"]
     assert "bands" not in sample_item.properties

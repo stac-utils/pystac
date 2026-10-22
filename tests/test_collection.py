@@ -891,11 +891,14 @@ def test_bands_are_kept_in_extra_fields(collection: Collection) -> None:
     assert collection.extra_fields["bands"] == [{"name": "red"}]
     get_opt(collection.bands)[0].name = "green"
     assert collection.to_dict()["bands"] == [{"name": "green"}]
+    assert collection.extra_fields["bands"] == [{"name": "green"}]
+    assert collection.extra_fields["bands"] = [{"name": "blue"}]
+    assert collection.to_dict()["bands"] == [{"name": "blue"}]
 
 
 def test_bands_set_to_none_are_removed(collection: Collection) -> None:
     collection.bands = [Band(name="collection")]
-    collection.to_dict()
+    assert "bands" in collection.to_dict()
     collection.bands = None
     assert "bands" not in collection.to_dict()
     assert "bands" not in collection.extra_fields
