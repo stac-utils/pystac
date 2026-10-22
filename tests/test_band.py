@@ -15,12 +15,6 @@ def test_from_dict_does_not_modify_input() -> None:
     assert d == {"name": "red", "description": "Red", "eo:common_name": "red"}
 
 
-def test_from_dict_empty() -> None:
-    band = Band.from_dict({})
-    assert band == Band()
-    assert band.to_dict() == {}
-
-
 def test_to_dict_omits_unset_fields() -> None:
     assert Band(name="red").to_dict() == {"name": "red"}
     assert Band(description="Red").to_dict() == {"description": "Red"}

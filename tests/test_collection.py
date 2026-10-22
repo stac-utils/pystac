@@ -892,7 +892,7 @@ def test_bands_are_kept_in_extra_fields(collection: Collection) -> None:
     get_opt(collection.bands)[0].name = "green"
     assert collection.to_dict()["bands"] == [{"name": "green"}]
     assert collection.extra_fields["bands"] == [{"name": "green"}]
-    assert collection.extra_fields["bands"] = [{"name": "blue"}]
+    collection.extra_fields["bands"] = [{"name": "blue"}]
     assert collection.to_dict()["bands"] == [{"name": "blue"}]
 
 

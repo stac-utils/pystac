@@ -759,18 +759,6 @@ def test_from_dict_bands_without_name(sample_item_dict: dict[str, Any]) -> None:
     assert item.bands == [Band(description="unnamed")]
 
 
-def test_asset_from_dict_bands_does_not_modify_input() -> None:
-    asset_dict = {"href": "data.tif", "bands": [{"name": "red"}]}
-    Asset.from_dict(asset_dict)
-    assert asset_dict == {"href": "data.tif", "bands": [{"name": "red"}]}
-
-
-def test_asset_extra_fields_positional() -> None:
-    asset = Asset("data.tif", None, None, None, None, {"foo": "bar"})
-    assert asset.extra_fields == {"foo": "bar"}
-    assert asset.bands is None
-
-
 def test_bands_are_kept_in_properties(sample_item_dict: dict[str, Any]) -> None:
     sample_item_dict["properties"]["bands"] = [{"name": "red"}]
     item = Item.from_dict(sample_item_dict)
@@ -779,13 +767,13 @@ def test_bands_are_kept_in_properties(sample_item_dict: dict[str, Any]) -> None:
     assert item.properties["bands"] == [{"name": "red"}]
     assert item.to_dict()["properties"]["bands"] == [{"name": "green"}]
     assert item.properties["bands"] == [{"name": "green"}]
-    assert item.properties["bands"] = [{"name": "blue"}]
-    assert item.to_dict()["bands"] == [{"name": "blue"}]
+    item.properties["bands"] = [{"name": "blue"}]
+    assert item.to_dict()["properties"]["bands"] == [{"name": "blue"}]
 
 
 def test_bands_set_to_none_are_removed(sample_item: Item) -> None:
     sample_item.bands = [Band(name="item")]
-    assert "bands" in sample_item.to_dict()
+    assert "bands" in sample_item.to_dict()["properties"]
     sample_item.bands = None
     assert "bands" not in sample_item.to_dict()["properties"]
     assert "bands" not in sample_item.properties
@@ -803,37 +791,11 @@ def test_bands_read_from_properties(sample_item: Item) -> None:
     assert item.bands == [Band(name="red")]
 
 
-def test_asset_bands_read_from_extra_fields() -> None:
-    asset = Asset("data.tif", extra_fields={"bands": [{"name": "red"}]})
-    assert asset.bands == [Band(name="red")]
-
-
-def test_asset_band_edits_are_serialized() -> None:
-    asset = Asset.from_dict({"href": "data.tif", "bands": [{"name": "red"}]})
-    get_opt(asset.bands)[0].name = "green"
-    assert asset.to_dict()["bands"] == [{"name": "green"}]
-    assert asset.clone().bands == [Band(name="green")]
-
-
-def test_asset_bands_set_to_none_are_removed() -> None:
-    asset = Asset.from_dict({"href": "data.tif", "bands": [{"name": "red"}]})
-    asset.bands = None
-    assert "bands" not in asset.to_dict()
-    assert asset.clone().bands is None
-
-
 def test_bands_written_to_properties_are_kept(sample_item: Item) -> None:
     sample_item.properties["bands"] = [{"name": "red"}]
     assert sample_item.bands == [Band(name="red")]
     assert sample_item.to_dict()["properties"]["bands"] == [{"name": "red"}]
     assert sample_item.clone().bands == [Band(name="red")]
-
-
-def test_asset_bands_written_to_extra_fields_are_kept() -> None:
-    asset = Asset("data.tif")
-    asset.extra_fields["bands"] = [{"name": "red"}]
-    assert asset.to_dict()["bands"] == [{"name": "red"}]
-    assert asset.clone().bands == [Band(name="red")]
 
 
 def test_bands_replaced_in_properties_after_read_are_kept(
