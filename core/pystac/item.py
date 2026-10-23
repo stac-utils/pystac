@@ -204,6 +204,9 @@ class Item(STACObject, Assets):
         ]
 
         self.__dict__ = d
+        # Deep copied assets keep the original owner; see Asset.__deepcopy__
+        for asset in self.assets.values():
+            asset.owner = self
 
     def set_self_href(self, href: str | None) -> None:
         """Sets the absolute HREF that is represented by the ``rel == 'self'``

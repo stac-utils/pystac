@@ -2,6 +2,7 @@ import json
 import os
 import shutil
 import tempfile
+from copy import deepcopy
 from pathlib import Path
 
 from pystac import Item, StacIO
@@ -50,3 +51,11 @@ class ItemBench(Bench):
             dest_href=os.path.join(self.temp_dir, "time_item_save.json"),
             stac_io=self.stac_io,
         )
+
+    def time_item_get_assets(self) -> None:
+        """Copy every asset out of an Item."""
+        _ = self.item.get_assets()
+
+    def time_item_deepcopy(self) -> None:
+        """Deep copy an Item, and with it every asset it holds."""
+        _ = deepcopy(self.item)
