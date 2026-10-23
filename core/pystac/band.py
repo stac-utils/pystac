@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from typing import Any
 
 from pystac.common_metadata import DataType, NoDataStrings, Statistics
@@ -127,8 +127,9 @@ class _BandCache:
         if self._bands is None or len(self._bands) != len(bands):
             return bands
         for band, new in zip(self._bands, bands):
-            band.name = new.name
-            band.description = new.description
+            for f in fields(new):
+                if f.name != "extra_fields":
+                    setattr(band, f.name, getattr(new, f.name))
             band.extra_fields.clear()
             band.extra_fields.update(new.extra_fields)
         return self._bands
