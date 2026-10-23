@@ -20,22 +20,28 @@ from pystac.extensions.base import (
 from pystac.extensions.hooks import ExtensionHooks
 from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.summaries import RangeSummary
-from pystac.utils import StringEnum, get_required, map_opt
+from pystac.utils import StringEnum, map_opt
 
-#: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Asset` or
+#: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Collection`,
+#: :class:`~pystac.Asset` or
 #: :class:`~pystac.ItemAssetDefinition`
-T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition)
+T = TypeVar(
+    "T", pystac.Item, pystac.Collection, pystac.Asset, pystac.ItemAssetDefinition
+)
 
-SCHEMA_URI: str = "https://stac-extensions.github.io/sar/v1.0.0/schema.json"
+SCHEMA_URI: str = "https://stac-extensions.github.io/sar/v1.3.2/schema.json"
 PREFIX: str = "sar:"
 
-# Required
+# Recommended
 INSTRUMENT_MODE_PROP: str = PREFIX + "instrument_mode"
 FREQUENCY_BAND_PROP: str = PREFIX + "frequency_band"
 POLARIZATIONS_PROP: str = PREFIX + "polarizations"
 PRODUCT_TYPE_PROP: str = PREFIX + "product_type"
 
-# Not required
+# Optional
+BANDWIDTH_PROP: str = PREFIX + "bandwidth"
+RELATIVE_BURST_PROP: str = PREFIX + "relative_burst"
+BEAM_IDS_PROP: str = PREFIX + "beam_ids"
 CENTER_FREQUENCY_PROP: str = PREFIX + "center_frequency"
 RESOLUTION_RANGE_PROP: str = PREFIX + "resolution_range"
 RESOLUTION_AZIMUTH_PROP: str = PREFIX + "resolution_azimuth"
@@ -63,6 +69,12 @@ class Polarization(StringEnum):
     VV = "VV"
     HV = "HV"
     VH = "VH"
+    LH = "LH"
+    LV = "LV"
+    RH = "RH"
+    RV = "RV"
+    CH = "CH"
+    CV = "CV"
 
 
 class ObservationDirection(StringEnum):
@@ -76,10 +88,10 @@ class SarExtension(
     ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
     """An abstract class that can be used to extend the properties of an
-    :class:`~pystac.Item` or :class:`~pystac.Asset` with properties from the
-    :stac-ext:`SAR Extension <sar>`. This class is generic over the type of
-    STAC Object to be extended (e.g. :class:`~pystac.Item`,
-    :class:`~pystac.Asset`).
+    :class:`~pystac.Item`, :class:`~pystac.Collection`, :class:`~pystac.Asset`,
+    or :class:`~pystac.ItemAssetDefinition` with optional properties from the
+    :stac-ext:`SAR Extension <sar>` v1.3.2. This class is generic over the type
+    of STAC object to be extended.
 
     To create a concrete instance of :class:`SarExtension`, use the
     :meth:`SarExtension.ext` method. For example:
@@ -94,10 +106,10 @@ class SarExtension(
 
     def apply(
         self,
-        instrument_mode: str,
-        frequency_band: FrequencyBand,
-        polarizations: list[Polarization],
-        product_type: str,
+        instrument_mode: str | None = None,
+        frequency_band: FrequencyBand | None = None,
+        polarizations: list[Polarization] | None = None,
+        product_type: str | None = None,
         center_frequency: float | None = None,
         resolution_range: float | None = None,
         resolution_azimuth: float | None = None,
@@ -107,8 +119,11 @@ class SarExtension(
         looks_azimuth: int | None = None,
         looks_equivalent_number: float | None = None,
         observation_direction: ObservationDirection | None = None,
+        bandwidth: float | None = None,
+        relative_burst: int | None = None,
+        beam_ids: list[str] | None = None,
     ) -> None:
-        """Applies sar extension properties to the extended Item.
+        """Applies SAR properties to the extended object. All fields are optional.
 
         Args:
             instrument_mode : The name of the sensor acquisition mode that is
@@ -140,6 +155,9 @@ class SarExtension(
             looks_azimuth : Optional number of groups of signal samples (looks)
                 parallel to the flight path.
             looks_equivalent_number : Optional equivalent number of looks (ENL).
+            bandwidth : Optional range bandwidth in gigahertz (GHz).
+            relative_burst : Optional relative burst number, starting at 1.
+            beam_ids : Optional beam identifiers (also called swaths).
             observation_direction : Optional Antenna pointing
                 direction relative to the flight trajectory of the satellite.
         """
@@ -147,81 +165,81 @@ class SarExtension(
         self.frequency_band = frequency_band
         self.polarizations = polarizations
         self.product_type = product_type
-        if center_frequency:
+        if center_frequency is not None:
             self.center_frequency = center_frequency
-        if resolution_range:
+        if resolution_range is not None:
             self.resolution_range = resolution_range
-        if resolution_azimuth:
+        if resolution_azimuth is not None:
             self.resolution_azimuth = resolution_azimuth
-        if pixel_spacing_range:
+        if pixel_spacing_range is not None:
             self.pixel_spacing_range = pixel_spacing_range
-        if pixel_spacing_azimuth:
+        if pixel_spacing_azimuth is not None:
             self.pixel_spacing_azimuth = pixel_spacing_azimuth
-        if looks_range:
+        if looks_range is not None:
             self.looks_range = looks_range
-        if looks_azimuth:
+        if looks_azimuth is not None:
             self.looks_azimuth = looks_azimuth
-        if looks_equivalent_number:
+        if looks_equivalent_number is not None:
             self.looks_equivalent_number = looks_equivalent_number
-        if observation_direction:
+        if observation_direction is not None:
             self.observation_direction = observation_direction
 
+        if bandwidth is not None:
+            self.bandwidth = bandwidth
+        if relative_burst is not None:
+            self.relative_burst = relative_burst
+        if beam_ids is not None:
+            self.beam_ids = beam_ids
+
     @property
-    def instrument_mode(self) -> str:
-        """Gets or sets an instrument mode string for the item."""
-        return get_required(
-            self._get_property(INSTRUMENT_MODE_PROP, str), self, INSTRUMENT_MODE_PROP
-        )
+    def instrument_mode(self) -> str | None:
+        """Gets or sets the instrument mode.
+
+        Deprecated in SAR v1.3.2 in favor of ``instrument_modes`` from the
+        instruments extension.
+        """
+        return self._get_property(INSTRUMENT_MODE_PROP, str)
 
     @instrument_mode.setter
-    def instrument_mode(self, v: str) -> None:
-        self._set_property(INSTRUMENT_MODE_PROP, v, pop_if_none=False)
+    def instrument_mode(self, v: str | None) -> None:
+        self._set_property(INSTRUMENT_MODE_PROP, v)
 
     @property
-    def frequency_band(self) -> FrequencyBand:
-        """Gets or sets a FrequencyBand for the item."""
-        return get_required(
-            map_opt(
-                lambda x: FrequencyBand(x), self._get_property(FREQUENCY_BAND_PROP, str)
-            ),
-            self,
-            FREQUENCY_BAND_PROP,
-        )
+    def frequency_band(self) -> FrequencyBand | None:
+        """Gets or sets the common frequency band."""
+        return map_opt(FrequencyBand, self._get_property(FREQUENCY_BAND_PROP, str))
 
     @frequency_band.setter
-    def frequency_band(self, v: FrequencyBand) -> None:
-        self._set_property(FREQUENCY_BAND_PROP, v.value, pop_if_none=False)
+    def frequency_band(self, v: FrequencyBand | None) -> None:
+        self._set_property(FREQUENCY_BAND_PROP, map_opt(lambda x: x.value, v))
 
     @property
-    def polarizations(self) -> list[Polarization]:
-        """Gets or sets a list of polarizations for the item."""
-        return get_required(
-            map_opt(
-                lambda values: [Polarization(v) for v in values],
-                self._get_property(POLARIZATIONS_PROP, list[str]),
-            ),
-            self,
-            POLARIZATIONS_PROP,
+    def polarizations(self) -> list[Polarization] | None:
+        """Gets or sets the polarizations, including compact polarizations."""
+        return map_opt(
+            lambda values: [Polarization(v) for v in values],
+            self._get_property(POLARIZATIONS_PROP, list[str]),
         )
 
     @polarizations.setter
-    def polarizations(self, values: list[Polarization]) -> None:
-        if not isinstance(values, list):
+    def polarizations(self, values: list[Polarization] | None) -> None:
+        if values is not None and not isinstance(values, list):
             raise pystac.STACError(f'polarizations must be a list. Invalid "{values}"')
         self._set_property(
-            POLARIZATIONS_PROP, [v.value for v in values], pop_if_none=False
+            POLARIZATIONS_PROP, map_opt(lambda vs: [v.value for v in vs], values)
         )
 
     @property
-    def product_type(self) -> str:
-        """Gets or sets a product type string for the item."""
-        return get_required(
-            self._get_property(PRODUCT_TYPE_PROP, str), self, PRODUCT_TYPE_PROP
-        )
+    def product_type(self) -> str | None:
+        """Gets or sets the product type.
+
+        Deprecated in SAR v1.1.0 in favor of ``product:type``.
+        """
+        return self._get_property(PRODUCT_TYPE_PROP, str)
 
     @product_type.setter
-    def product_type(self, v: str) -> None:
-        self._set_property(PRODUCT_TYPE_PROP, v, pop_if_none=False)
+    def product_type(self, v: str | None) -> None:
+        self._set_property(PRODUCT_TYPE_PROP, v)
 
     @property
     def center_frequency(self) -> float | None:
@@ -306,6 +324,33 @@ class SarExtension(
     def observation_direction(self, v: ObservationDirection | None) -> None:
         self._set_property(OBSERVATION_DIRECTION_PROP, map_opt(lambda x: x.value, v))
 
+    @property
+    def bandwidth(self) -> float | None:
+        """Range bandwidth in gigahertz (GHz), greater than zero."""
+        return self._get_property(BANDWIDTH_PROP, float)
+
+    @bandwidth.setter
+    def bandwidth(self, v: float | None) -> None:
+        self._set_property(BANDWIDTH_PROP, v)
+
+    @property
+    def relative_burst(self) -> int | None:
+        """Burst cycle identifier within each repeat cycle, starting at 1."""
+        return self._get_property(RELATIVE_BURST_PROP, int)
+
+    @relative_burst.setter
+    def relative_burst(self, v: int | None) -> None:
+        self._set_property(RELATIVE_BURST_PROP, v)
+
+    @property
+    def beam_ids(self) -> list[str] | None:
+        """Beam identifiers, also called swaths."""
+        return self._get_property(BEAM_IDS_PROP, list[str])
+
+    @beam_ids.setter
+    def beam_ids(self, v: list[str] | None) -> None:
+        self._set_property(BEAM_IDS_PROP, v)
+
     @classmethod
     def get_schema_uri(cls) -> str:
         return SCHEMA_URI
@@ -315,8 +360,9 @@ class SarExtension(
         """Extends the given STAC Object with properties from the :stac-ext:`SAR
         Extension <sar>`.
 
-        This extension can be applied to instances of :class:`~pystac.Item` or
-        :class:`~pystac.Asset`.
+        This extension can be applied to :class:`~pystac.Item`,
+        :class:`~pystac.Collection`, :class:`~pystac.Asset`, and
+        :class:`~pystac.ItemAssetDefinition` instances.
 
         Raises:
 
@@ -325,11 +371,10 @@ class SarExtension(
         if isinstance(obj, pystac.Item):
             cls.ensure_has_extension(obj, add_if_missing)
             return cast(SarExtension[T], ItemSarExtension(obj))
+        elif isinstance(obj, pystac.Collection):
+            cls.ensure_has_extension(obj, add_if_missing)
+            return cast(SarExtension[T], CollectionSarExtension(obj))
         elif isinstance(obj, pystac.Asset):
-            if obj.owner is not None and not isinstance(obj.owner, pystac.Item):
-                raise pystac.ExtensionTypeError(
-                    "SAR extension does not apply to Collection Assets."
-                )
             cls.ensure_owner_has_extension(obj, add_if_missing)
             return cast(SarExtension[T], AssetSarExtension(obj))
         elif isinstance(obj, pystac.ItemAssetDefinition):
@@ -368,6 +413,17 @@ class ItemSarExtension(SarExtension[pystac.Item]):
 
     def __repr__(self) -> str:
         return f"<ItemSarExtension Item id={self.item.id}>"
+
+
+class CollectionSarExtension(SarExtension[pystac.Collection]):
+    """SAR fields on a Collection. Use :meth:`SarExtension.ext` to create one."""
+
+    def __init__(self, collection: pystac.Collection):
+        self.collection = collection
+        self.properties = collection.extra_fields
+
+    def __repr__(self) -> str:
+        return f"<CollectionSarExtension Collection id={self.collection.id}>"
 
 
 class AssetSarExtension(SarExtension[pystac.Asset]):
@@ -570,16 +626,49 @@ class SummariesSarExtension(SummariesExtension):
     def observation_direction(self, v: list[ObservationDirection] | None) -> None:
         self._set_summary(OBSERVATION_DIRECTION_PROP, v)
 
+    @property
+    def bandwidth(self) -> RangeSummary[float] | None:
+        """Gets or sets the summary of :attr:`SarExtension.bandwidth` values."""
+        return self.summaries.get_range(BANDWIDTH_PROP)
+
+    @bandwidth.setter
+    def bandwidth(self, v: RangeSummary[float] | None) -> None:
+        self._set_summary(BANDWIDTH_PROP, v)
+
+    @property
+    def relative_burst(self) -> RangeSummary[int] | None:
+        """Gets or sets the summary of :attr:`SarExtension.relative_burst` values."""
+        return self.summaries.get_range(RELATIVE_BURST_PROP)
+
+    @relative_burst.setter
+    def relative_burst(self, v: RangeSummary[int] | None) -> None:
+        self._set_summary(RELATIVE_BURST_PROP, v)
+
+    @property
+    def beam_ids(self) -> list[str] | None:
+        """Gets or sets the summary of :attr:`SarExtension.beam_ids` values."""
+        return self.summaries.get_list(BEAM_IDS_PROP)
+
+    @beam_ids.setter
+    def beam_ids(self, v: list[str] | None) -> None:
+        self._set_summary(BEAM_IDS_PROP, v)
+
 
 class SarExtensionHooks(ExtensionHooks):
     schema_uri = SCHEMA_URI
-    prev_extension_ids = {"sar"}
-    stac_object_types = {pystac.STACObjectType.ITEM}
+    prev_extension_ids = {
+        "sar",
+        *{
+            f"https://stac-extensions.github.io/sar/v{v}/schema.json"
+            for v in ("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.3.1")
+        },
+    }
+    stac_object_types = {pystac.STACObjectType.ITEM, pystac.STACObjectType.COLLECTION}
 
     def migrate(
         self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
-        if version < "0.9":
+        if version < "0.9" and info.object_type == pystac.STACObjectType.ITEM:
             # Some sar fields became common_metadata
             if (
                 PREFIX + "platform" in obj["properties"]
