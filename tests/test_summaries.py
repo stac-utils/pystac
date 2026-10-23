@@ -3,6 +3,7 @@ from typing import Any
 
 import pytest
 
+from pystac import Band
 from pystac.summaries import RangeSummary, Summaries, Summarizer, SummaryStrategy
 from tests.utils import TestCases
 
@@ -13,6 +14,18 @@ def test_summary() -> None:
     summaries_dict = summaries.to_dict()
     assert len(summaries_dict["eo:bands"]) == 4
     assert len(summaries_dict["proj:code"]) == 1
+
+
+def test_summary_uses_item_bands() -> None:
+    items = list(TestCases.case_5().get_items(recursive=True))
+    for item in items:
+        item.properties["bands"] = [{"name": "stale"}]
+        item.bands = [Band(name="red")]
+    summaries = Summarizer().summarize(items).to_dict()
+    assert summaries["bands"] == [{"name": "red"}]
+    for item in items:
+        item.bands = None
+    assert "bands" not in Summarizer().summarize(items).to_dict()
 
 
 def test_summary_limit() -> None:
