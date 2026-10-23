@@ -121,7 +121,8 @@ class Asset:
         Changes made to the bands returned by :attr:`~pystac.Asset.bands` are written
         to ``extra_fields["bands"]`` whenever this dictionary is read.
         """
-        self._band_cache.sync(self._extra_fields)
+        if self._band_cache.loaded:
+            self._band_cache.sync(self._extra_fields)
         return self._extra_fields
 
     @extra_fields.setter

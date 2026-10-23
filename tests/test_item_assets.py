@@ -255,6 +255,16 @@ def test_band_edits_are_written_to_collection_extra_fields(
     assert item_assets["data"]["bands"] == [{"name": "green"}]
 
 
+def test_band_edits_made_before_adding_to_collection_are_serialized(
+    collection: Collection,
+) -> None:
+    asset_defn = ItemAssetDefinition({"bands": [{"name": "red"}]})
+    band = get_opt(asset_defn.bands)[0]
+    collection.item_assets["data"] = asset_defn
+    band.name = "green"
+    assert collection.to_dict()["item_assets"]["data"]["bands"] == [{"name": "green"}]
+
+
 def test_bands_set_to_none_are_removed(collection: Collection) -> None:
     collection.item_assets["data"] = ItemAssetDefinition({"bands": [{"name": "red"}]})
     collection.item_assets["data"].bands = None

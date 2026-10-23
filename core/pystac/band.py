@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from copy import deepcopy
+from copy import copy, deepcopy
 from dataclasses import dataclass, field, fields
 from typing import Any
 
@@ -53,7 +53,7 @@ class Band:
         :class:`~pystac.common_metadata.NoDataStrings` when they match a known
         value, and kept as plain strings otherwise.
         """
-        d = deepcopy(d)
+        d = _copy_json(d)
         statistics = d.pop("statistics", None)
         return cls(
             name=d.pop("name", None),
@@ -80,8 +80,32 @@ class Band:
             d["statistics"] = self.statistics.to_dict()
         if self.unit is not None:
             d["unit"] = self.unit
-        d.update(deepcopy(self.extra_fields))
+        d.update(_copy_json(self.extra_fields))
         return d
+
+
+_ATOMS = frozenset({str, int, float, bool, type(None)})
+
+
+def _copy_json(value: Any) -> Any:
+    """A deep copy that is fast for JSON values and uses ``deepcopy`` otherwise."""
+    kind = type(value)
+    if kind in _ATOMS:
+        return value
+    if kind is dict:
+        return {k: v if type(v) in _ATOMS else _copy_json(v) for k, v in value.items()}
+    if kind is list:
+        return [v if type(v) in _ATOMS else _copy_json(v) for v in value]
+    return deepcopy(value)
+
+
+def _copy_band(band: Band) -> Band:
+    band_copy = copy(band)
+    band_copy.extra_fields = _copy_json(band.extra_fields)
+    if band.statistics is not None:
+        band_copy.statistics = copy(band.statistics)
+        band_copy.statistics.extra_fields = _copy_json(band.statistics.extra_fields)
+    return band_copy
 
 
 def _write_bands(d: dict[str, Any], bands: list[Band] | None) -> None:
@@ -103,6 +127,9 @@ class _BandCache:
     def __init__(self) -> None:
         self._remember(None, None)
 
+    loaded: bool
+    """Whether there are band objects whose changes may need to be written."""
+
     def get(self, d: dict[str, Any]) -> list[Band] | None:
         raw = d.get("bands")
         if raw is not self._raw or raw != self._raw_copy:
@@ -114,7 +141,7 @@ class _BandCache:
         self._remember(d.get("bands"), bands)
 
     def sync(self, d: dict[str, Any]) -> None:
-        if self._bands is None or self._bands == self._bands_copy:
+        if not self.loaded or self._bands == self._bands_copy:
             return
         raw = d.get("bands")
         if raw is self._raw and raw == self._raw_copy:
@@ -136,6 +163,7 @@ class _BandCache:
 
     def _remember(self, raw: Any, bands: list[Band] | None) -> None:
         self._raw = raw
-        self._raw_copy = deepcopy(raw)
+        self._raw_copy = _copy_json(raw)
         self._bands = bands
-        self._bands_copy = deepcopy(bands)
+        self._bands_copy = None if bands is None else [_copy_band(b) for b in bands]
+        self.loaded = bands is not None

@@ -365,7 +365,8 @@ class Item(STACObject, Assets):
         Changes made to the bands returned by :attr:`~pystac.Item.bands` are written
         to ``properties["bands"]`` whenever this dictionary is read.
         """
-        self._band_cache.sync(self._properties)
+        if self._band_cache.loaded:
+            self._band_cache.sync(self._properties)
         return self._properties
 
     @properties.setter
@@ -395,10 +396,11 @@ class Item(STACObject, Assets):
 
         assets = {k: v.to_dict() for k, v in self.assets.items()}
 
+        properties = self.properties
         if self.datetime is not None:
-            self.properties["datetime"] = datetime_to_str(self.datetime)
+            properties["datetime"] = datetime_to_str(self.datetime)
         else:
-            self.properties["datetime"] = None
+            properties["datetime"] = None
 
         d: dict[str, Any] = {
             "type": "Feature",
@@ -407,7 +409,7 @@ class Item(STACObject, Assets):
             "id": self.id,
             "geometry": self.geometry,
             "bbox": self.bbox if self.bbox is not None else [],
-            "properties": self.properties,
+            "properties": properties,
             "links": [link.to_dict(transform_href=transform_hrefs) for link in links],
             "assets": assets,
         }

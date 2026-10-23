@@ -131,6 +131,8 @@ class ItemAssetDefinition:
             obj: The Collection that owns this asset.
         """
         self.owner = obj
+        if self._band_cache.loaded:
+            obj._item_asset_bands_loaded = True
 
     @property
     def title(self) -> str | None:
@@ -208,14 +210,22 @@ class ItemAssetDefinition:
         returned bands are written back whenever
         :attr:`~pystac.ItemAssetDefinition.properties` is read.
         """
-        return self._band_cache.get(self.properties)
+        bands = self._band_cache.get(self.properties)
+        self._mark_owner()
+        return bands
 
     @bands.setter
     def bands(self, v: list[Band] | None) -> None:
         self._band_cache.set(self.properties, v)
+        self._mark_owner()
+
+    def _mark_owner(self) -> None:
+        if self.owner is not None and self._band_cache.loaded:
+            self.owner._item_asset_bands_loaded = True
 
     def _sync_bands(self) -> None:
-        self._band_cache.sync(self._properties)
+        if self._band_cache.loaded:
+            self._band_cache.sync(self._properties)
 
     def to_dict(self) -> dict[str, Any]:
         """Returns a dictionary representing this ``ItemAssetDefinition``."""

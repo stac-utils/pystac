@@ -539,6 +539,7 @@ class Collection(Catalog, Assets):
     ):
         self._band_cache = _BandCache()
         self._item_assets: _ItemAssets | None = None
+        self._item_asset_bands_loaded = False
         super().__init__(
             id,
             description,
@@ -908,8 +909,9 @@ class Collection(Catalog, Assets):
         the :attr:`~pystac.Collection.item_assets` definitions are written to this
         dictionary whenever it is read.
         """
-        self._band_cache.sync(self._extra_fields)
-        if self._item_assets is not None:
+        if self._band_cache.loaded:
+            self._band_cache.sync(self._extra_fields)
+        if self._item_asset_bands_loaded and self._item_assets is not None:
             for item_asset in self._item_assets.values():
                 item_asset._sync_bands()
         return self._extra_fields
