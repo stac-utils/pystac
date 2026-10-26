@@ -115,13 +115,17 @@ def _conflicts(
 
 def _band_containers(obj: dict[str, Any]) -> list[dict[str, Any]]:
     if obj.get("type") == pystac.STACObjectType.ITEM:
-        return [obj["properties"], *obj.get("assets", {}).values()]
+        return [
+            obj["properties"],
+            *obj.get("assets", {}).values(),
+        ]
     if obj.get("type") == pystac.STACObjectType.COLLECTION:
-        containers = [*obj.get("assets", {}).values()]
-        containers.extend(obj.get("item_assets", {}).values())
-        if obj.get("summaries") is not None:
-            containers.append(obj["summaries"])
-        return containers
+        return [
+            obj,
+            *obj.get("assets", {}).values(),
+            *obj.get("item_assets", {}).values(),
+            obj.get("summaries") or {},
+        ]
     return []
 
 
@@ -230,11 +234,11 @@ def migrate_extension_bands(
     """Moves an extension's v1 band list (e.g. ``eo:bands``) into the STAC 1.1
     ``bands`` field of an Item or Collection dict.
 
-    Applies to Item properties and assets, and to Collection assets,
-    ``item_assets`` and ``summaries``. If ``bands`` is not set, it is created from
-    the extension's bands; otherwise the two lists are merged by index. The
-    extension's own band fields (``fields``) get ``prefix``; all other fields are
-    kept as they are. Empty band lists are removed.
+    Applies to Item properties and assets, and to the Collection itself, its
+    assets, ``item_assets`` and ``summaries``. If ``bands`` is not set, it is
+    created from the extension's bands; otherwise the two lists are merged by
+    index. The extension's own band fields (``fields``) get ``prefix``; all other
+    fields are kept as they are. Empty band lists are removed.
 
     In extension v1, bands in Item properties were the bands of all assets; in
     STAC 1.1, they are the bands of assets that don't define their own. They are
@@ -286,10 +290,7 @@ def has_extension_fields(obj: dict[str, Any], prefix: str) -> bool:
         obj : The Item or Collection dict.
         prefix : The extension's field prefix, e.g. ``"eo:"``.
     """
-    containers = _band_containers(obj)
-    if obj.get("type") == pystac.STACObjectType.COLLECTION:
-        containers.append(obj)
-    for container in containers:
+    for container in _band_containers(obj):
         fields = [container]
         if _is_band_list(bands := container.get("bands")):
             fields.extend(bands)

@@ -301,6 +301,23 @@ def test_collection_assets_and_item_assets(collection: Collection) -> None:
     assert d["item_assets"]["data"]["bands"] == [{"name": "red", "raster:scale": 2}]
 
 
+def test_collection_bands(collection: Collection) -> None:
+    d = collection.to_dict(include_self_link=False)
+    d["eo:bands"] = [{"name": "B01", "common_name": "coastal"}]
+    assert migrate(d)
+    assert "eo:bands" not in d
+    assert d["bands"] == [{"name": "B01", "eo:common_name": "coastal"}]
+
+
+def test_collection_null_summaries(collection: Collection) -> None:
+    d = collection.to_dict(include_self_link=False)
+    d["summaries"] = None
+    d["assets"] = {"data": {"href": "d.tif", "eo:bands": [{"name": "red"}]}}
+    assert migrate(d)
+    assert d["assets"]["data"]["bands"] == [{"name": "red"}]
+    assert d["summaries"] is None
+
+
 def test_collection_summaries(collection: Collection) -> None:
     d = collection.to_dict(include_self_link=False)
     d["summaries"] = {
