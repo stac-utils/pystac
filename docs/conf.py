@@ -256,3 +256,7 @@ nitpick_ignore = [
     ("py:class", "HREF"),  # this one partially works
     ("py:class", "jsonschema.validators.Draft7Validator"),
 ]
+
+nitpick_ignore_regex = [
+    ("py:class", r"pystac\.extensions\.[^.]+\.T"),
+]
