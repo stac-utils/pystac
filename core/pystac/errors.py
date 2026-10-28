@@ -133,3 +133,10 @@ class DeprecatedWarning(FutureWarning):
     version extension ``deprecated`` field is present and set to ``True``."""
 
     pass
+
+
+class SpecDeprecationWarning(DeprecationWarning):
+    """Issued when a field deprecated in the STAC spec or an extension spec is
+    set to a value other than None."""
+
+    pass
