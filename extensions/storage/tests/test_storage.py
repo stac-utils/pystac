@@ -23,6 +23,7 @@ DATA_FILES = Path(__file__).resolve().parent / "data-files"
 NAIP_EXAMPLE_URI = str(DATA_FILES / "item-naip.json")
 NAIP_COLLECTION_URI = str(DATA_FILES / "collection-naip.json")
 V1_MIGRATION_ITEM_URI = str(DATA_FILES / "item-v1.0.0.json")
+AWS_BUCKET = "my-bucket"
 
 
 @pytest.fixture
@@ -411,35 +412,36 @@ def test_migrate(v1_item: Item) -> None:
 
 
 @pytest.mark.parametrize(
-    "href,bucket",
+    "href",
     [
-        ("s3://my-bucket/data.tif", "my-bucket"),
-        ("https://my-bucket.s3.us-west-2.amazonaws.com/data.tif", "my-bucket"),
-        ("https://my-bucket.s3-us-west-2.amazonaws.com/data.tif", "my-bucket"),
-        ("https://my-bucket.s3.amazonaws.com/data.tif", "my-bucket"),
-        ("https://s3.us-west-2.amazonaws.com/my-bucket/data.tif", "my-bucket"),
-        ("https://s3.amazonaws.com/my-bucket/data.tif", "my-bucket"),
+        "s3://my-bucket/data.tif",
+        "https://my-bucket.s3.us-west-2.amazonaws.com/data.tif",
+        "https://my-bucket.s3-us-west-2.amazonaws.com/data.tif",
+        "https://my-bucket.s3.amazonaws.com/data.tif",
+        "https://s3.us-west-2.amazonaws.com/my-bucket/data.tif",
+        "https://s3.amazonaws.com/my-bucket/data.tif",
     ],
 )
-def test_migrate_aws_href_forms(v1_item: Item, href: str, bucket: str) -> None:
+def test_migrate_aws_href_forms(v1_item: Item, href: str) -> None:
     item_dict = v1_item.to_dict(include_self_link=False, transform_hrefs=False)
-    item_dict["assets"] = {"AWS": item_dict["assets"]["AWS"]}
-    item_dict["assets"]["AWS"]["href"] = href
-    del item_dict["assets"]["AWS"]["storage:tier"]
+    item_dict["assets"] = {"AWS": {"href": href, "storage:platform": "AWS"}}
 
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         item = Item.from_dict(item_dict, migrate=True)
 
     refs = item.assets["AWS"].to_dict()["storage:refs"]
-    assert item.properties["storage:schemes"][refs[0]]["bucket"] == bucket
+    assert item.properties["storage:schemes"][refs[0]]["bucket"] == AWS_BUCKET
 
 
 def test_migrate_aws_href_not_parsed(v1_item: Item) -> None:
     item_dict = v1_item.to_dict(include_self_link=False, transform_hrefs=False)
-    item_dict["assets"] = {"AWS": item_dict["assets"]["AWS"]}
-    item_dict["assets"]["AWS"]["href"] = "https://example.com/my-bucket/data.tif"
-    del item_dict["assets"]["AWS"]["storage:tier"]
+    item_dict["assets"] = {
+        "AWS": {
+            "href": "https://example.com/my-bucket/data.tif",
+            "storage:platform": "AWS",
+        }
+    }
 
     with pytest.warns(UserWarning, match="Could not parse bucket/account"):
         item = Item.from_dict(item_dict, migrate=True)
