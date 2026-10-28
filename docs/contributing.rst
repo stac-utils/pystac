@@ -152,3 +152,47 @@ In an effort to maintain a consistent codebase, PySTAC conforms to the following
 The exception to this rule is when ``datetime`` is only imported for type checking and
 using the class directly interferes with another variable name. In this case, in the
 TYPE_CHECKING block you should do ``from datetime import datetime as Datetime``.
+
+Spec deprecations
+^^^^^^^^^^^^^^^^^
+
+When adding or updating support for an extension version that deprecates a field:
+
+- Keep the getter and setter, and add a ``.. deprecated::`` note to the getter's
+  docstring naming the replacement. Sphinx renders a property's documentation
+  from its getter.
+- In the setter, issue :class:`~pystac.SpecDeprecationWarning` only for non-``None``
+  values, with a ``stacklevel`` that points at the caller.
+- Don't rewrite the field in ``migrate()`` unless PySTAC can still read it through
+  an accessor afterwards.
+
+Example:
+
+.. code-block:: python
+
+    import warnings
+
+    import pystac
+
+
+    @property
+    def old_prop(self) -> str | None:
+        """Gets or sets the old property.
+
+        .. deprecated:: 1.1.0
+            ``ext:old_prop`` is deprecated in v1.1.0 of the Ext specification in
+            favor of ``ext:new_prop``. Setting a value other than ``None`` issues a
+            :class:`~pystac.SpecDeprecationWarning`.
+        """
+        return self._get_property(OLD_PROP, str)
+
+    @old_prop.setter
+    def old_prop(self, v: str | None) -> None:
+        if v is not None:
+            warnings.warn(
+                "'ext:old_prop' is deprecated in the Ext specification; "
+                "use 'ext:new_prop' instead.",
+                pystac.SpecDeprecationWarning,
+                stacklevel=2,
+            )
+        self._set_property(OLD_PROP, v)
