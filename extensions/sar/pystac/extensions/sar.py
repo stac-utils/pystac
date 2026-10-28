@@ -90,7 +90,7 @@ class SarExtension(
     """An abstract class that can be used to extend the properties of an
     :class:`~pystac.Item`, :class:`~pystac.Collection`, :class:`~pystac.Asset`,
     or :class:`~pystac.ItemAssetDefinition` with optional properties from the
-    :stac-ext:`SAR Extension <sar>` v1.3.2. This class is generic over the type
+    :stac-ext:`SAR Extension <sar>`. This class is generic over the type
     of STAC object to be extended.
 
     To create a concrete instance of :class:`SarExtension`, use the
