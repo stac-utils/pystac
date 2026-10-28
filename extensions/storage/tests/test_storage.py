@@ -1,5 +1,6 @@
 import json
 import random
+import warnings
 from copy import deepcopy
 from pathlib import Path
 from string import ascii_letters
@@ -407,3 +408,40 @@ def test_migrate(v1_item: Item) -> None:
     assert "storage:tier" not in item.assets["AZURE"].to_dict()
     # but preserved for unmigrated assets
     assert item.assets["GCP"].to_dict().get("storage:tier") == "STANDARD"
+
+
+@pytest.mark.parametrize(
+    "href,bucket",
+    [
+        ("s3://my-bucket/data.tif", "my-bucket"),
+        ("https://my-bucket.s3.us-west-2.amazonaws.com/data.tif", "my-bucket"),
+        ("https://my-bucket.s3-us-west-2.amazonaws.com/data.tif", "my-bucket"),
+        ("https://my-bucket.s3.amazonaws.com/data.tif", "my-bucket"),
+        ("https://s3.us-west-2.amazonaws.com/my-bucket/data.tif", "my-bucket"),
+        ("https://s3.amazonaws.com/my-bucket/data.tif", "my-bucket"),
+    ],
+)
+def test_migrate_aws_href_forms(v1_item: Item, href: str, bucket: str) -> None:
+    item_dict = v1_item.to_dict(include_self_link=False, transform_hrefs=False)
+    item_dict["assets"] = {"AWS": item_dict["assets"]["AWS"]}
+    item_dict["assets"]["AWS"]["href"] = href
+    del item_dict["assets"]["AWS"]["storage:tier"]
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        item = Item.from_dict(item_dict, migrate=True)
+
+    refs = item.assets["AWS"].to_dict()["storage:refs"]
+    assert item.properties["storage:schemes"][refs[0]]["bucket"] == bucket
+
+
+def test_migrate_aws_href_not_parsed(v1_item: Item) -> None:
+    item_dict = v1_item.to_dict(include_self_link=False, transform_hrefs=False)
+    item_dict["assets"] = {"AWS": item_dict["assets"]["AWS"]}
+    item_dict["assets"]["AWS"]["href"] = "https://example.com/my-bucket/data.tif"
+    del item_dict["assets"]["AWS"]["storage:tier"]
+
+    with pytest.warns(UserWarning, match="Could not parse bucket/account"):
+        item = Item.from_dict(item_dict, migrate=True)
+
+    assert "storage:refs" not in item.assets["AWS"].to_dict()
