@@ -23,7 +23,6 @@ DATA_FILES = Path(__file__).resolve().parent / "data-files"
 NAIP_EXAMPLE_URI = str(DATA_FILES / "item-naip.json")
 NAIP_COLLECTION_URI = str(DATA_FILES / "collection-naip.json")
 V1_MIGRATION_ITEM_URI = str(DATA_FILES / "item-v1.0.0.json")
-AWS_BUCKET = "my-bucket"
 
 
 @pytest.fixture
@@ -431,7 +430,7 @@ def test_migrate_aws_href_forms(v1_item: Item, href: str) -> None:
         item = Item.from_dict(item_dict, migrate=True)
 
     refs = item.assets["AWS"].to_dict()["storage:refs"]
-    assert item.properties["storage:schemes"][refs[0]]["bucket"] == AWS_BUCKET
+    assert item.properties["storage:schemes"][refs[0]]["bucket"] == "my-bucket"
 
 
 def test_migrate_aws_href_not_parsed(v1_item: Item) -> None:
