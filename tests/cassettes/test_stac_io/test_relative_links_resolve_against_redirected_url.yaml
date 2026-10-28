@@ -1,0 +1,70 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://pystac.test/old/catalog.json
+  response:
+    body:
+      string: ''
+    headers:
+      Location:
+      - /new/catalog.json
+      Content-Length:
+      - '0'
+    status:
+      code: 301
+      message: Moved Permanently
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://pystac.test/new/catalog.json
+  response:
+    body:
+      string: |-
+        {
+          "type": "Catalog",
+          "id": "redirected",
+          "stac_version": "1.1.0",
+          "description": "a catalog behind a redirect",
+          "links": [
+            {
+              "rel": "child",
+              "href": "./child/catalog.json",
+              "type": "application/json"
+            }
+          ]
+        }
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '243'
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://pystac.test/new/child/catalog.json
+  response:
+    body:
+      string: |-
+        {
+          "type": "Catalog",
+          "id": "child",
+          "stac_version": "1.1.0",
+          "description": "the child catalog",
+          "links": []
+        }
+    headers:
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '120'
+    status:
+      code: 200
+      message: OK
+version: 1
