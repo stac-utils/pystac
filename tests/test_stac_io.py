@@ -1,18 +1,20 @@
 import json
 import os
 import tempfile
-import threading
 import unittest
-from collections.abc import Iterator
-from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
-from typing import Any, cast
+from typing import cast
 
 import pytest
 from pytest import MonkeyPatch
 
 import pystac
-from pystac.stac_io import DefaultStacIO, DuplicateKeyReportingMixin, StacIO
+from pystac.stac_io import (
+    HAS_URLLIB3,
+    DefaultStacIO,
+    DuplicateKeyReportingMixin,
+    StacIO,
+)
 from tests.utils import TestCases
 
 
@@ -121,6 +123,7 @@ def test_report_duplicate_keys() -> None:
         assert str(excinfo.value), f'Found duplicate object name "key" in {src_href}'
 
 
+@pytest.mark.skipif(not HAS_URLLIB3, reason="requires urllib3")
 @unittest.mock.patch("pystac.stac_io.urllib3.PoolManager.request")
 def test_headers_stac_io(request_mock: unittest.mock.MagicMock) -> None:
     stac_io = DefaultStacIO(headers={"Authorization": "api-key fake-api-key-value"})
@@ -129,6 +132,7 @@ def test_headers_stac_io(request_mock: unittest.mock.MagicMock) -> None:
     # required until https://github.com/stac-utils/pystac/pull/896 is merged
     catalog["links"] = []
     request_mock.return_value.__enter__.return_value.status = 200
+    request_mock.return_value.__enter__.return_value.retries = None
     request_mock.return_value.__enter__.return_value.read.return_value = json.dumps(
         catalog
     ).encode("utf-8")
@@ -226,16 +230,10 @@ def test_save_http_href_errors(tmp_path: Path) -> None:
 
 
 @pytest.mark.vcr()
+@pytest.mark.skipif(not HAS_URLLIB3, reason="requires urllib3")
 def test_urls_with_non_ascii_characters() -> None:
-    from pystac.stac_io import HAS_URLLIB3
-
     url = "https://capella-open-data.s3.us-west-2.amazonaws.com/stac/capella-open-data-by-capital/capella-open-data-malé/collection.json"
-
-    if HAS_URLLIB3:
-        pystac.Collection.from_file(url)
-    else:
-        with pytest.raises(pystac.STACError):
-            pystac.Collection.from_file(url)
+    pystac.Collection.from_file(url)
 
 
 @pytest.mark.vcr()
@@ -270,88 +268,33 @@ def test_custom_stac_io() -> None:
     assert stac_io.calls == 2
 
 
-@pytest.fixture
-def redirecting_server() -> Iterator[str]:
-    """Serves a catalog at /new/ and permanently redirects /old/ to it."""
-    catalog = pystac.Catalog("redirected", "a catalog behind a redirect").to_dict(
-        include_self_link=False
-    )
-    catalog["links"] = [
-        {"rel": "child", "href": "./child/catalog.json", "type": "application/json"}
-    ]
-    child = pystac.Catalog("child", "the child catalog").to_dict(
-        include_self_link=False
-    )
-    child["links"] = []
-    documents = {
-        "/new/catalog.json": json.dumps(catalog).encode("utf-8"),
-        "/new/child/catalog.json": json.dumps(child).encode("utf-8"),
-    }
-
-    class Handler(BaseHTTPRequestHandler):
-        def do_GET(self) -> None:
-            if self.path.startswith("/old/"):
-                # 301, not 308: urllib only follows 308 from Python 3.11 on.
-                self.send_response(301)
-                self.send_header("Location", "/new/" + self.path[len("/old/") :])
-                self.end_headers()
-            elif self.path in documents:
-                body = documents[self.path]
-                self.send_response(200)
-                self.send_header("Content-Type", "application/json")
-                self.send_header("Content-Length", str(len(body)))
-                self.end_headers()
-                self.wfile.write(body)
-            else:
-                self.send_error(404)
-
-        def log_message(self, *_: Any) -> None:
-            pass
-
-    server = HTTPServer(("127.0.0.1", 0), Handler)
-    thread = threading.Thread(target=server.serve_forever, daemon=True)
-    thread.start()
-    try:
-        yield f"http://127.0.0.1:{server.server_port}"
-    finally:
-        server.shutdown()
-        server.server_close()
-
-
-def _stac_ios() -> list[Any]:
-    from pystac.stac_io import HAS_URLLIB3
-
-    params: list[Any] = [pytest.param(False, DefaultStacIO, id="urllib")]
+def _stac_io_classes() -> list[type[StacIO]]:
     if HAS_URLLIB3:
         from pystac.stac_io import RetryStacIO
 
-        params.append(pytest.param(True, DefaultStacIO, id="urllib3"))
-        params.append(pytest.param(True, RetryStacIO, id="retry"))
-    return params
+        return [DefaultStacIO, RetryStacIO]
+    return [DefaultStacIO]
 
 
-@pytest.mark.block_network(allowed_hosts=["127.0.0.1"])
-@pytest.mark.parametrize("use_urllib3,stac_io_class", _stac_ios())
+@pytest.mark.vcr()
+@pytest.mark.default_cassette("test_relative_links_resolve_against_redirected_url")
+@pytest.mark.parametrize("stac_io_class", _stac_io_classes())
 @pytest.mark.parametrize("read", ["from_file", "read_file"])
 def test_relative_links_resolve_against_redirected_url(
-    redirecting_server: str,
-    monkeypatch: MonkeyPatch,
-    use_urllib3: bool,
-    stac_io_class: type[StacIO],
-    read: str,
+    stac_io_class: type[StacIO], read: str
 ) -> None:
     # https://github.com/stac-utils/pystac/issues/1816
-    monkeypatch.setattr("pystac.stac_io.HAS_URLLIB3", use_urllib3)
+    # The cassette redirects /old/ to /new/ with a relative Location header.
     stac_io = stac_io_class()
-    href = f"{redirecting_server}/old/catalog.json"
+    href = "https://pystac.test/old/catalog.json"
     if read == "from_file":
         catalog = pystac.Catalog.from_file(href, stac_io=stac_io)
     else:
         catalog = cast(pystac.Catalog, pystac.read_file(href, stac_io=stac_io))
 
-    assert catalog.get_self_href() == f"{redirecting_server}/new/catalog.json"
+    assert catalog.get_self_href() == "https://pystac.test/new/catalog.json"
     child = next(iter(catalog.get_children()))
-    assert child.get_self_href() == f"{redirecting_server}/new/child/catalog.json"
+    assert child.get_self_href() == "https://pystac.test/new/child/catalog.json"
 
 
 def test_final_href_is_forgotten_when_a_read_is_not_redirected() -> None:

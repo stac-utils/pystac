@@ -1,13 +1,13 @@
+import importlib.util
 import json
 import os
 import shutil
 import tempfile
 from datetime import datetime, timezone
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import jsonschema
 import pytest
-from requests_mock import Mocker
 
 import pystac
 import pystac.validation
@@ -17,6 +17,11 @@ from pystac.utils import get_opt
 from pystac.validation import GetSchemaError, JsonSchemaSTACValidator
 from tests.utils import TestCases
 from tests.utils.test_cases import ExampleInfo
+
+if TYPE_CHECKING:
+    from requests_mock import Mocker
+
+HAS_REQUESTS_MOCK = importlib.util.find_spec("requests_mock") is not None
 
 
 class TestValidate:
@@ -250,7 +255,8 @@ def test_item_latest_version_uses_local(item: pystac.Item) -> None:
     assert item.validate()
 
 
-def test_404_schema_url(requests_mock: Mocker, item: pystac.Item) -> None:
+@pytest.mark.skipif(not HAS_REQUESTS_MOCK, reason="requires requests-mock")
+def test_404_schema_url(requests_mock: "Mocker", item: pystac.Item) -> None:
     requests_mock.get(
         "http://pystac-extensions.test/a-fake-schema.json", status_code=404
     )
