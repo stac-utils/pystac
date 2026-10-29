@@ -14,6 +14,7 @@ from dateutil import tz
 import pystac
 from pystac import (
     Asset,
+    Band,
     Catalog,
     CatalogType,
     Collection,
@@ -842,3 +843,32 @@ def test_from_dict_missing_extent(collection: Collection) -> None:
 
     assert c.extent.spatial.to_dict()["bbox"] == [[-90, -180, 90, 180]]
     assert c.extent.temporal.to_dict()["interval"] == [[None, None]]
+
+
+def test_set_bands_on_collection(collection: Collection) -> None:
+    collection.add_asset("data", Asset(href="example.tif"))
+    collection.bands = [Band(name="analytic")]
+    assert collection.assets["data"].bands
+    assert collection.assets["data"].bands[0].name == "analytic"
+
+
+def test_bands_roundtrip_on_asset(collection: Collection) -> None:
+    collection.add_asset("data", Asset(href="example.tif"))
+    collection_dict = collection.to_dict(include_self_link=False, transform_hrefs=False)
+    collection_dict["assets"]["data"]["bands"] = [{"name": "data"}]
+    collection = Collection.from_dict(collection_dict)
+    assert collection.assets["data"].bands
+    assert collection.assets["data"].bands[0].name == "data"
+    collection_dict = collection.to_dict(include_self_link=False, transform_hrefs=False)
+    assert collection_dict["assets"]["data"]["bands"][0]["name"] == "data"
+
+
+def test_bands_roundtrip_on_collection(collection: Collection) -> None:
+    collection.add_asset("data", Asset(href="example.tif"))
+    collection_dict = collection.to_dict(include_self_link=False, transform_hrefs=False)
+    collection_dict["bands"] = [{"name": "data"}]
+    collection = Collection.from_dict(collection_dict)
+    assert collection.assets["data"].bands
+    assert collection.assets["data"].bands[0].name == "data"
+    collection_dict = collection.to_dict(include_self_link=False, transform_hrefs=False)
+    assert collection_dict["bands"][0]["name"] == "data"
