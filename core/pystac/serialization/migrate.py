@@ -79,14 +79,15 @@ def _migrate_datetime_range(
     return None
 
 
-BAND_COMMON_FIELDS = {
+BAND_COMMON_FIELDS = (
     "name",
     "description",
-    "nodata",
     "data_type",
+    "nodata",
     "statistics",
     "unit",
-}
+)
+"""Common band fields, in the order :meth:`pystac.Band.to_dict` writes them."""
 
 YIELDING_BAND_FIELDS: dict[str, AbstractSet[str]] = {"raster:bands": {"name"}}
 """Fields of an extension's v1 band list that are dropped, with a warning, where
@@ -97,6 +98,13 @@ def _to_common_band(
     band: dict[str, Any], prefix: str, fields: AbstractSet[str]
 ) -> dict[str, Any]:
     return {prefix + k if k in fields else k: v for k, v in band.items()}
+
+
+def _sort_band_fields(band: dict[str, Any]) -> None:
+    ordered = {k: band[k] for k in BAND_COMMON_FIELDS if k in band}
+    ordered.update(band)
+    band.clear()
+    band.update(ordered)
 
 
 def _is_band_list(value: Any) -> TypeGuard[list[dict[str, Any]]]:
@@ -218,13 +226,14 @@ def _migrate_extension_bands_in(
         for i, band in enumerate(ext_bands)
     ]
     bands = d.get("bands")
-    if not ext_bands:
-        pass
-    elif bands is None:
-        d["bands"] = converted
-    else:
-        for band, new_band in zip(bands, converted):
-            band.update(new_band)
+    if ext_bands:
+        if bands is None:
+            d["bands"] = bands = converted
+        else:
+            for band, new_band in zip(bands, converted):
+                band.update(new_band)
+        for band in bands:
+            _sort_band_fields(band)
     del d[bands_prop]
 
 
@@ -238,7 +247,8 @@ def migrate_extension_bands(
     assets, ``item_assets`` and ``summaries``. If ``bands`` is not set, it is
     created from the extension's bands; otherwise the two lists are merged by
     index. The extension's own band fields (``fields``) get ``prefix``; all other
-    fields are kept as they are. Empty band lists are removed.
+    fields are kept as they are. The common band fields come first, in the order of
+    :meth:`pystac.Band.to_dict`. Empty band lists are removed.
 
     In extension v1, bands in Item properties were the bands of all assets; in
     STAC 1.1, they are the bands of assets that don't define their own. They are

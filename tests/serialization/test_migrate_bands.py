@@ -4,7 +4,7 @@ from typing import Any
 import pytest
 
 import pystac
-from pystac import Collection
+from pystac import Band, Collection
 from pystac.serialization.migrate import (
     has_extension_fields,
     migrate_extension_bands,
@@ -98,6 +98,22 @@ def test_merge_order_does_not_matter(sentinel2_dict: dict[str, Any]) -> None:
     migrate_raster(raster_first)
     migrate_eo(raster_first)
     assert eo_first == raster_first
+
+
+@pytest.mark.parametrize("eo_first", [True, False])
+def test_common_fields_come_first(item_dict: dict[str, Any], eo_first: bool) -> None:
+    asset = item_dict["assets"]["data"]
+    asset["eo:bands"] = [{"common_name": "red", "name": "B04"}]
+    asset["raster:bands"] = [{"scale": 2, "nodata": 0, "data_type": "uint16"}]
+    if eo_first:
+        migrate_eo(item_dict)
+        migrate_raster(item_dict)
+    else:
+        migrate_raster(item_dict)
+        migrate_eo(item_dict)
+    band = asset["bands"][0]
+    assert list(band)[:3] == ["name", "data_type", "nodata"]
+    assert list(band) == list(Band.from_dict(band).to_dict())
 
 
 def test_item_properties_bands_on_assets_are_removed(
