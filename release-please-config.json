@@ -5,6 +5,7 @@
       "changelog-path": "CHANGELOG.md",
       "component": "pystac",
       "include-component-in-tag": false,
+      "exclude-paths": ["extensions"],
       "extra-files": ["pyproject.toml", "core/pystac/version.py"]
     },
     "extensions/classification": {
