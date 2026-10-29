@@ -18,11 +18,12 @@ def date_time_range_item() -> Item:
 
 @pytest.fixture
 def sample_full_item() -> Item:
-    return Item.from_file(
-        TestCases.get_path(
-            "data-files/examples/1.0.0-beta.2/item-spec/examples/sample-full.json"
+    with pytest.warns(UserWarning, match="Item properties have bands that no asset"):
+        return Item.from_file(
+            TestCases.get_path(
+                "data-files/examples/1.0.0-beta.2/item-spec/examples/sample-full.json"
+            )
         )
-    )
 
 
 def test_datetimes(date_time_range_item: Item) -> None:

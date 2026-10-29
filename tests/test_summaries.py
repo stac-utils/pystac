@@ -3,7 +3,9 @@ from typing import Any
 
 import pytest
 
+from pystac import Band
 from pystac.summaries import RangeSummary, Summaries, Summarizer, SummaryStrategy
+from pystac.utils import get_opt
 from tests.utils import TestCases
 
 
@@ -11,8 +13,27 @@ def test_summary() -> None:
     coll = TestCases.case_5()
     summaries = Summarizer().summarize(coll.get_items(recursive=True))
     summaries_dict = summaries.to_dict()
-    assert len(summaries_dict["eo:bands"]) == 4
+    assert len(summaries_dict["bands"]) == 4
     assert len(summaries_dict["proj:code"]) == 1
+
+
+def test_summary_uses_item_and_asset_bands() -> None:
+    items = list(TestCases.case_5().get_items(recursive=True))
+    for item in items:
+        item.bands = [Band(name="red")]
+        get_opt(item.bands)[0].description = "Red"
+        for asset in item.assets.values():
+            asset.bands = None
+    summaries = Summarizer().summarize(items).to_dict()
+    assert summaries["bands"] == [{"name": "red", "description": "Red"}]
+    for item in items:
+        item.bands = None
+        next(iter(item.assets.values())).bands = [Band(name="nir")]
+    assert Summarizer().summarize(items).to_dict()["bands"] == [{"name": "nir"}]
+    for item in items:
+        for asset in item.assets.values():
+            asset.bands = None
+    assert "bands" not in Summarizer().summarize(items).to_dict()
 
 
 def test_summary_limit() -> None:
