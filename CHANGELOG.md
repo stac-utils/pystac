@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.16.0](https://github.com/stac-utils/pystac/compare/v1.15.2...v1.16.0) (2026-10-29)
+
+
+### Features
+
+* add octet-stream and zip media types ([#1805](https://github.com/stac-utils/pystac/issues/1805)) ([0be1933](https://github.com/stac-utils/pystac/commit/0be193371c045c89bcc51733341b767aac74eceb))
+* add optional allow-list for fetching json schemas ([#1828](https://github.com/stac-utils/pystac/issues/1828)) ([3482843](https://github.com/stac-utils/pystac/commit/3482843993ff104a7ba8dfa36d1f8cb615572444))
+* Add SpecDeprecationWarning ([#1845](https://github.com/stac-utils/pystac/issues/1845)) ([30a0c67](https://github.com/stac-utils/pystac/commit/30a0c677377572c4966bb5fa24a0dfd800777331))
+* validate using local extension json schemas ([#1814](https://github.com/stac-utils/pystac/issues/1814)) ([9ef2186](https://github.com/stac-utils/pystac/commit/9ef2186b9d8d4aaab5f13cdccc947702adf11b93))
+
+
+### Bug Fixes
+
+* recursively convert values in PropertiesExtension._set_property ([#1804](https://github.com/stac-utils/pystac/issues/1804)) ([68f12fd](https://github.com/stac-utils/pystac/commit/68f12fdeee1fc76465fef15ddb449370a0014ae8)), closes [#1802](https://github.com/stac-utils/pystac/issues/1802)
+
+
+### Documentation
+
+* **fix:** asv dev doesn't exist anymore ([#1839](https://github.com/stac-utils/pystac/issues/1839)) ([0d4af68](https://github.com/stac-utils/pystac/commit/0d4af682e3af8fe87da0686ae59e21a8e725b5bb))
+* reflect that PySTAC writes STAC v1.1.0 by default ([#1803](https://github.com/stac-utils/pystac/issues/1803)) ([b02ceba](https://github.com/stac-utils/pystac/commit/b02ceba07834411aa61e4d5e9c8efdd1bd6a51f3)), closes [#1513](https://github.com/stac-utils/pystac/issues/1513)
+* tweak how we version extension packages ([#1796](https://github.com/stac-utils/pystac/issues/1796)) ([e064109](https://github.com/stac-utils/pystac/commit/e064109398b0c3f29d2c3801561624a9c2061fc8))
+
 ## [1.15.2](https://github.com/stac-utils/pystac/compare/v1.15.1...v1.15.2) (2026-07-27)
 
 
