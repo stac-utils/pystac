@@ -13,6 +13,7 @@ from typing import (
 )
 
 import pystac
+from pystac.band import _write_bands
 from pystac.utils import get_required
 
 if TYPE_CHECKING:
@@ -171,7 +172,9 @@ class Summarizer:
     def _update_with_item(self, summaries: Summaries, item: Item) -> None:
         import numbers
 
-        for k, v in item.properties.items():
+        properties = dict(item.properties)
+        _write_bands(properties, item.bands)
+        for k, v in properties.items():
             if k in self.summaryfields:
                 strategy = self.summaryfields[k]
                 if strategy == SummaryStrategy.RANGE or (
