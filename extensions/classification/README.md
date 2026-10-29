@@ -11,5 +11,5 @@ This extension provides a way to describe categorical data and classification sc
 
 ## Versioning
 
-The package's MAJOR and MINOR versions match the version of the extension itself, e.g. **pystac-ext-classification** v2.0.0 corresponds to the [v2.0.0](https://github.com/stac-extensions/classification/releases/tag/v2.0.0) release of the **classification** extension.
-Any changes to the software (not the extension) will be released via [PATCH releases](https://packaging.python.org/en/latest/discussions/versioning/#valid-version-numbers).
+This package's MAJOR and MINOR versions match the version of the extension itself, e.g. **pystac-ext-classification** v2.0.0 corresponds to the [v2.0.0](https://github.com/stac-extensions/classification/releases/tag/v2.0.0) release of the **classification** extension.
+When we release updates to the package code without changing the target extension version, we use [PATCH releases](https://packaging.python.org/en/latest/discussions/versioning/#valid-version-numbers).

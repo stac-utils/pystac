@@ -9,5 +9,5 @@ This extension describes datasets that are organized as multi-dimensional datacu
 
 ## Versioning
 
-This package's version corresponds to the version of the extension specification it targets.
-When we release updates to the package code without changing the target extension version, we use [post releases](https://packaging.python.org/en/latest/discussions/versioning/#post-releases), e.g. `2.2.0.post1`.
+This package's MAJOR and MINOR versions match the version of the extension itself, e.g. **pystac-ext-datacube** v2.2.0 corresponds to the [v2.2.0](https://github.com/stac-extensions/datacube/releases/tag/v2.2.0) release of the **datacube** extension.
+When we release updates to the package code without changing the target extension version, we use [PATCH releases](https://packaging.python.org/en/latest/discussions/versioning/#valid-version-numbers).

@@ -9,5 +9,5 @@ This extension allows collections to define common asset properties that are sha
 
 ## Versioning
 
-This package's version corresponds to the version of the extension specification it targets.
-When we release updates to the package code without changing the target extension version, we use [post releases](https://packaging.python.org/en/latest/discussions/versioning/#post-releases), e.g. `1.0.0.post1`.
+This package's MAJOR and MINOR versions match the version of the extension itself, e.g. **pystac-ext-item-assets** v1.0.0 corresponds to the [v1.0.0](https://github.com/stac-extensions/item-assets/releases/tag/v1.0.0) release of the **item-assets** extension.
+When we release updates to the package code without changing the target extension version, we use [PATCH releases](https://packaging.python.org/en/latest/discussions/versioning/#valid-version-numbers).
