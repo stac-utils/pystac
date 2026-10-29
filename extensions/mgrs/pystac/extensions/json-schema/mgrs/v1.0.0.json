@@ -1,0 +1,117 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://stac-extensions.github.io/mgrs/v1.0.0/schema.json#",
+  "title": "MGRS Extension",
+  "description": "STAC MGRS Extension for STAC Items.",
+  "oneOf": [
+    {
+      "$comment": "This is the schema for STAC Items.",
+      "allOf": [
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "properties",
+            "assets"
+          ],
+          "properties": {
+            "type": {
+              "const": "Feature"
+            },
+            "properties": {
+              "allOf": [
+                {
+                  "$comment": "Require fields here for item properties.",
+                  "required": [
+                    "mgrs:latitude_band",
+                    "mgrs:grid_square"
+                  ]
+                },
+                {
+                  "$ref": "#/definitions/fields"
+                }
+              ]
+            },
+            "assets": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/fields"
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/definitions/stac_extensions"
+        }
+      ]
+    },
+    {
+      "$comment": "This is the schema for STAC Collections.",
+      "allOf": [
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "const": "Collection"
+            },
+            "assets": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/fields"
+              }
+            },
+            "item_assets": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/fields"
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/definitions/stac_extensions"
+        }
+      ]
+    }
+  ],
+  "definitions": {
+    "stac_extensions": {
+      "type": "object",
+      "required": [
+        "stac_extensions"
+      ],
+      "properties": {
+        "stac_extensions": {
+          "type": "array",
+          "contains": {
+            "const": "https://stac-extensions.github.io/mgrs/v1.0.0/schema.json"
+          }
+        }
+      }
+    },
+    "fields": {
+      "$comment": "Add your new fields here. Don't require them here, do that above in the item schema.",
+      "type": "object",
+      "properties": {
+        "mgrs:latitude_band": {
+          "type": "string"
+        },
+        "mgrs:grid_square": {
+          "type": "string"
+        },
+        "mgrs:utm_zone": {
+          "type": "integer"
+        }
+      },
+      "patternProperties": {
+        "^(?!mgrs:)": {
+          "$comment": "Do not allow other fields with this prefix"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

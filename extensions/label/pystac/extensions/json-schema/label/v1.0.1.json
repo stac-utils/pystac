@@ -1,0 +1,284 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://stac-extensions.github.io/label/v1.0.1/schema.json#",
+  "title": "Label Extension",
+  "description": "STAC Label Extension for STAC Items and STAC Collections.",
+  "oneOf": [
+    {
+      "$comment": "This is the schema for STAC Items.",
+      "allOf": [
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "properties",
+            "links",
+            "assets"
+          ],
+          "properties": {
+            "type": {
+              "const": "Feature"
+            },
+            "properties": {
+              "allOf": [
+                {
+                  "$comment": "Require fields here for item properties.",
+                  "required": [
+                    "label:properties",
+                    "label:description",
+                    "label:type"
+                  ]
+                },
+                {
+                  "$ref": "#/definitions/fields"
+                }
+              ]
+            },
+            "links": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/link_fields"
+              }
+            },
+            "assets": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/fields"
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/definitions/stac_extensions"
+        }
+      ]
+    },
+    {
+      "$comment": "This is the schema for STAC Collections.",
+      "allOf": [
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "const": "Collection"
+            },
+            "assets": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/fields"
+              }
+            },
+            "item_assets": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/fields"
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/definitions/stac_extensions"
+        }
+      ]
+    }
+  ],
+  "definitions": {
+    "stac_extensions": {
+      "type": "object",
+      "required": [
+        "stac_extensions"
+      ],
+      "properties": {
+        "stac_extensions": {
+          "type": "array",
+          "contains": {
+            "const": "https://stac-extensions.github.io/label/v1.0.1/schema.json"
+          }
+        }
+      }
+    },
+    "link_fields": {
+      "type": "object",
+      "properties": {
+        "label:assets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "patternProperties": {
+        "^(?!label:)": {}
+      },
+      "additionalProperties": false
+    },
+    "fields": {
+      "type": "object",
+      "properties": {
+        "label:properties": {
+          "title": "Property",
+          "oneOf": [
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "label:classes": {
+          "title": "Classes",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "classes"
+            ],
+            "properties": {
+              "name": {
+                "title": "Name"
+              },
+              "classes": {
+                "title": "Classes",
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "label:description": {
+          "title": "Description",
+          "type": "string",
+          "minLength": 1
+        },
+        "label:type": {
+          "title": "Type",
+          "type": "string",
+          "enum": [
+            "raster",
+            "vector"
+          ]
+        },
+        "label:tasks": {
+          "title": "Task",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "label:methods": {
+          "title": "Method",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "label:overviews": {
+          "title": "Overview",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "property_key": {
+                "title": "Property Key",
+                "type": "string"
+              },
+              "counts": {
+                "title": "Counts",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "title": "Class Name",
+                      "type": "string"
+                    },
+                    "count": {
+                      "title": "Count",
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "statistics": {
+                "title": "Statistics",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "title": "Stat Name",
+                      "type": "string"
+                    },
+                    "value": {
+                      "title": "Value",
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "label:type": {
+            "const": "raster"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "label:classes": {
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "label:classes": {
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "patternProperties": {
+        "^(?!label:)": {}
+      },
+      "additionalProperties": false
+    }
+  }
+}

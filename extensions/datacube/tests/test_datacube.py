@@ -275,7 +275,6 @@ def test_set_variables(ext_item: Item) -> None:
     assert ext_item.validate()
 
 
-@pytest.mark.vcr()
 def test_set_dimensions(ext_item: Item) -> None:
     original = ext_item.properties[dc.DIMENSIONS_PROP]
     value = dc.Dimension(

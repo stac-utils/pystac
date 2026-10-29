@@ -1,0 +1,150 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://stac-extensions.github.io/sat/v1.0.0/schema.json",
+  "title": "Satellite Extension",
+  "description": "STAC Sat Extension to a STAC Item.",
+  "oneOf": [
+    {
+      "$comment": "This is the schema for STAC Items.",
+      "allOf": [
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "properties",
+            "assets"
+          ],
+          "properties": {
+            "type": {
+              "const": "Feature"
+            },
+            "properties": {
+              "allOf": [
+                {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "sat:platform_international_designator"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "sat:orbit_state"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "sat:absolute_orbit"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "sat:relative_orbit"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "sat:anx_datetime"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "$ref": "#/definitions/fields"
+                }
+              ]
+            },
+            "assets": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/fields"
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/definitions/stac_extensions"
+        }
+      ]
+    },
+    {
+      "$comment": "This is the schema for STAC Collections.",
+      "allOf": [
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "const": "Collection"
+            },
+            "assets": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/fields"
+              }
+            },
+            "item_assets": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/fields"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "definitions": {
+    "stac_extensions": {
+      "type": "object",
+      "required": [
+        "stac_extensions"
+      ],
+      "properties": {
+        "stac_extensions": {
+          "type": "array",
+          "contains": {
+            "const": "https://stac-extensions.github.io/sat/v1.0.0/schema.json"
+          }
+        }
+      }
+    },
+    "fields": {
+      "type": "object",
+      "properties": {
+        "sat:platform_international_designator": {
+          "type": "string"
+        },
+        "sat:orbit_state": {
+          "title": "Orbit State",
+          "type": "string",
+          "enum": [
+            "ascending",
+            "descending",
+            "geostationary"
+          ]
+        },
+        "sat:absolute_orbit": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sat:relative_orbit": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sat:anx_datetime": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "patternProperties": {
+        "^(?!sat:)": {
+          "$comment": "Do not allow unspecified fields prefixed with sat:"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

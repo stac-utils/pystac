@@ -21,7 +21,6 @@ from tests.utils.test_cases import ExampleInfo
 
 
 class TestValidate:
-    @pytest.mark.vcr()
     def test_validate_current_version(self) -> None:
         catalog = pystac.read_file(
             TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
@@ -64,7 +63,6 @@ class TestValidate:
                     assert isinstance(e.source[0], jsonschema.ValidationError)
                     raise e
 
-    @pytest.mark.vcr()
     def test_validate_error_contains_href(self) -> None:
         # Test that the exception message contains the HREF of the object if available.
         cat = TestCases.case_1()
@@ -80,14 +78,12 @@ class TestValidate:
                 assert get_opt(item.get_self_href()) in str(e)
                 raise e
 
-    @pytest.mark.vcr()
     def test_validate_all_deprecated_dict_arg(self) -> None:
         catalog = TestCases.case_1()
 
         with pytest.warns(DeprecationWarning, match="use validate_all_dict"):
             pystac.validation.validate_all(catalog.to_dict(), catalog.get_self_href())
 
-    @pytest.mark.vcr()
     def test_validate_all_deprecated_dict_arg_missing_href(self) -> None:
         catalog = TestCases.case_1()
 
@@ -95,14 +91,12 @@ class TestValidate:
             with pytest.raises(ValueError, match="href must be set"):
                 pystac.validation.validate_all(catalog.to_dict())
 
-    @pytest.mark.vcr()
     def test_validate_all_unexpected_href(self) -> None:
         catalog = TestCases.case_1()
 
         with pytest.raises(ValueError, match="href must be None"):
             pystac.validation.validate_all(catalog, catalog.get_self_href())
 
-    @pytest.mark.vcr()
     def test_validate_all(self) -> None:
         catalog = TestCases.case_1()
 
@@ -150,7 +144,6 @@ class TestValidate:
             with pytest.raises(pystac.STACValidationError):
                 pystac.validation.validate_all_dict(stac_dict, new_cat_href)
 
-    @pytest.mark.vcr()
     def test_validates_geojson_with_tuple_coordinates(self) -> None:
         """This unit tests guards against a bug where if a geometry
         dict has tuples instead of lists for the coordinate sequence,
