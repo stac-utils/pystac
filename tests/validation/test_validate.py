@@ -15,6 +15,7 @@ from pystac.cache import CollectionCache
 from pystac.serialization.common_properties import merge_common_properties
 from pystac.utils import get_opt
 from pystac.validation import GetSchemaError, JsonSchemaSTACValidator
+from pystac.validation.stac_validator import SecureJsonSchemaSTACValidator
 from tests.utils import TestCases
 from tests.utils.test_cases import ExampleInfo
 
@@ -252,3 +253,19 @@ def test_404_schema_url(requests_mock: Mocker, item: pystac.Item) -> None:
         GetSchemaError, match="http://pystac-extensions.test/a-fake.schema.json"
     ):
         item.validate()
+
+
+@pytest.mark.vcr()
+def test_secure_validator_allows_trusted_schema(item: pystac.Item) -> None:
+    schema_uri = "https://stac-extensions.github.io/projection/v2.0.0/schema.json"
+    item.stac_extensions.append(schema_uri)
+
+    item.validate(validator=SecureJsonSchemaSTACValidator())
+
+
+def test_secure_validator_rejects_untrusted_schema(item: pystac.Item) -> None:
+    schema_uri = "https://untrusted.example/schema.json"
+    item.stac_extensions.append(schema_uri)
+
+    with pytest.raises(GetSchemaError, match="not in the allow-list"):
+        item.validate(validator=SecureJsonSchemaSTACValidator())
