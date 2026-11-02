@@ -22,7 +22,7 @@
     },
     "extensions/file": {
       "component": "pystac-ext-file",
-      "versioning": "always-bump-patch",
+      "versioning": "always-bump-patch"
     },
     "extensions/grid": {
       "component": "pystac-ext-grid",
