@@ -93,6 +93,9 @@ class SarExtension(
     :stac-ext:`SAR Extension <sar>`. This class is generic over the type
     of STAC object to be extended.
 
+    Unset fields return ``None``; assigning ``None`` to a property removes it.
+    Use STAC validation to check schema constraints.
+
     To create a concrete instance of :class:`SarExtension`, use the
     :meth:`SarExtension.ext` method. For example:
 
@@ -124,6 +127,11 @@ class SarExtension(
         beam_ids: list[str] | None = None,
     ) -> None:
         """Applies SAR properties to the extended object. All fields are optional.
+
+        Positional arguments remain supported. Passing or defaulting to ``None``
+        removes ``instrument_mode``, ``frequency_band``, ``polarizations``, and
+        ``product_type``. Other fields are only updated when their arguments are
+        not ``None``.
 
         Args:
             instrument_mode : The name of the sensor acquisition mode that is
@@ -195,8 +203,9 @@ class SarExtension(
     def instrument_mode(self) -> str | None:
         """Gets or sets the instrument mode.
 
-        Deprecated in SAR v1.3.2 in favor of ``instrument_modes`` from the
-        instruments extension.
+        As of v1.3.2 of the SAR extension, ``sar:instrument_mode`` is deprecated
+        in favor of ``instrument_modes`` from the instruments extension.
+        This accessor remains supported for compatibility.
         """
         return self._get_property(INSTRUMENT_MODE_PROP, str)
 
@@ -233,7 +242,9 @@ class SarExtension(
     def product_type(self) -> str | None:
         """Gets or sets the product type.
 
-        Deprecated in SAR v1.1.0 in favor of ``product:type``.
+        As of v1.1.0 of the SAR extension, ``sar:product_type`` is deprecated
+        in favor of ``product:type``. This accessor remains supported for
+        compatibility.
         """
         return self._get_property(PRODUCT_TYPE_PROP, str)
 
@@ -243,7 +254,10 @@ class SarExtension(
 
     @property
     def center_frequency(self) -> float | None:
-        """Gets or sets a center frequency for the item."""
+        """Gets or sets the center frequency in gigahertz (GHz), greater than zero.
+
+        Use STAC validation to check this constraint.
+        """
         return self._get_property(CENTER_FREQUENCY_PROP, float)
 
     @center_frequency.setter
@@ -326,7 +340,10 @@ class SarExtension(
 
     @property
     def bandwidth(self) -> float | None:
-        """Range bandwidth in gigahertz (GHz), greater than zero."""
+        """Range bandwidth in gigahertz (GHz), greater than zero.
+
+        Use STAC validation to check this constraint.
+        """
         return self._get_property(BANDWIDTH_PROP, float)
 
     @bandwidth.setter
