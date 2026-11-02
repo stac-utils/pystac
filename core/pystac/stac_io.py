@@ -262,16 +262,25 @@ class StacIO(ABC):
         links in a retrieved document resolve against this URL, not the requested one.
         """
         href = str(os.fspath(source))
-        return self._final_hrefs.get(href, href)
+        return self._redirects().get(href, href)
 
     def _set_final_href(self, href: str, final_href: str | None) -> None:
         """Records the URL a read of ``href`` ended up at after redirects, for
         :meth:`_get_final_href`. Implementations that follow redirects should call
         this after every read so that a stale redirect is not reused."""
         if final_href and final_href != href:
-            self._final_hrefs[href] = final_href
+            self._redirects()[href] = final_href
         else:
-            self._final_hrefs.pop(href, None)
+            self._redirects().pop(href, None)
+
+    def _redirects(self) -> dict[str, str]:
+        # Subclasses that override __init__ without calling super().__init__()
+        # never get _final_hrefs, so create it on first use.
+        try:
+            return self._final_hrefs
+        except AttributeError:
+            self._final_hrefs = {}
+            return self._final_hrefs
 
     def save_json(
         self,
