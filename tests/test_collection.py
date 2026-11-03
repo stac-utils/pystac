@@ -842,3 +842,52 @@ def test_from_dict_missing_extent(collection: Collection) -> None:
 
     assert c.extent.spatial.to_dict()["bbox"] == [[-90, -180, 90, 180]]
     assert c.extent.temporal.to_dict()["interval"] == [[None, None]]
+
+
+def test_from_dict_null_spatial_extent(collection: Collection) -> None:
+    # https://github.com/stac-utils/pystac/issues/1551
+    d = collection.to_dict()
+    d["extent"]["spatial"] = None
+    with pytest.warns(UserWarning, match="spatial extent should have a bbox"):
+        c = Collection.from_dict(d)
+
+    assert c.extent.spatial.to_dict()["bbox"] == [[-90, -180, 90, 180]]
+    # the temporal extent is untouched
+    temporal = collection.extent.temporal.to_dict()["interval"]
+    assert c.extent.temporal.to_dict()["interval"] == temporal
+
+
+def test_from_dict_null_spatial_bbox(collection: Collection) -> None:
+    # https://github.com/stac-utils/pystac/issues/1551
+    d = collection.to_dict()
+    d["extent"]["spatial"] = {"bbox": None, "extra": "kept"}
+    with pytest.warns(UserWarning, match="spatial extent should have a bbox"):
+        c = Collection.from_dict(d)
+
+    assert c.extent.spatial.to_dict()["bbox"] == [[-90, -180, 90, 180]]
+    assert c.extent.spatial.extra_fields == {"extra": "kept"}
+
+
+def test_from_dict_null_temporal_extent(collection: Collection) -> None:
+    # https://github.com/stac-utils/pystac/issues/1551
+    d = collection.to_dict()
+    d["extent"]["temporal"] = None
+    with pytest.warns(UserWarning, match="temporal extent should have an interval"):
+        c = Collection.from_dict(d)
+
+    assert c.extent.temporal.to_dict()["interval"] == [[None, None]]
+    spatial = collection.extent.spatial.to_dict()["bbox"]
+    assert c.extent.spatial.to_dict()["bbox"] == spatial
+
+
+def test_null_extent_round_trips_as_valid_stac(collection: Collection) -> None:
+    # https://github.com/stac-utils/pystac/issues/1551
+    d = collection.to_dict()
+    d["extent"] = {"spatial": None, "temporal": None}
+    with pytest.warns(UserWarning):
+        c = Collection.from_dict(d)
+
+    assert c.to_dict()["extent"] == {
+        "spatial": {"bbox": [[-90, -180, 90, 180]]},
+        "temporal": {"interval": [[None, None]]},
+    }
