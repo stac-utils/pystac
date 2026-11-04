@@ -35,12 +35,12 @@ def test_example(landsat8_collection: Collection) -> None:
     assert landsat8_collection.item_assets["B1"] == ItemAssetDefinition(
         {
             "type": "image/tiff; application=geotiff",
-            "eo:bands": [
+            "bands": [
                 {
                     "name": "B1",
-                    "common_name": "coastal",
-                    "center_wavelength": 0.44,
-                    "full_width_half_max": 0.02,
+                    "eo:common_name": "coastal",
+                    "eo:center_wavelength": 0.44,
+                    "eo:full_width_half_max": 0.02,
                 }
             ],
             "title": "Coastal Band (B1)",
@@ -54,12 +54,12 @@ def test_set_using_dict(landsat8_collection: Collection) -> None:
 
     landsat8_collection.item_assets["Bx"] = {
         "type": "image/tiff; application=geotiff",
-        "eo:bands": [
+        "bands": [
             {
                 "name": "B1",
-                "common_name": "coastal",
-                "center_wavelength": 0.44,
-                "full_width_half_max": 0.02,
+                "eo:common_name": "coastal",
+                "eo:center_wavelength": 0.44,
+                "eo:full_width_half_max": 0.02,
             }
         ],
         "title": "Coastal Band (B1)",
@@ -166,6 +166,7 @@ class TestAssetDefinition:
         assert asset_definition.owner == landsat8_collection
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_extra_fields(collection: Collection) -> None:
     asset_definition = ItemAssetDefinition.create(
         title=None,
@@ -322,6 +323,7 @@ def test_item_assets_extension_is_deprecated() -> None:
     item_asset_ext.item_assets["thumbnail"] = asset_definition
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_item_assets_extension_asset_definition_is_deprecated() -> None:
     with pytest.warns(
         DeprecationWarning, match="Please use ``pystac.ItemAssetDefinition``"

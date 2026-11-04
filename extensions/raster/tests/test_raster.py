@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 from pytest_pystac.plugin import assert_to_from_dict
@@ -24,7 +25,18 @@ PLANET_EXAMPLE_URI = str(DATA_FILES / "raster-planet-example.json")
 
 @pytest.fixture
 def ext_item() -> pystac.Item:
-    return pystac.Item.from_file(PLANET_EXAMPLE_URI)
+    with pytest.warns(UserWarning, match="Dropping name of raster:bands"):
+        return pystac.Item.from_file(PLANET_EXAMPLE_URI)
+
+
+def test_band_names_different_from_eo_give_way(ext_item: pystac.Item) -> None:
+    bands = get_opt(ext_item.assets["data"].bands)
+    assert [band.name for band in bands] == ["band-1", "band-2", "band-3", "band-4"]
+    assert bands[0].extra_fields["raster:scale"] == 0.01
+    assert bands[0].extra_fields["eo:common_name"] == "red"
+    assert "raster:bands" not in ext_item.assets["data"].extra_fields
+    assert "eo:bands" not in ext_item.assets["data"].extra_fields
+    assert RasterExtension.get_schema_uri() in ext_item.stac_extensions
 
 
 SENTINEL2_EXAMPLE_URI = str(DATA_FILES / "raster-sentinel2-example.json")
@@ -46,6 +58,7 @@ def test_validate_raster(ext_item: pystac.Item) -> None:
     item2.validate()
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 @pytest.mark.vcr()
 def test_asset_bands(ext_item: pystac.Item) -> None:
     item2 = pystac.Item.from_file(SENTINEL2_EXAMPLE_URI)
@@ -147,16 +160,12 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
     RasterExtension.ext(asset).bands = new_bands
     ext_item.add_asset("test", asset)
 
-    assert len(ext_item.assets["test"].extra_fields["raster:bands"]) == 3
-    assert (
-        ext_item.assets["test"].extra_fields["raster:bands"][1]["statistics"]["minimum"]
-        == -1
-    )
-    assert (
-        ext_item.assets["test"].extra_fields["raster:bands"][1]["histogram"]["min"]
-        == 3848.354901960784
-    )
-    assert ext_item.assets["test"].extra_fields["raster:bands"][2]["nodata"] == "-inf"
+    assert "raster:bands" not in ext_item.assets["test"].extra_fields
+    test_bands = get_opt(ext_item.assets["test"].bands)
+    assert len(test_bands) == 3
+    assert get_opt(test_bands[1].statistics).minimum == -1
+    assert test_bands[1].extra_fields["raster:histogram"]["min"] == 3848.354901960784
+    assert test_bands[2].nodata == "-inf"
 
     for s in new_stats:
         s.minimum = None
@@ -164,7 +173,7 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
         s.mean = None
         s.stddev = None
         s.valid_percent = None
-        assert len(s.properties) == 0
+        assert s.to_dict() == {}
 
     for b in new_bands:
         b.bits_per_sample = None
@@ -179,9 +188,15 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
         b.offset = None
         assert len(b.properties) == 0
 
-    new_stats[2].apply(minimum=0, maximum=10000, mean=5000, stddev=10, valid_percent=88)
-    new_stats[1].apply(minimum=-1, maximum=1, mean=0, stddev=1, valid_percent=100)
-    new_stats[0].apply(minimum=1, maximum=255, mean=200, stddev=3, valid_percent=100)
+    new_stats[2] = Statistics(
+        minimum=0, maximum=10000, mean=5000, stddev=10, valid_percent=88
+    )
+    new_stats[1] = Statistics(
+        minimum=-1, maximum=1, mean=0, stddev=1, valid_percent=100
+    )
+    new_stats[0] = Statistics(
+        minimum=1, maximum=255, mean=200, stddev=3, valid_percent=100
+    )
     new_bands[2].apply(
         nodata=1,
         unit="test1",
@@ -201,11 +216,9 @@ def test_asset_bands(ext_item: pystac.Item) -> None:
         histogram=new_histograms[2],
     )
     RasterExtension.ext(ext_item.assets["test"]).apply(new_bands)
-    assert (
-        ext_item.assets["test"].extra_fields["raster:bands"][0]["statistics"]["minimum"]
-        == 1
-    )
-    assert ext_item.assets["test"].extra_fields["raster:bands"][0]["nodata"] == "nan"
+    test_bands = get_opt(ext_item.assets["test"].bands)
+    assert get_opt(test_bands[0].statistics).minimum == 1
+    assert test_bands[0].nodata == "nan"
 
 
 def test_extension_not_implemented(ext_item: pystac.Item) -> None:
@@ -257,6 +270,7 @@ def test_summaries_adds_uri() -> None:
     assert RasterExtension.get_schema_uri() not in col.stac_extensions
 
 
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
 def test_collection_item_asset() -> None:
     coll = pystac.Collection.from_file(LANDSAT_COLLECTION_EXAMPLE_URI)
 
@@ -271,7 +285,7 @@ def test_collection_item_asset() -> None:
 
 def test_older_extension_version(ext_item: pystac.Item) -> None:
     old = "https://stac-extensions.github.io/raster/v1.0.0/schema.json"
-    new = "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
+    new = "https://stac-extensions.github.io/raster/v2.0.0/schema.json"
 
     stac_extensions = set(ext_item.stac_extensions)
     stac_extensions.remove(new)
@@ -285,3 +299,144 @@ def test_older_extension_version(ext_item: pystac.Item) -> None:
     migrated_item = pystac.Item.from_dict(item_as_dict, migrate=True)
     assert RasterExtension.has_extension(migrated_item)
     assert new in migrated_item.stac_extensions
+
+
+def test_band_extension() -> None:
+    band = pystac.Band(name="b1", nodata=0)
+    raster_ext = RasterExtension.ext(band)
+    raster_ext.sampling = Sampling.AREA
+    raster_ext.bits_per_sample = 12
+    raster_ext.spatial_resolution = 10.0
+    raster_ext.scale = 0.0001
+    raster_ext.offset = -0.1
+    assert band.to_dict() == {
+        "name": "b1",
+        "nodata": 0,
+        "raster:sampling": "area",
+        "raster:bits_per_sample": 12,
+        "raster:spatial_resolution": 10.0,
+        "raster:scale": 0.0001,
+        "raster:offset": -0.1,
+    }
+    assert raster_ext.sampling == Sampling.AREA
+    raster_ext.scale = None
+    assert "raster:scale" not in band.extra_fields
+
+
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
+def test_set_bands_keeps_other_band_fields(ext_item: pystac.Item) -> None:
+    asset = ext_item.assets["data"]
+    asset.bands = [
+        pystac.Band(name="red", unit="m", extra_fields={"eo:common_name": "red"})
+    ]
+    RasterExtension.ext(asset).bands = [RasterBand.create(scale=2.0, unit="cm")]
+    assert get_opt(asset.bands)[0].to_dict() == {
+        "name": "red",
+        "unit": "cm",
+        "eo:common_name": "red",
+        "raster:scale": 2.0,
+    }
+    raster_bands = get_opt(RasterExtension.ext(asset).bands)
+    assert raster_bands[0].scale == 2.0
+    assert raster_bands[0].unit == "cm"
+
+
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
+def test_asset_bands_inherited_from_owner_are_ignored(ext_item: pystac.Item) -> None:
+    ext_item.bands = [pystac.Band(extra_fields={"raster:scale": 2.0})]
+    asset = ext_item.assets["data"]
+    asset.bands = None
+    asset.extra_fields.pop("raster:bands", None)
+    assert asset.bands is ext_item.bands
+    assert RasterExtension.ext(asset).bands is None
+
+
+def test_migration_removes_uri_without_raster_fields() -> None:
+    d = {
+        "type": "Feature",
+        "stac_version": "1.1.0",
+        "stac_extensions": [
+            "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
+        ],
+        "id": "item",
+        "geometry": None,
+        "properties": {"datetime": "2020-01-01T00:00:00Z"},
+        "links": [],
+        "assets": {
+            "data": {
+                "href": "data.tif",
+                "raster:bands": [{"data_type": "uint8", "nodata": 0}],
+            }
+        },
+    }
+    item = pystac.Item.from_dict(d)
+    assert item.stac_extensions == []
+    assert get_opt(item.assets["data"].bands)[0].to_dict() == {
+        "data_type": "uint8",
+        "nodata": 0,
+    }
+
+
+@pytest.fixture
+def v1_summaries_collection_dict(collection: pystac.Collection) -> dict[str, Any]:
+    d = collection.to_dict(include_self_link=False)
+    d["stac_extensions"] = [
+        "https://stac-extensions.github.io/raster/v1.1.0/schema.json"
+    ]
+    d["summaries"] = {"raster:bands": [{"data_type": "uint16", "scale": 0.0001}]}
+    return d
+
+
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
+def test_migrates_v1_summaries(v1_summaries_collection_dict: dict[str, Any]) -> None:
+    col = pystac.Collection.from_dict(v1_summaries_collection_dict)
+    assert RasterExtension.get_schema_uri() in col.stac_extensions
+    assert col.summaries.get_list("raster:bands") is None
+    assert col.summaries.get_list("bands") == [
+        {"data_type": "uint16", "raster:scale": 0.0001}
+    ]
+    assert get_opt(RasterExtension.summaries(col).bands)[0].scale == 0.0001
+
+
+@pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
+def test_set_summaries_bands_keeps_other_band_fields(
+    v1_summaries_collection_dict: dict[str, Any],
+) -> None:
+    col = pystac.Collection.from_dict(v1_summaries_collection_dict)
+    col.summaries.add("bands", [{"name": "B1", "eo:common_name": "blue"}])
+    RasterExtension.summaries(col).bands = [RasterBand.create(scale=2.0)]
+    assert col.summaries.get_list("bands") == [
+        {"name": "B1", "eo:common_name": "blue", "raster:scale": 2.0}
+    ]
+
+
+def test_v1_bands_accessors_are_deprecated(
+    ext_item: pystac.Item, v1_summaries_collection_dict: dict[str, Any]
+) -> None:
+    asset = ext_item.assets["data"]
+    with pytest.deprecated_call(match="RasterExtension.bands is deprecated"):
+        RasterExtension.ext(asset).bands
+    with pytest.deprecated_call(match="RasterExtension.bands is deprecated"):
+        RasterExtension.ext(asset).bands = [RasterBand.create(scale=2.0)]
+    with pytest.deprecated_call(match="RasterExtension.apply is deprecated"):
+        RasterExtension.ext(asset).apply([RasterBand.create(scale=2.0)])
+    col = pystac.Collection.from_dict(v1_summaries_collection_dict)
+    with pytest.deprecated_call(match="SummariesRasterExtension.bands is deprecated"):
+        RasterExtension.summaries(col).bands
+
+
+def test_item_ext(ext_item: pystac.Item) -> None:
+    ext = RasterExtension.ext(ext_item)
+    ext.scale = 2.0
+    ext.sampling = Sampling.POINT
+    assert ext_item.properties["raster:scale"] == 2.0
+    assert RasterExtension.ext(ext_item).sampling == Sampling.POINT
+
+
+def test_data_value_classes_are_from_core() -> None:
+    from pystac import common_metadata
+
+    assert DataType is common_metadata.DataType
+    assert NoDataStrings is common_metadata.NoDataStrings
+    assert Statistics is common_metadata.Statistics
+    assert Statistics.create(minimum=0, count=2) == Statistics(minimum=0, count=2)

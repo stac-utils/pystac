@@ -77,6 +77,26 @@ class Statistics:
     """Other fields on the statistics object."""
 
     @classmethod
+    def create(
+        cls,
+        minimum: float | None = None,
+        maximum: float | None = None,
+        mean: float | None = None,
+        stddev: float | None = None,
+        valid_percent: float | None = None,
+        count: int | None = None,
+    ) -> Statistics:
+        """Creates a new statistics object."""
+        return cls(
+            minimum=minimum,
+            maximum=maximum,
+            mean=mean,
+            stddev=stddev,
+            count=count,
+            valid_percent=valid_percent,
+        )
+
+    @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Statistics:
         """Creates a new statistics object from a dictionary. Does not modify ``d``."""
         d = deepcopy(d)
