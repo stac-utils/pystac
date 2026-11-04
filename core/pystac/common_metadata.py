@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from copy import deepcopy
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Optional, TypeVar, cast
 
 import pystac
 from pystac import utils
 from pystac.errors import STACError
+from pystac.utils import StringEnum
 
 if TYPE_CHECKING:
     from pystac.asset import Asset
@@ -14,6 +17,95 @@ if TYPE_CHECKING:
 
 
 P = TypeVar("P")
+
+
+class DataType(StringEnum):
+    """Data types allowed for the ``data_type`` field of
+    :stac-spec:`Data Values <commons/common-metadata.md#data-values>`."""
+
+    INT8 = "int8"
+    INT16 = "int16"
+    INT32 = "int32"
+    INT64 = "int64"
+    UINT8 = "uint8"
+    UINT16 = "uint16"
+    UINT32 = "uint32"
+    UINT64 = "uint64"
+    FLOAT16 = "float16"
+    FLOAT32 = "float32"
+    FLOAT64 = "float64"
+    CINT16 = "cint16"
+    CINT32 = "cint32"
+    CFLOAT32 = "cfloat32"
+    CFLOAT64 = "cfloat64"
+    OTHER = "other"
+
+
+class NoDataStrings(StringEnum):
+    """String values allowed for the ``nodata`` field of
+    :stac-spec:`Data Values <commons/common-metadata.md#data-values>`."""
+
+    INF = "inf"
+    NINF = "-inf"
+    NAN = "nan"
+
+
+@dataclass
+class Statistics:
+    """The ``statistics`` field of
+    :stac-spec:`Data Values <commons/common-metadata.md#data-values>`."""
+
+    minimum: float | None = None
+    """Minimum value of all the data values."""
+
+    maximum: float | None = None
+    """Maximum value of all the data values."""
+
+    mean: float | None = None
+    """Mean value of all the data values."""
+
+    stddev: float | None = None
+    """Standard deviation value of all the data values."""
+
+    count: int | None = None
+    """Total number of all data values."""
+
+    valid_percent: float | None = None
+    """Percentage of valid (not ``nodata``) values."""
+
+    extra_fields: dict[str, Any] = field(default_factory=dict)
+    """Other fields on the statistics object."""
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> Statistics:
+        """Creates a new statistics object from a dictionary. Does not modify ``d``."""
+        d = deepcopy(d)
+        return cls(
+            minimum=d.pop("minimum", None),
+            maximum=d.pop("maximum", None),
+            mean=d.pop("mean", None),
+            stddev=d.pop("stddev", None),
+            count=d.pop("count", None),
+            valid_percent=d.pop("valid_percent", None),
+            extra_fields=d,
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        """Creates a dictionary from this statistics object."""
+        d: dict[str, Any] = {
+            k: v
+            for k, v in (
+                ("minimum", self.minimum),
+                ("maximum", self.maximum),
+                ("mean", self.mean),
+                ("stddev", self.stddev),
+                ("count", self.count),
+                ("valid_percent", self.valid_percent),
+            )
+            if v is not None
+        }
+        d.update(deepcopy(self.extra_fields))
+        return d
 
 
 class CommonMetadata:

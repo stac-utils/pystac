@@ -538,6 +538,8 @@ class Collection(Catalog, Assets):
         bands: list[Band] | None = None,
     ):
         self._band_cache = _BandCache()
+        self._item_assets: _ItemAssets | None = None
+        self._item_asset_bands_loaded = False
         super().__init__(
             id,
             description,
@@ -555,7 +557,6 @@ class Collection(Catalog, Assets):
         self.keywords = keywords
         self.providers = providers
         self.summaries = summaries or Summaries.empty()
-        self._item_assets: _ItemAssets | None = None
 
         self.assets = {}
         if assets is not None:
@@ -904,10 +905,15 @@ class Collection(Catalog, Assets):
         """Extra fields that are part of the top-level JSON properties of the
         Collection.
 
-        Changes made to the bands returned by :attr:`~pystac.Collection.bands` are
-        written to ``extra_fields["bands"]`` whenever this dictionary is read.
+        Changes made to the bands returned by :attr:`~pystac.Collection.bands` and by
+        the :attr:`~pystac.Collection.item_assets` definitions are written to this
+        dictionary whenever it is read.
         """
-        self._band_cache.sync(self._extra_fields)
+        if self._band_cache.loaded:
+            self._band_cache.sync(self._extra_fields)
+        if self._item_asset_bands_loaded and self._item_assets is not None:
+            for item_asset in self._item_assets.values():
+                item_asset._sync_bands()
         return self._extra_fields
 
     @extra_fields.setter

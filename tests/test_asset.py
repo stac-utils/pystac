@@ -288,6 +288,20 @@ def test_bands_are_updated_in_place() -> None:
     assert asset.extra_fields["bands"] == [{"name": "blue"}]
 
 
+def test_band_data_values_are_updated_in_place() -> None:
+    asset = pystac.Asset(
+        "data.tif", extra_fields={"bands": [{"name": "red", "nodata": 0}]}
+    )
+    band = get_opt(asset.bands)[0]
+    asset.extra_fields["bands"][0].update(
+        {"nodata": 255, "unit": "m", "statistics": {"mean": 1.0}}
+    )
+    assert get_opt(asset.bands)[0] is band
+    assert band.nodata == 255
+    assert band.unit == "m"
+    assert band.statistics == pystac.common_metadata.Statistics(mean=1.0)
+
+
 def test_bands_are_read_again_when_their_number_changes() -> None:
     asset = pystac.Asset("data.tif", extra_fields={"bands": [{"name": "red"}]})
     band = get_opt(asset.bands)[0]

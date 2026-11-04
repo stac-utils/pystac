@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from copy import deepcopy
-from dataclasses import dataclass, field
+from copy import copy, deepcopy
+from dataclasses import dataclass, field, fields
 from typing import Any
+
+from pystac.common_metadata import DataType, NoDataStrings, Statistics
 
 
 @dataclass
@@ -22,6 +24,20 @@ class Band:
     CommonMark 0.29 syntax MAY be used for rich text representation.
     """
 
+    data_type: DataType | str | None = None
+    """The data type of the values in the band."""
+
+    nodata: float | NoDataStrings | str | None = None
+    """Value used to identify no-data."""
+
+    statistics: Statistics | None = None
+    """Statistics of all the values in the band."""
+
+    unit: str | None = None
+    """Unit of measurement of the values in the band, preferably compliant to
+    `UCUM <https://ucum.org/ucum.html>`__ or
+    `UDUNITS-2 <https://docs.unidata.ucar.edu/udunits/current/>`__."""
+
     extra_fields: dict[str, Any] = field(default_factory=dict)
     """Other fields on the band."""
 
@@ -30,11 +46,24 @@ class Band:
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Band:
-        """Creates a new band object from a dictionary. Does not modify ``d``."""
-        d = deepcopy(d)
-        name = d.pop("name", None)
-        description = d.pop("description", None)
-        return cls(name=name, description=description, extra_fields=d)
+        """Creates a new band object from a dictionary. Does not modify ``d``.
+
+        ``data_type`` and string ``nodata`` values are converted to
+        :class:`~pystac.common_metadata.DataType` and
+        :class:`~pystac.common_metadata.NoDataStrings` when they match a known
+        value, and kept as plain strings otherwise.
+        """
+        d = _copy_json(d)
+        statistics = d.pop("statistics", None)
+        return cls(
+            name=d.pop("name", None),
+            description=d.pop("description", None),
+            data_type=DataType.coerce(d.pop("data_type", None)),
+            nodata=NoDataStrings.coerce(d.pop("nodata", None)),
+            statistics=None if statistics is None else Statistics.from_dict(statistics),
+            unit=d.pop("unit", None),
+            extra_fields=d,
+        )
 
     def to_dict(self) -> dict[str, Any]:
         """Creates a dictionary from this band object."""
@@ -43,8 +72,40 @@ class Band:
             d["name"] = self.name
         if self.description is not None:
             d["description"] = self.description
-        d.update(deepcopy(self.extra_fields))
+        if self.data_type is not None:
+            d["data_type"] = self.data_type
+        if self.nodata is not None:
+            d["nodata"] = self.nodata
+        if self.statistics is not None:
+            d["statistics"] = self.statistics.to_dict()
+        if self.unit is not None:
+            d["unit"] = self.unit
+        d.update(_copy_json(self.extra_fields))
         return d
+
+
+_ATOMS = frozenset({str, int, float, bool, type(None)})
+
+
+def _copy_json(value: Any) -> Any:
+    """A deep copy that is fast for JSON values and uses ``deepcopy`` otherwise."""
+    kind = type(value)
+    if kind in _ATOMS:
+        return value
+    if kind is dict:
+        return {k: v if type(v) in _ATOMS else _copy_json(v) for k, v in value.items()}
+    if kind is list:
+        return [v if type(v) in _ATOMS else _copy_json(v) for v in value]
+    return deepcopy(value)
+
+
+def _copy_band(band: Band) -> Band:
+    band_copy = copy(band)
+    band_copy.extra_fields = _copy_json(band.extra_fields)
+    if band.statistics is not None:
+        band_copy.statistics = copy(band.statistics)
+        band_copy.statistics.extra_fields = _copy_json(band.statistics.extra_fields)
+    return band_copy
 
 
 def _write_bands(d: dict[str, Any], bands: list[Band] | None) -> None:
@@ -66,6 +127,9 @@ class _BandCache:
     def __init__(self) -> None:
         self._remember(None, None)
 
+    loaded: bool
+    """Whether there are band objects whose changes may need to be written."""
+
     def get(self, d: dict[str, Any]) -> list[Band] | None:
         raw = d.get("bands")
         if raw is not self._raw or raw != self._raw_copy:
@@ -77,7 +141,7 @@ class _BandCache:
         self._remember(d.get("bands"), bands)
 
     def sync(self, d: dict[str, Any]) -> None:
-        if self._bands is None or self._bands == self._bands_copy:
+        if not self.loaded or self._bands == self._bands_copy:
             return
         raw = d.get("bands")
         if raw is self._raw and raw == self._raw_copy:
@@ -90,14 +154,16 @@ class _BandCache:
         if self._bands is None or len(self._bands) != len(bands):
             return bands
         for band, new in zip(self._bands, bands):
-            band.name = new.name
-            band.description = new.description
+            for f in fields(new):
+                if f.name != "extra_fields":
+                    setattr(band, f.name, getattr(new, f.name))
             band.extra_fields.clear()
             band.extra_fields.update(new.extra_fields)
         return self._bands
 
     def _remember(self, raw: Any, bands: list[Band] | None) -> None:
         self._raw = raw
-        self._raw_copy = deepcopy(raw)
+        self._raw_copy = _copy_json(raw)
         self._bands = bands
-        self._bands_copy = deepcopy(bands)
+        self._bands_copy = None if bands is None else [_copy_band(b) for b in bands]
+        self.loaded = bands is not None
