@@ -780,14 +780,40 @@ Collection's :class:`pystac.Summaries` instance in the ``summaries`` attribute.
    # [4326]
 
 
+Deprecated Extension Fields
+---------------------------
+
+Extension specifications sometimes deprecate a field that remains valid, in favor
+of a replacement. Where PySTAC tracks such a deprecation, it keeps the accessor so
+existing metadata can still be read. Assigning a non-``None`` value issues a
+:class:`~pystac.SpecDeprecationWarning` that names the replacement field. Reading
+the field, or setting it to ``None``, does not warn.
+
+.. warning::
+   PySTAC's extension support can lag behind changes to the specifications, so not
+   every deprecated field issues this warning. The absence of a warning does not mean
+   a field is current. Check the extension's specification for its deprecation status.
+
+:class:`~pystac.SpecDeprecationWarning` subclasses :class:`DeprecationWarning`, so it
+can be filtered separately from deprecations of the PySTAC API itself:
+
+.. code-block:: python
+
+   import warnings
+   import pystac
+
+   warnings.filterwarnings("ignore", category=pystac.SpecDeprecationWarning)
+
+
 Item Asset properties
 =====================
 
 Properties that apply to Items can be found in two places: the Item's properties or in
-any of an Item's Assets. If the property is on an Asset, it applies only to that specific
-asset. For example, gsd defined for an Item represents the best Ground Sample Distance
-(resolution) for the data within the Item. However, some assets may be lower resolution
-and thus have a higher gsd. In that case, the `gsd` can be found on the Asset.
+any of an Item's Assets. If the property is on an Asset, it applies only to that
+specific asset. For example, gsd defined for an Item represents the best Ground Sample
+Distance (resolution) for the data within the Item. However, some assets may be lower
+resolution and thus have a higher gsd. In that case, the `gsd` can be found on the
+Asset.
 
 See the STAC documentation on :stac-spec:`Additional Fields for Assets
 <item-spec/item-spec.md#additional-fields-for-assets>` and the relevant :stac-spec:`Best

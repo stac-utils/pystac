@@ -79,7 +79,6 @@ def test_add_to() -> None:
     assert len(eo_uris) == 1
 
 
-@pytest.mark.vcr()
 def test_validate_eo() -> None:
     item = pystac.Item.from_file(LANDSAT_EXAMPLE_URI)
     item2 = pystac.Item.from_file(BANDS_IN_ITEM_URI)
@@ -88,7 +87,6 @@ def test_validate_eo() -> None:
 
 
 @pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
-@pytest.mark.vcr()
 def test_bands() -> None:
     item = pystac.Item.from_file(BANDS_IN_ITEM_URI)
 
@@ -122,7 +120,6 @@ def test_asset_bands_s2() -> None:
 
 
 @pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
-@pytest.mark.vcr()
 def test_asset_bands() -> None:
     item = pystac.Item.from_file(LANDSAT_EXAMPLE_URI)
 
@@ -180,7 +177,6 @@ def test_asset_bands() -> None:
     assert "eo:bands" not in item.assets["test"].extra_fields
 
 
-@pytest.mark.vcr()
 def test_cloud_cover() -> None:
     item = pystac.Item.from_file(LANDSAT_EXAMPLE_URI)
 
@@ -399,7 +395,6 @@ def test_get_field(ext_item: pystac.Item, field: str) -> None:
     assert attr == prop
 
 
-@pytest.mark.vcr()
 @pytest.mark.parametrize(
     "field,value",
     [

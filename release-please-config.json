@@ -5,73 +5,96 @@
       "changelog-path": "CHANGELOG.md",
       "component": "pystac",
       "include-component-in-tag": false,
+      "exclude-paths": ["extensions"],
       "extra-files": ["pyproject.toml", "core/pystac/version.py"]
     },
     "extensions/classification": {
-      "component": "pystac-ext-classification"
+      "component": "pystac-ext-classification",
+      "versioning": "always-bump-patch"
     },
     "extensions/datacube": {
-      "component": "pystac-ext-datacube"
+      "component": "pystac-ext-datacube",
+      "versioning": "always-bump-patch"
     },
     "extensions/eo": {
-      "component": "pystac-ext-eo"
+      "component": "pystac-ext-eo",
+      "versioning": "always-bump-patch"
     },
     "extensions/file": {
-      "component": "pystac-ext-file"
+      "component": "pystac-ext-file",
+      "versioning": "always-bump-patch"
     },
     "extensions/grid": {
-      "component": "pystac-ext-grid"
+      "component": "pystac-ext-grid",
+      "versioning": "always-bump-patch"
     },
     "extensions/item_assets": {
-      "component": "pystac-ext-item-assets"
+      "component": "pystac-ext-item-assets",
+      "versioning": "always-bump-patch"
     },
     "extensions/label": {
-      "component": "pystac-ext-label"
+      "component": "pystac-ext-label",
+      "versioning": "always-bump-patch"
     },
     "extensions/mgrs": {
-      "component": "pystac-ext-mgrs"
+      "component": "pystac-ext-mgrs",
+      "versioning": "always-bump-patch"
     },
     "extensions/mlm": {
-      "component": "pystac-ext-mlm"
+      "component": "pystac-ext-mlm",
+      "versioning": "always-bump-patch"
     },
     "extensions/pointcloud": {
-      "component": "pystac-ext-pointcloud"
+      "component": "pystac-ext-pointcloud",
+      "versioning": "always-bump-patch"
     },
     "extensions/projection": {
-      "component": "pystac-ext-projection"
+      "component": "pystac-ext-projection",
+      "versioning": "always-bump-patch"
     },
     "extensions/raster": {
-      "component": "pystac-ext-raster"
+      "component": "pystac-ext-raster",
+      "versioning": "always-bump-patch"
     },
     "extensions/render": {
-      "component": "pystac-ext-render"
+      "component": "pystac-ext-render",
+      "versioning": "always-bump-patch"
     },
     "extensions/sar": {
-      "component": "pystac-ext-sar"
+      "component": "pystac-ext-sar",
+      "versioning": "always-bump-patch"
     },
     "extensions/sat": {
-      "component": "pystac-ext-sat"
+      "component": "pystac-ext-sat",
+      "versioning": "always-bump-patch"
     },
     "extensions/scientific": {
-      "component": "pystac-ext-scientific"
+      "component": "pystac-ext-scientific",
+      "versioning": "always-bump-patch"
     },
     "extensions/storage": {
-      "component": "pystac-ext-storage"
+      "component": "pystac-ext-storage",
+      "versioning": "always-bump-patch"
     },
     "extensions/table": {
-      "component": "pystac-ext-table"
+      "component": "pystac-ext-table",
+      "versioning": "always-bump-patch"
     },
     "extensions/timestamps": {
-      "component": "pystac-ext-timestamps"
+      "component": "pystac-ext-timestamps",
+      "versioning": "always-bump-patch"
     },
     "extensions/version": {
-      "component": "pystac-ext-version"
+      "component": "pystac-ext-version",
+      "versioning": "always-bump-patch"
     },
     "extensions/view": {
-      "component": "pystac-ext-view"
+      "component": "pystac-ext-view",
+      "versioning": "always-bump-patch"
     },
     "extensions/xarray_assets": {
-      "component": "pystac-ext-xarray-assets"
+      "component": "pystac-ext-xarray-assets",
+      "versioning": "always-bump-patch"
     }
   },
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"

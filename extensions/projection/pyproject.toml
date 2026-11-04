@@ -2,7 +2,7 @@
 name = "pystac-ext-projection"
 description = "Projection extension for PySTAC"
 readme = "README.md"
-version = "2.0.1"
+version = "2.0.2"
 authors = []
 maintainers = []
 keywords = ["pystac", "imagery", "raster", "catalog", "STAC", "projection"]
@@ -37,3 +37,4 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["pystac"]
+include = ["pystac.extensions.json-schema/*.json"]

@@ -233,3 +233,8 @@ DeprecatedWarning
 ~~~~~~~~~~~~~~~~~
 
 .. autoclass:: pystac.DeprecatedWarning
+
+SpecDeprecationWarning
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pystac.SpecDeprecationWarning

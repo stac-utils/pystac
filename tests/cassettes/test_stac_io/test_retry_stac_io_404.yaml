@@ -6,7 +6,7 @@ interactions:
     uri: https://planetarycomputer.microsoft.com/api/stac/v1/collections/not-a-collection-id
   response:
     body:
-      string: '{"code":"NotFoundError","description":"No collection with id ''not-a-collection-id''
+      string: '{"code":"NotFoundError","description":"No collection with id \u0027not-a-collection-id\u0027
         found!"}'
     headers: {}
     status:

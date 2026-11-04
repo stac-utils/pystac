@@ -51,14 +51,12 @@ def test_asset_repr(sentinel_item: Item) -> None:
     assert f"<AssetSatExtension Asset href={asset.href}>" == sat_asset_ext.__repr__()
 
 
-@pytest.mark.vcr()
 def test_no_args_fails(item: Item) -> None:
     SatExtension.ext(item).apply()
     with pytest.raises(pystac.STACValidationError):
         item.validate()
 
 
-@pytest.mark.vcr()
 def test_orbit_state(item: Item) -> None:
     orbit_state = sat.OrbitState.ASCENDING
     SatExtension.ext(item).apply(orbit_state)
@@ -68,7 +66,6 @@ def test_orbit_state(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_relative_orbit(item: Item) -> None:
     relative_orbit = 1234
     SatExtension.ext(item).apply(None, relative_orbit)
@@ -78,7 +75,6 @@ def test_relative_orbit(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_absolute_orbit(item: Item) -> None:
     absolute_orbit = 1234
     SatExtension.ext(item).apply(absolute_orbit=absolute_orbit)
@@ -88,7 +84,6 @@ def test_absolute_orbit(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_anx_datetime(item: Item) -> None:
     anx_datetime = str_to_datetime("2020-01-01T00:00:00Z")
     SatExtension.ext(item).apply(anx_datetime=anx_datetime)
@@ -98,7 +93,6 @@ def test_anx_datetime(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_platform_international_designator(item: Item) -> None:
     platform_international_designator = "2018-080A"
     SatExtension.ext(item).apply(
@@ -113,7 +107,6 @@ def test_platform_international_designator(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_relative_orbit_no_negative(item: Item) -> None:
     negative_relative_orbit = -2
     SatExtension.ext(item).apply(None, negative_relative_orbit)
@@ -121,7 +114,6 @@ def test_relative_orbit_no_negative(item: Item) -> None:
         item.validate()
 
 
-@pytest.mark.vcr()
 def test_both(item: Item) -> None:
     orbit_state = sat.OrbitState.DESCENDING
     relative_orbit = 4321
@@ -131,7 +123,6 @@ def test_both(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_modify(item: Item) -> None:
     SatExtension.ext(item).apply(sat.OrbitState.DESCENDING, 999)
 
@@ -179,7 +170,6 @@ def test_to_from_dict(item: Item) -> None:
     assert relative_orbit == SatExtension.ext(item).relative_orbit
 
 
-@pytest.mark.vcr()
 def test_clear_orbit_state(item: Item) -> None:
     SatExtension.ext(item).apply(sat.OrbitState.DESCENDING, 999)
 
@@ -188,7 +178,6 @@ def test_clear_orbit_state(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_clear_relative_orbit(item: Item) -> None:
     SatExtension.ext(item).apply(sat.OrbitState.DESCENDING, 999)
 

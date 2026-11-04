@@ -2,7 +2,9 @@ import json
 import logging
 import warnings
 from abc import ABC, abstractmethod
-from typing import Any
+from pathlib import Path, PurePosixPath
+from typing import Any, cast
+from urllib.parse import urlparse
 
 import pystac
 import pystac.utils
@@ -142,6 +144,9 @@ class JsonSchemaSTACValidator(STACValidator):
             the validator will retrieve the JSON schemas for validation.
             Defaults to an instance of
             :class:`~pystac.validation.schema_uri_map.DefaultSchemaUriMap`
+        allow_list: Optional list of base urls that are the validator can read from
+            when validating. Defaults to ``None`` which means that the validator
+            can read from anywhere.
 
     Note:
     This class requires the ``jsonschema`` library to be installed.
@@ -149,8 +154,13 @@ class JsonSchemaSTACValidator(STACValidator):
 
     schema_uri_map: SchemaUriMap
     schema_cache: dict[str, dict[str, Any]]
+    allow_list: list[str] | None = None
 
-    def __init__(self, schema_uri_map: SchemaUriMap | None = None) -> None:
+    def __init__(
+        self,
+        schema_uri_map: SchemaUriMap | None = None,
+        allow_list: list[str] | None = None,
+    ) -> None:
         if not HAS_JSONSCHEMA:
             raise ImportError("Cannot instantiate, requires jsonschema package")
 
@@ -159,11 +169,18 @@ class JsonSchemaSTACValidator(STACValidator):
         else:
             self.schema_uri_map = DefaultSchemaUriMap()
 
+        self.allow_list = self.allow_list if allow_list is None else allow_list
         self.schema_cache = get_local_schema_cache()
 
     def _get_schema(self, schema_uri: str) -> dict[str, Any]:
         if schema_uri not in self.schema_cache:
             try:
+                if self.allow_list is not None and not any(
+                    [schema_uri.startswith(base_url) for base_url in self.allow_list]
+                ):
+                    raise ValueError(
+                        f"{schema_uri=} is not in the allow-list {self.allow_list}"
+                    )
                 s = json.loads(pystac.StacIO.default().read_text(schema_uri))
             except Exception as error:
                 raise GetSchemaError(schema_uri, error) from error
@@ -299,6 +316,49 @@ class JsonSchemaSTACValidator(STACValidator):
 
         schema_uri = pystac.utils.make_absolute_href(schema_uri, href)
 
+        # if the extension class is installed and has a local schema file,
+        # try to read and cache that. Assumes that the schema_uri ends with
+        # name/version/schema.json for example:
+        # https://stac-extensions.github.io/eo/v1.1.0/schema.json
+        # and that the local schema file is at
+        # pystac/extensions/json-schema/eo/v1.1.0.json
+
+        if schema_uri not in self.schema_cache:
+            import importlib.resources
+
+            for schema_dir in importlib.resources.files(
+                "pystac.extensions.json-schema"
+            ).iterdir():
+                for schema_filepath in schema_dir.iterdir():
+                    uri_path = PurePosixPath(urlparse(schema_uri).path)
+                    version = uri_path.parent.name
+                    name = uri_path.parent.parent.name
+                    if (
+                        schema_filepath.is_file()
+                        and isinstance(schema_filepath, Path)
+                        and schema_filepath.parent.name == name
+                        and schema_filepath.name == f"{version}.json"
+                    ):
+                        with schema_filepath.open("r") as f:
+                            schema = cast(dict[str, Any], json.load(f))
+                            if schema["$id"] not in {schema_uri, f"{schema_uri}#"}:
+                                raise ValueError(
+                                    f"Local version of extension schema is invalid. "
+                                    f"Expected {schema_uri}, found {schema['$id']}"
+                                )
+                            self.schema_cache[schema_uri] = schema
+
         self._validate_from_uri(stac_dict, stac_object_type, schema_uri, href)
 
         return schema_uri
+
+
+class SecureJsonSchemaSTACValidator(JsonSchemaSTACValidator):
+    """Validate STAC, but only allow fetching schemas from domains that
+    are standard to the STAC organization.
+    """
+
+    allow_list: list[str] = [
+        "https://schemas.stacspec.org/",
+        "https://stac-extensions.github.io/",
+    ]

@@ -113,7 +113,6 @@ def test_stac_extensions(item: Item) -> None:
     assert item.ext.has("version")
 
 
-@pytest.mark.vcr()
 def test_add_version(item: Item, version: str) -> None:
     item.ext.version.apply(version)
     assert version == item.ext.version.version
@@ -122,7 +121,6 @@ def test_add_version(item: Item, version: str) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_version_in_properties(item: Item, version: str) -> None:
     item.ext.version.apply(version, deprecated=True)
     assert VERSION in item.properties
@@ -130,7 +128,6 @@ def test_version_in_properties(item: Item, version: str) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_add_not_deprecated_version(item: Item, version: str) -> None:
     item.ext.version.apply(version, deprecated=False)
     assert DEPRECATED in item.properties
@@ -138,7 +135,6 @@ def test_add_not_deprecated_version(item: Item, version: str) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_add_deprecated_version(item: Item, version: str) -> None:
     item.ext.version.apply(version, deprecated=True)
     assert DEPRECATED in item.properties
@@ -146,7 +142,6 @@ def test_add_deprecated_version(item: Item, version: str) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_latest(item: Item, version: str) -> None:
     year = 2013
     latest = make_item(year)
@@ -158,7 +153,6 @@ def test_latest(item: Item, version: str) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_predecessor(item: Item, version: str) -> None:
     year = 2010
     predecessor = make_item(year)
@@ -170,7 +164,6 @@ def test_predecessor(item: Item, version: str) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_successor(item: Item, version: str) -> None:
     year = 2012
     successor = make_item(year)
@@ -182,7 +175,6 @@ def test_successor(item: Item, version: str) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_all_links(item: Item, version: str) -> None:
     deprecated = True
     latest = make_item(2013)
@@ -313,7 +305,6 @@ def test_collection_stac_extensions(collection: Collection) -> None:
     assert collection.ext.has("version")
 
 
-@pytest.mark.vcr()
 def test_collection_add_version(collection: Collection, version: str) -> None:
     collection.ext.version.apply(version)
     assert collection.ext.version.version == version
@@ -321,7 +312,6 @@ def test_collection_add_version(collection: Collection, version: str) -> None:
     collection.validate()
 
 
-@pytest.mark.vcr()
 def test_collection_validate_all(collection: Collection, version: str) -> None:
     deprecated = True
     latest = make_collection(2013)
@@ -345,7 +335,6 @@ def test_catalog_stac_extensions(catalog: Catalog) -> None:
     assert catalog.ext.has("version")
 
 
-@pytest.mark.vcr()
 def test_catalog_add_version(catalog: Catalog, version: str) -> None:
     catalog.ext.version.apply(version)
     assert catalog.ext.version.version == version
@@ -353,7 +342,6 @@ def test_catalog_add_version(catalog: Catalog, version: str) -> None:
     catalog.validate()
 
 
-@pytest.mark.vcr()
 def test_catalog_validate_all(catalog: Catalog, version: str) -> None:
     deprecated = True
     latest = make_collection(2013)
@@ -446,7 +434,6 @@ def test_experimental(item: Item) -> None:
     assert "experimental" not in item.properties
 
 
-@pytest.mark.vcr
 def test_optional_version(item: Item) -> None:
     # Changed in v1.1.0
     assert item.ext.version.version is None
@@ -458,7 +445,6 @@ def test_optional_version(item: Item) -> None:
     assert "version" not in item.properties
 
 
-@pytest.mark.vcr
 def test_assets(item: Item) -> None:
     item.ext.remove("version")
     asset = Asset("example.tif")

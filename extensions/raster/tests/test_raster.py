@@ -59,7 +59,6 @@ def test_validate_raster(ext_item: pystac.Item) -> None:
 
 
 @pytest.mark.filterwarnings("ignore:.*(bands|apply) is deprecated:DeprecationWarning")
-@pytest.mark.vcr()
 def test_asset_bands(ext_item: pystac.Item) -> None:
     item2 = pystac.Item.from_file(SENTINEL2_EXAMPLE_URI)
 

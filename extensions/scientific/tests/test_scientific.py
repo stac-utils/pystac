@@ -108,7 +108,6 @@ def test_stac_extensions(item: Item) -> None:
     assert ScientificExtension.has_extension(item)
 
 
-@pytest.mark.vcr()
 def test_doi(item: Item) -> None:
     ScientificExtension.ext(item).apply(DOI)
     assert DOI == ScientificExtension.ext(item).doi
@@ -132,7 +131,6 @@ def test_doi(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_citation(item: Item) -> None:
     ScientificExtension.ext(item).apply(citation=CITATION)
     assert CITATION == ScientificExtension.ext(item).citation
@@ -141,7 +139,6 @@ def test_citation(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_publications_one(item: Item) -> None:
     publications = PUBLICATIONS[:1]
     ScientificExtension.ext(item).apply(publications=publications)
@@ -156,7 +153,6 @@ def test_publications_one(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_publications(item: Item) -> None:
     ScientificExtension.ext(item).apply(publications=PUBLICATIONS)
     assert PUBLICATIONS == ScientificExtension.ext(item).publications
@@ -169,7 +165,6 @@ def test_publications(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_remove_publication_one(item: Item) -> None:
     publications = PUBLICATIONS[:1]
     ScientificExtension.ext(item).apply(DOI, publications=publications)
@@ -181,7 +176,6 @@ def test_remove_publication_one(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_remove_all_publications_one(item: Item) -> None:
     publications = PUBLICATIONS[:1]
     ScientificExtension.ext(item).apply(DOI, publications=publications)
@@ -193,7 +187,6 @@ def test_remove_all_publications_one(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_remove_publication_forward(item: Item) -> None:
     ScientificExtension.ext(item).apply(DOI, publications=PUBLICATIONS)
 
@@ -213,7 +206,6 @@ def test_remove_publication_forward(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_remove_publication_reverse(item: Item) -> None:
     ScientificExtension.ext(item).apply(DOI, publications=PUBLICATIONS)
 
@@ -231,7 +223,6 @@ def test_remove_publication_reverse(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_remove_all_publications_with_some(item: Item) -> None:
     ScientificExtension.ext(item).apply(DOI, publications=PUBLICATIONS)
     ScientificExtension.ext(item).remove_publication()
@@ -242,7 +233,6 @@ def test_remove_all_publications_with_some(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_remove_all_publications_with_none(item: Item) -> None:
     ScientificExtension.ext(item).apply(DOI)
     ScientificExtension.ext(item).remove_publication()
@@ -274,7 +264,6 @@ def test_collection_stac_extensions(collection: Collection) -> None:
     assert ScientificExtension.has_extension(collection)
 
 
-@pytest.mark.vcr()
 def test_collection_doi(collection: Collection) -> None:
     ScientificExtension.ext(collection).apply(DOI)
     assert DOI == ScientificExtension.ext(collection).doi
@@ -298,7 +287,6 @@ def test_collection_doi(collection: Collection) -> None:
     collection.validate()
 
 
-@pytest.mark.vcr()
 def test_collection_citation(collection: Collection) -> None:
     ScientificExtension.ext(collection).apply(citation=CITATION)
     assert CITATION == ScientificExtension.ext(collection).citation
@@ -307,7 +295,6 @@ def test_collection_citation(collection: Collection) -> None:
     collection.validate()
 
 
-@pytest.mark.vcr()
 def test_collection_publications_one(collection: Collection) -> None:
     publications = PUBLICATIONS[:1]
     ScientificExtension.ext(collection).apply(publications=publications)
@@ -322,7 +309,6 @@ def test_collection_publications_one(collection: Collection) -> None:
     collection.validate()
 
 
-@pytest.mark.vcr()
 def test_collection_publications(collection: Collection) -> None:
     ScientificExtension.ext(collection).apply(publications=PUBLICATIONS)
     assert PUBLICATIONS == ScientificExtension.ext(collection).publications
@@ -336,7 +322,6 @@ def test_collection_publications(collection: Collection) -> None:
     collection.validate()
 
 
-@pytest.mark.vcr()
 def test_collection_remove_publication_one(collection: Collection) -> None:
     publications = PUBLICATIONS[:1]
     ScientificExtension.ext(collection).apply(DOI, publications=publications)
@@ -348,7 +333,6 @@ def test_collection_remove_publication_one(collection: Collection) -> None:
     collection.validate()
 
 
-@pytest.mark.vcr()
 def test_collection_remove_all_publications_one(collection: Collection) -> None:
     publications = PUBLICATIONS[:1]
     ScientificExtension.ext(collection).apply(DOI, publications=publications)
@@ -360,7 +344,6 @@ def test_collection_remove_all_publications_one(collection: Collection) -> None:
     collection.validate()
 
 
-@pytest.mark.vcr()
 def test_collection_remove_publication_forward(collection: Collection) -> None:
     ScientificExtension.ext(collection).apply(DOI, publications=PUBLICATIONS)
 
@@ -380,7 +363,6 @@ def test_collection_remove_publication_forward(collection: Collection) -> None:
     collection.validate()
 
 
-@pytest.mark.vcr()
 def test_collection_remove_publication_reverse(collection: Collection) -> None:
     ScientificExtension.ext(collection).apply(DOI, publications=PUBLICATIONS)
 
@@ -398,7 +380,6 @@ def test_collection_remove_publication_reverse(collection: Collection) -> None:
     collection.validate()
 
 
-@pytest.mark.vcr()
 def test_collection_remove_all_publications_with_some(collection: Collection) -> None:
     ScientificExtension.ext(collection).apply(DOI, publications=PUBLICATIONS)
     ScientificExtension.ext(collection).remove_publication()
@@ -409,7 +390,6 @@ def test_collection_remove_all_publications_with_some(collection: Collection) ->
     collection.validate()
 
 
-@pytest.mark.vcr()
 def test_collection_remove_all_publications_with_none(collection: Collection) -> None:
     ScientificExtension.ext(collection).apply(DOI)
     ScientificExtension.ext(collection).remove_publication()

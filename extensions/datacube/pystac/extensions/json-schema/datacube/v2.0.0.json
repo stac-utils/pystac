@@ -1,0 +1,516 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://stac-extensions.github.io/datacube/v2.0.0/schema.json",
+  "title": "Datacube Extension",
+  "description": "Datacube Extension for STAC Items and STAC Collections.",
+  "oneOf": [
+    {
+      "$comment": "This is the schema for STAC Items. Remove this object if this extension only applies to Collections.",
+      "allOf": [
+        {
+          "$ref": "#/definitions/stac_extensions"
+        },
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "properties",
+            "assets"
+          ],
+          "properties": {
+            "type": {
+              "const": "Feature"
+            },
+            "properties": {
+              "allOf": [
+                {
+                  "$comment": "Require fields here for Item Properties.",
+                  "required": [
+                    "cube:dimensions"
+                  ]
+                },
+                {
+                  "$ref": "#/definitions/fields"
+                }
+              ]
+            },
+            "assets": {
+              "$comment": "This validates the fields in Item Assets, but does not require them.",
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/fields"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "$comment": "This is the schema for STAC Collections.",
+      "type": "object",
+      "allOf": [
+        {
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "const": "Collection"
+            }
+          }
+        },
+        {
+          "$ref": "#/definitions/stac_extensions"
+        }
+      ],
+      "anyOf": [
+        {
+          "$comment": "This is the schema for the top-level fields in a Collection. Remove this if this extension does not define top-level fields for Collections.",
+          "allOf": [
+            {
+              "$comment": "Require fields here for Collections (top-level).",
+              "required": [
+                "cube:dimensions"
+              ]
+            },
+            {
+              "$ref": "#/definitions/fields"
+            }
+          ]
+        },
+        {
+          "$comment": "This validates the fields in Collection Assets, but does not require them.",
+          "required": [
+            "assets"
+          ],
+          "properties": {
+            "assets": {
+              "type": "object",
+              "not": {
+                "additionalProperties": {
+                  "not": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/require_any_field"
+                      },
+                      {
+                        "$ref": "#/definitions/fields"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "$comment": "This is the schema for the fields in Item Asset Definitions. It doesn't require any fields.",
+          "required": [
+            "item_assets"
+          ],
+          "properties": {
+            "item_assets": {
+              "type": "object",
+              "not": {
+                "additionalProperties": {
+                  "not": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/require_any_field"
+                      },
+                      {
+                        "$ref": "#/definitions/fields"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "$comment": "This is the schema for the fields in Summaries. By default, only checks the existance of the properties, but not the schema of the summaries.",
+          "required": [
+            "summaries"
+          ],
+          "properties": {
+            "summaries": {
+              "$ref": "#/definitions/require_any_field"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "definitions": {
+    "stac_extensions": {
+      "type": "object",
+      "required": [
+        "stac_extensions"
+      ],
+      "properties": {
+        "stac_extensions": {
+          "type": "array",
+          "contains": {
+            "const": "https://stac-extensions.github.io/datacube/v2.0.0/schema.json"
+          }
+        }
+      }
+    },
+    "require_any_field": {
+      "$comment": "Please list all fields here so that we can force the existance of one of them in other parts of the schemas.",
+      "anyOf": [
+        {"required": ["cube:dimensions"]},
+        {"required": ["cube:variables"]}
+      ]
+    },
+    "fields": {
+      "$comment": "Add your new fields here. Don't require them here, do that above in the corresponding schema.",
+      "type": "object",
+      "properties": {
+        "cube:dimensions": {
+          "$ref": "#/definitions/cube:dimensions"
+        },
+        "cube:variables": {
+          "$ref": "#/definitions/cube:variables"
+        }
+      },
+      "patternProperties": {
+        "^(?!cube:)": {}
+      },
+      "additionalProperties": false
+    },
+    "cube:dimensions": {
+      "type": "object",
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/additional_dimension"
+          },
+          {
+            "$ref": "#/definitions/horizontal_spatial_dimension"
+          },
+          {
+            "$ref": "#/definitions/vertical_spatial_dimension"
+          },
+          {
+            "$ref": "#/definitions/temporal_dimension"
+          }
+        ]
+      }
+    },
+    "cube:variables": {
+      "type": "object",
+      "additionalProperties": {
+          "$ref": "#/definitions/variable"
+      }
+    },
+    "additional_dimension": {
+      "title": "Additional Dimension Object",
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "type",
+            "extent"
+          ]
+        },
+        {
+          "required": [
+            "type",
+            "values"
+          ]
+        }
+      ],
+      "not": {
+        "required": [
+          "axis"
+        ]
+      },
+      "properties": {
+        "type": {
+          "allOf": [
+            {
+              "type": "string"
+            },
+            {
+              "not": {
+                "type": "string",
+                "const": "spatial"
+              }
+            }
+          ]
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "extent": {
+          "$ref": "#/definitions/extent_open"
+        },
+        "values": {
+          "$ref": "#/definitions/values"
+        },
+        "step": {
+          "$ref": "#/definitions/step"
+        },
+        "unit": {
+          "$ref": "#/definitions/unit"
+        },
+        "reference_system": {
+          "type": "string"
+        },
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string"
+            ]
+          }
+        }
+      }
+    },
+    "horizontal_spatial_dimension": {
+      "title": "Horizontal Spatial Dimension Object",
+      "type": "object",
+      "required": [
+        "type",
+        "axis",
+        "extent"
+      ],
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/type_spatial"
+        },
+        "axis": {
+          "$ref": "#/definitions/axis_xy"
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "extent": {
+          "$ref": "#/definitions/extent_closed"
+        },
+        "values": {
+          "$ref": "#/definitions/values_numeric"
+        },
+        "step": {
+          "$ref": "#/definitions/step"
+        },
+        "reference_system": {
+          "$ref": "#/definitions/reference_system_spatial"
+        }
+      }
+    },
+    "vertical_spatial_dimension": {
+      "title": "Vertical Spatial Dimension Object",
+      "type": "object",
+      "anyOf": [
+        {
+          "required": [
+            "type",
+            "axis",
+            "extent"
+          ]
+        },
+        {
+          "required": [
+            "type",
+            "axis",
+            "values"
+          ]
+        }
+      ],
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/type_spatial"
+        },
+        "axis": {
+          "$ref": "#/definitions/axis_z"
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "extent": {
+          "$ref": "#/definitions/extent_open"
+        },
+        "values": {
+          "$ref": "#/definitions/values"
+        },
+        "step": {
+          "$ref": "#/definitions/step"
+        },
+        "unit": {
+          "$ref": "#/definitions/unit"
+        },
+        "reference_system": {
+          "$ref": "#/definitions/reference_system_spatial"
+        }
+      }
+    },
+    "temporal_dimension": {
+      "title": "Temporal Dimension Object",
+      "type": "object",
+      "required": [
+        "type",
+        "extent"
+      ],
+      "not": {
+        "required": [
+          "axis"
+        ]
+      },
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "temporal"
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "extent": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "step": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "variable": {
+      "title": "Variable Object",
+      "type": "object",
+      "required": [
+        "dimensions"
+      ],
+      "properties": {
+        "variable_type": {
+          "type": "string",
+          "enum": [
+            "data",
+            "auxiliary"
+          ]
+        },
+        "description": {
+          "$ref": "#/definitions/description"
+        },
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "values": {
+          "type": "array",
+          "minItems": 1
+        },
+        "extent": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": [
+              "string",
+              "number",
+              "null"
+            ]
+          }
+        },
+        "unit": {
+          "$ref": "#/definitions/unit"
+        }
+      }
+    },
+    "type_spatial": {
+      "type": "string",
+      "const": "spatial"
+    },
+    "axis_xy": {
+      "type": "string",
+      "enum": [
+        "x",
+        "y"
+      ]
+    },
+    "axis_z": {
+      "type": "string",
+      "const": "z"
+    },
+    "extent_closed": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "number"
+      }
+    },
+    "extent_open": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": [
+          "number",
+          "null"
+        ]
+      }
+    },
+    "values_numeric": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "number"
+      }
+    },
+    "values": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "step": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "unit": {
+      "type": "string"
+    },
+    "reference_system_spatial": {
+      "type": [
+        "string",
+        "number",
+        "object"
+      ],
+      "default": 4326
+    },
+    "description": {
+      "type": "string"
+    }
+  }
+}
