@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 import pystac
 from pystac import RelType, STACError, STACObjectType
 from pystac.asset import Asset, Assets
-from pystac.band import Band
+from pystac.band import Band, _BandCache
 from pystac.catalog import Catalog
 from pystac.collection import Collection
 from pystac.errors import DeprecatedWarning
@@ -66,6 +66,8 @@ class Item(STACObject, Assets):
         assets : A dictionary mapping string keys to :class:`~pystac.Asset` objects. All
             :class:`~pystac.Asset` values in the dictionary will have their
             :attr:`~pystac.Asset.owner` attribute set to the created Item.
+        bands : Optional list of :class:`~pystac.Band` objects. If not given, they
+            are read from ``properties["bands"]``.
     """
 
     assets: dict[str, Asset]
@@ -103,9 +105,6 @@ class Item(STACObject, Assets):
     """A list of :class:`~pystac.Link` objects representing all links associated with
     this Item."""
 
-    properties: dict[str, Any]
-    """A dictionary of additional metadata for the Item."""
-
     stac_extensions: list[str]
     """List of extensions the Item implements."""
 
@@ -113,10 +112,6 @@ class Item(STACObject, Assets):
     """Optional instance of StacIO that will be used by default for any IO
     operations. This is set when an item is read by a StacIO instance.
     """
-
-    _bands: list[Band] | None = None
-    """Optional list of :class:`~pystac.Band` objects representing all the bands
-    associated with this Item."""
 
     STAC_OBJECT_TYPE = STACObjectType.ITEM
 
@@ -134,13 +129,14 @@ class Item(STACObject, Assets):
         collection: str | Collection | None = None,
         extra_fields: dict[str, Any] | None = None,
         assets: dict[str, Asset] | None = None,
-        bands: list[Band] | None = None,
+        bands: list[pystac.Band] | None = None,
     ):
         super().__init__(stac_extensions or [])
 
         self.id = id
         self.geometry = geometry
         self.bbox = bbox
+        self._band_cache = _BandCache()
         self.properties = properties
         if extra_fields is None:
             self.extra_fields = {}
@@ -182,7 +178,8 @@ class Item(STACObject, Assets):
             for k, asset in assets.items():
                 self.add_asset(k, asset)
 
-        self._bands = bands
+        if bands is not None:
+            self.bands = bands
 
     def __repr__(self) -> str:
         return f"<Item id={self.id}>"
@@ -362,14 +359,32 @@ class Item(STACObject, Assets):
             ) from e
 
     @property
-    def bands(self) -> Optional[List[Band]]:
-        """Returns the bands set on this item."""
-        return self._bands
+    def properties(self) -> dict[str, Any]:
+        """A dictionary of additional metadata for the Item.
+
+        Changes made to the bands returned by :attr:`~pystac.Item.bands` are written
+        to ``properties["bands"]`` whenever this dictionary is read.
+        """
+        self._band_cache.sync(self._properties)
+        return self._properties
+
+    @properties.setter
+    def properties(self, properties: dict[str, Any]) -> None:
+        self._properties = properties
+
+    @property
+    def bands(self) -> list[Band] | None:
+        """Gets or sets the bands of this item.
+
+        They are read from and written to ``properties["bands"]``. Changes made to
+        the returned bands are written back whenever :attr:`~pystac.Item.properties`
+        is read.
+        """
+        return self._band_cache.get(self.properties)
 
     @bands.setter
-    def bands(self, bands: Optional[List[Band]]) -> None:
-        """Sets the bands on this item."""
-        self._bands = bands
+    def bands(self, bands: list[Band] | None) -> None:
+        self._band_cache.set(self.properties, bands)
 
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True
@@ -406,9 +421,6 @@ class Item(STACObject, Assets):
         # This field is prohibited if there's no geometry
         if not self.geometry:
             d.pop("bbox")
-
-        if self.bands is not None:
-            d["properties"]["bands"] = [band.to_dict() for band in self.bands]
 
         return d
 
@@ -485,12 +497,6 @@ class Item(STACObject, Assets):
             if k not in [*pass_through_fields, *parse_fields, *exclude_fields]
         }
 
-        bands = properties.pop("bands", None)
-        if bands is not None:
-            deserialized_bands = [Band.from_dict(d) for d in bands]
-        else:
-            deserialized_bands = None
-
         item = cls(
             **{k: d.get(k) for k in pass_through_fields},  # type: ignore
             datetime=datetime,
@@ -498,7 +504,6 @@ class Item(STACObject, Assets):
             extra_fields=extra_fields,
             href=href,
             assets={k: Asset.from_dict(v) for k, v in assets.items()},
-            bands=deserialized_bands,
         )
 
         for link in links:

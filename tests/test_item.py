@@ -687,7 +687,7 @@ def test_clone_extra_fields(item: Item) -> None:
 
 
 def test_bands_do_not_exist(sample_item: Item) -> None:
-    sample_item.assets["analytic"].bands is None
+    assert sample_item.assets["analytic"].bands is None
 
 
 def test_set_bands(sample_item: Item) -> None:
@@ -723,3 +723,115 @@ def test_bands_roundtrip_on_item(sample_item: Item) -> None:
     assert item.assets["analytic"].bands[0].name == "analytic"
     item_dict = item.to_dict(include_self_link=False, transform_hrefs=False)
     assert item_dict["properties"]["bands"][0]["name"] == "analytic"
+    assert "bands" not in item_dict["assets"]["analytic"]
+
+
+def test_bands_inherited_from_item_are_not_serialized_on_asset(
+    sample_item: Item,
+) -> None:
+    sample_item.bands = [Band(name="analytic")]
+    assert sample_item.assets["analytic"].bands
+    item_dict = sample_item.to_dict(include_self_link=False, transform_hrefs=False)
+    assert all("bands" not in asset for asset in item_dict["assets"].values())
+
+
+def test_asset_bands_override_item_bands(sample_item: Item) -> None:
+    sample_item.bands = [Band(name="item")]
+    sample_item.assets["analytic"].bands = [Band(name="asset")]
+    assert sample_item.assets["analytic"].bands[0].name == "asset"
+    assert sample_item.assets["thumbnail"].bands
+    assert sample_item.assets["thumbnail"].bands[0].name == "item"
+
+
+def test_clone_keeps_bands(sample_item: Item) -> None:
+    sample_item.bands = [Band(name="item")]
+    sample_item.assets["analytic"].bands = [Band(name="asset")]
+    cloned = sample_item.clone()
+    assert cloned.bands == [Band(name="item")]
+    assert cloned.assets["analytic"].bands == [Band(name="asset")]
+    assert cloned.bands is not sample_item.bands
+    assert cloned.assets["analytic"].bands is not sample_item.assets["analytic"].bands
+
+
+def test_from_dict_bands_without_name(sample_item_dict: dict[str, Any]) -> None:
+    sample_item_dict["properties"]["bands"] = [{"description": "unnamed"}]
+    item = Item.from_dict(sample_item_dict)
+    assert item.bands == [Band(description="unnamed")]
+
+
+def test_bands_are_kept_in_properties(sample_item_dict: dict[str, Any]) -> None:
+    sample_item_dict["properties"]["bands"] = [{"name": "red"}]
+    item = Item.from_dict(sample_item_dict)
+    assert item.properties["bands"] == [{"name": "red"}]
+    get_opt(item.bands)[0].name = "green"
+    assert item.properties["bands"] == [{"name": "green"}]
+    assert item.to_dict()["properties"]["bands"] == [{"name": "green"}]
+    item.properties["bands"] = [{"name": "blue"}]
+    assert item.to_dict()["properties"]["bands"] == [{"name": "blue"}]
+
+
+def test_bands_set_to_none_are_removed(sample_item: Item) -> None:
+    sample_item.bands = [Band(name="item")]
+    assert "bands" in sample_item.to_dict()["properties"]
+    sample_item.bands = None
+    assert "bands" not in sample_item.to_dict()["properties"]
+    assert "bands" not in sample_item.properties
+    assert sample_item.clone().bands is None
+
+
+def test_bands_read_from_properties(sample_item: Item) -> None:
+    item = Item(
+        id="item",
+        geometry=None,
+        bbox=None,
+        datetime=sample_item.datetime,
+        properties={"bands": [{"name": "red"}]},
+    )
+    assert item.bands == [Band(name="red")]
+
+
+def test_bands_written_to_properties_are_kept(sample_item: Item) -> None:
+    sample_item.properties["bands"] = [{"name": "red"}]
+    assert sample_item.bands == [Band(name="red")]
+    assert sample_item.to_dict()["properties"]["bands"] == [{"name": "red"}]
+    assert sample_item.clone().bands == [Band(name="red")]
+
+
+def test_bands_replaced_in_properties_after_read_are_kept(
+    sample_item_dict: dict[str, Any],
+) -> None:
+    sample_item_dict["properties"]["bands"] = [{"name": "red"}]
+    item = Item.from_dict(sample_item_dict)
+    assert item.bands == [Band(name="red")]
+    item.properties["bands"] = [{"name": "green"}]
+    assert item.to_dict()["properties"]["bands"] == [{"name": "green"}]
+
+
+def test_bands_changed_in_place_in_properties_are_kept(
+    sample_item_dict: dict[str, Any],
+) -> None:
+    sample_item_dict["properties"]["bands"] = [{"name": "red"}]
+    item = Item.from_dict(sample_item_dict)
+    assert item.bands == [Band(name="red")]
+    item.properties["bands"][0]["name"] = "green"
+    assert item.bands == [Band(name="green")]
+    assert item.to_dict()["properties"]["bands"] == [{"name": "green"}]
+
+
+def test_band_edits_are_written_to_properties(sample_item: Item) -> None:
+    sample_item.bands = [Band(name="red")]
+    get_opt(sample_item.bands)[0].name = "green"
+    assert sample_item.properties["bands"] == [{"name": "green"}]
+
+
+def test_setting_bands_writes_properties(sample_item: Item) -> None:
+    sample_item.bands = [Band(name="red")]
+    assert sample_item.properties["bands"] == [{"name": "red"}]
+
+
+def test_unchanged_bands_are_not_rewritten(sample_item_dict: dict[str, Any]) -> None:
+    bands = [{"description": None, "name": "red"}]
+    sample_item_dict["properties"]["bands"] = bands
+    item = Item.from_dict(sample_item_dict)
+    assert item.bands == [Band(name="red")]
+    assert item.to_dict()["properties"]["bands"] == bands

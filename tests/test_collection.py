@@ -26,7 +26,7 @@ from pystac import (
     TemporalExtent,
 )
 from pystac.extensions.eo import EOExtension
-from pystac.utils import datetime_to_str, get_required, str_to_datetime
+from pystac.utils import datetime_to_str, get_opt, get_required, str_to_datetime
 from pystac.validation import validate_dict
 from tests.utils import ARBITRARY_BBOX, ARBITRARY_GEOM, TestCases
 
@@ -872,3 +872,47 @@ def test_bands_roundtrip_on_collection(collection: Collection) -> None:
     assert collection.assets["data"].bands[0].name == "data"
     collection_dict = collection.to_dict(include_self_link=False, transform_hrefs=False)
     assert collection_dict["bands"][0]["name"] == "data"
+    assert "bands" not in collection_dict["assets"]["data"]
+
+
+def test_clone_keeps_bands(collection: Collection) -> None:
+    collection.bands = [Band(name="collection")]
+    collection.add_asset("data", Asset(href="example.tif", bands=[Band(name="asset")]))
+    cloned = collection.clone()
+    assert cloned.bands == [Band(name="collection")]
+    assert cloned.bands is not collection.bands
+    assert cloned.assets["data"].bands == [Band(name="asset")]
+
+
+def test_bands_are_kept_in_extra_fields(collection: Collection) -> None:
+    collection_dict = collection.to_dict(include_self_link=False)
+    collection_dict["bands"] = [{"name": "red"}]
+    collection = Collection.from_dict(collection_dict)
+    assert collection.extra_fields["bands"] == [{"name": "red"}]
+    get_opt(collection.bands)[0].name = "green"
+    assert collection.to_dict()["bands"] == [{"name": "green"}]
+    assert collection.extra_fields["bands"] == [{"name": "green"}]
+    collection.extra_fields["bands"] = [{"name": "blue"}]
+    assert collection.to_dict()["bands"] == [{"name": "blue"}]
+
+
+def test_bands_set_to_none_are_removed(collection: Collection) -> None:
+    collection.bands = [Band(name="collection")]
+    assert "bands" in collection.to_dict()
+    collection.bands = None
+    assert "bands" not in collection.to_dict()
+    assert "bands" not in collection.extra_fields
+    assert collection.clone().bands is None
+
+
+def test_bands_written_to_extra_fields_are_kept(collection: Collection) -> None:
+    collection.extra_fields["bands"] = [{"name": "red"}]
+    assert collection.bands == [Band(name="red")]
+    assert collection.to_dict()["bands"] == [{"name": "red"}]
+    assert collection.clone().bands == [Band(name="red")]
+
+
+def test_band_edits_are_written_to_extra_fields(collection: Collection) -> None:
+    collection.bands = [Band(name="red")]
+    get_opt(collection.bands)[0].name = "green"
+    assert collection.extra_fields["bands"] == [{"name": "green"}]
