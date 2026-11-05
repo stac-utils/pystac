@@ -2,9 +2,12 @@ from __future__ import annotations
 
 from copy import copy, deepcopy
 from dataclasses import dataclass, field, fields
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pystac.common_metadata import DataType, NoDataStrings, Statistics
+
+if TYPE_CHECKING:
+    from pystac.extensions.ext import BandExt
 
 
 @dataclass
@@ -82,6 +85,23 @@ class Band:
             d["unit"] = self.unit
         d.update(_copy_json(self.extra_fields))
         return d
+
+    @property
+    def ext(self) -> BandExt:
+        """Accessor for extension classes on this band
+
+        Example::
+
+            band.ext.raster.scale = 0.0001
+        """
+        try:
+            from pystac.extensions.ext import BandExt
+        except ModuleNotFoundError as e:
+            from pystac.errors import _raise_for_missing_ext
+
+            _raise_for_missing_ext(e)
+
+        return BandExt(stac_object=self)
 
 
 _ATOMS = frozenset({str, int, float, bool, type(None)})
