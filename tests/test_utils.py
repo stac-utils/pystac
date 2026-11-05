@@ -490,3 +490,15 @@ def test_stringenum_repr() -> None:
         THIS = "this"
 
     assert repr(SomeEnum.THIS) == "'this'"
+
+
+@pytest.mark.parametrize(
+    "value,expected", [("this", "this"), ("other", "other"), (1, 1), (None, None)]
+)
+def test_stringenum_coerce(value: object, expected: object) -> None:
+    class SomeEnum(StringEnum):
+        THIS = "this"
+
+    result = SomeEnum.coerce(value)
+    assert result == expected
+    assert isinstance(result, SomeEnum) == (value == "this")

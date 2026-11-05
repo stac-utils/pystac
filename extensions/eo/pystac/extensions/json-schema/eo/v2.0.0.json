@@ -1,0 +1,342 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://stac-extensions.github.io/eo/v2.0.0/schema.json#",
+  "title": "EO Extension",
+  "description": "STAC EO Extension for STAC Items and STAC Collections.",
+  "type": "object",
+  "required": ["stac_extensions", "type"],
+  "properties": {
+    "stac_extensions": {
+      "type": "array",
+      "contains": {
+        "const": "https://stac-extensions.github.io/eo/v2.0.0/schema.json"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$comment": "Items",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "Feature"
+          }
+        }
+      },
+      "then": {
+        "allOf": [
+          {
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/validate_properties"
+              }
+            }
+          },
+          {
+            "$ref": "#/definitions/validate_assets"
+          }
+        ],
+        "anyOf": [
+          {
+            "required": ["properties"],
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/require_properties"
+              }
+            }
+          },
+          {
+            "$ref": "#/definitions/require_assets"
+          }
+        ]
+      }
+    },
+    {
+      "$comment": "Collections",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "Collection"
+          }
+        }
+      },
+      "then": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/validate_bands"
+          },
+          {
+            "$ref": "#/definitions/validate_assets"
+          },
+          {
+            "properties": {
+              "item_assets": {
+                "additionalProperties": {
+                  "$ref": "#/definitions/validate_properties"
+                }
+              }
+            }
+          },
+          {
+            "properties": {
+              "summaries": {
+                "type": "object",
+                "$comment": "We can't properly validate summary objects types (min/max or schemas) yet.",
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/validate_bands"
+                  },
+                  {
+                    "properties": {
+                      "eo:cloud_cover": {
+                        "type": ["array", "object"],
+                        "items": {
+                          "$ref": "#/definitions/eo:cloud_cover"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "eo:snow_cover": {
+                        "type": ["array", "object"],
+                        "items": {
+                          "$ref": "#/definitions/eo:snow_cover"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "eo:common_name": {
+                        "type": ["array", "object"],
+                        "items": {
+                          "$ref": "#/definitions/eo:common_name"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "eo:center_wavelength": {
+                        "type": ["array", "object"],
+                        "items": {
+                          "$ref": "#/definitions/eo:center_wavelength"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "eo:full_width_half_max": {
+                        "type": ["array", "object"],
+                        "items": {
+                          "$ref": "#/definitions/eo:full_width_half_max"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "eo:solar_illumination": {
+                        "type": ["array", "object"],
+                        "items": {
+                          "$ref": "#/definitions/eo:solar_illumination"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "anyOf": [
+          {
+            "$ref": "#/definitions/require_in_bands"
+          },
+          {
+            "$ref": "#/definitions/require_assets"
+          },
+          {
+            "required": ["item_assets"],
+            "properties": {
+              "item_assets": {
+                "$ref": "#/definitions/asset_contains"
+              }
+            }
+          },
+          {
+            "required": ["summaries"],
+            "properties": {
+              "summaries": {
+                "$ref": "#/definitions/require_properties"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "definitions": {
+    "require_properties": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/require_fields"
+        },
+        {
+          "$ref": "#/definitions/require_in_bands"
+        }
+      ]
+    },
+    "validate_bands": {
+      "type": "object",
+      "properties": {
+        "bands": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/fields"
+          }
+        }
+      }
+    },
+    "validate_properties": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/fields"
+        },
+        {
+          "$ref": "#/definitions/validate_bands"
+        }
+      ]
+    },
+    "require_assets": {
+      "required": ["assets"],
+      "properties": {
+        "assets": {
+          "$ref": "#/definitions/asset_contains"
+        }
+      }
+    },
+    "validate_assets": {
+      "properties": {
+        "assets": {
+          "additionalProperties": {
+            "$ref": "#/definitions/validate_properties"
+          }
+        }
+      }
+    },
+    "asset_contains": {
+      "type": "object",
+      "not": {
+        "additionalProperties": {
+          "not": {
+            "$ref": "#/definitions/require_properties"
+          }
+        }
+      }
+    },
+    "require_in_bands": {
+      "required": ["bands"],
+      "properties": {
+        "bands": {
+          "type": "array",
+          "contains": {
+            "$ref": "#/definitions/require_fields"
+          }
+        }
+      }
+    },
+    "require_fields": {
+      "anyOf": [
+        { "required": ["eo:cloud_cover"] },
+        { "required": ["eo:snow_cover"] },
+        { "required": ["eo:common_name"] },
+        { "required": ["eo:center_wavelength"] },
+        { "required": ["eo:full_width_half_max"] },
+        { "required": ["eo:solar_illumination"] }
+      ]
+    },
+    "fields": {
+      "type": "object",
+      "properties": {
+        "eo:cloud_cover": {
+          "$ref": "#/definitions/eo:cloud_cover"
+        },
+        "eo:snow_cover": {
+          "$ref": "#/definitions/eo:snow_cover"
+        },
+        "eo:common_name": {
+          "$ref": "#/definitions/eo:common_name"
+        },
+        "eo:center_wavelength": {
+          "$ref": "#/definitions/eo:center_wavelength"
+        },
+        "eo:full_width_half_max": {
+          "$ref": "#/definitions/eo:full_width_half_max"
+        },
+        "eo:solar_illumination": {
+          "$ref": "#/definitions/eo:solar_illumination"
+        }
+      },
+      "patternProperties": {
+        "^(?!eo:)": {}
+      },
+      "additionalProperties": false
+    },
+    "eo:cloud_cover": {
+      "title": "Cloud Cover",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "eo:snow_cover": {
+      "title": "Snow and Ice Cover",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "eo:common_name": {
+      "title": "Common Name of the band",
+      "type": "string",
+      "enum": [
+        "pan",
+        "coastal",
+        "blue",
+        "green",
+        "green05",
+        "yellow",
+        "red",
+        "rededge",
+        "rededge071",
+        "rededge075",
+        "rededge078",
+        "nir",
+        "nir08",
+        "nir09",
+        "cirrus",
+        "swir16",
+        "swir22",
+        "lwir",
+        "lwir11",
+        "lwir12"
+      ]
+    },
+    "eo:center_wavelength": {
+      "title": "Center Wavelength",
+      "type": "number",
+      "minimumExclusive": 0
+    },
+    "eo:full_width_half_max": {
+      "title": "Full Width Half Max (FWHM)",
+      "type": "number",
+      "minimumExclusive": 0
+    },
+    "eo:solar_illumination": {
+      "title": "Solar Illumination",
+      "type": "number",
+      "minimum": 0
+    }
+  }
+}

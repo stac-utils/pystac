@@ -102,6 +102,17 @@ class StringEnum(str, Enum):
     def __str__(self) -> str:
         return cast(str, self.value)
 
+    @classmethod
+    def coerce(cls, value: Any) -> Any:
+        """Returns the member with the given value, or ``value`` unchanged if it is
+        not a string or no member has that value."""
+        if not isinstance(value, str):
+            return value
+        try:
+            return cls(value)
+        except ValueError:
+            return value
+
 
 class JoinType(StringEnum):
     """DEPRECATED.

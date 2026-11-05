@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from pystac import Asset, Catalog, Collection, Item, Link
+from pystac import Asset, Band, Catalog, Collection, Item, Link
 from pystac.errors import ExtensionNotImplemented
 from pystac.extensions.ext import (
     EXTENSION_NAME_MAPPING,
@@ -84,6 +84,31 @@ all_catalog_ext_props = {a for a in dir(CatalogExt) if not a.startswith("_")} - 
     "add",
     "remove",
 }
+
+
+def test_ext_syntax_band_is_just_for_accessing_properties() -> None:
+    band = Band.from_dict(
+        {
+            "name": "red",
+            "data_type": "uint16",
+            "nodata": 0,
+            "eo:common_name": "red",
+            "eo:center_wavelength": 0.665,
+            "eo:full_width_half_max": 0.038,
+            "raster:spatial_resolution": 10,
+            "raster:scale": 0.0001,
+            "raster:offset": -0.1,
+        }
+    )
+    assert band.name == "red"
+    assert band.ext.raster.scale == 0.0001
+    assert band.ext.eo.common_name == "red"
+
+    for verb in {"has", "add", "remove"}:
+        with pytest.raises(
+            NotImplementedError, match="controlled at the item or collection"
+        ):
+            getattr(band.ext, verb)("raster")
 
 
 @pytest.mark.parametrize("name", all_link_ext_props)

@@ -661,8 +661,7 @@ class Catalog(STACObject):
         if self.stac_extensions:
             d["stac_extensions"] = self.stac_extensions
 
-        for key in self.extra_fields:
-            d[key] = self.extra_fields[key]
+        d.update(self.extra_fields)
 
         if self.title is not None:
             d["title"] = self.title

@@ -26,8 +26,16 @@ from pystac.serialization.identify import STACJSONDescription, STACVersionID
 from pystac.utils import get_required, map_opt
 
 #: Generalized version of :class:`~pystac.Item`, :class:`~pystac.Asset`,
-#: :class:`~pystac.ItemAssetDefinition` or :class:`~pystac.extensions.raster.RasterBand`
-T = TypeVar("T", pystac.Item, pystac.Asset, pystac.ItemAssetDefinition, RasterBand)
+#: :class:`~pystac.ItemAssetDefinition`, :class:`~pystac.Band` or
+#: :class:`~pystac.extensions.raster.RasterBand`
+T = TypeVar(
+    "T",
+    pystac.Item,
+    pystac.Asset,
+    pystac.ItemAssetDefinition,
+    pystac.Band,
+    RasterBand,
+)
 
 SCHEMA_URI_PATTERN: str = (
     "https://stac-extensions.github.io/classification/v{version}/schema.json"
@@ -507,7 +515,7 @@ class ClassificationExtension(
     ExtensionManagementMixin[pystac.Item | pystac.Collection],
 ):
     """An abstract class that can be used to extend the properties of
-    :class:`~pystac.Item`, :class:`~pystac.Asset`,
+    :class:`~pystac.Item`, :class:`~pystac.Asset`, :class:`~pystac.Band`,
     :class:`~pystac.extensions.raster.RasterBand`, or
     :class:`~pystac.ItemAssetDefinition` with properties from the
     :stac-ext:`Classification Extension <classification>`.  This class is generic
@@ -619,8 +627,9 @@ class ClassificationExtension(
 
         This extension can be applied to instances of :class:`~pystac.Item`,
         :class:`~pystac.Asset`,
-        :class:`~pystac.ItemAssetDefinition`, or
-        :class:`~pystac.extensions.raster.RasterBand`.
+        :class:`~pystac.ItemAssetDefinition`, :class:`~pystac.Band`, or
+        :class:`~pystac.extensions.raster.RasterBand`. A band has no owner, so
+        ``add_if_missing`` has no effect for it.
 
         Raises:
             pystac.ExtensionTypeError : If an invalid object type is passed
@@ -636,6 +645,8 @@ class ClassificationExtension(
             return cast(
                 ClassificationExtension[T], ItemAssetsClassificationExtension(obj)
             )
+        elif isinstance(obj, pystac.Band):
+            return cast(ClassificationExtension[T], BandClassificationExtension(obj))
         elif isinstance(obj, RasterBand):
             return cast(
                 ClassificationExtension[T], RasterBandClassificationExtension(obj)
@@ -695,6 +706,29 @@ class ItemAssetsClassificationExtension(
         return (
             f"<ItemAssetsClassificationExtension ItemAssetDefinition={self.asset_defn}"
         )
+
+
+class BandClassificationExtension(ClassificationExtension[pystac.Band]):
+    """A concrete implementation of :class:`ClassificationExtension` on a
+    :class:`~pystac.Band` that extends the band's fields to include properties
+    defined in the :stac-ext:`Classification Extension <classification>`.
+
+    This class should generally not be instantiated directly. Instead, call
+    :meth:`ClassificationExtension.ext` on a :class:`~pystac.Band` to extend it.
+    """
+
+    band: pystac.Band
+    """The :class:`~pystac.Band` being extended."""
+
+    properties: dict[str, Any]
+    """The :class:`~pystac.Band` extra fields, including extension properties."""
+
+    def __init__(self, band: pystac.Band):
+        self.band = band
+        self.properties = band.extra_fields
+
+    def __repr__(self) -> str:
+        return f"<BandClassificationExtension Band name={self.band.name}>"
 
 
 class RasterBandClassificationExtension(ClassificationExtension[RasterBand]):

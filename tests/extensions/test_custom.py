@@ -204,6 +204,29 @@ def test_migrates(add_extension_hooks: None) -> None:
     assert custom.test_prop == "foo"
 
 
+@pytest.mark.parametrize(
+    "stac_extensions",
+    [
+        ["custom", "https://example.com/v1.0/custom-schema.json"],
+        [
+            "https://example.com/v1.0/custom-schema.json",
+            "https://example.com/other.json",
+            "https://example.com/v1.0/custom-schema.json",
+        ],
+        ["https://example.com/v1.0/custom-schema.json", SCHEMA_URI],
+    ],
+)
+def test_migrate_lists_schema_uri_once(
+    add_extension_hooks: None, stac_extensions: list[str]
+) -> None:
+    item_as_dict = Item("an-id", None, None, datetime.now(), {}).to_dict()
+    item_as_dict["stac_version"] = "1.0.0"
+    item_as_dict["stac_extensions"] = stac_extensions
+    item = Item.from_dict(item_as_dict, migrate=True)
+    assert item.stac_extensions.count(SCHEMA_URI) == 1
+    assert item.stac_extensions[0] == SCHEMA_URI
+
+
 class Nested:
     def __init__(self, value: Any) -> None:
         self.value = value
