@@ -1,0 +1,348 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://stac-extensions.github.io/raster/v2.0.0/schema.json#",
+  "title": "Raster Extension",
+  "description": "STAC Raster Extension for STAC Items and STAC Collections.",
+  "type": "object",
+  "required": ["stac_extensions", "type"],
+  "properties": {
+    "stac_extensions": {
+      "type": "array",
+      "contains": {
+        "const": "https://stac-extensions.github.io/raster/v2.0.0/schema.json"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$comment": "Items",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "Feature"
+          }
+        }
+      },
+      "then": {
+        "allOf": [
+          {
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/validate_properties"
+              }
+            }
+          },
+          {
+            "$ref": "#/definitions/validate_assets"
+          }
+        ],
+        "anyOf": [
+          {
+            "required": ["properties"],
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/require_properties"
+              }
+            }
+          },
+          {
+            "$ref": "#/definitions/require_assets"
+          }
+        ]
+      }
+    },
+    {
+      "$comment": "Collections",
+      "if": {
+        "properties": {
+          "type": {
+            "const": "Collection"
+          }
+        }
+      },
+      "then": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/validate_bands"
+          },
+          {
+            "$ref": "#/definitions/validate_assets"
+          },
+          {
+            "properties": {
+              "item_assets": {
+                "additionalProperties": {
+                  "$ref": "#/definitions/validate_properties"
+                }
+              }
+            }
+          },
+          {
+            "properties": {
+              "summaries": {
+                "type": "object",
+                "$comment": "We can't properly validate summary objects types (min/max or schemas) yet.",
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/validate_bands"
+                  },
+                  {
+                    "properties": {
+                      "raster:bits_per_sample": {
+                        "type": ["array", "object"],
+                        "items": {
+                          "$ref": "#/definitions/raster:bits_per_sample"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "raster:sampling": {
+                        "type": ["array", "object"],
+                        "items": {
+                          "$ref": "#/definitions/raster:sampling"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "raster:scale": {
+                        "type": ["array", "object"],
+                        "items": {
+                          "$ref": "#/definitions/raster:scale"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "raster:offset": {
+                        "type": ["array", "object"],
+                        "items": {
+                          "$ref": "#/definitions/raster:offset"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "raster:spatial_resolution": {
+                        "type": ["array", "object"],
+                        "items": {
+                          "$ref": "#/definitions/raster:spatial_resolution"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "properties": {
+                      "raster:histogram": {
+                        "type": ["array", "object"],
+                        "items": {
+                          "$ref": "#/definitions/raster:histogram"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "anyOf": [
+          {
+            "$ref": "#/definitions/require_in_bands"
+          },
+          {
+            "$ref": "#/definitions/require_assets"
+          },
+          {
+            "required": ["item_assets"],
+            "properties": {
+              "item_assets": {
+                "$ref": "#/definitions/asset_contains"
+              }
+            }
+          },
+          {
+            "required": ["summaries"],
+            "properties": {
+              "summaries": {
+                "$ref": "#/definitions/require_properties"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "definitions": {
+    "require_properties": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/require_fields"
+        },
+        {
+          "$ref": "#/definitions/require_in_bands"
+        }
+      ]
+    },
+    "validate_bands": {
+      "type": "object",
+      "properties": {
+        "bands": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/fields"
+          }
+        }
+      }
+    },
+    "validate_properties": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/fields"
+        },
+        {
+          "$ref": "#/definitions/validate_bands"
+        }
+      ]
+    },
+    "require_assets": {
+      "required": ["assets"],
+      "properties": {
+        "assets": {
+          "$ref": "#/definitions/asset_contains"
+        }
+      }
+    },
+    "validate_assets": {
+      "properties": {
+        "assets": {
+          "additionalProperties": {
+            "$ref": "#/definitions/validate_properties"
+          }
+        }
+      }
+    },
+    "asset_contains": {
+      "type": "object",
+      "not": {
+        "additionalProperties": {
+          "not": {
+            "$ref": "#/definitions/require_properties"
+          }
+        }
+      }
+    },
+    "require_in_bands": {
+      "required": ["bands"],
+      "properties": {
+        "bands": {
+          "type": "array",
+          "contains": {
+            "$ref": "#/definitions/require_fields"
+          }
+        }
+      }
+    },
+    "require_fields": {
+      "anyOf": [
+        {"required": ["raster:bits_per_sample"]},
+        {"required": ["raster:sampling"]},
+        {"required": ["raster:scale"]},
+        {"required": ["raster:offset"]},
+        {"required": ["raster:spatial_resolution"]},
+        {"required": ["raster:histogram"]}
+      ]
+    },
+    "fields": {
+      "type": "object",
+      "properties": {
+        "raster:bits_per_sample": {
+          "$ref": "#/definitions/raster:bits_per_sample"
+        },
+        "raster:sampling": {
+          "$ref": "#/definitions/raster:sampling"
+        },
+        "raster:scale": {
+          "$ref": "#/definitions/raster:scale"
+        },
+        "raster:offset": {
+          "$ref": "#/definitions/raster:offset"
+        },
+        "raster:spatial_resolution": {
+          "$ref": "#/definitions/raster:spatial_resolution"
+        },
+        "raster:histogram": {
+          "$ref": "#/definitions/raster:histogram"
+        }
+      },
+      "patternProperties": {
+        "^(?!raster:)": {}
+      },
+      "additionalProperties": false
+    },
+    "raster:bits_per_sample": {
+      "title": "The actual number of bits used for this band",
+      "type": "integer"
+    },
+    "raster:sampling": {
+      "title": "Pixel sampling in the band",
+      "type": "string",
+      "enum": [
+        "area",
+        "point"
+      ]
+    },
+    "raster:scale": {
+      "title": "multiplicator factor of the pixel value to transform into the value",
+      "type": "number"
+    },
+    "raster:offset": {
+      "title": "number to be added to the pixel value to transform into the value",
+      "type": "number"
+    },
+    "raster:spatial_resolution": {
+      "title": "Average spatial resolution (in meters) of the pixels in the band",
+      "type": "number"
+    },
+    "raster:histogram": {
+      "title": "Histogram",
+      "type": "object",
+      "additionalItems": false,
+      "required": [
+        "count",
+        "min",
+        "max",
+        "buckets"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "title": "number of buckets",
+          "type": "number"
+        },
+        "min": {
+          "title": "Minimum value of the buckets",
+          "type": "number"
+        },
+        "max": {
+          "title": "Maximum value of the buckets",
+          "type": "number"
+        },
+        "buckets": {
+          "title": "distribution buckets",
+          "type": "array",
+          "minItems": 3,
+          "items": {
+            "title": "number of pixels in the bucket",
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}

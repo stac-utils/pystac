@@ -5,6 +5,7 @@ from copy import copy, deepcopy
 from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 
 from pystac import MediaType, STACError, common_metadata, utils
+from pystac.band import Band, _BandCache
 from pystac.utils import is_absolute_href, make_absolute_href, make_relative_href
 
 if TYPE_CHECKING:
@@ -33,6 +34,8 @@ class Asset:
         extra_fields : Optional, additional fields for this asset. This is used
             by extensions as a way to serialize and deserialize properties on asset
             object JSON.
+        bands : Optional, the bands of this asset. If not given, they are read from
+            ``extra_fields["bands"]``.
     """
 
     href: str
@@ -58,10 +61,6 @@ class Asset:
     """The :class:`~pystac.Item` or :class:`~pystac.Collection` that this asset belongs
     to, or ``None`` if it has no owner."""
 
-    extra_fields: dict[str, Any]
-    """Optional, additional fields for this asset. This is used by extensions as a
-    way to serialize and deserialize properties on asset object JSON."""
-
     def __init__(
         self,
         href: str,
@@ -70,13 +69,17 @@ class Asset:
         media_type: str | None = None,
         roles: list[str] | None = None,
         extra_fields: dict[str, Any] | None = None,
+        bands: list[Band] | None = None,
     ) -> None:
         self.href = utils.make_posix_style(href)
         self.title = title
         self.description = description
         self.media_type = media_type
         self.roles = roles
+        self._band_cache = _BandCache()
         self.extra_fields = extra_fields or {}
+        if bands is not None:
+            self.bands = bands
 
         # The Item which owns this Asset.
         self.owner = None
@@ -110,6 +113,40 @@ class Asset:
                 return utils.make_absolute_href(self.href, item_self)
             return None
 
+    @property
+    def extra_fields(self) -> dict[str, Any]:
+        """Optional, additional fields for this asset. This is used by extensions as a
+        way to serialize and deserialize properties on asset object JSON.
+
+        Changes made to the bands returned by :attr:`~pystac.Asset.bands` are written
+        to ``extra_fields["bands"]`` whenever this dictionary is read.
+        """
+        if self._band_cache.loaded:
+            self._band_cache.sync(self._extra_fields)
+        return self._extra_fields
+
+    @extra_fields.setter
+    def extra_fields(self, extra_fields: dict[str, Any]) -> None:
+        self._extra_fields = extra_fields
+
+    @property
+    def bands(self) -> list[Band] | None:
+        """Gets or sets the bands of this asset.
+
+        If this asset has no bands of its own, the bands of its owner are returned.
+        The asset's own bands are read from and written to ``extra_fields["bands"]``.
+        Changes made to the returned bands are written back whenever
+        :attr:`~pystac.Asset.extra_fields` is read.
+        """
+        bands = self._band_cache.get(self.extra_fields)
+        if bands is None and self.owner is not None:
+            return self.owner.bands
+        return bands
+
+    @bands.setter
+    def bands(self, bands: list[Band] | None) -> None:
+        self._band_cache.set(self.extra_fields, bands)
+
     def to_dict(self) -> dict[str, Any]:
         """Returns this Asset as a dictionary.
 
@@ -128,9 +165,9 @@ class Asset:
         if self.description is not None:
             d["description"] = self.description
 
-        if self.extra_fields is not None and len(self.extra_fields) > 0:
-            for k, v in self.extra_fields.items():
-                d[k] = v
+        extra_fields = self.extra_fields
+        if extra_fields:
+            d.update(extra_fields)
 
         if self.roles is not None:
             d["roles"] = self.roles
@@ -139,7 +176,7 @@ class Asset:
 
     def clone(self) -> Asset:
         """Clones this asset. Makes a ``deepcopy`` of the
-        :attr:`~pystac.Asset.extra_fields`.
+        :attr:`~pystac.Asset.extra_fields`, including the asset's own bands.
 
         Returns:
             Asset: The clone of this asset.
@@ -287,6 +324,9 @@ class Assets(Protocol):
 
     assets: dict[str, Asset]
     """The asset dictionary."""
+
+    bands: list[Band] | None
+    """The bands shared by this object's assets."""
 
     def get_assets(
         self,
