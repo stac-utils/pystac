@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from collections.abc import Iterable, Sequence
 from copy import deepcopy
 from datetime import datetime, timezone
@@ -41,6 +42,13 @@ C = TypeVar("C", bound="Collection")
 Bboxes = list[list[float | int]]
 TemporalIntervals = list[list[datetime]] | list[list[Optional[datetime]]]
 TemporalIntervalsLike = TemporalIntervals | list[datetime] | list[Optional[datetime]]
+
+# Stand-ins for a spatial or temporal extent that the source document does not
+# provide. These are the values Collection.from_dict() has always used for a
+# missing or null ``extent``; they are reused here so that pystac has a single
+# default extent no matter which part of the object was left out.
+_DEFAULT_BBOXES: Bboxes = [[-90, -180, 90, 180]]
+_DEFAULT_INTERVALS: list[list[datetime | None]] = [[None, None]]
 
 
 class SpatialExtent:
@@ -104,12 +112,31 @@ class SpatialExtent:
         )
 
     @staticmethod
-    def from_dict(d: dict[str, Any]) -> SpatialExtent:
+    def from_dict(d: dict[str, Any] | None) -> SpatialExtent:
         """Constructs a SpatialExtent from a dict.
+
+        A ``null`` spatial extent, or one with a ``null`` ``bbox``, is invalid
+        STAC. It is deserialized as the bbox of the whole world with a warning.
 
         Returns:
             SpatialExtent: The SpatialExtent deserialized from the JSON dict.
         """
+        if d is None or d.get("bbox") is None:
+            # https://github.com/stac-utils/pystac/issues/1551
+            warnings.warn(
+                "A collection's spatial extent should have a bbox, but it is "
+                f"null. pystac is using the default bbox ({_DEFAULT_BBOXES}) "
+                "and continuing deserialization, but note that the source "
+                "collection is invalid STAC.",
+                UserWarning,
+            )
+            return SpatialExtent(
+                bboxes=deepcopy(_DEFAULT_BBOXES),
+                extra_fields=(
+                    None if d is None else {k: v for k, v in d.items() if k != "bbox"}
+                ),
+            )
+
         return SpatialExtent(
             bboxes=d["bbox"], extra_fields={k: v for k, v in d.items() if k != "bbox"}
         )
@@ -245,17 +272,37 @@ class TemporalExtent:
         )
 
     @staticmethod
-    def from_dict(d: dict[str, Any]) -> TemporalExtent:
+    def from_dict(d: dict[str, Any] | None) -> TemporalExtent:
         """Constructs an TemporalExtent from a dict.
+
+        A ``null`` temporal extent, or one with a ``null`` ``interval``, is
+        invalid STAC. It is deserialized as a single open interval with a
+        warning.
 
         Returns:
             TemporalExtent: The TemporalExtent deserialized from the JSON dict.
         """
+        if d is None or d.get("interval") is None:
+            # https://github.com/stac-utils/pystac/issues/1551
+            warnings.warn(
+                "A collection's temporal extent should have an interval, but "
+                "it is null. pystac is using a single open interval and "
+                "continuing deserialization, but note that the source "
+                "collection is invalid STAC.",
+                UserWarning,
+            )
+            return TemporalExtent(
+                intervals=deepcopy(_DEFAULT_INTERVALS),
+                extra_fields=(
+                    None
+                    if d is None
+                    else {k: v for k, v in d.items() if k != "interval"}
+                ),
+            )
+
         parsed_intervals: list[list[datetime | None]] = []
         for i in d["interval"]:
             if isinstance(i, str):
-                import warnings
-
                 # d["interval"] is a list of strings, so we correct the list and
                 # try again
                 # https://github.com/stac-utils/pystac/issues/1221
@@ -361,8 +408,8 @@ class Extent:
             Extent: The Extent deserialized from the JSON dict.
         """
         return Extent(
-            spatial=SpatialExtent.from_dict(d["spatial"]),
-            temporal=TemporalExtent.from_dict(d["temporal"]),
+            spatial=SpatialExtent.from_dict(d.get("spatial")),
+            temporal=TemporalExtent.from_dict(d.get("temporal")),
             extra_fields={
                 k: v for k, v in d.items() if k not in {"spatial", "temporal"}
             },
@@ -661,8 +708,8 @@ class Collection(Catalog, Assets):
                 "temporal extents"
             )
             extent = Extent(
-                spatial=SpatialExtent([-90, -180, 90, 180]),
-                temporal=TemporalExtent([None, None]),
+                spatial=SpatialExtent(deepcopy(_DEFAULT_BBOXES)),
+                temporal=TemporalExtent(deepcopy(_DEFAULT_INTERVALS)),
             )
         title = d.pop("title", None)
         stac_extensions = d.pop("stac_extensions", None)
