@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from collections.abc import Iterable
 from typing import (
     Any,
@@ -12,6 +13,7 @@ from typing import (
 )
 
 import pystac
+from pystac.errors import SpecDeprecationWarning
 from pystac.extensions.base import (
     ExtensionManagementMixin,
     PropertiesExtension,
@@ -211,6 +213,15 @@ class SarExtension(
 
     @instrument_mode.setter
     def instrument_mode(self, v: str | None) -> None:
+        if v is not None:
+            warnings.warn(
+                "'sar:instrument_mode' is deprecated in the SAR specification; "
+                "use 'instrument_modes' from the instruments extension instead. "
+                "This accessor remains supported for compatibility.",
+                category=SpecDeprecationWarning,
+                stacklevel=2,
+            )
+
         self._set_property(INSTRUMENT_MODE_PROP, v)
 
     @property
@@ -250,6 +261,15 @@ class SarExtension(
 
     @product_type.setter
     def product_type(self, v: str | None) -> None:
+        if v is not None:
+            warnings.warn(
+                "'sar:product_type' is deprecated in the SAR specification; "
+                "use 'type' from the product extension instead. "
+                "This accessor remains supported for compatibility.",
+                category=SpecDeprecationWarning,
+                stacklevel=2,
+            )
+
         self._set_property(PRODUCT_TYPE_PROP, v)
 
     @property
