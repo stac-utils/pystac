@@ -612,7 +612,12 @@ class StorageExtensionHooks(ExtensionHooks):
     _UNSUPPORTED_PLATFORMS: set[str] = {"GCP", "IBM", "ALIBABA", "ORACLE", "OTHER"}
 
     # Regex patterns for parsing cloud storage URLs
-    _S3_URL_PATTERN = re.compile(r"^s3://([^/]+)/")
+    # s3://, virtual-hosted style https, and path-style https
+    _S3_URL_PATTERNS = (
+        re.compile(r"^s3://([^/]+)/"),
+        re.compile(r"^https://([^.]+)\.s3[.-](?:[a-z0-9-]+\.)?amazonaws\.com/"),
+        re.compile(r"^https://s3[.-](?:[a-z0-9-]+\.)?amazonaws\.com/([^/]+)/"),
+    )
     _AZURE_BLOB_PATTERN = re.compile(r"^https://([^.]+)\.blob\.core\.windows\.net/")
 
     def migrate(
@@ -671,7 +676,10 @@ class StorageExtensionHooks(ExtensionHooks):
 
                 # Parse bucket/account info from href
                 if platform_upper == "AWS":
-                    if s3_match := self._S3_URL_PATTERN.match(href):
+                    if s3_match := next(
+                        filter(None, (p.match(href) for p in self._S3_URL_PATTERNS)),
+                        None,
+                    ):
                         scheme["bucket"] = s3_match.group(1)
                     else:
                         assets_failed_parsing.append(asset_key)

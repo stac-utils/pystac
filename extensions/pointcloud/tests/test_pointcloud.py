@@ -67,12 +67,10 @@ def test_apply(plain_item: pystac.Item) -> None:
     assert PointcloudExtension.has_extension(plain_item)
 
 
-@pytest.mark.vcr()
 def test_validate_pointcloud(pc_item: pystac.Item) -> None:
     pc_item.validate()
 
 
-@pytest.mark.vcr()
 def test_count(pc_item: pystac.Item) -> None:
     assert "pc:count" in pc_item.properties
     pc_count = PointcloudExtension.ext(pc_item).count
@@ -88,7 +86,6 @@ def test_count(pc_item: pystac.Item) -> None:
         pc_item.validate()
 
 
-@pytest.mark.vcr()
 def test_type(pc_item: pystac.Item) -> None:
     assert "pc:type" in pc_item.properties
     pc_type = PointcloudExtension.ext(pc_item).type
@@ -100,7 +97,6 @@ def test_type(pc_item: pystac.Item) -> None:
     pc_item.validate()
 
 
-@pytest.mark.vcr()
 def test_encoding(pc_item: pystac.Item) -> None:
     assert "pc:encoding" in pc_item.properties
     pc_encoding = PointcloudExtension.ext(pc_item).encoding
@@ -112,7 +108,6 @@ def test_encoding(pc_item: pystac.Item) -> None:
     pc_item.validate()
 
 
-@pytest.mark.vcr()
 def test_schemas(pc_item: pystac.Item) -> None:
     assert "pc:schemas" in pc_item.properties
     pc_schemas = [s.to_dict() for s in PointcloudExtension.ext(pc_item).schemas]
@@ -124,7 +119,6 @@ def test_schemas(pc_item: pystac.Item) -> None:
     pc_item.validate()
 
 
-@pytest.mark.vcr()
 def test_statistics(pc_item: pystac.Item) -> None:
     assert "pc:statistics" in pc_item.properties
     statistics = PointcloudExtension.ext(pc_item).statistics
@@ -151,7 +145,6 @@ def test_statistics(pc_item: pystac.Item) -> None:
     pc_item.validate()
 
 
-@pytest.mark.vcr()
 def test_density(pc_item: pystac.Item) -> None:
     assert "pc:density" in pc_item.properties
     pc_density = PointcloudExtension.ext(pc_item).density

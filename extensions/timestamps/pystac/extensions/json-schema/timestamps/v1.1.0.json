@@ -1,0 +1,146 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://stac-extensions.github.io/timestamps/v1.1.0/schema.json#",
+  "title": "Timestamps Extension",
+  "description": "STAC Timestamps Extension to a STAC Item.",
+  "oneOf": [
+    {
+      "$comment": "This is the schema for STAC Items.",
+      "allOf": [
+        {
+          "type": "object",
+          "required": [
+            "type",
+            "properties",
+            "assets",
+            "links"
+          ],
+          "properties": {
+            "type": {
+              "const": "Feature"
+            },
+            "properties": {
+              "$ref": "#/definitions/fields"
+            },
+            "assets": {
+              "$ref": "#/definitions/assets"
+            },
+            "links": {
+              "$ref": "#/definitions/links"
+            }
+          }
+        },
+        {
+          "$ref": "#/definitions/stac_extensions"
+        }
+      ]
+    },
+    {
+      "$comment": "This is the schema for STAC Collections.",
+      "allOf": [
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "const": "Collection"
+            },
+            "assets": {
+              "$ref": "#/definitions/assets"
+            },
+            "item_assets": {
+              "$ref": "#/definitions/assets"
+            },
+            "links": {
+              "$ref": "#/definitions/links"
+            }
+          }
+        },
+        {
+          "$ref": "#/definitions/fields"
+        },
+        {
+          "$ref": "#/definitions/stac_extensions"
+        }
+      ]
+    },
+    {
+      "$comment": "This is the schema for STAC Catalogs.",
+      "allOf": [
+        {
+          "type": "object",
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "const": "Catalog"
+            },
+            "links": {
+              "$ref": "#/definitions/links"
+            }
+          }
+        },
+        {
+          "$ref": "#/definitions/fields"
+        },
+        {
+          "$ref": "#/definitions/stac_extensions"
+        }
+      ]
+    }
+  ],
+  "definitions": {
+    "stac_extensions": {
+      "type": "object",
+      "required": [
+        "stac_extensions"
+      ],
+      "properties": {
+        "stac_extensions": {
+          "type": "array",
+          "contains": {
+            "const": "https://stac-extensions.github.io/timestamps/v1.1.0/schema.json"
+          }
+        }
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/fields"
+      }
+    },
+    "assets": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/fields"
+      }
+    },
+    "fields": {
+      "type": "object",
+      "properties": {
+        "published": {
+          "title": "Publish Time",
+          "type": "string",
+          "format": "date-time",
+          "pattern": "(\\+00:00|Z)$"
+        },
+        "unpublished": {
+          "title": "Removal Time",
+          "type": "string",
+          "format": "date-time",
+          "pattern": "(\\+00:00|Z)$"
+        },
+        "expires": {
+          "title": "Expiry Time",
+          "type": "string",
+          "format": "date-time",
+          "pattern": "(\\+00:00|Z)$"
+        }
+      }
+    }
+  }
+}

@@ -19,6 +19,7 @@ __all__ = [
     "RequiredPropertyMissing",
     "STACValidationError",
     "DeprecatedWarning",
+    "SpecDeprecationWarning",
     "MediaType",
     "RelType",
     "StacIO",
@@ -61,6 +62,7 @@ from pystac.errors import (
     RequiredPropertyMissing,
     STACValidationError,
     DeprecatedWarning,
+    SpecDeprecationWarning,
 )
 
 from pystac.version import (

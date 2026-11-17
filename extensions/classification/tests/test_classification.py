@@ -172,7 +172,6 @@ def test_apply_bitfields(plain_item: Item) -> None:
     )
 
 
-@pytest.mark.vcr()
 def test_apply_classes(plain_item: Item) -> None:
     ClassificationExtension.add_to(plain_item)
     ClassificationExtension.ext(plain_item).apply(
