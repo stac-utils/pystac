@@ -326,9 +326,13 @@ class JsonSchemaSTACValidator(STACValidator):
         if schema_uri not in self.schema_cache:
             import importlib.resources
 
-            for schema_dir in importlib.resources.files(
-                "pystac.extensions.json-schema"
-            ).iterdir():
+            try:
+                files = importlib.resources.files(
+                    "pystac.extensions.json-schema"
+                ).iterdir()
+            except ModuleNotFoundError:
+                files = iter(())
+            for schema_dir in files:
                 for schema_filepath in schema_dir.iterdir():
                     uri_path = PurePosixPath(urlparse(schema_uri).path)
                     version = uri_path.parent.name
