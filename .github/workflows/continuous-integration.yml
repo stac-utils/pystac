@@ -111,9 +111,10 @@ jobs:
       - name: Install pystac-core with minimum dependencies
         # --no-sources: take pystac-ext-* from PyPI, not the workspace
         run: |
+          uv venv --clear
           uv pip install --no-sources --resolution lowest-direct ./core ".[validation]"
       - name: Run smoke test
-        run: uv run --no-sync python scripts/smoke_test.py
+        run: uv run --no-sync python scripts/validation_smoke_test.py
 
   check-benchmarks:
     # This checks to make sure any API changes haven't broken any of the

@@ -1,8 +1,8 @@
-import pystac
+from pystac.validation import validate_dict
 
 
 def main() -> None:
-    pystac.validation.validate_dict(
+    validate_dict(
         {
             "type": "Feature",
             "stac_version": "1.1.0",
