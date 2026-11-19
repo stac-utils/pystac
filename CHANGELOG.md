@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.2](https://github.com/stac-utils/pystac/compare/v1.16.1...v1.16.2) (2026-11-19)
+
+
+### Bug Fixes
+
+* preserve extra_fields in Link.clone ([#1860](https://github.com/stac-utils/pystac/issues/1860)) ([924560a](https://github.com/stac-utils/pystac/commit/924560a62579c0e84584fab198f96bdb56ad2547))
+
 ## [1.16.1](https://github.com/stac-utils/pystac/compare/v1.16.0...v1.16.1) (2026-11-18)
 
 
