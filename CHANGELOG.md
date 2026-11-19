@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.1](https://github.com/stac-utils/pystac/compare/v1.16.0...v1.16.1) (2026-11-18)
+
+
+### Bug Fixes
+
+* Don't raise if extensions don't have local schema ([#1858](https://github.com/stac-utils/pystac/issues/1858)) ([5c93622](https://github.com/stac-utils/pystac/commit/5c93622db744f6b59872ddc0d25bfb28a90ed15b))
+
 ## [1.16.0](https://github.com/stac-utils/pystac/compare/v1.15.2...v1.16.0) (2026-11-02)
 
 
