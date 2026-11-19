@@ -646,6 +646,7 @@ class STACObject(ABC):
             href = make_absolute_href(href)
 
         d = stac_io.read_json(href)
+        href = stac_io._get_final_href(href)
         o = cls.from_dict(d, href=href, migrate=True, preserve_dict=False)
 
         # If this is a root catalog, set the root to the catalog instance.
