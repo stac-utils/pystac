@@ -1,5 +1,6 @@
 {
   "release-type": "python",
+  "pull-request-footer": "This PR was generated with [Release Please](https://github.com/googleapis/release-please). See [documentation](https://github.com/googleapis/release-please#release-please). **NOTE** If only pystac is being released (no extensions) someone needs to manually tag and release.",
   "packages": {
     ".": {
       "changelog-path": "CHANGELOG.md",
