@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from copy import deepcopy
 from typing import TYPE_CHECKING, Any, TypeVar
 
 import pystac
@@ -426,6 +427,7 @@ class Link(PathLike):
             target=self.target,
             media_type=self.media_type,
             title=self.title,
+            extra_fields=deepcopy(self.extra_fields),
         )
 
     @classmethod

@@ -2029,6 +2029,24 @@ def test_clone_extra_fields(catalog: Catalog) -> None:
     assert cloned.extra_fields["foo"] == "bar"
 
 
+def test_clone_link_extra_fields(catalog: Catalog) -> None:
+    catalog.add_link(Link("foo", "./foo.json", extra_fields={"foo:bar": "baz"}))
+    cloned = catalog.clone()
+    link = cloned.get_single_link("foo")
+    assert link is not None
+    assert link.extra_fields == {"foo:bar": "baz"}
+
+
+def test_full_copy_link_extra_fields(catalog: Catalog) -> None:
+    # https://github.com/stac-utils/pystac/issues/1856
+    catalog.add_link(Link("foo", "./foo.json", extra_fields={"foo:bar": "baz"}))
+    copied = catalog.full_copy()
+    link = copied.get_single_link("foo")
+    assert link is not None
+    assert link.extra_fields == {"foo:bar": "baz"}
+    assert {"foo:bar": "baz"}.items() <= link.to_dict().items()
+
+
 def test_warn_if_next_link_present(catalog: Catalog) -> None:
     catalog.links.append(Link(rel="next", target="./next.json"))
     with pytest.warns(UserWarning):
