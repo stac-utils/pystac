@@ -36,9 +36,12 @@ if TYPE_CHECKING:
 
 class StacIO(ABC):
     _default_io: Callable[[], StacIO] | None = None
+    headers: dict[str, str] = {}
+    migrate: bool = True
 
-    def __init__(self, headers: dict[str, str] | None = None):
+    def __init__(self, headers: dict[str, str] | None = None, migrate: bool = True):
         self.headers = headers or {}
+        self.migrate = migrate
 
     @abstractmethod
     def read_text(self, source: HREF, *args: Any, **kwargs: Any) -> str:
@@ -131,6 +134,7 @@ class StacIO(ABC):
         href: HREF | None = None,
         root: Catalog | None = None,
         preserve_dict: bool = True,
+        migrate: bool | None = None,
     ) -> STACObject:
         """Deserializes a :class:`~pystac.STACObject` subclass instance from a
         dictionary.
@@ -146,6 +150,9 @@ class StacIO(ABC):
                 Defaults to ``True``, which results in a deepcopy of the
                 parameter. Set to ``False`` when possible to avoid the performance
                 hit of a deepcopy.
+            migrate: By default, STAC objects and extensions are migrated to
+                their latest supported version. Set this to False to
+                disable this behavior.
         """
         href_str = None if href is None else str(os.fspath(href))
         if identify_stac_object_type(d) == pystac.STACObjectType.ITEM:
@@ -159,25 +166,40 @@ class StacIO(ABC):
             )
 
         info = identify_stac_object(d)
-        d = migrate_to_latest(d, info)
+        if migrate is None:
+            migrate = self.migrate
+        if migrate:
+            d = migrate_to_latest(d, info)
 
         if info.object_type == pystac.STACObjectType.CATALOG:
             catalog = pystac.Catalog.from_dict(
-                d, href=href_str, root=root, migrate=True, preserve_dict=preserve_dict
+                d,
+                href=href_str,
+                root=root,
+                migrate=migrate,
+                preserve_dict=preserve_dict,
             )
             catalog._stac_io = self
             return catalog
 
         if info.object_type == pystac.STACObjectType.COLLECTION:
             collection = pystac.Collection.from_dict(
-                d, href=href_str, root=root, migrate=True, preserve_dict=preserve_dict
+                d,
+                href=href_str,
+                root=root,
+                migrate=migrate,
+                preserve_dict=preserve_dict,
             )
             collection._stac_io = self
             return collection
 
         if info.object_type == pystac.STACObjectType.ITEM:
             item = pystac.Item.from_dict(
-                d, href=href_str, root=root, migrate=True, preserve_dict=preserve_dict
+                d,
+                href=href_str,
+                root=root,
+                migrate=migrate,
+                preserve_dict=preserve_dict,
             )
             item._stac_io = self
             return item
@@ -209,6 +231,7 @@ class StacIO(ABC):
         source: HREF,
         root: Catalog | None = None,
         *args: Any,
+        migrate: bool | None = None,
         **kwargs: Any,
     ) -> STACObject:
         """Read a STACObject from a JSON file at the given source.
@@ -223,6 +246,9 @@ class StacIO(ABC):
                 previously resolved instances of the STAC object.
             *args : Additional positional arguments to be passed to
                 :meth:`StacIO.read_json`.
+            migrate: By default, STAC objects and extensions are migrated to
+                their latest supported version. Set this to False or use a StacIO with
+                migrate set to False to disable this behavior.
             **kwargs : Additional keyword arguments to be passed to
                 :meth:`StacIO.read_json`.
 
@@ -232,7 +258,7 @@ class StacIO(ABC):
         """
         d = self.read_json(source, *args, **kwargs)
         return self.stac_object_from_dict(
-            d, href=source, root=root, preserve_dict=False
+            d, href=source, root=root, preserve_dict=False, migrate=migrate
         )
 
     def save_json(
@@ -442,8 +468,9 @@ if HAS_URLLIB3:
             self,
             headers: dict[str, str] | None = None,
             retry: Retry | None = None,
+            migrate: bool = True,
         ):
-            super().__init__(headers)
+            super().__init__(headers, migrate=migrate)
 
             self.retry = retry or Retry()
             """The :py:class:`urllib3.util.retry.Retry` to use with all reading network

@@ -172,6 +172,7 @@ class ItemCollection(Collection[pystac.Item]):
         d: dict[str, Any],
         preserve_dict: bool = True,
         root: pystac.Catalog | None = None,
+        migrate: bool = True,
     ) -> C:
         """Creates a :class:`ItemCollection` instance from a dictionary.
 
@@ -187,7 +188,9 @@ class ItemCollection(Collection[pystac.Item]):
             raise STACTypeError(d, cls)
 
         items = [
-            pystac.Item.from_dict(item, preserve_dict=preserve_dict, root=root)
+            pystac.Item.from_dict(
+                item, preserve_dict=preserve_dict, root=root, migrate=migrate
+            )
             for item in d.get("features", [])
         ]
         extra_fields = {k: v for k, v in d.items() if k not in ("features", "type")}
@@ -195,15 +198,27 @@ class ItemCollection(Collection[pystac.Item]):
         return cls(items=items, extra_fields=extra_fields)
 
     @classmethod
-    def from_file(cls: type[C], href: HREF, stac_io: pystac.StacIO | None = None) -> C:
+    def from_file(
+        cls: type[C],
+        href: HREF,
+        stac_io: pystac.StacIO | None = None,
+        migrate: bool | None = None,
+    ) -> C:
         """Reads a :class:`ItemCollection` from a JSON file.
 
         Arguments:
             href : Path to the file.
-            stac_io : A :class:`~pystac.StacIO` instance to use for file I/O
+            stac_io: Optional :class:`~StacIO` instance to use for I/O operations. If
+                not provided, will use :meth:`StacIO.default` to create an instance.
+            migrate: By default, STAC objects and extensions are migrated to
+                their latest supported version. Set this to False or use a StacIO with
+                migrate set to False to disable this behavior.
         """
         if stac_io is None:
             stac_io = pystac.StacIO.default()
+
+        if migrate is None:
+            migrate = getattr(stac_io, "migrate", True)
 
         href = make_posix_style(href)
         if not is_absolute_href(href):
@@ -211,7 +226,7 @@ class ItemCollection(Collection[pystac.Item]):
 
         d = stac_io.read_json(href)
 
-        return cls.from_dict(d, preserve_dict=False)
+        return cls.from_dict(d, preserve_dict=False, migrate=migrate)
 
     def save_object(
         self,

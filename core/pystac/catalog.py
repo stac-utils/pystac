@@ -1281,11 +1281,16 @@ class Catalog(STACObject):
         return cast(Catalog, super().full_copy(root, parent))
 
     @classmethod
-    def from_file(cls: type[C], href: HREF, stac_io: pystac.StacIO | None = None) -> C:
+    def from_file(
+        cls: type[C],
+        href: HREF,
+        stac_io: pystac.StacIO | None = None,
+        migrate: bool | None = None,
+    ) -> C:
         if stac_io is None:
             stac_io = pystac.StacIO.default()
 
-        result = super().from_file(href, stac_io)
+        result = super().from_file(href, stac_io, migrate=migrate)
         result._stac_io = stac_io
 
         return result

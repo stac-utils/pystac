@@ -622,13 +622,21 @@ class STACObject(ABC):
         raise NotImplementedError
 
     @classmethod
-    def from_file(cls: type[S], href: HREF, stac_io: pystac.StacIO | None = None) -> S:
+    def from_file(
+        cls: type[S],
+        href: HREF,
+        stac_io: pystac.StacIO | None = None,
+        migrate: bool | None = None,
+    ) -> S:
         """Reads a STACObject implementation from a file.
 
         Args:
             href : The HREF to read the object from.
             stac_io: Optional instance of StacIO to use. If not provided, will use the
                 default instance.
+            migrate: By default, STAC objects and extensions are migrated to
+                their latest supported version. Set this to False or use a StacIO with
+                migrate set to False to disable this behavior.
 
         Returns:
             The specific STACObject implementation class that is represented
@@ -642,11 +650,14 @@ class STACObject(ABC):
         if stac_io is None:
             stac_io = pystac.StacIO.default()
 
+        if migrate is None:
+            migrate = getattr(stac_io, "migrate", True)
+
         if not is_absolute_href(href):
             href = make_absolute_href(href)
 
         d = stac_io.read_json(href)
-        o = cls.from_dict(d, href=href, migrate=True, preserve_dict=False)
+        o = cls.from_dict(d, href=href, migrate=migrate, preserve_dict=False)
 
         # If this is a root catalog, set the root to the catalog instance.
         root_link = o.get_root_link()
