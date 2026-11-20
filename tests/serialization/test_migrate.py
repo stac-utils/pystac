@@ -17,6 +17,9 @@ from tests.utils.test_cases import ExampleInfo
 
 
 class TestMigrate:
+    @pytest.mark.filterwarnings(
+        "ignore:Not migrating eo.bands. the Item properties have bands:UserWarning"
+    )
     @pytest.mark.parametrize("example", TestCases.get_examples_info())
     def test_migrate(self, example: ExampleInfo) -> None:
         collection_cache = CollectionCache()

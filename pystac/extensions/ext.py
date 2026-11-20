@@ -5,6 +5,7 @@ from typing import Any, Generic, Literal, TypeVar, cast
 
 from pystac import (
     Asset,
+    Band,
     Catalog,
     Collection,
     Item,
@@ -456,3 +457,58 @@ class LinkExt(_AssetsExt[Link]):
     @property
     def storage(self) -> StorageExtension[Link]:
         return StorageExtension.ext(self.stac_object)
+
+
+@dataclass
+class BandExt:
+    """Supporting the :attr:`~pystac.Band.ext` accessor for interacting
+    with extension classes
+    """
+
+    stac_object: Band
+
+    def has(self, name: EXTENSION_NAMES) -> bool:
+        """Whether the given extension is enabled on this STAC object
+
+        Args:
+            name : Extension identifier (eg: 'eo')
+
+        Returns:
+            bool: ``True`` if extension is enabled, otherwise ``False``
+        """
+        raise NotImplementedError(
+            "Bands do not control the presence or absence of STAC extensions. "
+            "That is controlled at the item or collection level."
+        )
+
+    def add(self, name: EXTENSION_NAMES) -> None:
+        """Add the given extension to this STAC object
+
+        Args:
+            name : Extension identifier (eg: 'eo')
+        """
+        raise NotImplementedError(
+            "Bands do not control the presence or absence of STAC extensions. "
+            "That is controlled at the item or collection level."
+        )
+
+    def remove(self, name: EXTENSION_NAMES) -> None:
+        """Remove the given extension from this STAC object
+
+        Args:
+            name : Extension identifier (eg: 'eo')
+        """
+        raise NotImplementedError(
+            "Bands do not control the presence or absence of STAC extensions. "
+            "That is controlled at the item or collection level."
+        )
+
+    @property
+    def raster(self) -> RasterExtension[Band]:
+        return RasterExtension.ext(
+            self.stac_object,
+        )
+
+    @property
+    def eo(self) -> EOExtension[Band]:
+        return EOExtension.ext(self.stac_object)

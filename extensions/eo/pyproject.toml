@@ -2,7 +2,7 @@
 name = "pystac-ext-eo"
 description = "Electro-Optical extension for PySTAC"
 readme = "README.md"
-version = "1.1.2"
+version = "2.0.0"
 authors = []
 maintainers = []
 keywords = ["pystac", "imagery", "raster", "catalog", "STAC", "eo"]
@@ -20,7 +20,7 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "pystac-core",
+    "pystac-core>=1.17.0",
     "pystac-ext-projection",
     "pystac-ext-view",
 ]

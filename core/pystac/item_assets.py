@@ -6,9 +6,11 @@ for use as values in the :attr:`~pystac.Collection.item_assets` dict.
 
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING, Any
 
 import pystac
+from pystac.band import Band, _BandCache
 
 if TYPE_CHECKING:
     from pystac.extensions.ext import ItemAssetExt
@@ -18,6 +20,7 @@ ASSET_TITLE_PROP = "title"
 ASSET_DESC_PROP = "description"
 ASSET_TYPE_PROP = "type"
 ASSET_ROLES_PROP = "roles"
+ASSET_BANDS_PROP = "bands"
 
 
 class ItemAssetDefinition:
@@ -26,13 +29,12 @@ class ItemAssetDefinition:
     for use as values in the :attr:`~pystac.Collection.item_assets` dict.
     """
 
-    properties: dict[str, Any]
-
     owner: pystac.Collection | None
 
     def __init__(
         self, properties: dict[str, Any], owner: pystac.Collection | None = None
     ) -> None:
+        self._band_cache = _BandCache()
         self.properties = properties
         self.owner = owner
 
@@ -49,6 +51,7 @@ class ItemAssetDefinition:
         media_type: str | None,
         roles: list[str] | None,
         extra_fields: dict[str, Any] | None = None,
+        bands: list[Band] | None = None,
     ) -> ItemAssetDefinition:
         """
         Creates a new asset definition.
@@ -67,6 +70,7 @@ class ItemAssetDefinition:
                 of the asset, similar to the use of rel in links.
             extra_fields : Additional fields on the asset definition, e.g. from
                 extensions.
+            bands : The bands of the asset.
         """
         asset_defn = cls({})
         asset_defn.apply(
@@ -75,6 +79,7 @@ class ItemAssetDefinition:
             media_type=media_type,
             roles=roles,
             extra_fields=extra_fields,
+            bands=bands,
         )
         return asset_defn
 
@@ -85,6 +90,7 @@ class ItemAssetDefinition:
         media_type: str | None,
         roles: list[str] | None,
         extra_fields: dict[str, Any] | None = None,
+        bands: list[Band] | None = None,
     ) -> None:
         """
         Sets the properties for this asset definition.
@@ -103,6 +109,8 @@ class ItemAssetDefinition:
                 of the asset, similar to the use of rel in links.
             extra_fields : Additional fields on the asset definition, e.g. from
                 extensions.
+            bands : The bands of the asset. If not given, they are read from
+                ``extra_fields["bands"]``.
         """
         if extra_fields:
             self.properties.update(extra_fields)
@@ -110,6 +118,8 @@ class ItemAssetDefinition:
         self.description = description
         self.media_type = media_type
         self.roles = roles
+        if bands is not None or ASSET_BANDS_PROP not in (extra_fields or {}):
+            self.bands = bands
         self.owner = None
 
     def set_owner(self, obj: pystac.Collection) -> None:
@@ -121,6 +131,8 @@ class ItemAssetDefinition:
             obj: The Collection that owns this asset.
         """
         self.owner = obj
+        if self._band_cache.loaded:
+            obj._item_asset_bands_loaded = True
 
     @property
     def title(self) -> str | None:
@@ -176,10 +188,47 @@ class ItemAssetDefinition:
         else:
             self.properties[ASSET_ROLES_PROP] = v
 
+    @property
+    def properties(self) -> dict[str, Any]:
+        """The fields of this asset definition.
+
+        Changes made to the bands returned by :attr:`~pystac.ItemAssetDefinition.bands`
+        are written to ``properties["bands"]`` whenever this dictionary is read.
+        """
+        self._sync_bands()
+        return self._properties
+
+    @properties.setter
+    def properties(self, properties: dict[str, Any]) -> None:
+        self._properties = properties
+
+    @property
+    def bands(self) -> list[Band] | None:
+        """Gets or sets the bands of the asset.
+
+        They are read from and written to ``properties["bands"]``. Changes to the
+        returned bands are written back whenever
+        :attr:`~pystac.ItemAssetDefinition.properties` is read.
+        """
+        bands = self._band_cache.get(self.properties)
+        self._mark_owner()
+        return bands
+
+    @bands.setter
+    def bands(self, v: list[Band] | None) -> None:
+        self._band_cache.set(self.properties, v)
+        self._mark_owner()
+
+    def _mark_owner(self) -> None:
+        if self.owner is not None and self._band_cache.loaded:
+            self.owner._item_asset_bands_loaded = True
+
+    def _sync_bands(self) -> None:
+        if self._band_cache.loaded:
+            self._band_cache.sync(self._properties)
+
     def to_dict(self) -> dict[str, Any]:
         """Returns a dictionary representing this ``ItemAssetDefinition``."""
-        from copy import deepcopy
-
         return deepcopy(self.properties)
 
     def create_asset(self, href: str) -> pystac.Asset:
@@ -191,17 +240,19 @@ class ItemAssetDefinition:
             description=self.description,
             media_type=self.media_type,
             roles=self.roles,
-            extra_fields={
-                k: v
-                for k, v in self.properties.items()
-                if k
-                not in {
-                    ASSET_TITLE_PROP,
-                    ASSET_DESC_PROP,
-                    ASSET_TYPE_PROP,
-                    ASSET_ROLES_PROP,
+            extra_fields=deepcopy(
+                {
+                    k: v
+                    for k, v in self.properties.items()
+                    if k
+                    not in {
+                        ASSET_TITLE_PROP,
+                        ASSET_DESC_PROP,
+                        ASSET_TYPE_PROP,
+                        ASSET_ROLES_PROP,
+                    }
                 }
-            },
+            ),
         )
 
     @property

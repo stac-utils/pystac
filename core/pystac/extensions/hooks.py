@@ -67,17 +67,28 @@ class ExtensionHooks(ABC):
         schema ID. This method will only be called for STAC objects that have been
         identified as a previous version of STAC. Implementations should directly
         manipulate the obj dict. Remember to call super() in order to change out
-        the old 'stac_extension' entry with the latest schema URI.
+        the old 'stac_extension' entries with the latest schema URI, which is listed
+        once.
         """
-        # Migrate schema versions
-        for prev_id in self.prev_extension_ids:
-            if prev_id in info.extensions:
-                try:
-                    i = obj["stac_extensions"].index(prev_id)
-                    obj["stac_extensions"][i] = self.schema_uri
-                except ValueError:
-                    obj["stac_extensions"].append(self.schema_uri)
-                break
+        self._replace_extension_ids(obj, info, self.schema_uri)
+
+    def _replace_extension_ids(
+        self, obj: dict[str, Any], info: STACJSONDescription, schema_uri: str
+    ) -> None:
+        """Replaces the previous extension IDs in ``stac_extensions`` with
+        ``schema_uri``, which is listed once."""
+        if self.prev_extension_ids.isdisjoint(info.extensions):
+            return
+        uris = [
+            schema_uri if uri in self.prev_extension_ids else uri
+            for uri in obj["stac_extensions"]
+        ]
+        if schema_uri not in uris:
+            uris.append(schema_uri)
+        first = uris.index(schema_uri)
+        obj["stac_extensions"][:] = [
+            uri for i, uri in enumerate(uris) if uri != schema_uri or i == first
+        ]
 
 
 class RegisteredExtensionHooks:

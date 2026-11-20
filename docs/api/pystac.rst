@@ -15,6 +15,7 @@ pystac
       Summaries
       Item
       Asset
+      Band
       ItemAssetDefinition
       CommonMetadata
       ItemCollection
@@ -117,6 +118,13 @@ Asset
 -----
 
 .. autoclass:: pystac.Asset
+   :members:
+   :undoc-members:
+
+Band
+----
+
+.. autoclass:: pystac.Band
    :members:
    :undoc-members:
 

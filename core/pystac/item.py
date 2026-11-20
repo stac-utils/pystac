@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 import pystac
 from pystac import RelType, STACError, STACObjectType
 from pystac.asset import Asset, Assets
+from pystac.band import Band, _BandCache
 from pystac.catalog import Catalog
 from pystac.collection import Collection
 from pystac.errors import DeprecatedWarning
@@ -65,6 +66,8 @@ class Item(STACObject, Assets):
         assets : A dictionary mapping string keys to :class:`~pystac.Asset` objects. All
             :class:`~pystac.Asset` values in the dictionary will have their
             :attr:`~pystac.Asset.owner` attribute set to the created Item.
+        bands : Optional list of :class:`~pystac.Band` objects. If not given, they
+            are read from ``properties["bands"]``.
     """
 
     assets: dict[str, Asset]
@@ -102,9 +105,6 @@ class Item(STACObject, Assets):
     """A list of :class:`~pystac.Link` objects representing all links associated with
     this Item."""
 
-    properties: dict[str, Any]
-    """A dictionary of additional metadata for the Item."""
-
     stac_extensions: list[str]
     """List of extensions the Item implements."""
 
@@ -129,12 +129,14 @@ class Item(STACObject, Assets):
         collection: str | Collection | None = None,
         extra_fields: dict[str, Any] | None = None,
         assets: dict[str, Asset] | None = None,
+        bands: list[pystac.Band] | None = None,
     ):
         super().__init__(stac_extensions or [])
 
         self.id = id
         self.geometry = geometry
         self.bbox = bbox
+        self._band_cache = _BandCache()
         self.properties = properties
         if extra_fields is None:
             self.extra_fields = {}
@@ -175,6 +177,9 @@ class Item(STACObject, Assets):
         if assets is not None:
             for k, asset in assets.items():
                 self.add_asset(k, asset)
+
+        if bands is not None:
+            self.bands = bands
 
     def __repr__(self) -> str:
         return f"<Item id={self.id}>"
@@ -353,6 +358,35 @@ class Item(STACObject, Assets):
                 "Link failed to resolve. Use get_links instead."
             ) from e
 
+    @property
+    def properties(self) -> dict[str, Any]:
+        """A dictionary of additional metadata for the Item.
+
+        Changes made to the bands returned by :attr:`~pystac.Item.bands` are written
+        to ``properties["bands"]`` whenever this dictionary is read.
+        """
+        if self._band_cache.loaded:
+            self._band_cache.sync(self._properties)
+        return self._properties
+
+    @properties.setter
+    def properties(self, properties: dict[str, Any]) -> None:
+        self._properties = properties
+
+    @property
+    def bands(self) -> list[Band] | None:
+        """Gets or sets the bands of this item.
+
+        They are read from and written to ``properties["bands"]``. Changes made to
+        the returned bands are written back whenever :attr:`~pystac.Item.properties`
+        is read.
+        """
+        return self._band_cache.get(self.properties)
+
+    @bands.setter
+    def bands(self, bands: list[Band] | None) -> None:
+        self._band_cache.set(self.properties, bands)
+
     def to_dict(
         self, include_self_link: bool = True, transform_hrefs: bool = True
     ) -> dict[str, Any]:
@@ -362,10 +396,11 @@ class Item(STACObject, Assets):
 
         assets = {k: v.to_dict() for k, v in self.assets.items()}
 
+        properties = self.properties
         if self.datetime is not None:
-            self.properties["datetime"] = datetime_to_str(self.datetime)
+            properties["datetime"] = datetime_to_str(self.datetime)
         else:
-            self.properties["datetime"] = None
+            properties["datetime"] = None
 
         d: dict[str, Any] = {
             "type": "Feature",
@@ -374,7 +409,7 @@ class Item(STACObject, Assets):
             "id": self.id,
             "geometry": self.geometry,
             "bbox": self.bbox if self.bbox is not None else [],
-            "properties": self.properties,
+            "properties": properties,
             "links": [link.to_dict(transform_href=transform_hrefs) for link in links],
             "assets": assets,
         }
