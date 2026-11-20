@@ -208,8 +208,9 @@ class ItemCollection(Collection[pystac.Item]):
 
         Arguments:
             href : Path to the file.
-            stac_io: Optional :class:`~StacIO` instance to use for I/O operations. If
-                not provided, will use :meth:`StacIO.default` to create an instance.
+            stac_io: Optional :class:`~pystac.StacIO` instance to use for I/O
+                operations. If not provided, will use :meth:`pystac.StacIO.default`
+                to create an instance.
             migrate: By default, STAC objects and extensions are migrated to
                 their latest supported version. Set this to False or use a StacIO with
                 migrate set to False to disable this behavior.
