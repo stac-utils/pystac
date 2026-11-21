@@ -65,8 +65,10 @@ PySTAC uses
 - `mypy <http://www.mypy-lang.org/>`_ for Python type annotation checks
 
 Run all of these with ``pre-commit run --all-files`` or a single one using
-``pre-commit run --all-files ID``, where ``ID`` is one of the command names above. For
-example, to lint all the Python code, run ``pre-commit run --all-files ruff``.
+``pre-commit run --all-files ID``, where ``ID`` is a hook id from
+``.pre-commit-config.yaml``. For example, to lint all the Python code, run
+``pre-commit run --all-files ruff-check``. The hooks install their own copies of these
+tools, and the ``sync-with-uv`` hook keeps their versions in step with ``uv.lock``.
 
 You can also install a Git pre-commit hook which will run the relevant linters and
 formatters on any staged code when committing. This will be much faster than running on
