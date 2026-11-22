@@ -473,25 +473,13 @@ def geometry_to_bbox(geometry: dict[str, Any]) -> list[float]:
     lats: list[float] = []
     lons: list[float] = []
 
-    def extract_coords(coords: list[list[float] | list[list[Any]]]) -> None:
+    def extract_coords(coords: list[Any]) -> None:
+        if coords and isinstance(coords[0], (int, float)):
+            lats.append(coords[0])
+            lons.append(coords[1])
+            return
         for x in coords:
-            # This handles points
-            if isinstance(x, float):
-                assert isinstance(coords[0], float), (
-                    f"Type mismatch: {coords[0]} is not a float"
-                )
-                assert isinstance(coords[1], float), (
-                    f"Type mismatch: {coords[1]} is not a float"
-                )
-                lats.append(coords[0])
-                lons.append(coords[1])
-                return
-            if isinstance(x[0], list):
-                extract_coords(x)
-            else:
-                lat, lon = x
-                lats.append(lat)
-                lons.append(lon)
+            extract_coords(x)
 
     extract_coords(coords)
 
