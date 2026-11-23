@@ -643,7 +643,7 @@ class STACObject(ABC):
             by the JSON read from the file located at HREF.
         """
         if cls == STACObject:
-            return cast(S, pystac.read_file(href))
+            return cast(S, pystac.read_file(href, stac_io=stac_io, migrate=migrate))
 
         href = make_posix_style(href)
 
