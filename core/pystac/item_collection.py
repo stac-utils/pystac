@@ -215,8 +215,17 @@ class ItemCollection(Collection[pystac.Item]):
                 their latest supported version. Set this to False or use a StacIO with
                 migrate set to False to disable this behavior.
         """
+        if stac_io is not None and migrate is not None:
+            raise ValueError(
+                "Setting both ``stac_io`` and ``migrate`` is not supported. Either "
+                "provide a StacIO instance with .migrate set or set migrate "
+                "directly in the function call."
+            )
+
         if stac_io is None:
             stac_io = pystac.StacIO.default()
+            if migrate is not None:
+                stac_io.migrate = migrate
 
         if migrate is None:
             migrate = getattr(stac_io, "migrate", True)

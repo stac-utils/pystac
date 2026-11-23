@@ -128,9 +128,19 @@ def read_file(
             is not a :class:`~pystac.STACObject` and must be read using
             :meth:`ItemCollection.from_file <pystac.ItemCollection.from_file>`
     """
+    if stac_io is not None and migrate is not None:
+        raise ValueError(
+            "Setting both ``stac_io`` and ``migrate`` is not supported. Either "
+            "provide a StacIO instance with .migrate set or set migrate "
+            "directly in the function call."
+        )
+
     if stac_io is None:
         stac_io = StacIO.default()
-    return stac_io.read_stac_object(href, migrate=migrate)
+        if migrate is not None:
+            stac_io.migrate = migrate
+
+    return stac_io.read_stac_object(href)
 
 
 def write_file(
@@ -205,9 +215,19 @@ def read_dict(
             is not a :class:`~pystac.STACObject` and must be read using
             :meth:`ItemCollection.from_dict <pystac.ItemCollection.from_dict>`
     """
+    if stac_io is not None and migrate is not None:
+        raise ValueError(
+            "Setting both ``stac_io`` and ``migrate`` is not supported. Either "
+            "provide a StacIO instance with .migrate set or set migrate "
+            "directly in the function call."
+        )
+
     if stac_io is None:
         stac_io = StacIO.default()
-    return stac_io.stac_object_from_dict(d, href, root, migrate=migrate)
+        if migrate is not None:
+            stac_io.migrate = migrate
+
+    return stac_io.stac_object_from_dict(d, href, root)
 
 
 def __getattr__(name: str) -> Any:
