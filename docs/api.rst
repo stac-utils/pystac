@@ -103,6 +103,7 @@ Extensions
 
 PySTAC provides support for the following STAC Extensions:
 
+* :mod:`Archive <pystac.extensions.archive>`
 * :mod:`Datacube <pystac.extensions.datacube>`
 * :mod:`Electro-Optical <pystac.extensions.eo>`
 * :mod:`File Info <pystac.extensions.file>`

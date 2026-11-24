@@ -9,6 +9,10 @@
       "exclude-paths": ["extensions"],
       "extra-files": ["pyproject.toml", "core/pystac/version.py"]
     },
+    "extensions/archive": {
+      "component": "pystac-ext-archive",
+      "versioning": "always-bump-patch"
+    },
     "extensions/classification": {
       "component": "pystac-ext-classification",
       "versioning": "always-bump-patch"
