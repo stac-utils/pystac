@@ -15,12 +15,12 @@ from pystac.cache import CollectionCache
 from pystac.serialization.common_properties import merge_common_properties
 from pystac.utils import get_opt
 from pystac.validation import GetSchemaError, JsonSchemaSTACValidator
+from pystac.validation.stac_validator import SecureJsonSchemaSTACValidator
 from tests.utils import TestCases
 from tests.utils.test_cases import ExampleInfo
 
 
 class TestValidate:
-    @pytest.mark.vcr()
     def test_validate_current_version(self) -> None:
         catalog = pystac.read_file(
             TestCases.get_path("data-files/catalogs/test-case-1/catalog.json")
@@ -63,7 +63,6 @@ class TestValidate:
                     assert isinstance(e.source[0], jsonschema.ValidationError)
                     raise e
 
-    @pytest.mark.vcr()
     def test_validate_error_contains_href(self) -> None:
         # Test that the exception message contains the HREF of the object if available.
         cat = TestCases.case_1()
@@ -79,14 +78,12 @@ class TestValidate:
                 assert get_opt(item.get_self_href()) in str(e)
                 raise e
 
-    @pytest.mark.vcr()
     def test_validate_all_deprecated_dict_arg(self) -> None:
         catalog = TestCases.case_1()
 
         with pytest.warns(DeprecationWarning, match="use validate_all_dict"):
             pystac.validation.validate_all(catalog.to_dict(), catalog.get_self_href())
 
-    @pytest.mark.vcr()
     def test_validate_all_deprecated_dict_arg_missing_href(self) -> None:
         catalog = TestCases.case_1()
 
@@ -94,14 +91,12 @@ class TestValidate:
             with pytest.raises(ValueError, match="href must be set"):
                 pystac.validation.validate_all(catalog.to_dict())
 
-    @pytest.mark.vcr()
     def test_validate_all_unexpected_href(self) -> None:
         catalog = TestCases.case_1()
 
         with pytest.raises(ValueError, match="href must be None"):
             pystac.validation.validate_all(catalog, catalog.get_self_href())
 
-    @pytest.mark.vcr()
     def test_validate_all(self) -> None:
         catalog = TestCases.case_1()
 
@@ -149,7 +144,6 @@ class TestValidate:
             with pytest.raises(pystac.STACValidationError):
                 pystac.validation.validate_all_dict(stac_dict, new_cat_href)
 
-    @pytest.mark.vcr()
     def test_validates_geojson_with_tuple_coordinates(self) -> None:
         """This unit tests guards against a bug where if a geometry
         dict has tuples instead of lists for the coordinate sequence,
@@ -259,3 +253,19 @@ def test_404_schema_url(requests_mock: Mocker, item: pystac.Item) -> None:
         GetSchemaError, match="http://pystac-extensions.test/a-fake.schema.json"
     ):
         item.validate()
+
+
+@pytest.mark.vcr()
+def test_secure_validator_allows_trusted_schema(item: pystac.Item) -> None:
+    schema_uri = "https://stac-extensions.github.io/projection/v2.0.0/schema.json"
+    item.stac_extensions.append(schema_uri)
+
+    item.validate(validator=SecureJsonSchemaSTACValidator())
+
+
+def test_secure_validator_rejects_untrusted_schema(item: pystac.Item) -> None:
+    schema_uri = "https://untrusted.example/schema.json"
+    item.stac_extensions.append(schema_uri)
+
+    with pytest.raises(GetSchemaError, match="not in the allow-list"):
+        item.validate(validator=SecureJsonSchemaSTACValidator())

@@ -305,6 +305,27 @@ def test_inheritance_clone() -> None:
     assert isinstance(cloned_link, CustomLink)
 
 
+def test_clone_preserves_extra_fields() -> None:
+    link = Link(
+        rel="r",
+        target="t",
+        media_type="a/b",
+        title="t",
+        extra_fields={"foo:bar": "baz", "nested": {"a": [1, 2]}},
+    )
+    cloned_link = link.clone()
+    assert cloned_link.extra_fields == link.extra_fields
+    assert cloned_link.to_dict() == link.to_dict()
+
+
+def test_clone_does_not_share_extra_fields() -> None:
+    link = Link(rel="r", target="t", extra_fields={"nested": {"a": [1, 2]}})
+    cloned_link = link.clone()
+    cloned_link.extra_fields["nested"]["a"].append(3)
+    cloned_link.extra_fields["new"] = True
+    assert link.extra_fields == {"nested": {"a": [1, 2]}}
+
+
 def test_relative_self_link(tmp_path: Path) -> None:
     # https://github.com/stac-utils/pystac/issues/801
     item = Item("an-id", None, None, datetime.now(), {})

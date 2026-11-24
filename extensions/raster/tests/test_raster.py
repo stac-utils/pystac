@@ -46,7 +46,6 @@ def test_validate_raster(ext_item: pystac.Item) -> None:
     item2.validate()
 
 
-@pytest.mark.vcr()
 def test_asset_bands(ext_item: pystac.Item) -> None:
     item2 = pystac.Item.from_file(SENTINEL2_EXAMPLE_URI)
 

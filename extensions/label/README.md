@@ -10,5 +10,5 @@ This extension provides fields for describing labeled training data for machine 
 
 ## Versioning
 
-This package's version corresponds to the version of the extension specification it targets.
-When we release updates to the package code without changing the target extension version, we use [post releases](https://packaging.python.org/en/latest/discussions/versioning/#post-releases), e.g. `1.0.1.post1`.
+This package's MAJOR and MINOR versions match the version of the extension itself, e.g. **pystac-ext-label** v1.0.1 corresponds to the [v1.0.1](https://github.com/stac-extensions/label/releases/tag/v1.0.1) release of the **label** extension.
+When we release updates to the package code without changing the target extension version, we use [PATCH releases](https://packaging.python.org/en/latest/discussions/versioning/#valid-version-numbers).

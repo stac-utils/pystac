@@ -19,6 +19,7 @@ __all__ = [
     "RequiredPropertyMissing",
     "STACValidationError",
     "DeprecatedWarning",
+    "SpecDeprecationWarning",
     "MediaType",
     "RelType",
     "StacIO",
@@ -48,7 +49,6 @@ __all__ = [
     "set_stac_version",
 ]
 
-import warnings
 from typing import Any
 
 from pystac.errors import (
@@ -62,6 +62,7 @@ from pystac.errors import (
     RequiredPropertyMissing,
     STACValidationError,
     DeprecatedWarning,
+    SpecDeprecationWarning,
 )
 
 from pystac.version import (
@@ -91,6 +92,7 @@ from pystac.provider import ProviderRole, Provider
 from pystac.utils import HREF
 
 import pystac.extensions.hooks
+<<<<<<< HEAD
 import pystac.extensions.archive
 import pystac.extensions.classification
 import pystac.extensions.datacube
@@ -143,6 +145,13 @@ EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks(
         pystac.extensions.xarray_assets.XARRAY_ASSETS_EXTENSION_HOOKS,
     ]
 )
+=======
+
+#: Extension migration/link hooks, discovered lazily from installed extension
+#: packages via the ``pystac.extensions`` entry point group. ``pystac-core``
+#: intentionally has no compile-time knowledge of any extension.
+EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks()
+>>>>>>> publicrepo/main
 
 
 def read_file(href: HREF, stac_io: StacIO | None = None) -> STACObject:

@@ -1,5 +1,51 @@
 # Changelog
 
+## [1.16.1](https://github.com/stac-utils/pystac/compare/v1.16.0...v1.16.1) (2026-11-18)
+
+
+### Bug Fixes
+
+* Don't raise if extensions don't have local schema ([#1858](https://github.com/stac-utils/pystac/issues/1858)) ([5c93622](https://github.com/stac-utils/pystac/commit/5c93622db744f6b59872ddc0d25bfb28a90ed15b))
+
+## [1.16.0](https://github.com/stac-utils/pystac/compare/v1.15.2...v1.16.0) (2026-11-02)
+
+
+### Features
+
+* add octet-stream and zip media types ([#1805](https://github.com/stac-utils/pystac/issues/1805)) ([0be1933](https://github.com/stac-utils/pystac/commit/0be193371c045c89bcc51733341b767aac74eceb))
+* add optional allow-list for fetching json schemas ([#1828](https://github.com/stac-utils/pystac/issues/1828)) ([3482843](https://github.com/stac-utils/pystac/commit/3482843993ff104a7ba8dfa36d1f8cb615572444))
+* Add SpecDeprecationWarning ([#1845](https://github.com/stac-utils/pystac/issues/1845)) ([30a0c67](https://github.com/stac-utils/pystac/commit/30a0c677377572c4966bb5fa24a0dfd800777331))
+* validate using local extension json schemas ([#1814](https://github.com/stac-utils/pystac/issues/1814)) ([9ef2186](https://github.com/stac-utils/pystac/commit/9ef2186b9d8d4aaab5f13cdccc947702adf11b93))
+
+
+### Bug Fixes
+
+* recursively convert values in PropertiesExtension._set_property ([#1804](https://github.com/stac-utils/pystac/issues/1804)) ([68f12fd](https://github.com/stac-utils/pystac/commit/68f12fdeee1fc76465fef15ddb449370a0014ae8)), closes [#1802](https://github.com/stac-utils/pystac/issues/1802)
+
+
+### Documentation
+
+* **fix:** asv dev doesn't exist anymore ([#1839](https://github.com/stac-utils/pystac/issues/1839)) ([0d4af68](https://github.com/stac-utils/pystac/commit/0d4af682e3af8fe87da0686ae59e21a8e725b5bb))
+* reflect that PySTAC writes STAC v1.1.0 by default ([#1803](https://github.com/stac-utils/pystac/issues/1803)) ([b02ceba](https://github.com/stac-utils/pystac/commit/b02ceba07834411aa61e4d5e9c8efdd1bd6a51f3)), closes [#1513](https://github.com/stac-utils/pystac/issues/1513)
+* tweak how we version extension packages ([#1796](https://github.com/stac-utils/pystac/issues/1796)) ([e064109](https://github.com/stac-utils/pystac/commit/e064109398b0c3f29d2c3801561624a9c2061fc8))
+
+## [1.15.2](https://github.com/stac-utils/pystac/compare/v1.15.1...v1.15.2) (2026-07-27)
+
+
+### Bug Fixes
+
+* circular imports for extensions ([#1764](https://github.com/stac-utils/pystac/issues/1764)) ([c82570e](https://github.com/stac-utils/pystac/commit/c82570e6d4695b5c4d49ed80b422ab2fcfad5e94))
+
+## [1.15.1](https://github.com/stac-utils/pystac/compare/v1.15.0...v1.15.1) (2026-06-30)
+
+
+### Bug Fixes
+
+* actually link pystac-core and pystac via release-please ([207e38d](https://github.com/stac-utils/pystac/commit/207e38d7def9c03203129bd6ed4a06a7bce0aa9a))
+* consolidate core and top-level package in release-please ([#1760](https://github.com/stac-utils/pystac/issues/1760)) ([c6a9fbd](https://github.com/stac-utils/pystac/commit/c6a9fbd511375940d35b77e89c091eed3580d570))
+* more release-please flailing ([#1762](https://github.com/stac-utils/pystac/issues/1762)) ([bcf1062](https://github.com/stac-utils/pystac/commit/bcf106258abf9faa3085a32e4b2319f611ef7baa))
+* remove invalid version specifier ([#1756](https://github.com/stac-utils/pystac/issues/1756)) ([bc70651](https://github.com/stac-utils/pystac/commit/bc706511d4d04a111d3058fd9c29e9842d1888ea))
+
 ## [1.15.0](https://github.com/stac-utils/pystac/compare/v1.15.0-rc.1...v1.15.0) (2026-06-25)
 
 

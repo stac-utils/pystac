@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from copy import deepcopy
 from typing import TYPE_CHECKING, Any, TypeVar
 
 import pystac
@@ -426,6 +427,7 @@ class Link(PathLike):
             target=self.target,
             media_type=self.media_type,
             title=self.title,
+            extra_fields=deepcopy(self.extra_fields),
         )
 
     @classmethod
@@ -525,6 +527,11 @@ class Link(PathLike):
 
             link.ext.file.size = 8675309
         """
-        from pystac.extensions.ext import LinkExt
+        try:
+            from pystac.extensions.ext import LinkExt
+        except ModuleNotFoundError as e:
+            from pystac.errors import _raise_for_missing_ext
+
+            _raise_for_missing_ext(e)
 
         return LinkExt(stac_object=self)

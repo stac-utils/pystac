@@ -45,7 +45,6 @@ def test_item_repr(item: pystac.Item) -> None:
     assert f"<ItemGridExtension Item id={item.id}>" == grid_item_ext.__repr__()
 
 
-@pytest.mark.vcr()
 def test_attributes(item: pystac.Item) -> None:
     GridExtension.ext(item).apply(code)
     assert code == GridExtension.ext(item).code
@@ -57,7 +56,6 @@ def test_invalid_code_value(item: pystac.Item) -> None:
         GridExtension.ext(item).apply("not_a_valid_code")
 
 
-@pytest.mark.vcr()
 def test_modify(item: pystac.Item) -> None:
     GridExtension.ext(item).apply(code)
     GridExtension.ext(item).apply(code + "a")

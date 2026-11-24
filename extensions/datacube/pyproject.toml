@@ -2,7 +2,7 @@
 name = "pystac-ext-datacube"
 description = "Datacube extension for PySTAC"
 readme = "README.md"
-version = "2.2.0"
+version = "2.2.2"
 authors = []
 maintainers = []
 keywords = ["pystac", "imagery", "raster", "catalog", "STAC", "datacube"]
@@ -21,6 +21,9 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = ["pystac-core"]
 
+[project.entry-points."pystac.extensions"]
+datacube = "pystac.extensions.datacube:DATACUBE_EXTENSION_HOOKS"
+
 [project.urls]
 Documentation = "https://pystac.readthedocs.io"
 Repository = "https://github.com/stac-utils/pystac"
@@ -34,3 +37,4 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["pystac"]
+include = ["pystac.extensions.json-schema/*.json"]

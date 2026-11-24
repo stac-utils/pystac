@@ -1,4 +1,20 @@
-from typing import Any
+from typing import Any, NoReturn
+
+
+def _raise_for_missing_ext(error: ModuleNotFoundError) -> NoReturn:
+    """Re-raise a friendlier error when the ``.ext`` accessor is unavailable.
+
+    The `.ext` accessor lives in `pystac.extensions.ext`, which is distributed
+    with the `pystac` package rather than `pystac-core`. If that specific module
+    is missing, point the user at `pystac`; otherwise propagate the original
+    error (a genuinely broken extension install).
+    """
+    if error.name == "pystac.extensions.ext":
+        raise ImportError(
+            "The `.ext` accessor is provided by the `pystac` package, not "
+            "`pystac-core`. Install `pystac` to use `.ext`."
+        ) from error
+    raise error
 
 
 class TemplateError(Exception):
@@ -115,5 +131,12 @@ class STACValidationError(Exception):
 class DeprecatedWarning(FutureWarning):
     """Issued when converting a dictionary to a STAC Item or Collection and the
     version extension ``deprecated`` field is present and set to ``True``."""
+
+    pass
+
+
+class SpecDeprecationWarning(DeprecationWarning):
+    """Issued when a field deprecated in the STAC spec or an extension spec is
+    set to a value other than None."""
 
     pass

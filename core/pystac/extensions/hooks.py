@@ -44,6 +44,14 @@ class ExtensionHooks(ABC):
     def get_object_links(self, obj: STACObject) -> list[str | pystac.RelType] | None:
         return None
 
+    def get_deprecation_message(self, obj: STACObject) -> str | None:
+        """Return a warning message if `obj` is deprecated per this extension.
+
+        Emitted as a `pystac.DeprecatedWarning` when loading an object from a
+        dict. The base implementation returns None (not deprecated).
+        """
+        return None
+
     def has_extension(self, obj: dict[str, Any]) -> bool:
         schema_startswith = VERSION_REGEX.split(self.schema_uri)[0] + "/"
         return any(
@@ -75,8 +83,27 @@ class ExtensionHooks(ABC):
 class RegisteredExtensionHooks:
     hooks: dict[str, ExtensionHooks]
 
-    def __init__(self, hooks: Iterable[ExtensionHooks]):
+    def __init__(self, hooks: Iterable[ExtensionHooks] = ()):
         self.hooks = {e.schema_uri: e for e in hooks}
+        self._discovered = False
+
+    def _discover(self) -> None:
+        """Register hooks advertised via the ``pystac.extensions`` entry point group.
+
+        Installed extensions self-advertise their `ExtensionHooks`, so
+        `pystac-core` needs no compile-time knowledge of them. Runs once.
+        """
+        if self._discovered:
+            return
+        self._discovered = True
+        import warnings
+        from importlib.metadata import entry_points
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            for entry_point in entry_points(group="pystac.extensions"):
+                hooks = entry_point.load()
+                self.hooks.setdefault(hooks.schema_uri, hooks)
 
     def add_extension_hooks(self, hooks: ExtensionHooks) -> None:
         e_id = hooks.schema_uri
@@ -92,6 +119,7 @@ class RegisteredExtensionHooks:
             del self.hooks[extension_id]
 
     def get_extended_object_links(self, obj: STACObject) -> list[str | pystac.RelType]:
+        self._discover()
         result: list[str | pystac.RelType] | None = None
         for ext in obj.stac_extensions:
             if ext in self.hooks:
@@ -106,6 +134,15 @@ class RegisteredExtensionHooks:
     def migrate(
         self, obj: dict[str, Any], version: STACVersionID, info: STACJSONDescription
     ) -> None:
+        self._discover()
         for hooks in self.hooks.values():
             if info.object_type in hooks._get_stac_object_types():
                 hooks.migrate(obj, version, info)
+
+    def get_deprecation_message(self, obj: STACObject) -> str | None:
+        self._discover()
+        for hooks in self.hooks.values():
+            message = hooks.get_deprecation_message(obj)
+            if message is not None:
+                return message
+        return None

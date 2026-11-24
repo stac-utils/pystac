@@ -48,7 +48,6 @@ def test_stac_extensions(item: pystac.Item) -> None:
     assert SarExtension.has_extension(item)
 
 
-@pytest.mark.vcr()
 def test_required(item: pystac.Item) -> None:
     mode: str = "Nonsense mode"
     frequency_band: sar.FrequencyBand = sar.FrequencyBand.P
@@ -74,7 +73,6 @@ def test_required(item: pystac.Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_all(item: pystac.Item) -> None:
     mode: str = "WV"
     frequency_band: sar.FrequencyBand = sar.FrequencyBand.KA

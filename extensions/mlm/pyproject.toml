@@ -2,7 +2,7 @@
 name = "pystac-ext-mlm"
 description = "Machine Learning Model extension for PySTAC"
 readme = "README.md"
-version = "1.4.0"
+version = "1.4.2"
 authors = []
 maintainers = []
 keywords = ["pystac", "imagery", "raster", "catalog", "STAC", "mlm"]
@@ -19,7 +19,14 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 requires-python = ">=3.10"
-dependencies = ["pystac-core"]
+dependencies = [
+    "pystac-core",
+    "pystac-ext-classification",
+    "pystac-ext-raster",
+]
+
+[project.entry-points."pystac.extensions"]
+mlm = "pystac.extensions.mlm:MLM_EXTENSION_HOOKS"
 
 [project.urls]
 Documentation = "https://pystac.readthedocs.io"
@@ -34,3 +41,4 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["pystac"]
+include = ["pystac.extensions.json-schema/*.json"]

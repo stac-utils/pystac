@@ -1187,14 +1187,12 @@ class TestCatalog:
             assert read_cat.extra_fields["custom_field"] == "Special content"
 
     @pytest.mark.parametrize("cat", TestCases.all_test_catalogs())
-    @pytest.mark.vcr()
     def test_validate_all(self, cat: Catalog) -> None:
         # If hrefs are not set, it will fail validation.
         if cat.get_self_href() is None:
             cat.normalize_hrefs("/tmp")
         cat.validate_all()
 
-    @pytest.mark.vcr()
     def test_validate_all_invalid(self) -> None:
         # Make one invalid, write it off, read it in, ensure it throws
         cat = TestCases.case_1()
@@ -1622,7 +1620,6 @@ def test_get_items_with_multiple_ids(test_case_1_catalog: Catalog) -> None:
     assert len(list(items)) == 2
 
 
-@pytest.mark.vcr()
 def test_validate_all_with_max_n(test_case_1_catalog: Catalog) -> None:
     cat = test_case_1_catalog
     assert cat.validate_all() == 8
@@ -1630,7 +1627,6 @@ def test_validate_all_with_max_n(test_case_1_catalog: Catalog) -> None:
     assert cat.validate_all(max_items=1) == 1
 
 
-@pytest.mark.vcr()
 def test_validate_all_with_recusive_off(test_case_1_catalog: Catalog) -> None:
     cat = test_case_1_catalog
     assert cat.validate_all() == 8
@@ -2031,6 +2027,24 @@ def test_clone_extra_fields(catalog: Catalog) -> None:
     catalog.extra_fields["foo"] = "bar"
     cloned = catalog.clone()
     assert cloned.extra_fields["foo"] == "bar"
+
+
+def test_clone_link_extra_fields(catalog: Catalog) -> None:
+    catalog.add_link(Link("foo", "./foo.json", extra_fields={"foo:bar": "baz"}))
+    cloned = catalog.clone()
+    link = cloned.get_single_link("foo")
+    assert link is not None
+    assert link.extra_fields == {"foo:bar": "baz"}
+
+
+def test_full_copy_link_extra_fields(catalog: Catalog) -> None:
+    # https://github.com/stac-utils/pystac/issues/1856
+    catalog.add_link(Link("foo", "./foo.json", extra_fields={"foo:bar": "baz"}))
+    copied = catalog.full_copy()
+    link = copied.get_single_link("foo")
+    assert link is not None
+    assert link.extra_fields == {"foo:bar": "baz"}
+    assert {"foo:bar": "baz"}.items() <= link.to_dict().items()
 
 
 def test_warn_if_next_link_present(catalog: Catalog) -> None:

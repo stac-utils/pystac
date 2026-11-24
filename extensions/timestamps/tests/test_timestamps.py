@@ -75,12 +75,10 @@ def test_apply() -> None:
         assert p not in item.properties
 
 
-@pytest.mark.vcr()
 def test_validate_timestamps(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_expires(item: Item, sample_datetime: datetime) -> None:
     # Get
     assert "expires" in item.properties
@@ -116,7 +114,6 @@ def test_expires(item: Item, sample_datetime: datetime) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_published(item: Item, sample_datetime: datetime) -> None:
     # Get
     assert "published" in item.properties
@@ -154,7 +151,6 @@ def test_published(item: Item, sample_datetime: datetime) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_unpublished(item: Item, sample_datetime: datetime) -> None:
     # Get
     assert "unpublished" not in item.properties

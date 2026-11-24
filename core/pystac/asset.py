@@ -272,7 +272,12 @@ class Asset:
 
             asset.ext.proj.code = "EPSG:4326"
         """
-        from pystac.extensions.ext import AssetExt
+        try:
+            from pystac.extensions.ext import AssetExt
+        except ModuleNotFoundError as e:
+            from pystac.errors import _raise_for_missing_ext
+
+            _raise_for_missing_ext(e)
 
         return AssetExt(stac_object=self)
 

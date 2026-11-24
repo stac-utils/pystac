@@ -58,13 +58,11 @@ def test_apply() -> None:
     assert ViewExtension.ext(item).sun_elevation == 5.0
 
 
-@pytest.mark.vcr()
 def test_validate_view(item: Item) -> None:
     assert ViewExtension.has_extension(item)
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_off_nadir(item: Item) -> None:
     # Get
     assert "view:off_nadir" in item.properties
@@ -96,7 +94,6 @@ def test_off_nadir(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_incidence_angle(item: Item) -> None:
     # Get
     assert "view:incidence_angle" in item.properties
@@ -128,7 +125,6 @@ def test_incidence_angle(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_azimuth(item: Item) -> None:
     # Get
     assert "view:azimuth" in item.properties
@@ -156,7 +152,6 @@ def test_azimuth(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_sun_azimuth(item: Item) -> None:
     # Get
     assert "view:sun_azimuth" in item.properties
@@ -189,7 +184,6 @@ def test_sun_azimuth(item: Item) -> None:
     item.validate()
 
 
-@pytest.mark.vcr()
 def test_sun_elevation(item: Item) -> None:
     # Get
     assert "view:sun_elevation" in item.properties

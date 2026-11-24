@@ -8,7 +8,7 @@ from pystac import RelType, STACError, STACObjectType
 from pystac.asset import Asset, Assets
 from pystac.catalog import Catalog
 from pystac.collection import Collection
-from pystac.errors import DeprecatedWarning, ExtensionNotImplemented
+from pystac.errors import DeprecatedWarning
 from pystac.link import Link
 from pystac.serialization import (
     identify_stac_object,
@@ -426,8 +426,6 @@ class Item(STACObject, Assets):
     ) -> T:
         import warnings
 
-        from pystac.extensions.version import ItemVersionExtension
-
         if preserve_dict:
             d = deepcopy(d)
 
@@ -482,16 +480,9 @@ class Item(STACObject, Assets):
         if root:
             item.set_root(root)
 
-        try:
-            version = ItemVersionExtension.ext(item)
-            if version.deprecated:
-                warnings.warn(
-                    f"The item '{item.id}' is deprecated.",
-                    DeprecatedWarning,
-                )
-            # Item asset deprecation checks pending version extension support
-        except ExtensionNotImplemented:
-            pass
+        message = pystac.EXTENSION_HOOKS.get_deprecation_message(item)
+        if message is not None:
+            warnings.warn(message, DeprecatedWarning)
 
         return item
 
@@ -534,6 +525,11 @@ class Item(STACObject, Assets):
 
             item.ext.proj.code = "EPSG:4326"
         """
-        from pystac.extensions.ext import ItemExt
+        try:
+            from pystac.extensions.ext import ItemExt
+        except ModuleNotFoundError as e:
+            from pystac.errors import _raise_for_missing_ext
+
+            _raise_for_missing_ext(e)
 
         return ItemExt(stac_object=self)
