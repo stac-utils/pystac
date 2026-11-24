@@ -7,12 +7,12 @@
   "links": [
     {
       "rel": "root",
-      "href": "./example-Collection.json",
+      "href": "./collection.json",
       "type": "application/json"
     },
     {
       "rel": "item",
-      "href": "./example-item.json",
+      "href": "./item.json",
       "type": "application/json"      
     }
   ],  

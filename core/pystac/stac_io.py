@@ -4,8 +4,7 @@ import json
 import os
 from abc import ABC, abstractmethod
 from collections.abc import Callable
-from email.message import Message
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 import pystac
 from pystac.serialization import (
@@ -311,16 +310,10 @@ class DefaultStacIO(StacIO):
                             "User-Agent": f"pystac/{pystac.__version__}",
                             **self.headers,
                         },
-                        preload_content=False,
+                        preload_content=False,  # type: ignore
                     ) as f:
                         if f.status >= 400:
-                            raise HTTPError(
-                                href,
-                                f.status,
-                                f.reason or "",
-                                cast(Message, f.headers),
-                                None,
-                            )
+                            raise HTTPError(href, f.status, f.reason, f.headers, None)
                         href_contents = f.read().decode("utf-8")
                 else:
                     req = Request(
@@ -476,18 +469,17 @@ if HAS_URLLIB3:
                             "User-Agent": f"pystac/{pystac.__version__}",
                             **self.headers,
                         },
-                        retries=self.retry,
+                        retries=self.retry,  # type: ignore
                     )
                     if response.status >= 400:
                         raise HTTPError(
                             href,
                             response.status,
-                            response.reason or "",
-                            cast(Message, response.headers),
+                            response.reason,
+                            response.headers,
                             None,
                         )
-                    # return cast(str, response.data.decode("utf-8"))
-                    return response.data.decode("utf-8")
+                    return cast(str, response.data.decode("utf-8"))
                 except HTTPError as e:
                     raise Exception(f"Could not read uri {href}") from e
             else:
