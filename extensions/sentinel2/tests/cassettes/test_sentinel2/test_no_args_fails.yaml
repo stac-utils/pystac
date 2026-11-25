@@ -1,0 +1,87 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://stac-extensions.github.io/sentinel-2/v1.0.0/schema.json
+  response:
+    body:
+      string: "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"$id\":
+        \"https://stac-extensions.github.io/sentinel-2/v1.0.0/schema.json\",\n  \"title\":
+        \"Sentinel-2 Extension\",\n  \"description\": \"Sentinel-2 Extension to STAC
+        Items.\",\n  \"allOf\": [\n    {\n      \"type\": \"object\",\n      \"required\":
+        [\n        \"type\",\n        \"properties\"\n      ],\n      \"properties\":
+        {\n        \"type\": {\n          \"const\": \"Feature\"\n        },\n        \"properties\":
+        {\n          \"allOf\": [\n            {\n              \"required\": []\n
+        \           },\n            {\n              \"$ref\": \"#/definitions/fields\"\n
+        \           }\n          ]\n        }\n      }\n    },\n    {\n      \"$ref\":
+        \"#/definitions/stac_extensions\"\n    }\n  ],\n  \"definitions\": {\n    \"stac_extensions\":
+        {\n      \"type\": \"object\",\n      \"required\": [\n        \"stac_extensions\"\n
+        \     ],\n      \"properties\": {\n        \"stac_extensions\": {\n          \"type\":
+        \"array\",\n          \"contains\": {\n            \"const\": \"https://stac-extensions.github.io/sentinel-2/v1.0.0/schema.json\"\n
+        \         }\n        }\n      }\n    },\n    \"fields\": {\n      \"type\":
+        \"object\",\n      \"properties\": {\n        \"s2:tile_id\": {\n          \"title\":
+        \"Tile Identifier\",\n          \"type\": \"string\"\n        },\n        \"s2:granule_id\":
+        {\n          \"title\": \"Granule Identifier\",\n          \"type\": \"string\",\n
+        \         \"deprecated\": true\n        },\n        \"s2:datatake_id\": {\n
+        \         \"title\": \"Datatake Identifier\",\n          \"type\": \"string\"\n
+        \       },\n        \"s2:product_uri\": {\n          \"title\": \"Product
+        URI\",\n          \"type\": \"string\"\n        },\n        \"s2:datastrip_id\":
+        {\n          \"title\": \"Datastrip Identifier\",\n          \"type\": \"string\"\n
+        \       },\n        \"s2:product_type\": {\n          \"title\": \"Product
+        Type\",\n          \"type\": \"string\"\n        },\n        \"s2:datatake_type\":
+        {\n          \"title\": \"Datatake Type\",\n          \"type\": \"string\"\n
+        \       },\n        \"s2:generation_time\": {\n          \"title\": \"Generation
+        Time\",\n          \"type\": \"string\",\n          \"format\": \"date-time\"\n
+        \       },\n        \"s2:processing_baseline\": {\n          \"title\": \"Processing
+        Baseline\",\n          \"type\": \"string\",\n          \"pattern\": \"^\\\\d\\\\d\\\\.\\\\d\\\\d$\"\n
+        \       },\n        \"s2:water_percentage\": {\n          \"title\": \"Water
+        Percentage\",\n          \"type\": \"number\",\n          \"minimum\": 0,\n
+        \         \"maximum\": 100\n        },\n        \"s2:mean_solar_zenith\":
+        {\n          \"title\": \"Mean Solar Zenith\",\n          \"type\": \"number\",\n
+        \         \"minimum\": 0,\n          \"maximum\": 180,\n          \"deprecated\":
+        true\n        },\n        \"s2:mean_solar_azimuth\": {\n          \"title\":
+        \"Mean Solar Azimuth\",\n          \"type\": \"number\",\n          \"minimum\":
+        0,\n          \"maximum\": 180, \n          \"deprecated\": true\n        },\n
+        \       \"s2:snow_ice_percentage\": {\n          \"title\": \"Snow and Ice
+        Percentage\",\n          \"type\": \"number\",\n          \"minimum\": 0,\n
+        \         \"maximum\": 100\n        },\n        \"s2:vegetation_percentage\":
+        {\n          \"title\": \"Vegetation Percentage\",\n          \"type\": \"number\",\n
+        \         \"minimum\": 0,\n          \"maximum\": 100\n        },\n        \"s2:thin_cirrus_percentage\":
+        {\n          \"title\": \"Thin Cirrus Percentage\",\n          \"type\": \"number\",\n
+        \         \"minimum\": 0,\n          \"maximum\": 100\n        },\n        \"s2:cloud_shadow_percentage\":
+        {\n          \"title\": \"Cloud Shadow Percentage\",\n          \"type\":
+        \"number\",\n          \"minimum\": 0,\n          \"maximum\": 100\n        },\n
+        \       \"s2:nodata_pixel_percentage\": {\n          \"title\": \"No Data
+        Pixel Percentage\",\n          \"type\": \"number\",\n          \"minimum\":
+        0,\n          \"maximum\": 100\n        },\n        \"s2:unclassified_percentage\":
+        {\n          \"title\": \"Unclassified Percentage\",\n          \"type\":
+        \"number\",\n          \"minimum\": 0,\n          \"maximum\": 100\n        },\n
+        \       \"s2:dark_features_percentage\": {\n          \"title\": \"Dark Features
+        Percentage\",\n          \"type\": \"number\",\n          \"minimum\": 0,\n
+        \         \"maximum\": 100\n        },\n        \"s2:not_vegetated_percentage\":
+        {\n          \"title\": \"Not Vegetated Percentage\",\n          \"type\":
+        \"number\",\n          \"minimum\": 0,\n          \"maximum\": 100\n        },\n
+        \       \"s2:degraded_msi_data_percentage\": {\n          \"title\": \"Degraded
+        MSI Data Percentage\",\n          \"type\": \"number\",\n          \"minimum\":
+        0,\n          \"maximum\": 100\n        },\n        \"s2:high_proba_clouds_percentage\":
+        {\n          \"title\": \"High Probability Clouds Percentage\",\n          \"type\":
+        \"number\",\n          \"minimum\": 0,\n          \"maximum\": 100\n        },\n
+        \       \"s2:medium_proba_clouds_percentage\": {\n          \"title\": \"Medium
+        Probability Clouds Percentage\",\n          \"type\": \"number\",\n          \"minimum\":
+        0,\n          \"maximum\": 100\n        },\n        \"s2:saturated_defective_pixel_percentage\":
+        {\n          \"title\": \"Saturated Defective Pixel Percentage\",\n          \"type\":
+        \"number\",\n          \"minimum\": 0,\n          \"maximum\": 100\n        },\n
+        \       \"s2:reflectance_conversion_factor\": {\n          \"title\": \"Reflectance
+        Conversion Factor\",\n          \"type\": \"number\"\n        },\n        \"s2:mgrs_tile\":
+        {\n          \"title\": \"Sentinel-2 MGRS Tile Identifier\",\n          \"type\":
+        \"string\",\n          \"pattern\": \"^\\\\d\\\\d?[CDEFGHJKLMNPQRSTUVWX][ABCDEFGHJKLMNPQRSTUVWXYZ][ABCDEFGHJKLMNPQRSTUV]$\",\n
+        \         \"deprecated\": true\n        }\n      },\n      \"patternProperties\":
+        {\n        \"^(?!s2:)\": {\n          \"$comment\": \"Do not allow other fields
+        with this prefix\"\n        }\n      },\n      \"additionalProperties\": false\n
+        \   }\n  }\n}"
+    headers: {}
+    status:
+      code: 200
+      message: OK
+version: 1
