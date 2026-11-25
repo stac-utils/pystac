@@ -36,9 +36,12 @@ if TYPE_CHECKING:
 
 class StacIO(ABC):
     _default_io: Callable[[], StacIO] | None = None
+    headers: dict[str, str] = {}
+    migrate: bool = True
 
-    def __init__(self, headers: dict[str, str] | None = None):
+    def __init__(self, headers: dict[str, str] | None = None, migrate: bool = True):
         self.headers = headers or {}
+        self.migrate = migrate
 
     @abstractmethod
     def read_text(self, source: HREF, *args: Any, **kwargs: Any) -> str:
@@ -159,25 +162,39 @@ class StacIO(ABC):
             )
 
         info = identify_stac_object(d)
-        d = migrate_to_latest(d, info)
+
+        if self.migrate:
+            d = migrate_to_latest(d, info)
 
         if info.object_type == pystac.STACObjectType.CATALOG:
             catalog = pystac.Catalog.from_dict(
-                d, href=href_str, root=root, migrate=True, preserve_dict=preserve_dict
+                d,
+                href=href_str,
+                root=root,
+                migrate=self.migrate,
+                preserve_dict=preserve_dict,
             )
             catalog._stac_io = self
             return catalog
 
         if info.object_type == pystac.STACObjectType.COLLECTION:
             collection = pystac.Collection.from_dict(
-                d, href=href_str, root=root, migrate=True, preserve_dict=preserve_dict
+                d,
+                href=href_str,
+                root=root,
+                migrate=self.migrate,
+                preserve_dict=preserve_dict,
             )
             collection._stac_io = self
             return collection
 
         if info.object_type == pystac.STACObjectType.ITEM:
             item = pystac.Item.from_dict(
-                d, href=href_str, root=root, migrate=True, preserve_dict=preserve_dict
+                d,
+                href=href_str,
+                root=root,
+                migrate=self.migrate,
+                preserve_dict=preserve_dict,
             )
             item._stac_io = self
             return item
@@ -442,8 +459,9 @@ if HAS_URLLIB3:
             self,
             headers: dict[str, str] | None = None,
             retry: Retry | None = None,
+            migrate: bool = True,
         ):
-            super().__init__(headers)
+            super().__init__(headers, migrate=migrate)
 
             self.retry = retry or Retry()
             """The :py:class:`urllib3.util.retry.Retry` to use with all reading network

@@ -1281,9 +1281,23 @@ class Catalog(STACObject):
         return cast(Catalog, super().full_copy(root, parent))
 
     @classmethod
-    def from_file(cls: type[C], href: HREF, stac_io: pystac.StacIO | None = None) -> C:
+    def from_file(
+        cls: type[C],
+        href: HREF,
+        stac_io: pystac.StacIO | None = None,
+        migrate: bool | None = None,
+    ) -> C:
+        if stac_io is not None and migrate is not None:
+            raise ValueError(
+                "Setting both ``stac_io`` and ``migrate`` is not supported. Either "
+                "provide a StacIO instance with .migrate set or set migrate "
+                "directly in the function call."
+            )
+
         if stac_io is None:
             stac_io = pystac.StacIO.default()
+            if migrate is not None:
+                stac_io.migrate = migrate
 
         result = super().from_file(href, stac_io)
         result._stac_io = stac_io

@@ -2,13 +2,18 @@ import json
 import os
 import tempfile
 import unittest
+from collections.abc import Callable
+from functools import partial
 from pathlib import Path
+from typing import Any
 
 import pytest
 from pytest import MonkeyPatch
 
 import pystac
+from pystac import Catalog, Item, ItemCollection, STACObject
 from pystac.stac_io import DefaultStacIO, DuplicateKeyReportingMixin, StacIO
+from pystac.version import get_stac_version
 from tests.utils import TestCases
 
 
@@ -264,3 +269,80 @@ def test_custom_stac_io() -> None:
     assert link
     link.get_href()
     assert stac_io.calls == 2
+
+
+### Tests for opting out of migration with the ``migrate`` kwarg or ``StacIO.migrate
+
+CATALOG = TestCases.get_path("data-files/examples/1.0.0/catalog.json")
+ITEM = TestCases.get_path("data-files/examples/1.0.0/collectionless-item.json")
+ITEM_COLLECTION = TestCases.get_path(
+    "data-files/item-collection/item-collection-1.0.0.json"
+)
+
+
+def assert_migrated(obj: STACObject | ItemCollection, expected: bool) -> None:
+    """Checks the item, or for catalogs, the item resolved through the catalog."""
+    if isinstance(obj, Catalog):
+        items = list(obj.get_items())
+    elif isinstance(obj, ItemCollection):
+        items = list(obj)
+    else:
+        assert isinstance(obj, Item)
+        items = [obj]
+    assert len(items) == 1
+    assert items[0].properties["license"] == ("other" if expected else "various")
+
+    stac_version = items[0].to_dict(transform_hrefs=False)["stac_version"]
+    assert stac_version == get_stac_version() if expected else "1.0.0"
+
+
+Reader = Callable[..., STACObject | ItemCollection]
+
+
+def read_item_dict(**kwargs: Any) -> STACObject:
+    with open(ITEM) as f:
+        return pystac.read_dict(json.load(f), **kwargs)
+
+
+READERS: dict[str, Reader] = {
+    "read_file": partial(pystac.read_file, CATALOG),
+    "read_dict": read_item_dict,
+    "STACObject.from_file": partial(STACObject.from_file, CATALOG),
+    "Catalog.from_file": partial(Catalog.from_file, CATALOG),
+    "Item.from_file": partial(Item.from_file, ITEM),
+    "ItemCollection.from_file": partial(ItemCollection.from_file, ITEM_COLLECTION),
+}
+
+
+@pytest.fixture(params=READERS)
+def read(request: pytest.FixtureRequest) -> Reader:
+    return READERS[request.param]
+
+
+def test_stac_io_migrate_attr() -> None:
+    assert StacIO.default().migrate is True
+    assert DefaultStacIO(migrate=False).migrate is False
+
+
+def test_migrates_by_default(read: Reader) -> None:
+    assert_migrated(read(), True)
+
+
+def test_migrate_kwarg(read: Reader) -> None:
+    assert_migrated(read(migrate=False), False)
+    assert_migrated(read(migrate=True), True)
+
+
+def test_stac_io_migrate(read: Reader) -> None:
+    assert_migrated(read(stac_io=DefaultStacIO(migrate=False)), False)
+
+
+def test_stac_io_and_migrate_kwarg_raises(read: Reader) -> None:
+    with pytest.raises(ValueError, match="stac_io"):
+        read(stac_io=DefaultStacIO(), migrate=False)
+
+
+def test_migrate_kwarg_does_not_change_default_stac_io() -> None:
+    pystac.read_file(CATALOG, migrate=False)
+    assert StacIO.default().migrate is True
+    assert_migrated(pystac.read_file(CATALOG), True)

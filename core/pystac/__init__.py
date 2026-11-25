@@ -99,7 +99,9 @@ import pystac.extensions.hooks
 EXTENSION_HOOKS = pystac.extensions.hooks.RegisteredExtensionHooks()
 
 
-def read_file(href: HREF, stac_io: StacIO | None = None) -> STACObject:
+def read_file(
+    href: HREF, stac_io: StacIO | None = None, migrate: bool | None = None
+) -> STACObject:
     """Reads a STAC object from a file.
 
     This method will return either a Catalog, a Collection, or an Item based on what
@@ -112,6 +114,9 @@ def read_file(href: HREF, stac_io: StacIO | None = None) -> STACObject:
         href : The HREF to read the object from.
         stac_io: Optional :class:`~StacIO` instance to use for I/O operations. If not
             provided, will use :meth:`StacIO.default` to create an instance.
+        migrate: By default, STAC objects and extensions are migrated to
+            their latest supported version. Set this to False or use a StacIO with
+            migrate set to False to disable this behavior.
 
     Returns:
         The specific STACObject implementation class that is represented
@@ -123,8 +128,18 @@ def read_file(href: HREF, stac_io: StacIO | None = None) -> STACObject:
             is not a :class:`~pystac.STACObject` and must be read using
             :meth:`ItemCollection.from_file <pystac.ItemCollection.from_file>`
     """
+    if stac_io is not None and migrate is not None:
+        raise ValueError(
+            "Setting both ``stac_io`` and ``migrate`` is not supported. Either "
+            "provide a StacIO instance with .migrate set or set migrate "
+            "directly in the function call."
+        )
+
     if stac_io is None:
         stac_io = StacIO.default()
+        if migrate is not None:
+            stac_io.migrate = migrate
+
     return stac_io.read_stac_object(href)
 
 
@@ -170,6 +185,7 @@ def read_dict(
     href: str | None = None,
     root: Catalog | None = None,
     stac_io: StacIO | None = None,
+    migrate: bool | None = None,
 ) -> STACObject:
     """Reads a :class:`~STACObject` or :class:`~ItemCollection` from a JSON-like dict
     representing a serialized STAC object.
@@ -187,8 +203,11 @@ def read_dict(
         root : Optional root of the catalog for this object.
             If provided, the root's resolved object cache can be used to search for
             previously resolved instances of the STAC object.
-        stac_io: Optional :class:`~StacIO` instance to use for reading. If ``None``,
-            the default instance will be used.
+        stac_io: Optional :class:`~StacIO` instance to use for I/O operations. If not
+            provided, will use :meth:`StacIO.default` to create an instance.
+        migrate: By default, STAC objects and extensions are migrated to
+            their latest supported version. Set this to False or use a StacIO with
+            migrate set to False to disable this behavior.
 
     Raises:
         STACTypeError : If the ``d`` dictionary does not represent a valid
@@ -196,8 +215,18 @@ def read_dict(
             is not a :class:`~pystac.STACObject` and must be read using
             :meth:`ItemCollection.from_dict <pystac.ItemCollection.from_dict>`
     """
+    if stac_io is not None and migrate is not None:
+        raise ValueError(
+            "Setting both ``stac_io`` and ``migrate`` is not supported. Either "
+            "provide a StacIO instance with .migrate set or set migrate "
+            "directly in the function call."
+        )
+
     if stac_io is None:
         stac_io = StacIO.default()
+        if migrate is not None:
+            stac_io.migrate = migrate
+
     return stac_io.stac_object_from_dict(d, href, root)
 
 
